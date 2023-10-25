@@ -31,13 +31,11 @@ public class TaskStatus {
 
     @Column
     private LocalDate nextDue;
-
     @Transient
     private String nextDuePersian;
     @Transient
     private String lastSuccessfulPersian;
-
-    @OneToMany(mappedBy = "taskStatus")
+    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     public String getNextDuePersian() {
@@ -113,7 +111,7 @@ public class TaskStatus {
         return tasks;
     }
 
-    public void setTasks(List<Task> tasks) {
-        this.tasks = tasks;
+    public void setTasks(Task task) {
+        this.tasks.add(task);
     }
 }

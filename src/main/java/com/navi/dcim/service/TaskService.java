@@ -13,6 +13,7 @@ import com.navi.dcim.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -35,10 +36,21 @@ public class TaskService {
     private CenterRepository centerRepository;
 
 
-    public void setTodayTasks() {
+    public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = (List<TaskStatus>) taskStatusRepository.findAll();
+        List<Task> taskList = (List<Task>) taskRepository.findAll();
         List<Center> centers = (List<Center>) centerRepository.findAll();
         List<Person> personList = (List<Person>) personRepository.findAll();
+
+        if (!taskList.isEmpty()) {
+            for (Task task : taskList
+            ) {
+                if (task.getSuccessDate() != null) {
+                    var delayedDays = java.time.LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
+                    task.setDelay(delayedDays);
+                }
+            }
+        }
 
         for (TaskStatus status : taskStatusList
         ) {
@@ -50,17 +62,22 @@ public class TaskService {
                 todayTask.setPerson(personList.get(new Random().nextInt(personList.size())));
                 todayTask.setStatus("Action Required");
                 todayTask.setDueDate(status.getNextDue());
-                taskRepository.save(todayTask);
+                status.setTasks(todayTask);
+                taskStatusRepository.save(status);
             }
         }
     }
 
     public List<TaskStatus> getTaskStatus() {
         List<TaskStatus> taskStatusList = (List<TaskStatus>) taskStatusRepository.findAll();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        for (TaskStatus taskStatus: taskStatusList
-             ) {
-            taskStatus.setNextDuePersian(dtf.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        for (TaskStatus taskStatus : taskStatusList
+        ) {
+            taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
+            if (taskStatus.getLastSuccessful() != null){
+                taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
+            }
         }
         return taskStatusList;
     }
@@ -84,27 +101,32 @@ public class TaskService {
         TaskStatus taskStatus = task.getTaskStatus();
 
         task.setSuccessDate(java.time.LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        task.setSuccessDatePersian(dtf.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+        DateTimeFormatter dateTime = DateTimeFormatter.ISO_DATE_TIME;
+        task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setStatus("Done");
         task.setDescription(description);
 
-        DateTimeFormatter dtf2 = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
         taskStatus.setNextDue(taskStatus.getLastSuccessful().toLocalDate().plusDays(taskStatus.getPeriod()));
-        taskStatus.setLastSuccessfulPersian(dtf2.format(PersianDate.fromGregorian(task.getSuccessDate().toLocalDate())));
-        taskStatus.setNextDuePersian(dtf2.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
-        taskRepository.save(task);
+        taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
+        taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
         return taskStatusRepository.save(taskStatus);
     }
 
     public List<Task> getUserTask(int id) {
         List<Task> tasks = (List<Task>) taskRepository.findAll();
         List<Task> userTasks = new ArrayList<>();
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         for (Task task : tasks
         ) {
             if (task.getPerson().getId() == id) {
                 userTasks.add(task);
+                task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+                if (task.getSuccessDate() != null) {
+                    task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+                }
             }
         }
         return userTasks;

@@ -42,7 +42,7 @@ public class UserController {
 
     @GetMapping("/api/settodaytask")
     private void setTodayTasks() {
-        taskService.setTodayTasks();
+        taskService.updateTodayTasks();
     }
 
 
