@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-public class UserController {
+public class RestUserController {
     @Autowired
     private TaskService taskService;
 
@@ -22,7 +22,7 @@ public class UserController {
 
     @GetMapping("/api/gettodaytasks")
     private List<Task> getTasks() {
-        return taskService.getUnfinishedTasks();
+        return taskService.getTaskList();
     }
 
     @GetMapping("/api/gettaskstatus")

@@ -17,19 +17,10 @@ public class Task {
     private int id;
 
     @Column
-    private String status;
-
-    @Column
-    private String statusPersian;
+    private boolean status;
 
     @Column
     private LocalDate dueDate;
-
-    @Transient
-    private String dueDatePersian;
-
-    @Transient
-    private String successDatePersian;
 
     @Column
     private LocalDateTime successDate;
@@ -39,6 +30,15 @@ public class Task {
 
     @Column
     private String description;
+
+    @Transient
+    private String dueDatePersian;
+
+    @Transient
+    private String successDatePersian;
+
+    @Transient
+    private String namePersian;
 
     @ManyToOne
     @JoinColumn(name = "task_status_id")
@@ -52,6 +52,18 @@ public class Task {
     @JoinColumn(name = "center_id")
     private Center center;
 
+
+    public boolean isStatus() {
+        return status;
+    }
+
+    public String getNamePersian() {
+        return namePersian;
+    }
+
+    public void setNamePersian(String namePersian) {
+        this.namePersian = namePersian;
+    }
 
     public int getId() {
         return id;
@@ -78,23 +90,14 @@ public class Task {
     }
 
 
-    public String getStatus() {
+    @JsonIgnore
+    public boolean getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(boolean status) {
         this.status = status;
     }
-
-    @JsonIgnore
-    public String getStatusPersian() {
-        return statusPersian;
-    }
-
-    public void setStatusPersian(String statusPersian) {
-        this.statusPersian = statusPersian;
-    }
-
 
     @JsonIgnore
     public LocalDate getDueDate() {
@@ -122,7 +125,6 @@ public class Task {
         this.delay = delay;
     }
 
-
     public String getDescription() {
         return description;
     }
@@ -130,7 +132,6 @@ public class Task {
     public void setDescription(String description) {
         this.description = description;
     }
-
 
     public TaskStatus getTaskStatus() {
         return taskStatus;

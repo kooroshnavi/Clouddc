@@ -42,15 +42,8 @@ public class TaskService {
         List<Center> centers = (List<Center>) centerRepository.findAll();
         List<Person> personList = (List<Person>) personRepository.findAll();
 
-        if (!taskList.isEmpty()) {
-            for (Task task : taskList
-            ) {
-                if (task.getSuccessDate() != null) {
-                    var delayedDays = java.time.LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
-                    task.setDelay(delayedDays);
-                }
-            }
-        }
+        delayCalculation(taskList);
+
 
         for (TaskStatus status : taskStatusList
         ) {
@@ -58,12 +51,25 @@ public class TaskService {
                 Task todayTask = new Task();
                 todayTask.setTaskStatus(status);
                 todayTask.setDelay(0);
+                todayTask.setStatus(false);
                 todayTask.setCenter(centers.get(new Random().nextInt(centers.size())));
                 todayTask.setPerson(personList.get(new Random().nextInt(personList.size())));
-                todayTask.setStatus("Action Required");
                 todayTask.setDueDate(status.getNextDue());
                 status.setTasks(todayTask);
                 taskStatusRepository.save(status);
+            }
+        }
+    }
+
+    private void delayCalculation(List<Task> taskList) {
+        if (!taskList.isEmpty()) {
+            for (Task task : taskList
+            ) {
+                if (!task.getStatus()) {
+                    var delayedDays = java.time.LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
+                    task.setDelay(delayedDays);
+                    taskRepository.save(task);
+                }
             }
         }
     }
@@ -75,35 +81,35 @@ public class TaskService {
         for (TaskStatus taskStatus : taskStatusList
         ) {
             taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
-            if (taskStatus.getLastSuccessful() != null){
+            if (taskStatus.getLastSuccessful() != null) {
                 taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
             }
         }
         return taskStatusList;
     }
 
-    public List<Task> getUnfinishedTasks() {
+    public List<Task> getTaskList() {
         List<Task> tasks = (List<Task>) taskRepository.findAll();
-        List<Task> unfinishedTask = new ArrayList<>();
-        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
         for (Task task : tasks
         ) {
-            if (task.getSuccessDate() == null) {
-                task.setDueDatePersian(dtf.format(PersianDate.fromGregorian(task.getDueDate())));
-                unfinishedTask.add(task);
+            task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+            if (task.getStatus()) {
+                task.setSuccessDatePersian(dateTimeFormatter.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
             }
         }
-        return unfinishedTask;
+        return tasks;
     }
 
     public TaskStatus updateTask(int id, String description) {
         Task task = taskRepository.findById(id).get();
         TaskStatus taskStatus = task.getTaskStatus();
 
-        task.setSuccessDate(java.time.LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES));
+        task.setSuccessDate(java.time.LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_DATE_TIME;
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
-        task.setStatus("Done");
+        task.setStatus(true);
         task.setDescription(description);
 
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");

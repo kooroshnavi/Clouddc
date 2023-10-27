@@ -18,9 +18,6 @@ public class TaskStatus {
     private int id;
 
     @Column
-    private String name;
-
-    @Column
     private String namePersian;
 
     @Column
@@ -31,12 +28,13 @@ public class TaskStatus {
 
     @Column
     private LocalDate nextDue;
+    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
+    private List<Task> tasks;
+
     @Transient
     private String nextDuePersian;
     @Transient
     private String lastSuccessfulPersian;
-    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
-    private List<Task> tasks;
 
     public String getNextDuePersian() {
         return nextDuePersian;
@@ -61,15 +59,6 @@ public class TaskStatus {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @JsonIgnore
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public String getNamePersian() {
