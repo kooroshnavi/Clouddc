@@ -7,6 +7,7 @@ import com.navi.dcim.model.TaskStatus;
 import com.navi.dcim.service.TaskService;
 import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,6 +39,7 @@ public class MvcUserController {
     }
 
     @GetMapping("/app/taskList")
+    @PreAuthorize(value = "ADMIN")
     public String getTaskList(Model model) {
         List<Task> taskLists = taskService.getTaskList();
         var date = PersianDate.fromGregorian(LocalDate.now());

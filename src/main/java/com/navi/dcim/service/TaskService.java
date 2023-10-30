@@ -11,8 +11,11 @@ import com.navi.dcim.repository.PersonRepository;
 import com.navi.dcim.repository.TaskRepository;
 import com.navi.dcim.repository.TaskStatusRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
@@ -37,8 +40,8 @@ public class TaskService {
 
 
     public void updateTodayTasks() {
-        List<TaskStatus> taskStatusList = (List<TaskStatus>) taskStatusRepository.findAll();
-        List<Task> taskList = (List<Task>) taskRepository.findAll();
+        List<TaskStatus> taskStatusList = taskStatusRepository.findAll();
+        List<Task> taskList = taskRepository.findAll();
         List<Center> centers = (List<Center>) centerRepository.findAll();
         List<Person> personList = (List<Person>) personRepository.findAll();
 
@@ -66,7 +69,7 @@ public class TaskService {
             for (Task task : taskList
             ) {
                 if (!task.getStatus()) {
-                    var delayedDays = java.time.LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
+                    var delayedDays = LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
                     task.setDelay(delayedDays);
                     taskRepository.save(task);
                 }
@@ -75,7 +78,8 @@ public class TaskService {
     }
 
     public List<TaskStatus> getTaskStatus() {
-        List<TaskStatus> taskStatusList = (List<TaskStatus>) taskStatusRepository.findAll();
+        List<TaskStatus> taskStatusList = taskStatusRepository
+                .findAll(Sort.by("lastSuccessful").descending());
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         for (TaskStatus taskStatus : taskStatusList
@@ -89,7 +93,8 @@ public class TaskService {
     }
 
     public List<Task> getTaskList() {
-        List<Task> tasks = (List<Task>) taskRepository.findAll();
+        List<Task> tasks = taskRepository.
+                findAll(Sort.by("dueDate").descending());
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
         for (Task task : tasks
@@ -106,7 +111,7 @@ public class TaskService {
         Task task = taskRepository.findById(id).get();
         TaskStatus taskStatus = task.getTaskStatus();
 
-        task.setSuccessDate(java.time.LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
+        task.setSuccessDate(LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_DATE_TIME;
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setStatus(true);
