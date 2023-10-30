@@ -10,6 +10,4 @@ import java.util.List;
 
 @Repository
 public interface TaskStatusRepository extends JpaRepository<TaskStatus, Integer> {
-    @Override
-    List<TaskStatus> findAll(Sort sort);
 }

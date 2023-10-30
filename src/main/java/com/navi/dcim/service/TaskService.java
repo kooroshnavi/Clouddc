@@ -47,10 +47,9 @@ public class TaskService {
 
         delayCalculation(taskList);
 
-
         for (TaskStatus status : taskStatusList
         ) {
-            if (status.getNextDue().equals(java.time.LocalDate.now())) {
+            if (status.getNextDue().equals(LocalDate.now())) {
                 Task todayTask = new Task();
                 todayTask.setTaskStatus(status);
                 todayTask.setDelay(0);
@@ -141,5 +140,17 @@ public class TaskService {
             }
         }
         return userTasks;
+    }
+
+    public List<Center> getCenterList() {
+        return centerRepository.findAll(Sort.by("name").ascending());
+    }
+
+    public List<Person> getPersonList() {
+        return personRepository.findAll(Sort.by("name").ascending());
+    }
+
+    public void addNewTask(TaskStatus taskStatus) {
+        taskStatusRepository.save(taskStatus);
     }
 }

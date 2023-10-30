@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table
@@ -52,6 +53,20 @@ public class Task {
     @JoinColumn(name = "center_id")
     private Center center;
 
+    @OneToMany(mappedBy = "task", cascade = CascadeType.ALL)
+    private List<TaskDetail> taskDetailList;
+
+
+
+
+
+    public List<TaskDetail> getTaskDetailList() {
+        return taskDetailList;
+    }
+
+    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
+        this.taskDetailList = taskDetailList;
+    }
 
     public boolean isStatus() {
         return status;
