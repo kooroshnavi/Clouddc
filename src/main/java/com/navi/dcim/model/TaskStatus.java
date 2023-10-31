@@ -18,7 +18,7 @@ public class TaskStatus {
     private int id;
 
     @Column
-    private String namePersian;
+    private String name;
 
     @Column
     private int period;
@@ -35,6 +35,11 @@ public class TaskStatus {
     private String nextDuePersian;
     @Transient
     private String lastSuccessfulPersian;
+
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
 
     public String getNextDuePersian() {
         return nextDuePersian;
@@ -61,12 +66,12 @@ public class TaskStatus {
         this.id = id;
     }
 
-    public String getNamePersian() {
-        return namePersian;
+    public String getName() {
+        return name;
     }
 
-    public void setNamePersian(String namePersian) {
-        this.namePersian = namePersian;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getPeriod() {

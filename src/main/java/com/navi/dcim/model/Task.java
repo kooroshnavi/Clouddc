@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table
@@ -28,9 +29,6 @@ public class Task {
     @Column
     private int delay;
 
-    @Column
-    private String description;
-
     @Transient
     private String dueDatePersian;
 
@@ -45,13 +43,20 @@ public class Task {
     private TaskStatus taskStatus;
 
     @OneToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
-
-    @OneToOne
     @JoinColumn(name = "center_id")
     private Center center;
 
+    @OneToMany(mappedBy = "task", cascade = {CascadeType.ALL})
+    private List<TaskDetail> taskDetailList;
+
+
+    public List<TaskDetail> getTaskDetailList() {
+        return taskDetailList;
+    }
+
+    public void setTaskDetailList(TaskDetail taskDetail) {
+        this.taskDetailList.add(taskDetail);
+    }
 
     public boolean isStatus() {
         return status;
@@ -125,14 +130,6 @@ public class Task {
         this.delay = delay;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public TaskStatus getTaskStatus() {
         return taskStatus;
     }
@@ -140,15 +137,6 @@ public class Task {
     public void setTaskStatus(TaskStatus taskStatus) {
         this.taskStatus = taskStatus;
     }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
 
     public Center getCenter() {
         return center;

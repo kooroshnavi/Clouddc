@@ -1,11 +1,8 @@
 package com.navi.dcim.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table
@@ -17,39 +14,12 @@ public class Person {
     private int id;
 
     @Column
-    private String namePersian;
+    private String name;
 
-    @Column
-    private String username;
+    @OneToOne(mappedBy = "person")
+    @PrimaryKeyJoinColumn
+    private PersonDetail personDetail;
 
-    @Column
-    @JsonIgnoreProperties
-    private String password;
-
-    @Column
-    private String role;
-
-    @Column
-    private LocalDateTime lastLogin;
-
-
-    @JsonIgnore
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    @JsonIgnore
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
 
     @JsonIgnore
     public int getId() {
@@ -60,30 +30,20 @@ public class Person {
         this.id = id;
     }
 
-    public String getNamePersian() {
-        return namePersian;
+    public String getName() {
+        return name;
     }
 
-    public void setNamePersian(String namePersian) {
-        this.namePersian = namePersian;
-    }
-
-    @JsonIgnore
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
+    public void setName(String name) {
+        this.name = name;
     }
 
     @JsonIgnore
-    public String getPassword() {
-        return password;
+    public PersonDetail getPersonDetail() {
+        return personDetail;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setPersonDetail(PersonDetail personDetail) {
+        this.personDetail = personDetail;
     }
-
 }

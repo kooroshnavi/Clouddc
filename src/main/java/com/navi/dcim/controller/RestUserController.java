@@ -35,10 +35,10 @@ public class RestUserController {
         return taskService.updateTask(id, description);
     }
 
-    @GetMapping("/api/usertasks/{id}")
+    /*@GetMapping("/api/usertasks/{id}")
     private List<Task> getUserTask(@PathVariable int id) {
         return taskService.getUserTask(id);
-    }
+    }*/
 
     @GetMapping("/api/settodaytask")
     private void setTodayTasks() {
