@@ -45,6 +45,7 @@ public class TaskService {
         for (TaskStatus status : taskStatusList
         ) {
             if (isTodayTask(status)) {
+                TaskDetail taskDetail2 = setupTaskDetail(new TaskDetail());
                 TaskDetail taskDetail = new TaskDetail();
                 Task todayTask = new Task();
 
@@ -65,6 +66,10 @@ public class TaskService {
                 taskStatusRepository.save(status);
             }
         }
+    }
+
+    private TaskDetail setupTaskDetail(TaskDetail taskDetail) {
+        return null;
     }
 
     private boolean isTodayTask(TaskStatus status) {
