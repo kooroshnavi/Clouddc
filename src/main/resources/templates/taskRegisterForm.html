@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<!-- Coding by CodingLab | www.codinglabweb.com-->
+<html lang="fa" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title> Dynamic Digital Clock | CodingLab </title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1,  white-space: nowrap, shrink-to-fit=yes">
+    <link rel="stylesheet" th:href="@{/css/clock2.css}">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+          integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"/>
+</head>
+
+<body>
+
+<section>
+    <div class="container" dir="rtl">
+
+        <h3 dir="rtl">تعریف وظیفه جدید</h3>
+
+
+        <form action="#" th:action="@{/app/addTask}"
+              th:object="${taskStatus}" method="POST">
+
+            <input type="text" th:field="*{firstName}"
+                   class="form-control mb-10 col-10" placeholder="شرح وظیفه">
+
+            <br><br>
+            <div class="form-group blu-margin">
+                <select class="form-control mb-5 col-5" th:field="${operator.opeId}"  id="dropOperator">
+                    <option value="0">سالن</option>
+                    <option th:each="operator : ${operators}" th:value="${operator.id}" th:text="${operator.operatorName}"></option>
+                </select>
+            </div>
+
+            <div class="form-group blu-margin">
+                <select class="form-control mb-5 col-5" th:field="${operator.opeId}"  id="dropOperator2">
+                    <option value="0">کارتابل</option>
+                    <option th:each="operator : ${operators}" th:value="${operator.id}" th:text="${operator.operatorName}"></option>
+                </select>
+            </div>
+
+            <br><br>
+            <label dir="rtl">مرتبه تکرار</label>
+            <select name = "dropdown" >
+                <option value = "0" selected>بدون تکرار</option>
+                <option value = "1">روزانه</option>
+                <option value = "7">هفتگی</option>
+                <option value = "30">ماهانه</option>
+                <option value = "90">سه ماهه</option>
+                <option value = "180">شش ماهه</option>
+                <option value = "365">سالانه</option>
+            </select>
+
+            <button type="submit" class="btn btn-info col-2">Save</button>
+                <br><br>
+        </form>
+
+        <hr>
+        <a th:href="@{/employees/list}">بازگشت به لیست وظایف</a>
+
+    </div>
+
+</section>
+
+
+<script>
+  let section = document.querySelector("section"),
+  icons = document.querySelector(".icons");
+
+  icons.onclick = ()=>{
+    section.classList.toggle("dark");
+  }
+
+  // creating a function and calling it in every seconds
+  setInterval(()=>{
+
+    let date = new Date(),
+    hour = date.getHours(),
+    min = date.getMinutes(),
+    sec = date.getSeconds();
+
+    let d;
+    d = hour < 12 ? "AM" : "PM"; //if hour is smaller than 12, than its value will be AM else its value will be pm
+    hour = hour > 12 ? hour - 12 : hour; //if hour value is greater than 12 than 12 will subtracted ( by doing this we will get value till 12 not 13,14 or 24 )
+    hour = hour == 0 ? hour = 12 : hour; // if hour value is  0 than it value will be 12
+
+    // adding 0 to the front of all the value if they will less than 10
+    hour = hour < 10 ? "0" + hour : hour;
+    min = min < 10 ? "0" + min : min;
+    sec = sec < 10 ? "0" + sec : sec;
+
+    document.querySelector(".hour_num").innerText = hour;
+    document.querySelector(".min_num").innerText = min;
+    document.querySelector(".sec_num").innerText = sec;
+    document.querySelector(".am_pm").innerText = d;
+
+  }, 1000); // 1000 milliseconds = 1s
+
+
+
+</script>
+
+</body>
+</html>

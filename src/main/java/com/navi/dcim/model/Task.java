@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -55,6 +56,7 @@ public class Task {
     }
 
     public void setTaskDetailList(TaskDetail taskDetail) {
+        this.taskDetailList = new ArrayList<>();
         this.taskDetailList.add(taskDetail);
     }
 

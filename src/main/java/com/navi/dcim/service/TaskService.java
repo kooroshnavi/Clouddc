@@ -14,7 +14,6 @@ import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -31,40 +30,45 @@ public class TaskService {
     private PersonRepository personRepository;
     @Autowired
     private CenterRepository centerRepository;
-    @Autowired
-    private StateRepository stateRepository;
+
 
 
     public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll(Sort.unsorted());
         List<Task> taskList = taskRepository.findAll(Sort.unsorted());
         List<Center> centers = (List<Center>) centerRepository.findAll();
-        List<Person> personList = (List<Person>) personRepository.findAll();
-        Optional<State> pending = stateRepository.findById(1);
+        List<Person> personList = personRepository.findAll();
 
         delayCalculation(taskList);
 
 
         for (TaskStatus status : taskStatusList
         ) {
-            if (status.getNextDue().equals(LocalDate.now())) {
+            if (isTodayTask(status)) {
                 TaskDetail taskDetail = new TaskDetail();
-                taskDetail.setState(pending);
-                taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
-                taskDetail.setUpdate_date(LocalDateTime.now());
-
                 Task todayTask = new Task();
+
                 todayTask.setTaskStatus(status);
                 todayTask.setDelay(0);
                 todayTask.setStatus(false);
                 todayTask.setCenter(centers.get(new Random().nextInt(centers.size())));
                 todayTask.setDueDate(status.getNextDue());
-                todayTask.setTaskDetailList(taskDetail);
 
+                taskDetail.setFinished(false);
+                taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
+                taskDetail.setUpdateDate(LocalDateTime.now());
+
+                taskDetail.setTask(todayTask);
+                todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
+
                 taskStatusRepository.save(status);
             }
         }
+    }
+
+    private boolean isTodayTask(TaskStatus status) {
+        return status.getNextDue().equals(LocalDate.now());
     }
 
     private void delayCalculation(List<Task> taskList) {

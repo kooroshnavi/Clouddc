@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Entity
 @Table
@@ -20,17 +19,24 @@ public class TaskDetail {
     private String description;
 
     @Column
-    private LocalDateTime update_date;
+    private LocalDateTime updateDate;
 
-    @OneToOne
-    @JoinColumn(name = "state_id")
-    private Optional<State> state;
+    @Column(name = "is_finished")
+    private boolean isFinished;
 
-    @OneToOne
+    public boolean isFinished() {
+        return isFinished;
+    }
+
+    public void setFinished(boolean finished) {
+        isFinished = finished;
+    }
+
+    @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @OneToOne
+    @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "task_id")
     private Task task;
 
@@ -51,20 +57,12 @@ public class TaskDetail {
         this.description = description;
     }
 
-    public LocalDateTime getUpdate_date() {
-        return update_date;
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 
-    public void setUpdate_date(LocalDateTime update_date) {
-        this.update_date = update_date;
-    }
-
-    public Optional<State> getState() {
-        return state;
-    }
-
-    public void setState(Optional<State> state) {
-        this.state = state;
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
     }
 
     public Person getPerson() {
