@@ -36,7 +36,7 @@ public class TaskDetail {
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne()
     @JoinColumn(name = "task_id")
     private Task task;
 

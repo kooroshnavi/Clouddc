@@ -4,6 +4,7 @@ import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
 import com.navi.dcim.model.*;
 import com.navi.dcim.repository.*;
+import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -17,21 +18,21 @@ import java.util.List;
 import java.util.Random;
 
 @Service
+@NoArgsConstructor
 public class TaskService {
-    public TaskService() {
 
-    }
-
-    @Autowired
     private TaskStatusRepository taskStatusRepository;
-    @Autowired
     private TaskRepository taskRepository;
-    @Autowired
     private PersonRepository personRepository;
-    @Autowired
     private CenterRepository centerRepository;
 
-
+    @Autowired
+    public TaskService(TaskStatusRepository taskStatusRepository, TaskRepository taskRepository, PersonRepository personRepository, CenterRepository centerRepository) {
+        this.taskStatusRepository = taskStatusRepository;
+        this.taskRepository = taskRepository;
+        this.personRepository = personRepository;
+        this.centerRepository = centerRepository;
+    }
 
     public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll(Sort.unsorted());
@@ -41,36 +42,37 @@ public class TaskService {
 
         delayCalculation(taskList);
 
-
         for (TaskStatus status : taskStatusList
         ) {
             if (isTodayTask(status)) {
-                TaskDetail taskDetail2 = setupTaskDetail(new TaskDetail());
-                TaskDetail taskDetail = new TaskDetail();
-                Task todayTask = new Task();
-
-                todayTask.setTaskStatus(status);
-                todayTask.setDelay(0);
-                todayTask.setStatus(false);
-                todayTask.setCenter(centers.get(new Random().nextInt(centers.size())));
-                todayTask.setDueDate(status.getNextDue());
-
-                taskDetail.setFinished(false);
-                taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
-                taskDetail.setUpdateDate(LocalDateTime.now());
-
-                taskDetail.setTask(todayTask);
+                Task todayTask = setupTask(status, centers);
+                TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
                 todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
-
                 taskStatusRepository.save(status);
             }
         }
     }
 
-    private TaskDetail setupTaskDetail(TaskDetail taskDetail) {
-        return null;
+    private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
+        TaskDetail taskDetail = new TaskDetail();
+        taskDetail.setFinished(false);
+        taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
+        taskDetail.setUpdateDate(LocalDateTime.now());
+        taskDetail.setTask(todayTask);
+        return taskDetail;
     }
+
+    private Task setupTask(TaskStatus status, List<Center> centers) {
+        Task todayTask = new Task();
+        todayTask.setTaskStatus(status);
+        todayTask.setDelay(0);
+        todayTask.setStatus(false);
+        todayTask.setCenter(centers.get(new Random().nextInt(centers.size())));
+        todayTask.setDueDate(status.getNextDue());
+        return todayTask;
+    }
+
 
     private boolean isTodayTask(TaskStatus status) {
         return status.getNextDue().equals(LocalDate.now());
