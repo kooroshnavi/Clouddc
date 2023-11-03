@@ -43,17 +43,14 @@
 <div class="container">
 
     <h3 th:text="${date}"/>
+    <h2 th:text="${name}"/>
+
     <hr>
 
     <!-- Add a button -->
-    <a th:href="@{/app/taskList}"
+    <a th:href="@{/app/statusList}"
        class="btn btn-primary btn-sm mb-3">
-        لیست عملکرد
-    </a>
-
-    <a th:href="@{/app/registerTask}"
-       class="btn btn-primary btn-sm mb-3">
-        ایجاد وظیفه جدید
+        وظایف در یک نگاه
     </a>
 
 
@@ -62,24 +59,35 @@
         <thead class="thead-dark">
         <tr>
 
-            <th>سررسید بعدی</th>
-            <th>دوره تکرار(روز)</th>
-            <th>تاریخ آخرین اقدام</th>
+            <th>مرکز</th>
+            <th>تاخیر (روز)</th>
+            <th>تاریخ اقدام</th>
+            <th>وضعیت</th>
+            <th>تاریخ سررسید</th>
             <th>عنوان</th>
-            <th>شناسه</th>
+            <th>شناسه وظیفه</th>
+            <th>ردیف</th>
+
 
         </tr>
         </thead>
 
         <tbody>
+        <tr th:each="task, iter : ${taskList}">
+            <td th:text="${task.getCenter.getNamePersian}"/>
+            <td th:text="${task.getDelay}"/>
+            <td th:text="${task.getSuccessDatePersian}"/>
+            <td>
+                <a th:href="@{/app/task/{id}(id=${task.id})} " th:text="${task.getStatus} ? 'اتمام' : 'بررسی نشده'" />
+            </td>
+            <td th:text="${task.getDueDatePersian}"/>
+            <td th:text="${task.getTaskStatus.name}"/>
+            <td th:text="${task.getTaskStatus.getId}"/>
+            <td th:text="${iter.count}"/>
 
-        <tr th:each="status : ${statusList}">
-            <td th:text="${status.getNextDuePersian}"/>
-            <td th:text="${status.period}"/>
-            <td th:text="${status.getLastSuccessfulPersian}"/>
-            <td th:text="${status.name}"/>
-            <td th:text="${status.id}"/>
         </tr>
+
+
         </tbody>
     </table>
 
@@ -119,8 +127,11 @@
   }, 1000); // 1000 milliseconds = 1s
 
 
-
 </script>
+
 
 </body>
 </html>
+
+
+

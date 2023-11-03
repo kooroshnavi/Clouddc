@@ -42,7 +42,7 @@
 
 		<tbody>
 		<tr th:each="status : ${statusList}">
-			<td th:text="${status.id}"  /><a th:href="@{/category/edit/{id}(id=${category.idCategory})}">view</a>
+			<td th:text="${status.id}"  />
 			<td th:text="${status.namePersian}" />
 			<td th:text="${status.lastSuccessful}" />
 			<td th:text="${status.period}" />

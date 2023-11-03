@@ -14,8 +14,10 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
@@ -56,7 +58,6 @@ public class TaskService {
 
     private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
         TaskDetail taskDetail = new TaskDetail();
-        taskDetail.setFinished(false);
         taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
         taskDetail.setUpdateDate(LocalDateTime.now());
         taskDetail.setTask(todayTask);
@@ -133,6 +134,37 @@ public class TaskService {
         taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
         taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
         return taskStatusRepository.save(taskStatus);
+    }
+
+    public List<Task> getTaskListById(int id) {
+        TaskStatus taskStatus = taskStatusRepository.findById(id).get();
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        for (Task task : taskStatus.getTasks()
+        ) {
+            task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+            if (task.getStatus()) {
+                task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+            }
+        }
+        return taskStatus.getTasks();
+    }
+
+    public List<TaskDetail> getTaskDetailById(int id) {
+        Task task = taskRepository.findById(id).get();
+
+        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        for (TaskDetail taskDetail : task.getTaskDetailList()
+        ) {
+            taskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(taskDetail.getUpdateDate())));
+
+        }
+
+        return task.getTaskDetailList()
+                .stream()
+                .sorted(Comparator.comparing(TaskDetail::getId).reversed())
+                .collect(Collectors.toList());
     }
 
     /*public List<Task> getUserTask(int id) {

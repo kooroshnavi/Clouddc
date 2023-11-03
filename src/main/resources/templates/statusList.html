@@ -46,9 +46,14 @@
     <hr>
 
     <!-- Add a button -->
-    <a th:href="@{/app/statusList}"
+    <a th:href="@{/app/taskList}"
        class="btn btn-primary btn-sm mb-3">
-        وظایف در یک نگاه
+        لیست عملکرد
+    </a>
+
+    <a th:href="@{/app/registerTask}"
+       class="btn btn-primary btn-sm mb-3">
+        ایجاد وظیفه جدید
     </a>
 
 
@@ -57,37 +62,29 @@
         <thead class="thead-dark">
         <tr>
 
-            <th>توضیحات کارشناس</th>
-            <th>کارشناس مربوطه</th>
-            <th>مرکز</th>
-            <th>تاخیر (روز)</th>
-            <th>تاریخ اقدام</th>
-            <th>وضعیت</th>
-            <th>تاریخ سررسید</th>
+            <th>سررسید بعدی</th>
+            <th>دوره تکرار(روز)</th>
+            <th>آخرین اقدام</th>
             <th>عنوان</th>
-            <th>شناسه وظیفه</th>
             <th>ردیف</th>
-
 
         </tr>
         </thead>
 
         <tbody>
-        <tr th:each="task : ${taskList}">
-            <td th:text="${task.getDescription}"/>
-            <td th:text="${task.getPerson.getNamePersian}"/>
-            <td th:text="${task.getCenter.getNamePersian}"/>
-            <td th:text="${task.getDelay}"/>
-            <td th:text="${task.getSuccessDatePersian}"/>
-            <td th:text="${task.getStatus}"/>
-            <td th:text="${task.getDueDatePersian}"/>
-            <td th:text="${task.getTaskStatus.getNamePersian}"/>
-            <td th:text="${task.getTaskStatus.getId}"/>
-            <td th:text="${task.id}"/>
 
+        <tr th:each="status, iter : ${statusList}" >
+
+            <td th:text="${status.getNextDuePersian}"/>
+            <td th:text="${status.period}"/>
+            <td>
+                <a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.lastSuccessfulPersian}" />
+            </td>
+            <td>
+                <a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.name}" />
+            </td>
+            <td th:text="${iter.count}"/>
         </tr>
-
-
         </tbody>
     </table>
 
@@ -127,11 +124,8 @@
   }, 1000); // 1000 milliseconds = 1s
 
 
-</script>
 
+</script>
 
 </body>
 </html>
-
-
-

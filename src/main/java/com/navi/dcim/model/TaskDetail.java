@@ -21,28 +21,28 @@ public class TaskDetail {
     @Column
     private LocalDateTime updateDate;
 
-    @Column(name = "is_finished")
-    private boolean isFinished;
-
-    public boolean isFinished() {
-        return isFinished;
-    }
-
-    public void setFinished(boolean finished) {
-        isFinished = finished;
-    }
+    @Transient
+    private String persianDate;
 
     @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
 
-    @OneToOne()
+    @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
 
     @JsonIgnore
     public int getId() {
         return id;
+    }
+
+    public String getPersianDate() {
+        return persianDate;
+    }
+
+    public void setPersianDate(String persianDate) {
+        this.persianDate = persianDate;
     }
 
     public void setId(int id) {
@@ -57,6 +57,7 @@ public class TaskDetail {
         this.description = description;
     }
 
+    @JsonIgnore
     public LocalDateTime getUpdateDate() {
         return updateDate;
     }

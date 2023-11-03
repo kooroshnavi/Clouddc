@@ -1,28 +1,17 @@
 package com.navi.dcim.controller;
 
 import com.github.mfathi91.time.PersianDate;
-import com.github.mfathi91.time.PersianDateTime;
-import com.navi.dcim.model.Center;
-import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
+import com.navi.dcim.model.TaskDetail;
 import com.navi.dcim.model.TaskStatus;
-import com.navi.dcim.repository.CenterRepository;
-import com.navi.dcim.repository.PersonRepository;
 import com.navi.dcim.service.TaskService;
-import org.apache.catalina.LifecycleState;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.format.TextStyle;
-import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -35,29 +24,50 @@ public class MvcUserController {
     @GetMapping("/app/statusList")
     public String getStatusList(Model model) {
         List<TaskStatus> taskStatusList = taskService.getTaskStatus();
+
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " +  month.toString() + "     " +  day + "  -  " + dayName.toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+
         model.addAttribute("statusList", taskStatusList);
         model.addAttribute("date", fullDate);
-        return "clock";
+        return "statusList";
     }
 
-    @GetMapping("/app/taskList")
-    public String getTaskList(Model model) {
-        List<Task> taskLists = taskService.getTaskList();
+    @GetMapping("/app/taskstatus/{id}")
+    public String getTaskList(@PathVariable("id") int id, Model model) {
+        List<Task> tasks = taskService.getTaskListById(id);
+        var name = tasks.get(0).getNamePersian();
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " +  month.toString() + "     " +  day + "  -  " + dayName.toString();
-        model.addAttribute("taskList", taskLists);
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        model.addAttribute("taskList", tasks);
+        model.addAttribute("name", name);
         model.addAttribute("date", fullDate);
-        return "task2";
+        return "taskList";
+    }
+
+
+    @GetMapping("/app/task/{id}")
+    public String getTaskDetail(@PathVariable("id") int id, Model model) {
+        List<TaskDetail> taskDetailList = taskService.getTaskDetailById(id);
+        var taskStatusName = taskDetailList.get(0).getTask().getTaskStatus().getName();
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        model.addAttribute("taskDetailList", taskDetailList);
+        model.addAttribute("name", taskStatusName);
+        model.addAttribute("date", fullDate);
+        return "taskDetail";
     }
 
    /* @GetMapping("/app/registerForm")
