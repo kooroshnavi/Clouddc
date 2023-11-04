@@ -70,7 +70,19 @@
 
         <tbody>
         <tr th:each="detail, iter : ${taskDetailList}">
-            <td th:text="${detail.getTask.getId}"/>
+            <td>
+                <form action="#" th:action="@{/app/taskdetail/} + ${{detail.getId}}" method="post">
+                    <button th:id="'table_entry_childs_button_' + ${detail.getId}" type="submit">
+                        <i>انتساب</i>
+                    </button>
+                </form>
+                <form action="#" th:action="@{/app/taskdetail/} + ${{detail.getId}}" method="get">
+                    <button th:id="'table_entry_childs_button_' + ${detail.getId}" type="submit">
+                        <i>اتمام</i>
+                    </button>
+                </form>
+            </td>
+
             <td th:text="${detail.getDescription}"/>
             <td th:text="${detail.getPerson.getName}"/>
             <td th:text="${detail.getPersianDate}"/>

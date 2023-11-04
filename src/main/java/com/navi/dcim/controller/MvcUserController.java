@@ -34,7 +34,7 @@ public class MvcUserController {
 
         model.addAttribute("statusList", taskStatusList);
         model.addAttribute("date", fullDate);
-        return "statusList";
+        return "index";
     }
 
     @GetMapping("/app/taskstatus/{id}")
