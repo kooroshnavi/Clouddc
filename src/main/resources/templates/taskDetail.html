@@ -58,7 +58,6 @@
         <thead class="thead-dark">
         <tr>
 
-            <th>عملیات</th>
             <th>توضیحات کاربر</th>
             <th>کارتابل</th>
             <th>تاریخ بروزرسانی</th>
@@ -70,27 +69,16 @@
 
         <tbody>
         <tr th:each="detail, iter : ${taskDetailList}">
-            <td>
-                <form th:if="${iter.first}" action="#" th:action="@{/app/assignForm/} + ${{detail.getId}}" method="get">
-                    <button th:id="'table_entry_childs_button_' + ${detail.getId}" type="submit">
-                        <i>انتساب</i>
-                    </button>
-                </form>
-                <form th:if="${iter.first}" action="#" th:action="@{/app/taskdetail/} + ${{detail.getId}}" method="get">
-                    <button th:id="'table_entry_childs_button_' + ${detail.getId}" type="submit">
-                        <i>اتمام</i>
-                    </button>
-                </form>
-            </td>
 
-
-            <td>
-                <input th:if="${iter.first}" name="title" style="width:100%;" >
-                <td th:text="${detail.getDescription}"/>
-            </td>
-
+            <td th:text="${detail.description}"/>
             <td th:text="${detail.getPerson.getName}"/>
-            <td th:text="${detail.getPersianDate}"/>
+
+            <td>
+                <a th:if="${iter.first}" th:href="@{/app/assignForm/{id}(id=${detail.id})}" th:text="${detail.getPersianDate}" />
+            </td>
+
+            <td th:unless="${iter.first}" th:text="${detail.getPersianDate}"/>
+
             <td th:text="${iter.count}"/>
 
         </tr>

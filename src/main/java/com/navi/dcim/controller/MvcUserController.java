@@ -115,6 +115,10 @@ public class MvcUserController {
                                    Model model,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
 
+        System.out.println(assignForm.getActionType());
+        System.out.println(assignForm.getDescription());
+
+
         taskService.updateTaskDetail(id, assignForm);
 
         return "statusList";

@@ -72,8 +72,8 @@
 
                         <div class="form-row">
                             <div class="name">توضیحات جهت انتساب</div>
-                            <div class="value" th:field="*{description}">
-                                <div class="input-group">
+                            <div class="value" >
+                                <div class="input-group" th:field="*{description}">
                                     <textarea class="textarea--style-6" ></textarea>
                                 </div>
                             </div>
@@ -81,12 +81,12 @@
 
                         <div class="form-row">
                             <div class="name">اتمام / انتساب وظیفه</div>
-                            <div class="value" th:field="*{actionType}">
+                            <div class="value" >
                                 <div class="input-group">
                                     <div class="rs-select2 js-select-simple select--no-search">
-                                        <select name="subject" >
-                                            <option disabled="disabled" selected="selected">انتخاب</option>
-                                            <option th:value="0">اتمام وظیفه</option>
+                                        <select name="subject" th:field="*{actionType}" >
+                                            <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
+                                            <option th:value="1">اتمام وظیفه</option>
                                             <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
                                         </select>
                                         <div class="select-dropdown"></div>
@@ -113,7 +113,6 @@
                         </div>
                     </form>
                 </div>
-
             </div>
         </div>
     </div>
