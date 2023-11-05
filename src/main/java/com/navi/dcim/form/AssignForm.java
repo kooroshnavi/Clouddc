@@ -1,12 +1,11 @@
 package com.navi.dcim.form;
 
 import lombok.NoArgsConstructor;
-import org.hibernate.boot.archive.scan.internal.ScanResultImpl;
 
 @NoArgsConstructor
 public class AssignForm {
     private String description;
-    private int type;
+    private int actionType;
 
 
     public String getDescription() {
@@ -17,11 +16,11 @@ public class AssignForm {
         this.description = description;
     }
 
-    public int getType() {
-        return type;
+    public int getActionType() {
+        return actionType;
     }
 
-    public void setType(int type) {
-        this.type = type;
+    public void setActionType(int actionType) {
+        this.actionType = actionType;
     }
 }

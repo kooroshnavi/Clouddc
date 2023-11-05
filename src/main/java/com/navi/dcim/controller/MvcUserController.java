@@ -2,6 +2,7 @@ package com.navi.dcim.controller;
 
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
+import com.navi.dcim.form.AssignForm;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskDetail;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
@@ -77,7 +79,7 @@ public class MvcUserController {
     }
 
     @GetMapping("/app/assignForm/{id}")
-    public String showAssignForm(@PathVariable("id") int id, Model model){
+    public String showAssignForm(@PathVariable("id") int id, Model model) {
         List<Person> personList = taskService.getPersonList(id);
         Task thisTask = taskService.getTask(id);
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -86,20 +88,22 @@ public class MvcUserController {
         var center = thisTask.getCenter().getNamePersian();
         var delay = thisTask.getDelay();
         String person = "";
-        for (TaskDetail taskdetail: thisTask.getTaskDetailList()
-             ) {
-            if (taskdetail.getId() == id){
-                person  = taskdetail.getPerson().getName();
+        for (TaskDetail taskdetail : thisTask.getTaskDetailList()
+        ) {
+            if (taskdetail.getId() == id) {
+                person = taskdetail.getPerson().getName();
                 break;
             }
         }
+        AssignForm assignForm = new AssignForm();
         model.addAttribute("id", id);
         model.addAttribute("taskName", taskName);
         model.addAttribute("dueDate", dueDate);
         model.addAttribute("center", center);
-        model.addAttribute("person", person);
+        model.addAttribute("personName", person);
         model.addAttribute("personList", personList);
         model.addAttribute("delay", delay);
+        model.addAttribute("assignForm", assignForm);
 
         return "assign";
 
@@ -107,17 +111,13 @@ public class MvcUserController {
     }
 
     @PostMapping("/app/taskdetail/{id}")
-    public String assignTaskDetail(@PathVariable("id") int id, Model model) {
-       List<TaskDetail> taskDetailList  = taskService.assignNewTaskDetail(id);
-        var date = PersianDate.fromGregorian(LocalDate.now());
-        var year = date.getYear();
-        var month = date.getMonth().getPersianName();
-        var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
-        model.addAttribute("date", fullDate);
-        model.addAttribute("taskDetailList", taskDetailList);
-        return "assign";
+    public String assignTaskDetail(@PathVariable("id") int id,
+                                   Model model,
+                                   @ModelAttribute("assignForm") AssignForm assignForm) {
+
+        taskService.updateTaskDetail(id, assignForm);
+
+        return "statusList";
     }
 
 

@@ -27,7 +27,7 @@
                     <h2 class="title">ثبت توضیحات و انتخاب کارتابل جهت انتساب وظیفه</h2>
                 </div>
                 <div class="card-body">
-                    <form  action="#" th:action="@{/app/taskdetail/} + ${{id}}" method="POST">
+                    <form  action="#" th:action="@{/app/taskdetail/} + ${{id}}" th:object="${assignForm}" method="POST">
                         <div class="form-row">
                             <div class="name">عنوان وظیفه</div>
                             <div class="name" th:text="${taskName}">
@@ -64,8 +64,8 @@
                         <div class="form-row">
                             <div class="name">کارتابل فعلی</div>
                             <div class="value">
-                                <div class="name" th:text="${person}">
-                                    <input class="input--style-6" type="text" th:text="${person}" >
+                                <div class="name" th:text="${personName}">
+                                    <input class="input--style-6" type="text" th:text="${personName}" >
                                 </div>
                             </div>
                         </div>
@@ -74,7 +74,6 @@
                             <div class="name">توضیحات جهت انتساب</div>
                             <div class="value" th:field="*{description}">
                                 <div class="input-group">
-
                                     <textarea class="textarea--style-6" ></textarea>
                                 </div>
                             </div>
@@ -82,13 +81,13 @@
 
                         <div class="form-row">
                             <div class="name">اتمام / انتساب وظیفه</div>
-                            <div class="value">
+                            <div class="value" th:field="*{actionType}">
                                 <div class="input-group">
                                     <div class="rs-select2 js-select-simple select--no-search">
-                                        <select name="subject">
+                                        <select name="subject" >
                                             <option disabled="disabled" selected="selected">انتخاب</option>
-                                            <option id="done">اتمام وظیفه</option>
-                                            <option th:each="person : ${personList}" th:value="${person.name}" th:text="${person.name}"></option>
+                                            <option th:value="0">اتمام وظیفه</option>
+                                            <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
                                         </select>
                                         <div class="select-dropdown"></div>
                                     </div>
@@ -109,11 +108,12 @@
                                 <div class="label--desc">Upload your CV/Resume or any other relevant file. Max file size 50 MB</div>
                             </div>
                         </div>
+                        <div class="card-footer">
+                            <button class="btn btn--radius-2 btn--blue-2" type="submit">ثبت</button>
+                        </div>
                     </form>
                 </div>
-                <div class="card-footer">
-                    <button class="btn btn--radius-2 btn--blue-2" type="submit">ثبت</button>
-                </div>
+
             </div>
         </div>
     </div>

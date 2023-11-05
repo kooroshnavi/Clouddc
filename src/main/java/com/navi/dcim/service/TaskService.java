@@ -2,6 +2,7 @@ package com.navi.dcim.service;
 
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
+import com.navi.dcim.form.AssignForm;
 import com.navi.dcim.model.*;
 import com.navi.dcim.repository.*;
 import lombok.NoArgsConstructor;
@@ -203,8 +204,9 @@ public class TaskService {
     }
 
     public List<Person> getPersonList(int id) {
+        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
         List<Integer> ids = new ArrayList<>();
-        ids.add(id);
+        ids.add(taskDetail.getPerson().getId());
       return   personRepository.findAllByIdNotIn(ids);
     }
 
@@ -212,6 +214,19 @@ public class TaskService {
         TaskDetail taskDetail = taskDetailRepository.findById(id).get();
         Task thisTask = taskDetail.getTask();
         return thisTask;
+    }
+
+    public void updateTaskDetail(int id, AssignForm assignForm) {
+        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
+        Task task = getTask(id);
+        switch (assignForm.getActionType()){
+            case 0:
+                taskDetail.setDescription(assignForm.getDescription());
+                taskDetail.setUpdateDate(LocalDateTime.now());
+                task.setTaskDetailList(taskDetail);
+                updateTask(task.getId(), assignForm.getDescription());
+
+        }
     }
 
     /*public List<Task> getUserTask(int id) {
