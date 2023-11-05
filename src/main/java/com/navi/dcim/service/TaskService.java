@@ -14,6 +14,7 @@ import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
@@ -25,16 +26,23 @@ public class TaskService {
 
     private TaskStatusRepository taskStatusRepository;
     private TaskRepository taskRepository;
+    private TaskDetailRepository taskDetailRepository;
     private PersonRepository personRepository;
     private CenterRepository centerRepository;
 
     @Autowired
-    public TaskService(TaskStatusRepository taskStatusRepository, TaskRepository taskRepository, PersonRepository personRepository, CenterRepository centerRepository) {
+    public TaskService(TaskStatusRepository taskStatusRepository,
+                       TaskRepository taskRepository,
+                       PersonRepository personRepository,
+                       CenterRepository centerRepository,
+                       TaskDetailRepository taskDetailRepository) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
         this.personRepository = personRepository;
         this.centerRepository = centerRepository;
+        this.taskDetailRepository = taskDetailRepository;
     }
+
 
     public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll(Sort.unsorted());
@@ -157,14 +165,53 @@ public class TaskService {
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         for (TaskDetail taskDetail : task.getTaskDetailList()
         ) {
-            taskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(taskDetail.getUpdateDate())));
-
+            taskDetail.setPersianDate(dateTime.format
+                    (PersianDateTime
+                            .fromGregorian
+                                    (taskDetail.getUpdateDate())));
         }
 
         return task.getTaskDetailList()
                 .stream()
                 .sorted(Comparator.comparing(TaskDetail::getId).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public List<TaskDetail> assignNewTaskDetail(int id) {
+        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
+        Task thisTask = taskDetail.getTask();
+        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+
+        List<Person> person = personRepository.findAll();
+        var newPerson = person.get(new Random().nextInt(person.size()));
+        while (taskDetail.getPerson().getId() == newPerson.getId()) {
+            newPerson = person.get(new Random().nextInt(person.size()));
+        }
+
+        taskDetail.setDescription("Assigned-needs attention");
+        taskDetail.setUpdateDate(LocalDateTime.now());
+
+        TaskDetail newTaskDetail = new TaskDetail();
+        newTaskDetail.setUpdateDate(taskDetail.getUpdateDate());
+        newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getUpdateDate())));
+        newTaskDetail.setPerson(newPerson);
+        newTaskDetail.setTask(thisTask);
+
+        thisTask.getTaskDetailList().add(newTaskDetail);
+        taskRepository.save(thisTask);
+        return thisTask.getTaskDetailList();
+    }
+
+    public List<Person> getPersonList(int id) {
+        List<Integer> ids = new ArrayList<>();
+        ids.add(id);
+      return   personRepository.findAllByIdNotIn(ids);
+    }
+
+    public Task getTask(int id) {
+        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
+        Task thisTask = taskDetail.getTask();
+        return thisTask;
     }
 
     /*public List<Task> getUserTask(int id) {

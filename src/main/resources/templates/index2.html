@@ -8,7 +8,7 @@
 	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700' rel='stylesheet' type='text/css'>
 
 	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
-
+	
 	<link rel="stylesheet" href="/sample/css/style.css">
 
 	</head>
@@ -35,23 +35,30 @@
 						    </tr>
 						  </thead>
 						  <tbody>
-						  <tr data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 
-						  <tr th:each="status, iter : ${statusList}" >
+							<tr th:each="status, iter : ${statusList}"  data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
 
-							  <td th:text="${iter.count}"/>
-							  <td>
-								  <a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.name}" />
-							  </td>
-							  <td>
-								  <a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.lastSuccessfulPersian}" />
-							  </td>
-							  <td th:text="${status.getNextDuePersian}"/>
-							  <td th:text="${status.period}"/>
+							<tr data-toggle="collapse" data-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+								<td th:text="${iter.count}"/>
+								<td>
+									<a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.name}" />
+								</td>
+								<td>
+									<a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.lastSuccessfulPersian}" />
+								</td>
+								<td th:text="${status.getNextDuePersian}"/>
+								<td th:text="${status.period}"/>
+								<td colspan="6" id="collapseOne" class="collapse show acc" data-parent="#accordion">
+									<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Porro iste, facere sunt sequi nostrum ipsa, amet doloremque magnam reiciendis tempore sapiente. Necessitatibus recusandae harum nam sit perferendis quia inventore natus.</p>
+								</td>
 
-						  </tr>
-						  </tr>
 
+							</tr>
+						    </tr>
+
+
+
+						    </tr>
 						  </tbody>
 						</table>
 					</div>
