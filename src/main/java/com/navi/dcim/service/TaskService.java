@@ -217,9 +217,7 @@ public class TaskService {
                 taskDetail.setFinished(true);
                 assignNewTaskDetail(taskDetailId, assignForm.getActionType());
                 break;
-
         }
-
     }
 
     public Task getTask(int taskDetailId) {
@@ -227,13 +225,12 @@ public class TaskService {
     }
 
 
-
     public List<Task> getUserTask(int id) {
         List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndFinishedFalse(id);
         List<Task> userTasks = new ArrayList<>();
         for (TaskDetail taskDetail : taskDetailList
         ) {
-           userTasks.add(taskDetail.getTask());
+            userTasks.add(taskDetail.getTask());
         }
         return userTasks;
     }
