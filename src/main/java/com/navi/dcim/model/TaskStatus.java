@@ -29,7 +29,7 @@ public class TaskStatus {
 
     @Column
     private LocalDate nextDue;
-    @OneToMany(mappedBy = "taskStatus", cascade = {CascadeType.PERSIST, CascadeType.REMOVE, CascadeType.REFRESH, CascadeType.MERGE})
+    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     @Transient

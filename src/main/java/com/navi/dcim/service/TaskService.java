@@ -14,7 +14,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -68,7 +67,8 @@ public class TaskService {
     private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
         TaskDetail taskDetail = new TaskDetail();
         taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
-        taskDetail.setUpdateDate(LocalDateTime.now());
+        taskDetail.setAssignedDate(LocalDateTime.now());
+        taskDetail.setFinished(false);
         taskDetail.setTask(todayTask);
         return taskDetail;
     }
@@ -128,12 +128,11 @@ public class TaskService {
         return tasks;
     }
 
-    public TaskStatus updateTask(int id, String description) {
-        Task task = taskRepository.findById(id).get();
+    public TaskStatus updateTask(Task task) {
         TaskStatus taskStatus = task.getTaskStatus();
 
-        task.setSuccessDate(java.time.LocalDateTime.now().truncatedTo(ChronoUnit.SECONDS));
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_DATE_TIME;
+        task.setSuccessDate(LocalDateTime.now());
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setStatus(true);
 
@@ -145,8 +144,8 @@ public class TaskService {
         return taskStatusRepository.save(taskStatus);
     }
 
-    public List<Task> getTaskListById(int id) {
-        TaskStatus taskStatus = taskStatusRepository.findById(id).get();
+    public List<Task> getTaskListById(int taskStatusId) {
+        TaskStatus taskStatus = taskStatusRepository.findById(taskStatusId).get();
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
@@ -160,8 +159,8 @@ public class TaskService {
         return taskStatus.getTasks();
     }
 
-    public List<TaskDetail> getTaskDetailById(int id) {
-        Task task = taskRepository.findById(id).get();
+    public List<TaskDetail> getTaskDetailById(int taskId) {
+        Task task = taskRepository.findById(taskId).get();
 
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
         for (TaskDetail taskDetail : task.getTaskDetailList()
@@ -169,7 +168,7 @@ public class TaskService {
             taskDetail.setPersianDate(dateTime.format
                     (PersianDateTime
                             .fromGregorian
-                                    (taskDetail.getUpdateDate())));
+                                    (taskDetail.getAssignedDate())));
         }
 
         return task.getTaskDetailList()
@@ -178,24 +177,16 @@ public class TaskService {
                 .collect(Collectors.toList());
     }
 
-    public List<TaskDetail> assignNewTaskDetail(int id) {
-        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
-        Task thisTask = taskDetail.getTask();
+    public List<TaskDetail> assignNewTaskDetail(int taskDetailId, int actionType) {
+        Task thisTask = taskDetailRepository.findById(taskDetailId).get().getTask();
+        Person person = personRepository.findById(actionType).get();
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
 
-        List<Person> person = personRepository.findAll();
-        var newPerson = person.get(new Random().nextInt(person.size()));
-        while (taskDetail.getPerson().getId() == newPerson.getId()) {
-            newPerson = person.get(new Random().nextInt(person.size()));
-        }
-
-        taskDetail.setDescription("Assigned-needs attention");
-        taskDetail.setUpdateDate(LocalDateTime.now());
-
         TaskDetail newTaskDetail = new TaskDetail();
-        newTaskDetail.setUpdateDate(taskDetail.getUpdateDate());
-        newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getUpdateDate())));
-        newTaskDetail.setPerson(newPerson);
+        newTaskDetail.setAssignedDate(LocalDateTime.now());
+        newTaskDetail.setFinished(false);
+        newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
+        newTaskDetail.setPerson(person);
         newTaskDetail.setTask(thisTask);
 
         thisTask.getTaskDetailList().add(newTaskDetail);
@@ -203,33 +194,54 @@ public class TaskService {
         return thisTask.getTaskDetailList();
     }
 
-    public List<Person> getPersonList(int id) {
-        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
+    public List<Person> getOtherPersonList(int taskDetailId) {
+        var currentPersonId = taskDetailRepository
+                .findById(taskDetailId).get()
+                .getPerson().getId();
         List<Integer> ids = new ArrayList<>();
-        ids.add(taskDetail.getPerson().getId());
-      return   personRepository.findAllByIdNotIn(ids);
-    }
+        ids.add(currentPersonId);
+        return personRepository.findAllByIdNotIn(ids);
+    }// returns a list of users that will be shown in the drop-down list of assignForm.
 
-    public Task getTask(int id) {
-        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
-        Task thisTask = taskDetail.getTask();
-        return thisTask;
-    }
-
-    public void updateTaskDetail(int id, AssignForm assignForm) {
-        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
-        Task task = getTask(id);
-        switch (assignForm.getActionType()){
-            case 0:
+    public void updateTaskDetail(int taskDetailId, AssignForm assignForm) {
+        TaskDetail taskDetail = taskDetailRepository.findById(taskDetailId).get();
+        switch (assignForm.getActionType()) {
+            case 1:     // Ends task. No assign
                 taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setUpdateDate(LocalDateTime.now());
-                task.setTaskDetailList(taskDetail);
-                updateTask(task.getId(), assignForm.getDescription());
+                taskDetail.setFinished(true);
+                updateTask(taskDetail.getTask());
+                break;
+
+            default: // Updates current taskDetail ,creates a new taskDetail and assigns it to specified person
+                taskDetail.setDescription(assignForm.getDescription());
+                taskDetail.setFinished(true);
+                assignNewTaskDetail(taskDetailId, assignForm.getActionType());
+                break;
 
         }
+
     }
 
-    /*public List<Task> getUserTask(int id) {
+    public Task getTask(int taskDetailId) {
+        return taskDetailRepository.findById(taskDetailId).get().getTask();
+    }
+
+
+
+    public List<Task> getUserTask(int id) {
+        List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndFinishedFalse(id);
+        List<Task> userTasks = new ArrayList<>();
+        for (TaskDetail taskDetail : taskDetailList
+        ) {
+           userTasks.add(taskDetail.getTask());
+        }
+        return userTasks;
+    }
+
+
+
+
+    /*public List<Task> getUserTask2(int id) {
         List<Task> tasks = taskRepository.findAll(Sort.by("dueDate"));
         List<Task> userTasks = new ArrayList<>();
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");

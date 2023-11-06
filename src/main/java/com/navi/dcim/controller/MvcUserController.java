@@ -1,7 +1,6 @@
 package com.navi.dcim.controller;
 
 import com.github.mfathi91.time.PersianDate;
-import com.github.mfathi91.time.PersianDateTime;
 import com.navi.dcim.form.AssignForm;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
@@ -9,6 +8,7 @@ import com.navi.dcim.model.TaskDetail;
 import com.navi.dcim.model.TaskStatus;
 import com.navi.dcim.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -37,7 +37,7 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
-
+        model.addAttribute("person", 2);
         model.addAttribute("statusList", taskStatusList);
         model.addAttribute("date", fullDate);
         return "statusList";
@@ -80,7 +80,7 @@ public class MvcUserController {
 
     @GetMapping("/app/assignForm/{id}")
     public String showAssignForm(@PathVariable("id") int id, Model model) {
-        List<Person> personList = taskService.getPersonList(id);
+        List<Person> personList = taskService.getOtherPersonList(id);
         Task thisTask = taskService.getTask(id);
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var taskName = thisTask.getTaskStatus().getName();
@@ -114,14 +114,16 @@ public class MvcUserController {
     public String assignTaskDetail(@PathVariable("id") int id,
                                    Model model,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
-
-        System.out.println(assignForm.getActionType());
-        System.out.println(assignForm.getDescription());
-
-
         taskService.updateTaskDetail(id, assignForm);
 
+        model.addAttribute("statusList",  taskService.getTaskStatus());
         return "statusList";
+    }
+
+    @GetMapping("/app/usertasks/{id}")
+    private String getUserTask(@PathVariable int id, Model model) {
+        model.addAttribute("taskList", taskService.getUserTask(id)) ;
+        return "taskList";
     }
 
 

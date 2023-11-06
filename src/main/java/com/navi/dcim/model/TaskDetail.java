@@ -19,7 +19,10 @@ public class TaskDetail {
     private String description;
 
     @Column
-    private LocalDateTime updateDate;
+    private LocalDateTime assignedDate;
+
+    @Column
+    private boolean finished;
 
     @Transient
     private String persianDate;
@@ -31,6 +34,15 @@ public class TaskDetail {
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
+
+    @JsonIgnore
+    public boolean isFinished() {
+        return finished;
+    }
+
+    public void setFinished(boolean finished) {
+        this.finished = finished;
+    }
 
     @JsonIgnore
     public int getId() {
@@ -58,12 +70,12 @@ public class TaskDetail {
     }
 
     @JsonIgnore
-    public LocalDateTime getUpdateDate() {
-        return updateDate;
+    public LocalDateTime getAssignedDate() {
+        return assignedDate;
     }
 
-    public void setUpdateDate(LocalDateTime updateDate) {
-        this.updateDate = updateDate;
+    public void setAssignedDate(LocalDateTime assignedDate) {
+        this.assignedDate = assignedDate;
     }
 
     public Person getPerson() {

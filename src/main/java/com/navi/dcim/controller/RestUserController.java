@@ -30,11 +30,6 @@ public class RestUserController {
         return taskService.getTaskStatus();
     }
 
-    @PutMapping("/api/updatetask/{id}")
-    private TaskStatus taskAction(@PathVariable int id, @RequestBody String description) {
-        return taskService.updateTask(id, description);
-    }
-
     /*@GetMapping("/api/usertasks/{id}")
     private List<Task> getUserTask(@PathVariable int id) {
         return taskService.getUserTask(id);

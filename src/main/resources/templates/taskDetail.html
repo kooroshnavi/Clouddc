@@ -60,7 +60,7 @@
 
             <th>توضیحات کاربر</th>
             <th>کارتابل</th>
-            <th>تاریخ بروزرسانی</th>
+            <th>تاریخ انتساب</th>
             <th>ردیف</th>
 
 
@@ -74,10 +74,10 @@
             <td th:text="${detail.getPerson.getName}"/>
 
             <td>
-                <a th:if="${iter.first}" th:href="@{/app/assignForm/{id}(id=${detail.id})}" th:text="${detail.getPersianDate}" />
+                <a th:if="${iter.first} and ${not detail.finished}"  th:href="@{/app/assignForm/{id}(id=${detail.id})}" th:text="${detail.getPersianDate}" />
+                <a th:if="${iter.first} and ${detail.finished}" th:text="${detail.getPersianDate}"/>
+                <a th:if="${not iter.first}" th:text="${detail.getPersianDate}"/>
             </td>
-
-            <td th:unless="${iter.first}" th:text="${detail.getPersianDate}"/>
 
             <td th:text="${iter.count}"/>
 
