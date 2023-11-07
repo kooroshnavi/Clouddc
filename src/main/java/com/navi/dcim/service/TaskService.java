@@ -59,16 +59,20 @@ public class TaskService {
                 TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
                 todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
-                taskStatusRepository.save(status);
+                status.setActive(true);
+            }
+            else {
+                status.setActive(false);
             }
         }
+        taskStatusRepository.saveAll(taskStatusList);
     }
 
     private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
         TaskDetail taskDetail = new TaskDetail();
         taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
         taskDetail.setAssignedDate(LocalDateTime.now());
-        taskDetail.setFinished(false);
+        taskDetail.setActive(true);
         taskDetail.setTask(todayTask);
         return taskDetail;
     }
@@ -77,7 +81,7 @@ public class TaskService {
         Task todayTask = new Task();
         todayTask.setTaskStatus(status);
         todayTask.setDelay(0);
-        todayTask.setStatus(false);
+        todayTask.setActive(true);
         todayTask.setCenter(centers.get(new Random().nextInt(centers.size())));
         todayTask.setDueDate(status.getNextDue());
         return todayTask;
@@ -134,13 +138,14 @@ public class TaskService {
         DateTimeFormatter dateTime = DateTimeFormatter.ISO_DATE_TIME;
         task.setSuccessDate(LocalDateTime.now());
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
-        task.setStatus(true);
+        task.setActive(false);
 
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
         taskStatus.setNextDue(taskStatus.getLastSuccessful().toLocalDate().plusDays(taskStatus.getPeriod()));
         taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
         taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
+        taskStatus.setActive(false);// task is inactive til next due
         return taskStatusRepository.save(taskStatus);
     }
 
@@ -152,7 +157,7 @@ public class TaskService {
         for (Task task : taskStatus.getTasks()
         ) {
             task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
-            if (task.getStatus()) {
+            if (!task.isActive()) {
                 task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
             }
         }
@@ -184,7 +189,7 @@ public class TaskService {
 
         TaskDetail newTaskDetail = new TaskDetail();
         newTaskDetail.setAssignedDate(LocalDateTime.now());
-        newTaskDetail.setFinished(false);
+        newTaskDetail.setActive(true);
         newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
         newTaskDetail.setPerson(person);
         newTaskDetail.setTask(thisTask);
@@ -208,13 +213,13 @@ public class TaskService {
         switch (assignForm.getActionType()) {
             case 1:     // Ends task. No assign
                 taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setFinished(true);
+                taskDetail.setActive(false);
                 updateTask(taskDetail.getTask());
                 break;
 
             default: // Updates current taskDetail ,creates a new taskDetail and assigns it to specified person
                 taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setFinished(true);
+                taskDetail.setActive(false);
                 assignNewTaskDetail(taskDetailId, assignForm.getActionType());
                 break;
         }
@@ -225,11 +230,13 @@ public class TaskService {
     }
 
 
-    public List<Task> getUserTask(int id) {
-        List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndFinishedFalse(id);
+    public List<Task> getUserTask(int personId) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(personId, true);
         List<Task> userTasks = new ArrayList<>();
         for (TaskDetail taskDetail : taskDetailList
         ) {
+            taskDetail.getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(taskDetail.getTask().getDueDate())));
             userTasks.add(taskDetail.getTask());
         }
         return userTasks;

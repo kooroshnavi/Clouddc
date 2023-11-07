@@ -1,11 +1,11 @@
 package com.navi.dcim.controller;
 
-import com.github.mfathi91.time.PersianDate;
 import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskStatus;
 import com.navi.dcim.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -14,11 +14,11 @@ public class RestUserController {
     @Autowired
     private TaskService taskService;
 
-    @GetMapping("/")
+   /* @GetMapping("/")
     private PersianDate getTime() {
         PersianDate today = PersianDate.now();
         return today;
-    }
+    }*/
 
     @GetMapping("/api/gettodaytasks")
     private List<Task> getTasks() {

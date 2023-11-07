@@ -5,10 +5,8 @@ import com.navi.dcim.form.AssignForm;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskDetail;
-import com.navi.dcim.model.TaskStatus;
 import com.navi.dcim.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.Banner;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,26 +25,43 @@ public class MvcUserController {
     private TaskService taskService;
 
 
-    @GetMapping("/app/statusList")
-    public String getStatusList(Model model) {
-        List<TaskStatus> taskStatusList = taskService.getTaskStatus();
-
+    @GetMapping("/app/main")
+    public String index(Model model) {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
-        model.addAttribute("person", 2);
-        model.addAttribute("statusList", taskStatusList);
+
         model.addAttribute("date", fullDate);
-        return "statusList";
+        model.addAttribute("statusList", taskService.getTaskStatus());
+        return "home";
     }
 
-    @GetMapping("/app/taskstatus/{id}")
+    @GetMapping("/app/main/mytask")
+    private String getUserTask(Model model) {
+        List<Task> userTaskList = taskService.getUserTask(2);
+
+        var name = userTaskList.get(0).getTaskStatus().getName();
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        model.addAttribute("name", name);
+        model.addAttribute("date", fullDate);
+        model.addAttribute("userTaskList", userTaskList);
+
+
+        return "userTaskList";
+    }
+
+    @GetMapping("/app/main/task/{id}")
     public String getTaskList(@PathVariable("id") int id, Model model) {
         List<Task> tasks = taskService.getTaskListById(id);
-        var name = tasks.get(0).getNamePersian();
+        var name = tasks.get(0).getTaskStatus().getName();
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
@@ -56,13 +71,15 @@ public class MvcUserController {
         model.addAttribute("taskList", tasks);
         model.addAttribute("name", name);
         model.addAttribute("date", fullDate);
-        return "taskList";
+        return "taskListUi2";
     }
 
 
-    @GetMapping("/app/task/{id}")
+    @GetMapping("/app/main/task/{id}/detail")
     public String getTaskDetail(@PathVariable("id") int id, Model model) {
         List<TaskDetail> taskDetailList = taskService.getTaskDetailById(id);
+        var delay = taskDetailList.get(0).getTask().getDelay();
+        var duedate = PersianDate.fromGregorian(taskDetailList.get(0).getTask().getDueDate());
         var taskStatusName = taskDetailList.get(0).getTask().getTaskStatus().getName();
         var taskId = taskDetailList.get(0).getTask().getId();
         var date = PersianDate.fromGregorian(LocalDate.now());
@@ -75,10 +92,14 @@ public class MvcUserController {
         model.addAttribute("name", taskStatusName);
         model.addAttribute("taskId", taskId);
         model.addAttribute("date", fullDate);
-        return "taskDetail";
+        model.addAttribute("delay", delay);
+        model.addAttribute("duedate", duedate);
+
+        return "taskDetailUi2";
     }
 
-    @GetMapping("/app/assignForm/{id}")
+
+    @GetMapping("/app/main/task/detail/{id}/form")
     public String showAssignForm(@PathVariable("id") int id, Model model) {
         List<Person> personList = taskService.getOtherPersonList(id);
         Task thisTask = taskService.getTask(id);
@@ -105,26 +126,29 @@ public class MvcUserController {
         model.addAttribute("delay", delay);
         model.addAttribute("assignForm", assignForm);
 
-        return "assign";
-
-
+        return "actionForm";
     }
 
-    @PostMapping("/app/taskdetail/{id}")
+
+    @PostMapping("/app/main/task/detail/form/submit/{id}")
     public String assignTaskDetail(@PathVariable("id") int id,
                                    Model model,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
+
         taskService.updateTaskDetail(id, assignForm);
 
-        model.addAttribute("statusList",  taskService.getTaskStatus());
-        return "statusList";
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+
+        model.addAttribute("date", fullDate);
+        model.addAttribute("statusList", taskService.getTaskStatus());
+        return "home";
     }
 
-    @GetMapping("/app/usertasks/{id}")
-    private String getUserTask(@PathVariable int id, Model model) {
-        model.addAttribute("taskList", taskService.getUserTask(id)) ;
-        return "taskList";
-    }
 
 
 

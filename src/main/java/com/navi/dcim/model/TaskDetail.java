@@ -22,7 +22,7 @@ public class TaskDetail {
     private LocalDateTime assignedDate;
 
     @Column
-    private boolean finished;
+    private boolean active;
 
     @Transient
     private String persianDate;
@@ -36,12 +36,12 @@ public class TaskDetail {
     private Task task;
 
     @JsonIgnore
-    public boolean isFinished() {
-        return finished;
+    public boolean isActive() {
+        return active;
     }
 
-    public void setFinished(boolean finished) {
-        this.finished = finished;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @JsonIgnore

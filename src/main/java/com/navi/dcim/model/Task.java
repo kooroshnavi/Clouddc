@@ -19,7 +19,7 @@ public class Task {
     private int id;
 
     @Column
-    private boolean status;
+    private boolean active;
 
     @Column
     private LocalDate dueDate;
@@ -60,8 +60,9 @@ public class Task {
         this.taskDetailList.add(taskDetail);
     }
 
-    public boolean isStatus() {
-        return status;
+    @JsonIgnore
+    public boolean isActive() {
+        return active;
     }
 
     public String getNamePersian() {
@@ -99,11 +100,11 @@ public class Task {
 
     @JsonIgnore
     public boolean getStatus() {
-        return status;
+        return active;
     }
 
-    public void setStatus(boolean status) {
-        this.status = status;
+    public void setActive(boolean active) {
+        this.active = active;
     }
 
     @JsonIgnore

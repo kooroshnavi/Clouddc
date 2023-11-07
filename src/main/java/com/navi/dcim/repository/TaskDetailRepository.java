@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface TaskDetailRepository extends JpaRepository<TaskDetail, Integer> {
-    List<TaskDetail> findAllByPerson_IdAndFinishedFalse(int id);
+    List<TaskDetail> findAllByPerson_IdAndActive(int id, boolean active);
 }

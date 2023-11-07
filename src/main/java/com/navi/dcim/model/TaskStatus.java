@@ -1,6 +1,7 @@
 package com.navi.dcim.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -25,6 +26,10 @@ public class TaskStatus {
     private int period;
 
     @Column
+    @Nullable
+    private boolean active;
+
+    @Column
     private LocalDateTime lastSuccessful;
 
     @Column
@@ -37,6 +42,14 @@ public class TaskStatus {
     @Transient
     private String lastSuccessfulPersian;
 
+    @JsonIgnore
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
 
     public void setTasks(List<Task> tasks) {
         this.tasks = tasks;
