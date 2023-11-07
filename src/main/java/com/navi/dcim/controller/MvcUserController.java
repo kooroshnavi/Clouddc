@@ -36,6 +36,8 @@ public class MvcUserController {
 
         model.addAttribute("date", fullDate);
         model.addAttribute("statusList", taskService.getTaskStatus());
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+
         return "home";
     }
 
@@ -54,6 +56,8 @@ public class MvcUserController {
         var dayName = date.getDayOfWeek().toString();
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
         model.addAttribute("date", fullDate);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+
         return "userTaskList";
     }
 
@@ -72,7 +76,10 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+
         model.addAttribute("date", fullDate);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+
         return "taskListUi2";
     }
 
@@ -96,6 +103,8 @@ public class MvcUserController {
         model.addAttribute("date", fullDate);
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+
 
         return "taskDetailUi2";
     }
@@ -127,6 +136,8 @@ public class MvcUserController {
         model.addAttribute("personList", personList);
         model.addAttribute("delay", delay);
         model.addAttribute("assignForm", assignForm);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+
 
         return "actionForm";
     }
@@ -152,6 +163,8 @@ public class MvcUserController {
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
 
         model.addAttribute("date", fullDate);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+
         return "userTaskList";
     }
 
