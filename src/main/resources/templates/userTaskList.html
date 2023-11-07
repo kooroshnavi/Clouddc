@@ -137,12 +137,12 @@
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                    <tr th:each="task, iter : ${taskList}">
+                                    <tr th:each="task, iter : ${userTaskList}">
                                         <td th:text="${task.getCenter.getNamePersian}"/>
                                         <td th:text="${task.getDelay}"/>
                                         <td th:text="${task.getSuccessDatePersian}"/>
                                         <td>
-                                            <a th:href="@{/app/task/{id}(id=${task.id})} " th:text="${task.active} ? 'گردش کار' : 'اتمام'" />
+                                            <a th:href="@{/app/main/task/{id}/detail(id=${task.id})} " th:text="${task.active} ? 'گردش کار' : 'اتمام'" />
                                         </td>
                                         <td th:text="${task.getDueDatePersian}"/>
                                         <td th:text="${task.getTaskStatus.name}"/>

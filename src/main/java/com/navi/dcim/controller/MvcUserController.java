@@ -42,34 +42,36 @@ public class MvcUserController {
     @GetMapping("/app/main/mytask")
     private String getUserTask(Model model) {
         List<Task> userTaskList = taskService.getUserTask(2);
-
-        var name = userTaskList.get(0).getTaskStatus().getName();
+        if (!userTaskList.isEmpty()){
+            var name = userTaskList.get(0).getTaskStatus().getName();
+            model.addAttribute("name", name);
+            model.addAttribute("userTaskList", userTaskList);
+        }
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
-        model.addAttribute("name", name);
         model.addAttribute("date", fullDate);
-        model.addAttribute("userTaskList", userTaskList);
-
-
         return "userTaskList";
     }
 
     @GetMapping("/app/main/task/{id}")
     public String getTaskList(@PathVariable("id") int id, Model model) {
         List<Task> tasks = taskService.getTaskListById(id);
-        var name = tasks.get(0).getTaskStatus().getName();
+        if (!tasks.isEmpty()){
+            var name = tasks.get(0).getTaskStatus().getName();
+            model.addAttribute("name", name);
+            model.addAttribute("taskList", tasks);
+        }
+
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().toString();
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
-        model.addAttribute("taskList", tasks);
-        model.addAttribute("name", name);
         model.addAttribute("date", fullDate);
         return "taskListUi2";
     }
@@ -136,7 +138,12 @@ public class MvcUserController {
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
 
         taskService.updateTaskDetail(id, assignForm);
-
+        List<Task> userTaskList = taskService.getUserTask(2);
+        if (!userTaskList.isEmpty()){
+            var name = userTaskList.get(0).getTaskStatus().getName();
+            model.addAttribute("name", name);
+            model.addAttribute("userTaskList", userTaskList);
+        }
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
@@ -145,8 +152,7 @@ public class MvcUserController {
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
 
         model.addAttribute("date", fullDate);
-        model.addAttribute("statusList", taskService.getTaskStatus());
-        return "home";
+        return "userTaskList";
     }
 
 
