@@ -2,6 +2,7 @@ package com.navi.dcim.controller;
 
 import com.github.mfathi91.time.PersianDate;
 import com.navi.dcim.form.AssignForm;
+import com.navi.dcim.form.PmRegisterForm;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskDetail;
@@ -37,14 +38,56 @@ public class MvcUserController {
         model.addAttribute("date", fullDate);
         model.addAttribute("statusList", taskService.getTaskStatus());
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
 
         return "home";
     }
 
+    @GetMapping("/app/main/pm/register/form")
+    public String getPmForm(Model model) {
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var pmRegister = new PmRegisterForm();
+        model.addAttribute("date", fullDate);
+        model.addAttribute("personList", taskService.getPersonList());
+        model.addAttribute("centerList", taskService.getCenterList());
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pmRegister", pmRegister);
+
+        return "pmRegisterForm";
+    }
+
+    @PostMapping("/app/main/pm/register/form/submit")
+    public String pmRegister(
+            Model model,
+            @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm) {
+        taskService.createNewPm(pmRegisterForm);
+
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+
+        model.addAttribute("date", fullDate);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("statusList", taskService.getTaskStatus());
+
+        return "home";
+    }
+
+
     @GetMapping("/app/main/mytask")
     private String getUserTask(Model model) {
         List<Task> userTaskList = taskService.getUserTask(2);
-        if (!userTaskList.isEmpty()){
+        if (!userTaskList.isEmpty()) {
             var name = userTaskList.get(0).getTaskStatus().getName();
             model.addAttribute("name", name);
             model.addAttribute("userTaskList", userTaskList);
@@ -57,6 +100,7 @@ public class MvcUserController {
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
 
         return "userTaskList";
     }
@@ -64,7 +108,7 @@ public class MvcUserController {
     @GetMapping("/app/main/task/{id}")
     public String getTaskList(@PathVariable("id") int id, Model model) {
         List<Task> tasks = taskService.getTaskListById(id);
-        if (!tasks.isEmpty()){
+        if (!tasks.isEmpty()) {
             var name = tasks.get(0).getTaskStatus().getName();
             model.addAttribute("name", name);
             model.addAttribute("taskList", tasks);
@@ -79,6 +123,7 @@ public class MvcUserController {
 
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
 
         return "taskListUi2";
     }
@@ -104,6 +149,7 @@ public class MvcUserController {
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
 
 
         return "taskDetailUi2";
@@ -137,6 +183,7 @@ public class MvcUserController {
         model.addAttribute("delay", delay);
         model.addAttribute("assignForm", assignForm);
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
 
 
         return "actionForm";
@@ -150,7 +197,7 @@ public class MvcUserController {
 
         taskService.updateTaskDetail(id, assignForm);
         List<Task> userTaskList = taskService.getUserTask(2);
-        if (!userTaskList.isEmpty()){
+        if (!userTaskList.isEmpty()) {
             var name = userTaskList.get(0).getTaskStatus().getName();
             model.addAttribute("name", name);
             model.addAttribute("userTaskList", userTaskList);
@@ -164,6 +211,7 @@ public class MvcUserController {
 
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
 
         return "userTaskList";
     }

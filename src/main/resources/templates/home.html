@@ -43,15 +43,19 @@
                         <div class="nav">
                             <div class="sb-sidenav-menu-heading">PM List</div>
 
-                            <a class="nav-link" th:href="@{/app/main}">
-                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
-                                وضعیت وظایف سالن
-                            </a>
-
                             <a class="nav-link" th:href="@{/app/main/mytask}" th:text="${'(' + pending + ')' + ' کارتابل من '}">
                                 <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt" ></i></div>
                             </a>
 
+                            <a class="nav-link" th:href="@{/app/main}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                سالن ها PM وضعیت
+                            </a>
+
+                            <a class="nav-link" th:href="@{/app/main/pm/register/form}">
+                                <div class="sb-nav-link-icon"><i class="fas fa-tachometer-alt"></i></div>
+                                جدید PM تعریف
+                            </a>
 
                             <div class="sb-sidenav-menu-heading">Daily</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
@@ -88,8 +92,8 @@
 
                     </div>
                     <div class="sb-sidenav-footer">
-                        <div class="small">کاربر</div>
-                        Start Bootstrap
+                        <div class="small" th:text="${person.name + ' :کاربر '}"></div>
+
                     </div>
                 </nav>
             </div>
@@ -146,11 +150,9 @@
 
                                         <td th:text="${status.getNextDuePersian}"/>
                                         <td th:text="${status.period}"/>
-                                        <td>
-                                            <a th:href="@{/app/taskstatus/{id}(id=${status.id})} " th:text="${status.lastSuccessfulPersian}" />
-                                        </td>
-                                        <td
-                                             th:text="${status.name}" />
+                                        <td th:text="${status.lastSuccessfulPersian}" />
+
+                                        <td th:text="${status.name}" />
 
                                         <td th:text="${iter.count}"/>
                                     </tr>

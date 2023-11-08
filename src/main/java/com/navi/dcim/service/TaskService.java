@@ -3,6 +3,7 @@ package com.navi.dcim.service;
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
 import com.navi.dcim.form.AssignForm;
+import com.navi.dcim.form.PmRegisterForm;
 import com.navi.dcim.model.*;
 import com.navi.dcim.repository.*;
 import lombok.NoArgsConstructor;
@@ -60,8 +61,7 @@ public class TaskService {
                 todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
                 status.setActive(true);
-            }
-            else {
+            } else {
                 status.setActive(false);
             }
         }
@@ -113,7 +113,9 @@ public class TaskService {
         for (TaskStatus taskStatus : taskStatusList
         ) {
             taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
-            taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
+            if (taskStatus.getLastSuccessful() != null){
+                taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
+            }
         }
         return taskStatusList;
     }
@@ -240,6 +242,54 @@ public class TaskService {
             userTasks.add(taskDetail.getTask());
         }
         return userTasks;
+    }
+
+    public Person getPerson(int i) {
+        return personRepository.findById(i).get();
+    }
+
+    public void createNewPm(PmRegisterForm pmRegisterForm) {
+        var newTaskStatus = new TaskStatus();
+        newTaskStatus.setActive(true);
+        newTaskStatus.setNextDue(LocalDate.now());
+        newTaskStatus.setName(pmRegisterForm.getName());
+        newTaskStatus.setPeriod(pmRegisterForm.getPeriod());
+
+        Center center = centerRepository.findById(pmRegisterForm.getCenterId()).get();
+
+        Task todayTask = new Task();
+        todayTask.setTaskStatus(newTaskStatus);
+        todayTask.setDelay(0);
+        todayTask.setActive(true);
+        todayTask.setCenter(center);
+        todayTask.setDueDate(newTaskStatus.getNextDue());
+
+        TaskDetail taskDetail = new TaskDetail();
+        taskDetail.setTask(todayTask);
+        if (pmRegisterForm.getPersonId() == 1){ // Random
+            List<Person> personList = personRepository.findAll();
+            taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
+        }
+        else { // assign to specified user
+            Person person = personRepository.findById(pmRegisterForm.getPersonId()).get();
+            taskDetail.setPerson(person);
+        }
+
+        taskDetail.setAssignedDate(LocalDateTime.now());
+        taskDetail.setActive(true);
+
+        todayTask.setTaskDetailList(taskDetail);
+        newTaskStatus.setTasks(todayTask);
+        taskStatusRepository.save(newTaskStatus);
+
+    }
+
+    public List<Person> getPersonList() {
+        return  personRepository.findAll();
+    }
+
+    public List<Center> getCenterList() {
+        return centerRepository.findAll();
     }
 
 
