@@ -2,6 +2,7 @@ package com.navi.dcim.controller;
 
 import com.github.mfathi91.time.PersianDate;
 import com.navi.dcim.form.AssignForm;
+import com.navi.dcim.form.EventForm;
 import com.navi.dcim.form.PmRegisterForm;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
@@ -44,7 +45,7 @@ public class MvcUserController {
     }
 
     @GetMapping("/app/main/pm/register/form")
-    public String getPmForm(Model model) {
+    public String pmForm(Model model) {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
@@ -81,6 +82,25 @@ public class MvcUserController {
         model.addAttribute("statusList", taskService.getTaskStatus());
 
         return "home";
+    }
+
+    @GetMapping("/app/main/event/register/form")
+    public String eventForm(Model model) {
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var eventRegister = new EventForm();
+        model.addAttribute("date", fullDate);
+        model.addAttribute("centerList", taskService.getCenterList());
+        model.addAttribute("eventTypeList", taskService.getEventType());
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("eventRegisterForm", eventRegister);
+
+        return "eventRegisterForm";
     }
 
 

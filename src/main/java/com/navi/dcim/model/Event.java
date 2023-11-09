@@ -24,29 +24,39 @@ public class Event {
     @Column
     private boolean active;
 
+    @Column
+    private String description;
+
     @ManyToOne
     @JoinColumn(name = "event_type_id")
     private EventType eventType;
 
     @ManyToOne
-    @JoinColumn(name = "person")
+    @JoinColumn(name = "person_id")
     private Person person;
 
-    @Column
-    private String description;
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private Center center;
+
 
     @Transient
     private String persianDate;
 
 
-    public Event(int id, LocalDateTime eventDate, boolean active, EventType eventType, Person person, String description, String persianDate) {
+    public Event(int id, LocalDateTime eventDate, Center center, boolean active, EventType eventType, Person person, String description, String persianDate) {
         this.id = id;
         this.eventDate = eventDate;
+        this.center = center;
         this.active = active;
         this.eventType = eventType;
         this.person = person;
         this.description = description;
         this.persianDate = "persianDate";
+    }
+
+    public Center getCenter() {
+        return center;
     }
 
     @JsonIgnore
@@ -87,9 +97,10 @@ public class Event {
                 "id=" + id +
                 ", eventDate=" + eventDate +
                 ", active=" + active +
+                ", description='" + description + '\'' +
                 ", eventType=" + eventType +
                 ", person=" + person +
-                ", description='" + description + '\'' +
+                ", center=" + center +
                 ", persianDate='" + persianDate + '\'' +
                 '}';
     }

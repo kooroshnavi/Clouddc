@@ -31,17 +31,22 @@ public class TaskService {
     private PersonRepository personRepository;
     private CenterRepository centerRepository;
 
+    private EventTypeRepository eventTypeRepository;
+
+
     @Autowired
     public TaskService(TaskStatusRepository taskStatusRepository,
                        TaskRepository taskRepository,
                        PersonRepository personRepository,
                        CenterRepository centerRepository,
-                       TaskDetailRepository taskDetailRepository) {
+                       TaskDetailRepository taskDetailRepository,
+                       EventTypeRepository eventTypeRepository) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
         this.personRepository = personRepository;
         this.centerRepository = centerRepository;
         this.taskDetailRepository = taskDetailRepository;
+        this.eventTypeRepository = eventTypeRepository;
     }
 
 
@@ -291,6 +296,10 @@ public class TaskService {
 
     public List<Center> getCenterList() {
         return centerRepository.findAll();
+    }
+
+    public List<EventType> getEventType() {
+        return eventTypeRepository.findAll();
     }
 
 
