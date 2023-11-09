@@ -61,6 +61,8 @@ public class TaskService {
                 todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
                 status.setActive(true);
+            } else if (status.getTasks().stream().anyMatch(task -> task.isActive())) {
+                status.setActive(true);
             } else {
                 status.setActive(false);
             }
@@ -96,13 +98,13 @@ public class TaskService {
         if (!taskList.isEmpty()) {
             for (Task task : taskList
             ) {
-                if (!task.getStatus()) {
+                if (task.isActive()) {
                     var delayedDays = LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
                     task.setDelay(delayedDays);
-                    taskRepository.save(task);
                 }
             }
         }
+        taskRepository.saveAll(taskList);
     }
 
     public List<TaskStatus> getTaskStatus() {
@@ -113,7 +115,7 @@ public class TaskService {
         for (TaskStatus taskStatus : taskStatusList
         ) {
             taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
-            if (taskStatus.getLastSuccessful() != null){
+            if (taskStatus.getLastSuccessful() != null) {
                 taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
             }
         }
@@ -266,11 +268,10 @@ public class TaskService {
 
         TaskDetail taskDetail = new TaskDetail();
         taskDetail.setTask(todayTask);
-        if (pmRegisterForm.getPersonId() == 1){ // Random
+        if (pmRegisterForm.getPersonId() == 1) { // Random
             List<Person> personList = personRepository.findAll();
             taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
-        }
-        else { // assign to specified user
+        } else { // assign to specified user
             Person person = personRepository.findById(pmRegisterForm.getPersonId()).get();
             taskDetail.setPerson(person);
         }
@@ -285,7 +286,7 @@ public class TaskService {
     }
 
     public List<Person> getPersonList() {
-        return  personRepository.findAll();
+        return personRepository.findAll();
     }
 
     public List<Center> getCenterList() {
