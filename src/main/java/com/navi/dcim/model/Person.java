@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table
@@ -32,19 +31,7 @@ public class Person {
     @JoinColumn(name = "role_id")
     private Role role;
 
-    @OneToMany(mappedBy = "person")
-    private List<TaskDetail> taskDetailList;
 
-
-
-    @JsonIgnore
-    public List<TaskDetail> getTaskDetailList() {
-        return taskDetailList;
-    }
-
-    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
-        this.taskDetailList = taskDetailList;
-    }
 
     public String getUsername() {
         return username;

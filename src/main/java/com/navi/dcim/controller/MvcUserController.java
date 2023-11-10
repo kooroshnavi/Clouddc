@@ -64,10 +64,10 @@ public class MvcUserController {
     }
 
     @PostMapping("/app/main/pm/register/form/submit")
-    public String pmRegister(
+    public String pmPost(
             Model model,
             @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm) {
-        taskService.createNewPm(pmRegisterForm);
+        taskService.pmRegister(pmRegisterForm);
 
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
@@ -98,9 +98,51 @@ public class MvcUserController {
         model.addAttribute("eventTypeList", taskService.getEventType());
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("eventRegisterForm", eventRegister);
+        model.addAttribute("eventRegister", eventRegister);
 
         return "eventRegisterForm";
+    }
+
+    @PostMapping("/app/main/event/register/form/submit")
+    public String eventPost(
+            Model model,
+            @ModelAttribute("eventRegister") EventForm eventForm) {
+        taskService.eventRegister(eventForm);
+
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+
+        model.addAttribute("date", fullDate);
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("statusList", taskService.getTaskStatus());
+
+        return "home";
+    }
+
+
+    @GetMapping("/app/main/event/view")
+    public String viewEvent(Model model) {
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().toString();
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var eventRegister = new EventForm();
+
+        model.addAttribute("date", fullDate);
+        model.addAttribute("centerList", taskService.getCenterList());
+        model.addAttribute("eventTypeList", taskService.getEventType());
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("eventList",  taskService.getEventList());
+
+        return "eventList";
     }
 
 

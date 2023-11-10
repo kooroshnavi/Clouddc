@@ -2,19 +2,16 @@ package com.navi.dcim.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 @Table
-@NoArgsConstructor
 public class EventType {
 
-    public EventType(int id, String name, List<Event> eventList) {
-        this.id = id;
-        this.name = name;
-        this.eventList = eventList;
+    public EventType() {
+        this.eventList = new ArrayList<>();
     }
 
     @Id
@@ -39,5 +36,9 @@ public class EventType {
 
     public List<Event> getEventList() {
         return eventList;
+    }
+
+    public void setEvent(Event event) {
+        eventList.add(event);
     }
 }

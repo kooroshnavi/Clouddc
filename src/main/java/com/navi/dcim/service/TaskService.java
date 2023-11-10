@@ -3,6 +3,7 @@ package com.navi.dcim.service;
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
 import com.navi.dcim.form.AssignForm;
+import com.navi.dcim.form.EventForm;
 import com.navi.dcim.form.PmRegisterForm;
 import com.navi.dcim.model.*;
 import com.navi.dcim.repository.*;
@@ -30,8 +31,8 @@ public class TaskService {
     private TaskDetailRepository taskDetailRepository;
     private PersonRepository personRepository;
     private CenterRepository centerRepository;
-
     private EventTypeRepository eventTypeRepository;
+    private EventRepository eventRepository;
 
 
     @Autowired
@@ -40,20 +41,22 @@ public class TaskService {
                        PersonRepository personRepository,
                        CenterRepository centerRepository,
                        TaskDetailRepository taskDetailRepository,
-                       EventTypeRepository eventTypeRepository) {
+                       EventTypeRepository eventTypeRepository,
+                       EventRepository eventRepository) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
         this.personRepository = personRepository;
         this.centerRepository = centerRepository;
         this.taskDetailRepository = taskDetailRepository;
         this.eventTypeRepository = eventTypeRepository;
+        this.eventRepository = eventRepository;
     }
 
 
     public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll(Sort.unsorted());
         List<Task> taskList = taskRepository.findAll(Sort.unsorted());
-        List<Center> centers = (List<Center>) centerRepository.findAll();
+        List<Center> centers = centerRepository.findAll();
         List<Person> personList = personRepository.findAll();
 
         delayCalculation(taskList);
@@ -116,7 +119,7 @@ public class TaskService {
         List<TaskStatus> taskStatusList = taskStatusRepository
                 .findAll(Sort.by("lastSuccessful").descending());
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (TaskStatus taskStatus : taskStatusList
         ) {
             taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
@@ -130,12 +133,12 @@ public class TaskService {
     public List<Task> getTaskList() {
         List<Task> tasks = taskRepository.findAll(Sort.by("dueDate").descending());
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ISO_DATE_TIME;
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (Task task : tasks
         ) {
             task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
             if (task.getStatus()) {
-                task.setSuccessDatePersian(dateTimeFormatter.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+                task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
             }
         }
         return tasks;
@@ -144,7 +147,7 @@ public class TaskService {
     public TaskStatus updateTask(Task task) {
         TaskStatus taskStatus = task.getTaskStatus();
 
-        DateTimeFormatter dateTime = DateTimeFormatter.ISO_DATE_TIME;
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         task.setSuccessDate(LocalDateTime.now());
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setActive(false);
@@ -161,7 +164,7 @@ public class TaskService {
     public List<Task> getTaskListById(int taskStatusId) {
         TaskStatus taskStatus = taskStatusRepository.findById(taskStatusId).get();
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
         for (Task task : taskStatus.getTasks()
         ) {
@@ -176,7 +179,7 @@ public class TaskService {
     public List<TaskDetail> getTaskDetailById(int taskId) {
         Task task = taskRepository.findById(taskId).get();
 
-        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (TaskDetail taskDetail : task.getTaskDetailList()
         ) {
             taskDetail.setPersianDate(dateTime.format
@@ -194,7 +197,7 @@ public class TaskService {
     public List<TaskDetail> assignNewTaskDetail(int taskDetailId, int actionType) {
         Task thisTask = taskDetailRepository.findById(taskDetailId).get().getTask();
         Person person = personRepository.findById(actionType).get();
-        DateTimeFormatter dateTime = DateTimeFormatter.ISO_LOCAL_DATE_TIME;
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
         TaskDetail newTaskDetail = new TaskDetail();
         newTaskDetail.setAssignedDate(LocalDateTime.now());
@@ -255,7 +258,7 @@ public class TaskService {
         return personRepository.findById(i).get();
     }
 
-    public void createNewPm(PmRegisterForm pmRegisterForm) {
+    public void pmRegister(PmRegisterForm pmRegisterForm) {
         var newTaskStatus = new TaskStatus();
         newTaskStatus.setActive(true);
         newTaskStatus.setNextDue(LocalDate.now());
@@ -290,6 +293,22 @@ public class TaskService {
 
     }
 
+    public void eventRegister(EventForm eventForm) {
+        var eventType = eventTypeRepository.findById(eventForm.getEventType()).get();
+        var now = LocalDateTime.now();
+        Event event = new Event(now
+                , now
+                , eventForm.isActive()
+                , eventForm.getDescription()
+                , eventType
+                , personRepository.findById(2).get()
+                , centerRepository.findById(eventForm.getCenterId()).get());
+        eventType.setEvent(event);
+        event.setType(eventType);
+        eventTypeRepository.save(eventType);
+    }
+
+
     public List<Person> getPersonList() {
         return personRepository.findAll();
     }
@@ -301,6 +320,21 @@ public class TaskService {
     public List<EventType> getEventType() {
         return eventTypeRepository.findAll();
     }
+
+    public List<Event> getEventList() {
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+
+        List<Event> eventList =  eventRepository.findAll(Sort.by("id").descending());
+        for (Event event: eventList
+             ) {
+            event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
+            event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
+        }
+
+        return eventList;
+    }
+
+
 
 
 

@@ -22,6 +22,9 @@ public class Event {
     private LocalDateTime eventDate;
 
     @Column
+    private LocalDateTime updateDate;
+
+    @Column
     private boolean active;
 
     @Column
@@ -39,20 +42,44 @@ public class Event {
     @JoinColumn(name = "center_id")
     private Center center;
 
-
     @Transient
     private String persianDate;
 
+    @Transient
+    private String persianUpdate;
 
-    public Event(int id, LocalDateTime eventDate, Center center, boolean active, EventType eventType, Person person, String description, String persianDate) {
-        this.id = id;
+
+    public Event(LocalDateTime eventDate
+            , LocalDateTime updateDate
+            , boolean active
+            , String description
+            , EventType eventType
+            , Person person
+            , Center center
+            ) {
         this.eventDate = eventDate;
-        this.center = center;
+        this.updateDate = updateDate;
         this.active = active;
+        this.description = description;
         this.eventType = eventType;
         this.person = person;
-        this.description = description;
-        this.persianDate = "persianDate";
+        this.center = center;
+    }
+
+    public void setPersianDate(String persianDate) {
+        this.persianDate = persianDate;
+    }
+
+    public String getPersianUpdate() {
+        return persianUpdate;
+    }
+
+    public void setPersianUpdate(String persianUpdate) {
+        this.persianUpdate = persianUpdate;
+    }
+
+    public LocalDateTime getUpdateDate() {
+        return updateDate;
     }
 
     public Center getCenter() {
@@ -103,5 +130,9 @@ public class Event {
                 ", center=" + center +
                 ", persianDate='" + persianDate + '\'' +
                 '}';
+    }
+
+    public void setType(EventType eventType) {
+        this.eventType = eventType;
     }
 }

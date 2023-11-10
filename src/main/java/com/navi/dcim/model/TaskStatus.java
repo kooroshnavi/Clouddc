@@ -23,6 +23,9 @@ public class TaskStatus {
     private String name;
 
     @Column
+    private String description;
+
+    @Column
     private int period;
 
     @Column
@@ -41,6 +44,14 @@ public class TaskStatus {
     private String nextDuePersian;
     @Transient
     private String lastSuccessfulPersian;
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     @JsonIgnore
     public boolean isActive() {

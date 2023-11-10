@@ -108,20 +108,18 @@
                             </div>
                         </div>
                         <div class="card mb-4">
-                            <div class="card-header" وظایف منتسب به من>
-                                <i class="fas fa-table me-1" > </i>
+                            <div class="card-header" th:text="${name}" >
+                                <i class="fas fa-table me-1" ></i>
                             </div>
                             <div class="card-body">
                                 <table id="datatablesSimple">
                                     <thead>
                                     <tr>
 
+                                        <th>وضعیت و جزئیات</th>
                                         <th>مرکز</th>
-                                        <th>تاخیر (روز)</th>
-                                        <th>تاریخ اقدام</th>
-                                        <th>وضعیت</th>
-                                        <th>تاریخ سررسید</th>
-                                        <th>عنوان</th>
+                                        <th>تاریخ ثبت</th>
+                                        <th>دسته بندی رخداد</th>
                                         <th>شماره ارجاع</th>
                                         <th>ردیف</th>
 
@@ -129,28 +127,25 @@
                                     </thead>
                                     <tfoot>
                                         <tr>
+                                            <th>وضعیت و جزئیات</th>
                                             <th>مرکز</th>
-                                            <th>تاخیر (روز)</th>
-                                            <th>تاریخ اقدام</th>
-                                            <th>وضعیت</th>
-                                            <th>تاریخ سررسید</th>
-                                            <th>عنوان</th>
+                                            <th>تاریخ ثبت</th>
+                                            <th>دسته بندی رخداد</th>
                                             <th>شماره ارجاع</th>
                                             <th>ردیف</th>
 
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                    <tr th:each="task, iter : ${userTaskList}">
-                                        <td th:text="${task.getCenter.getNamePersian}"/>
-                                        <td th:text="${task.getDelay}"/>
-                                        <td th:text="${task.getSuccessDatePersian}"/>
+                                    <tr th:each="event, iter : ${eventList}">
                                         <td>
-                                            <a th:href="@{/app/main/task/{id}/detail(id=${task.id})} " th:text="${task.active} ? 'گردش کار' : 'اتمام'" />
+                                            <a th:href="@{/app/main/event/{id}(id=${event.id})} " th:text="${event.isActive} ? 'در حال پیگیری' : 'پایان رخداد'" />
                                         </td>
-                                        <td th:text="${task.getDueDatePersian}"/>
-                                        <td th:text="${task.getTaskStatus.name}"/>
-                                        <td th:text="${task.getId}"/>
+                                        <td th:text="${event.getCenter.getNamePersian}"/>
+                                        <td th:text="${event.getPersianDate}"/>
+
+                                        <td th:text="${event.getEventType.getName}"/>
+                                        <td th:text="${event.getId}"/>
                                         <td th:text="${iter.count}"/>
 
                                     </tr>

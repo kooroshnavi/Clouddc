@@ -6,9 +6,17 @@ import lombok.NoArgsConstructor;
 public class EventForm {
 
     private int eventType;
-    private int status;
     private String description;
     private boolean active;
+    private int centerId;
+
+    public int getCenterId() {
+        return centerId;
+    }
+
+    public void setCenterId(int centerId) {
+        this.centerId = centerId;
+    }
 
     public int getEventType() {
         return eventType;
@@ -16,14 +24,6 @@ public class EventForm {
 
     public void setEventType(int eventType) {
         this.eventType = eventType;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
     }
 
     public String getDescription() {
@@ -46,7 +46,6 @@ public class EventForm {
     public String toString() {
         return "EventForm{" +
                 "eventType=" + eventType +
-                ", status=" + status +
                 ", description='" + description + '\'' +
                 ", active=" + active +
                 '}';
