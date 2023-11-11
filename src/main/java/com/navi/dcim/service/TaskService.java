@@ -290,7 +290,7 @@ public class TaskService {
 
     }
 
-    public void eventRegister(EventForm eventForm) {
+    public void eventRegister(EventForm eventForm, Person person) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         var eventType = eventTypeRepository.findById(eventForm.getEventType()).get();
         var registerDate = LocalDateTime.now();
@@ -303,7 +303,7 @@ public class TaskService {
                 + " ) "
                 + System.lineSeparator()
                 , eventType
-                , personRepository.findById(2).get()
+                , person
                 , centerRepository.findById(eventForm.getCenterId()).get());
         eventType.setEvent(event);
         event.setType(eventType);
@@ -365,6 +365,10 @@ public class TaskService {
 
     public List<Event> getPendingEventList(int personId) {
         return eventRepository.findAllByPerson_IdAndActive(personId, true);
+    }
+
+    public Person getPersonByName(String personName) {
+        return personRepository.findByUsername(personName);
     }
 
 

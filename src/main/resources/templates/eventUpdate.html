@@ -111,11 +111,15 @@
                                     </div>
                                     <div class="card-body">
                                         <form  action="#" th:action="@{/app/main/event/form/update/} + ${{id}}" th:object="${eventForm}" method="POST">
-                                            <div class="form-row">
-                                                <div class="name">نوع رخداد</div>
-                                                <div class="name" th:text="${event.getEventType.getName}">
-                                                    <input class="input--style-6" type="text" th:text="${event.getEventType.getName}" >
-                                                </div>
+
+
+                                                <div class="form-row">
+                                                    <div class="name">عنوان وظیفه</div>
+                                                    <div class="name" th:text="${event.getEventType.getName}" >
+                                                        <input class="input--style-6" type="text"  disabled="disabled" >
+                                                    </div>
+
+
                                             </div>
                                             <div class="form-row">
                                                 <div class="name">تاریخ ثبت رخداد</div>
@@ -175,7 +179,7 @@
                                                 <div class="name">ثبت توضیحات جدید</div>
                                                 <div class="value" >
                                                     <div class="input-group" >
-                                                        <textarea th:if="${event.isActive}" class="textarea--style-6"  th:field="*{description}" ></textarea>
+                                                        <textarea th:if="${event.isActive}" class="textarea--style-6"  th:field="*{description}" required="required" maxlength="1000" ></textarea>
                                                     </div>
                                                 </div>
                                             </div>

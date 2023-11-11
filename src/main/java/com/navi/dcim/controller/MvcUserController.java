@@ -10,6 +10,12 @@ import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskDetail;
 import com.navi.dcim.service.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +36,31 @@ public class MvcUserController {
     private TaskService taskService;
 
 
+
+    @GetMapping("/login")
+    public String login(Model model) {
+
+        return "login";
+    }
+
+
+    @Bean
+    public UserDetailsService users() {
+        // The builder will ensure the passwords are encoded before saving in memory
+        User.UserBuilder users = User.withDefaultPasswordEncoder();
+        UserDetails navi = users
+                .username("navi")
+                .password("123456")
+                .build();
+        UserDetails vijeh = users
+                .username("vijeh")
+                .password("123456")
+                .build();
+        return new InMemoryUserDetailsManager(navi, vijeh);
+    }
+
+
+
     @GetMapping("/app/main")
     public String index(Model model) {
         var date = PersianDate.fromGregorian(LocalDate.now());
@@ -38,12 +69,14 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
-
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
         model.addAttribute("date", fullDate);
         model.addAttribute("statusList", taskService.getTaskStatus());
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
 
         return "home";
     }
@@ -57,12 +90,15 @@ public class MvcUserController {
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
         var pmRegister = new PmRegisterForm();
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
         model.addAttribute("date", fullDate);
         model.addAttribute("personList", taskService.getPersonList());
         model.addAttribute("centerList", taskService.getCenterList());
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
         model.addAttribute("pmRegister", pmRegister);
 
         return "pmRegisterForm";
@@ -80,11 +116,14 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
 
         model.addAttribute("date", fullDate);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("statusList", taskService.getTaskStatus());
 
         return "home";
@@ -99,12 +138,15 @@ public class MvcUserController {
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
         var eventRegister = new EventForm();
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
         model.addAttribute("date", fullDate);
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("eventRegister", eventRegister);
 
         return "eventRegisterForm";
@@ -114,7 +156,7 @@ public class MvcUserController {
     public String eventPost(
             Model model,
             @ModelAttribute("eventRegister") EventForm eventForm) {
-        taskService.eventRegister(eventForm);
+
 
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
@@ -122,12 +164,16 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        taskService.eventRegister(eventForm, person);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
 
         model.addAttribute("date", fullDate);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
         model.addAttribute("statusList", taskService.getTaskStatus());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("eventList", taskService.getEventList());
 
 
@@ -144,12 +190,16 @@ public class MvcUserController {
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
+
         model.addAttribute("date", fullDate);
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("eventList", taskService.getEventList());
 
         return "eventList";
@@ -168,15 +218,19 @@ public class MvcUserController {
         Event event = taskService.getEvent(id);
         EventForm eventForm = new EventForm();
 
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
+
         model.addAttribute("event", event);
         model.addAttribute("id", id);
         model.addAttribute("eventForm", eventForm);
         model.addAttribute("date", fullDate);
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("eventList", taskService.getEventList());
 
         return "eventUpdate";
@@ -196,13 +250,17 @@ public class MvcUserController {
 
         taskService.updateEvent(id, eventForm);
 
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
+
         model.addAttribute("eventForm", eventForm);
         model.addAttribute("date", fullDate);
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("eventList", taskService.getEventList());
 
         return "eventList";
@@ -211,7 +269,10 @@ public class MvcUserController {
 
     @GetMapping("/app/main/mytask")
     private String getUserTask(Model model) {
-        List<Task> userTaskList = taskService.getUserTask(2);
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        List<Task> userTaskList = taskService.getUserTask(person.getId());
         if (!userTaskList.isEmpty()) {
             var name = userTaskList.get(0).getTaskStatus().getName();
             model.addAttribute("name", name);
@@ -223,10 +284,11 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
+
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
         model.addAttribute("date", fullDate);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
         return "userTaskList";
     }
@@ -247,10 +309,14 @@ public class MvcUserController {
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
+
         model.addAttribute("date", fullDate);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
         return "taskListUi2";
     }
@@ -269,15 +335,20 @@ public class MvcUserController {
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
+
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person.getId()));
+
         model.addAttribute("taskDetailList", taskDetailList);
         model.addAttribute("name", taskStatusName);
         model.addAttribute("taskId", taskId);
         model.addAttribute("date", fullDate);
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
 
         return "taskDetailUi2";
@@ -302,6 +373,12 @@ public class MvcUserController {
             }
         }
 
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person2 = taskService.getPersonByName(personName);
+        model.addAttribute("pending", taskService.getUserTask(person2.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person2.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person2.getId()));
         AssignForm assignForm = new AssignForm();
         model.addAttribute("id", id);
         model.addAttribute("taskName", taskName);
@@ -311,10 +388,6 @@ public class MvcUserController {
         model.addAttribute("personList", personList);
         model.addAttribute("delay", delay);
         model.addAttribute("assignForm", assignForm);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
-
 
         return "actionForm";
     }
@@ -324,14 +397,21 @@ public class MvcUserController {
     public String assignTaskDetail(@PathVariable("id") int id,
                                    Model model,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person2 = taskService.getPersonByName(personName);
 
         taskService.updateTaskDetail(id, assignForm);
-        List<Task> userTaskList = taskService.getUserTask(2);
+        List<Task> userTaskList = taskService.getUserTask(person2.getId());
         if (!userTaskList.isEmpty()) {
             var name = userTaskList.get(0).getTaskStatus().getName();
             model.addAttribute("name", name);
             model.addAttribute("userTaskList", userTaskList);
         }
+
+        model.addAttribute("pending", taskService.getUserTask(person2.getId()).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(person2.getId()).size());
+        model.addAttribute("person", taskService.getPerson(person2.getId()));
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
@@ -340,9 +420,6 @@ public class MvcUserController {
         var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
-        model.addAttribute("pending", taskService.getUserTask(2).size());
-        model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
         return "userTaskList";
     }
