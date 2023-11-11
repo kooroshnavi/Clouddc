@@ -65,7 +65,7 @@
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" href="layout-static.html">ثبت گزارش روزانه</a>
-                                    <a class="nav-link" th:href="@{/app/main/event/view}">رخدادهای ثبت شده</a>
+                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادهای ثبت شده '}"></a>
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
                                 </nav>
                             </div>
@@ -139,7 +139,7 @@
                                     <tbody>
                                     <tr th:each="event, iter : ${eventList}">
                                         <td>
-                                            <a th:href="@{/app/main/event/{id}(id=${event.id})} " th:text="${event.isActive} ? 'در حال پیگیری' : 'پایان رخداد'" />
+                                            <a th:href="@{/app/main/event/{id}(id=${event.id})} " th:text="${event.isActive} ? 'فعال' : 'خاتمه رخداد'" />
                                         </td>
                                         <td th:text="${event.getCenter.getNamePersian}"/>
                                         <td th:text="${event.getPersianDate}"/>

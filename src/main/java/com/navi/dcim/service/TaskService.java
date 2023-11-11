@@ -16,10 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -117,7 +114,7 @@ public class TaskService {
 
     public List<TaskStatus> getTaskStatus() {
         List<TaskStatus> taskStatusList = taskStatusRepository
-                .findAll(Sort.by("lastSuccessful").descending());
+                .findAll(Sort.by("active").descending());
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (TaskStatus taskStatus : taskStatusList
@@ -131,7 +128,7 @@ public class TaskService {
     }
 
     public List<Task> getTaskList() {
-        List<Task> tasks = taskRepository.findAll(Sort.by("dueDate").descending());
+        List<Task> tasks = taskRepository.findAll(Sort.by("active").descending());
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (Task task : tasks
@@ -294,12 +291,17 @@ public class TaskService {
     }
 
     public void eventRegister(EventForm eventForm) {
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         var eventType = eventTypeRepository.findById(eventForm.getEventType()).get();
-        var now = LocalDateTime.now();
-        Event event = new Event(now
-                , now
+        var registerDate = LocalDateTime.now();
+        Event event = new Event(registerDate
+                , registerDate
                 , eventForm.isActive()
-                , eventForm.getDescription()
+                , " ( "
+                + dateTime.format(PersianDateTime.fromGregorian(registerDate))
+                + "-->" + eventForm.getDescription()
+                + " ) "
+                + System.lineSeparator()
                 , eventType
                 , personRepository.findById(2).get()
                 , centerRepository.findById(eventForm.getCenterId()).get());
@@ -324,14 +326,45 @@ public class TaskService {
     public List<Event> getEventList() {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
-        List<Event> eventList =  eventRepository.findAll(Sort.by("id").descending());
-        for (Event event: eventList
-             ) {
+        List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
+        for (Event event : eventList
+        ) {
             event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
             event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
         }
 
         return eventList;
+    }
+
+    public Event getEvent(int eventId) {
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        Event event = eventRepository.findById(eventId).get();
+        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
+        event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
+        return event;
+    }
+
+    public void updateEvent(int id, EventForm eventForm) {
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        Event event = eventRepository.findById(id).get();
+        event.setActive(eventForm.isActive());
+        event.setUpdateDate(LocalDateTime.now());
+        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
+        event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
+        var description = event.getDescription()
+                + " ( "
+                + event.getPersianUpdate()
+                + "-->"
+                + eventForm.getDescription()
+                + " ) "
+                + System.lineSeparator();
+        event.setDescription(description);
+        eventRepository.save(event);
+
+    }
+
+    public List<Event> getPendingEventList(int personId) {
+        return eventRepository.findAllByPerson_IdAndActive(personId, true);
     }
 
 

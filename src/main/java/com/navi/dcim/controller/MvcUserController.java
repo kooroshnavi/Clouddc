@@ -4,6 +4,7 @@ import com.github.mfathi91.time.PersianDate;
 import com.navi.dcim.form.AssignForm;
 import com.navi.dcim.form.EventForm;
 import com.navi.dcim.form.PmRegisterForm;
+import com.navi.dcim.model.Event;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskDetail;
@@ -18,7 +19,9 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 
 @Controller
 public class MvcUserController {
@@ -33,12 +36,13 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
         model.addAttribute("statusList", taskService.getTaskStatus());
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("person", taskService.getPerson(2));
 
         return "home";
@@ -50,13 +54,14 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
         var pmRegister = new PmRegisterForm();
         model.addAttribute("date", fullDate);
         model.addAttribute("personList", taskService.getPersonList());
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("person", taskService.getPerson(2));
         model.addAttribute("pmRegister", pmRegister);
 
@@ -73,12 +78,13 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("statusList", taskService.getTaskStatus());
 
         return "home";
@@ -90,14 +96,15 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
         var eventRegister = new EventForm();
         model.addAttribute("date", fullDate);
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("eventTypeList", taskService.getEventType());
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
         model.addAttribute("eventRegister", eventRegister);
 
         return "eventRegisterForm";
@@ -113,15 +120,18 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
         model.addAttribute("statusList", taskService.getTaskStatus());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
+        model.addAttribute("eventList", taskService.getEventList());
 
-        return "home";
+
+        return "eventList";
     }
 
 
@@ -131,16 +141,69 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
-        var eventRegister = new EventForm();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
         model.addAttribute("centerList", taskService.getCenterList());
         model.addAttribute("eventTypeList", taskService.getEventType());
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
-        model.addAttribute("eventList",  taskService.getEventList());
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
+        model.addAttribute("eventList", taskService.getEventList());
+
+        return "eventList";
+    }
+
+    @GetMapping("/app/main/event/{id}")
+    public String viewEvent(Model model, @PathVariable int id) {
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var eventRegister = new EventForm();
+
+        Event event = taskService.getEvent(id);
+        EventForm eventForm = new EventForm();
+
+        model.addAttribute("event", event);
+        model.addAttribute("id", id);
+        model.addAttribute("eventForm", eventForm);
+        model.addAttribute("date", fullDate);
+        model.addAttribute("centerList", taskService.getCenterList());
+        model.addAttribute("eventTypeList", taskService.getEventType());
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
+        model.addAttribute("eventList", taskService.getEventList());
+
+        return "eventUpdate";
+    }
+
+    @PostMapping("/app/main/event/form/update/{id}")
+    public String updateEvent(Model model
+            , @PathVariable int id
+            , @ModelAttribute("eventForm") EventForm eventForm) {
+        var date = PersianDate.fromGregorian(LocalDate.now());
+        var year = date.getYear();
+        var month = date.getMonth().getPersianName();
+        var day = date.getDayOfMonth();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
+        var eventRegister = new EventForm();
+
+        taskService.updateEvent(id, eventForm);
+
+        model.addAttribute("eventForm", eventForm);
+        model.addAttribute("date", fullDate);
+        model.addAttribute("centerList", taskService.getCenterList());
+        model.addAttribute("eventTypeList", taskService.getEventType());
+        model.addAttribute("pending", taskService.getUserTask(2).size());
+        model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
+        model.addAttribute("eventList", taskService.getEventList());
 
         return "eventList";
     }
@@ -158,11 +221,12 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
         return "userTaskList";
     }
@@ -180,12 +244,13 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
         return "taskListUi2";
     }
@@ -202,8 +267,8 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
         model.addAttribute("taskDetailList", taskDetailList);
         model.addAttribute("name", taskStatusName);
         model.addAttribute("taskId", taskId);
@@ -212,6 +277,7 @@ public class MvcUserController {
         model.addAttribute("duedate", duedate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
 
         return "taskDetailUi2";
@@ -235,6 +301,7 @@ public class MvcUserController {
                 break;
             }
         }
+
         AssignForm assignForm = new AssignForm();
         model.addAttribute("id", id);
         model.addAttribute("taskName", taskName);
@@ -246,6 +313,7 @@ public class MvcUserController {
         model.addAttribute("assignForm", assignForm);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
 
         return "actionForm";
@@ -268,12 +336,13 @@ public class MvcUserController {
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
-        var dayName = date.getDayOfWeek().toString();
-        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName.toString();
+        var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
+        var fullDate = year + "  -  " + month.toString() + "     " + day + "  -  " + dayName;
 
         model.addAttribute("date", fullDate);
         model.addAttribute("pending", taskService.getUserTask(2).size());
         model.addAttribute("person", taskService.getPerson(2));
+        model.addAttribute("pendingEvents", taskService.getPendingEventList(2).size());
 
         return "userTaskList";
     }

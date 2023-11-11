@@ -66,6 +66,38 @@ public class Event {
         this.center = center;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public void setEventDate(LocalDateTime eventDate) {
+        this.eventDate = eventDate;
+    }
+
+    public void setUpdateDate(LocalDateTime updateDate) {
+        this.updateDate = updateDate;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public void setCenter(Center center) {
+        this.center = center;
+    }
+
     public void setPersianDate(String persianDate) {
         this.persianDate = persianDate;
     }
