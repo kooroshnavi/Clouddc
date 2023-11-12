@@ -36,7 +36,6 @@ public class MvcUserController {
     private TaskService taskService;
 
 
-
     @GetMapping("/login")
     public String login(Model model) {
 
@@ -56,9 +55,12 @@ public class MvcUserController {
                 .username("vijeh")
                 .password("123456")
                 .build();
-        return new InMemoryUserDetailsManager(navi, vijeh);
+        UserDetails nikoo = users
+                .username("nikooei")
+                .password("123456")
+                .build();
+        return new InMemoryUserDetailsManager(navi, vijeh, nikoo);
     }
-
 
 
     @GetMapping("/app/main")
@@ -339,10 +341,12 @@ public class MvcUserController {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
         Person person = taskService.getPersonByName(personName);
+        var permission = taskService.checkPermission(personName, taskDetailList.stream().findAny().filter(taskDetail -> taskDetail.isActive()));
+        System.out.println(permission);
+                model.addAttribute("permission", permission);
         model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
         model.addAttribute("pendingEvents", taskService.getPendingEventList(person.getId()).size());
         model.addAttribute("person", taskService.getPerson(person.getId()));
-
         model.addAttribute("taskDetailList", taskDetailList);
         model.addAttribute("name", taskStatusName);
         model.addAttribute("taskId", taskId);
@@ -423,11 +427,6 @@ public class MvcUserController {
 
         return "userTaskList";
     }
-
-
-
-
-
 
 
    /* @GetMapping("/app/registerForm")

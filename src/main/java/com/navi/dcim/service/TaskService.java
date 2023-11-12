@@ -371,6 +371,20 @@ public class TaskService {
         return personRepository.findByUsername(personName);
     }
 
+    public boolean checkPermission(String authenticatedName, Optional<TaskDetail> taskDetail) {
+        if (!taskDetail.isPresent()){
+            return false;
+        }
+        System.out.println(authenticatedName);
+        System.out.println(taskDetail.get().getPerson().getUsername());
+        if (Objects.equals(authenticatedName, taskDetail.get().getPerson().getUsername())){
+            return true;
+        }
+        else{
+            return false;
+        }
+    }
+
 
 
 

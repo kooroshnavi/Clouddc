@@ -37,11 +37,13 @@ public class TaskStatus {
 
     @Column
     private LocalDate nextDue;
+
     @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
     private List<Task> tasks;
 
     @Transient
     private String nextDuePersian;
+
     @Transient
     private String lastSuccessfulPersian;
 
