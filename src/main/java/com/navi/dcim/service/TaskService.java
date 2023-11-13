@@ -16,6 +16,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -100,16 +101,25 @@ public class TaskService {
     }
 
     private void delayCalculation(List<Task> taskList) {
-        if (!taskList.isEmpty()) {
+        var currentDate = LocalDate.now();
+        if (!taskList.isEmpty() && !isWeekend(currentDate)) {
             for (Task task : taskList
             ) {
                 if (task.isActive()) {
-                    var delayedDays = LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
+                    var delayedDays = currentDate.compareTo(ChronoLocalDate.from(task.getDueDate()));
                     task.setDelay(delayedDays);
                 }
             }
         }
         taskRepository.saveAll(taskList);
+    }
+
+    private boolean isWeekend(LocalDate currentDate) {
+        if (Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Thu")
+                || Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Fri")) {
+            return true;
+        }
+        return false;
     }
 
     public List<TaskStatus> getTaskStatus() {
@@ -375,15 +385,14 @@ public class TaskService {
     }
 
     public boolean checkPermission(String authenticatedName, Optional<TaskDetail> taskDetail) {
-        if (!taskDetail.isPresent()){
+        if (!taskDetail.isPresent()) {
             return false;
         }
         System.out.println(authenticatedName);
         System.out.println(taskDetail.get().getPerson().getUsername());
-        if (Objects.equals(authenticatedName, taskDetail.get().getPerson().getUsername())){
+        if (Objects.equals(authenticatedName, taskDetail.get().getPerson().getUsername())) {
             return true;
-        }
-        else{
+        } else {
             return false;
         }
     }
