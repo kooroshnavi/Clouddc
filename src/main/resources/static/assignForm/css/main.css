@@ -3,15 +3,15 @@
    #FONT
    ========================================================================== */
 .font-robo {
-  font-family: "Roboto", "Arial", "Helvetica Neue", sans-serif;
+  font-family: B NAZANIN;
 }
 
 .font-poppins {
-  font-family: "Poppins", "Arial", "Helvetica Neue", sans-serif;
+  font-family: B NAZANIN;
 }
 
 .font-opensans {
-  font-family: "Open Sans", "Arial", "Helvetica Neue", sans-serif;
+  font-family: B NAZANIN;
 }
 
 /* ==========================================================================
@@ -188,9 +188,9 @@ button {
 .page-wrapper {
   min-height: 100vh;
 }
-
+/*FONT*/
 body {
-  font-family: "Open Sans", "Arial", "Helvetica Neue", sans-serif;
+  font-family: "IRANSansWeb(FaNum)"
   font-weight: 400;
   font-size: 14px;
 }

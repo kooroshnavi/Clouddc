@@ -248,7 +248,10 @@ public class TaskService {
             taskDetail.getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(taskDetail.getTask().getDueDate())));
             userTasks.add(taskDetail.getTask());
         }
-        return userTasks;
+        return userTasks
+                .stream()
+                .sorted(Comparator.comparing(Task::getDelay).reversed())
+                .collect(Collectors.toList());
     }
 
     public Person getPerson(int i) {
@@ -363,8 +366,8 @@ public class TaskService {
 
     }
 
-    public List<Event> getPendingEventList(int personId) {
-        return eventRepository.findAllByPerson_IdAndActive(personId, true);
+    public List<Event> getPendingEventList() {
+        return eventRepository.findAllByActive(true);
     }
 
     public Person getPersonByName(String personName) {
@@ -384,10 +387,6 @@ public class TaskService {
             return false;
         }
     }
-
-
-
-
 
 
     /*public List<Task> getUserTask2(int id) {

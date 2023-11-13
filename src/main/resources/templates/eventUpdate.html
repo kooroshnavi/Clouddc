@@ -65,9 +65,9 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">ثبت گزارش روزانه</a>
-                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادهای ثبت شده '}"></a>
+                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادها '}"></a>
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
+                                    <s class="nav-link" href="layout-static.html" >ثبت گزارش روزانه (در حال توسعه)</s>
                                 </nav>
                             </div>
 
@@ -79,9 +79,9 @@
                             </a>
                             <div class="collapse" id="collapsePages" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">گزارش وظایف و عملکرد</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">نظارت تصویری</a>
+                                    <s class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">گزارش وظایف و عملکرد (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">نظارت تصویری (در حال توسعه)</s>
 
                                 </nav>
                             </div>
@@ -113,15 +113,15 @@
                                         <form  action="#" th:action="@{/app/main/event/form/update/} + ${{id}}" th:object="${eventForm}" method="POST">
 
 
-                                                <div class="form-row">
-                                                    <div class="name">عنوان وظیفه</div>
+                                                <div class="form-row" dir="rtl">
+                                                    <div class="name" >دسته بندی رخداد</div>
                                                     <div class="name" th:text="${event.getEventType.getName}" >
                                                         <input class="input--style-6" type="text"  disabled="disabled" >
                                                     </div>
 
 
                                             </div>
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">تاریخ ثبت رخداد</div>
                                                 <div class="value">
                                                     <div class="name" th:text="${event.persianDate}">
@@ -130,7 +130,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">آخرین بروز رسانی</div>
                                                 <div class="value">
                                                     <div class="name" th:text="${event.persianUpdate}">
@@ -139,7 +139,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">وضعیت</div>
                                                 <div class="value">
                                                     <div class="name"  th:text="${event.isActive} ? 'فعال' : 'خاتمه رخداد'">
@@ -149,7 +149,7 @@
                                             </div>
 
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">مرکز</div>
                                                 <div class="value">
                                                     <div class="name" th:text="${event.getCenter.getNamePersian}">
@@ -158,7 +158,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">ثبت توسط</div>
                                                 <div class="value">
                                                     <div class="name" th:text="${event.getPerson.getName}">
@@ -167,25 +167,26 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">توضیحات پیشین</div>
                                                 <div class="value"  >
-                                                    <div class="input-group" th:text="${event.description}" >
+                                                    <div class="input-group" th:text="${event.description}" dir="rtl">
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-row" th:if="${event.isActive}">
+                                            <div class="form-row" th:if="${event.isActive}" dir="rtl">
                                                 <div class="name">ثبت توضیحات جدید</div>
                                                 <div class="value" >
                                                     <div class="input-group" >
-                                                        <textarea th:if="${event.isActive}" class="textarea--style-6"  th:field="*{description}" required="required" maxlength="1000" ></textarea>
+                                                        <textarea th:if="${event.isActive}" class="textarea--style-6"  th:field="*{description}" required="required" maxlength="1000" dir="rtl"></textarea>
                                                     </div>
+                                                    <div class="label--desc" dir="rtl">شامل محدودیت کاراکتر - اگر توضیحات مفصل و شامل جداول و عکس است خلاصه آن را بنویسید و گزارش کامل را در فایل پیوست ضمیمه کنید.</div>
                                                 </div>
                                             </div>
 
 
-                                            <div class="form-row" th:if="${event.isActive}">
+                                            <div class="form-row" th:if="${event.isActive}" dir="rtl">
                                                 <div class="name">بروزرسانی وضعیت</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -202,18 +203,18 @@
                                             </div>
 
 
-                                            <div class="form-row" th:if="${event.isActive}">
+                                            <div class="form-row" th:if="${event.isActive}" dir="rtl">
                                                 <div class="name">پیوست</div>
                                                 <div class="value">
                                                     <div class="input-group js-input-file">
                                                         <input class="input-file" type="file" name="file_cv" id="file">
                                                         <label class="label--file" for="file">بارگذاری</label>
-                                                        <span class="input-file__info">فایلی انتخاب نشده است</span>
+                                                        <span class="input-file__info"> فایلی انتخاب نشده است </span>
                                                     </div>
-                                                    <div class="label--desc">Upload your CV/Resume or any other relevant file. Max file size 50 MB</div>
+                                                    <div class="label--desc" dir="rtl">حداکثر 10مگابایت</div>
                                                 </div>
                                             </div>
-                                            <div class="card-footer" th:if="${event.isActive}">
+                                            <div class="card-footer" th:if="${event.isActive}" dir="rtl">
                                                 <button class="btn btn--radius-2 btn--blue-2" type="submit" }>ثبت</button>
                                             </div>
                                         </form>

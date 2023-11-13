@@ -65,9 +65,9 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">ثبت گزارش روزانه</a>
-                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادهای ثبت شده '}"></a>
+                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادها '}"></a>
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
+                                    <s class="nav-link" href="layout-static.html" >ثبت گزارش روزانه (در حال توسعه)</s>
                                 </nav>
                             </div>
 
@@ -79,9 +79,9 @@
                             </a>
                             <div class="collapse" id="collapsePages" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">گزارش وظایف و عملکرد</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">نظارت تصویری</a>
+                                    <s class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">گزارش وظایف و عملکرد (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">نظارت تصویری (در حال توسعه)</s>
 
                                 </nav>
                             </div>
@@ -112,7 +112,7 @@
 
                                     <div class="card-body">
                                         <form  action="#" th:action="@{/app/main/event/register/form/submit}" th:object="${eventRegister}" method="POST">
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">نوع رخداد</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -127,17 +127,18 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">شرح رخداد</div>
                                                 <div class="value" >
                                                     <div class="input-group" >
-                                                        <textarea class="textarea--style-6" th:field="*{description}" required="required" ></textarea>
+                                                        <textarea class="textarea--style-6" th:field="*{description}" required="required" dir="rtl" ></textarea>
                                                     </div>
+                                                    <div class="label--desc" dir="rtl">شامل محدودیت کاراکتر - اگر توضیحات مفصل و شامل جداول و عکس است خلاصه آن را بنویسید و گزارش کامل را در فایل پیوست ضمیمه کنید.</div>
                                                 </div>
                                             </div>
 
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">انتخاب سالن</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -153,7 +154,7 @@
                                             </div>
 
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">آیا رخداد پیش آمده رفع شده است؟</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -169,7 +170,7 @@
                                             </div>
 
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">پیوست</div>
                                                 <div class="value">
                                                     <div class="input-group js-input-file">
@@ -177,10 +178,10 @@
                                                         <label class="label--file" for="file">بارگذاری</label>
                                                         <span class="input-file__info">فایلی انتخاب نشده است</span>
                                                     </div>
-                                                    <div class="label--desc">Upload your CV/Resume or any other relevant file. Max file size 50 MB</div>
+                                                    <div class="label--desc" dir="rtl">حداکثر 10 مگابایت</div>
                                                 </div>
                                             </div>
-                                            <div class="card-footer">
+                                            <div class="card-footer" dir="rtl">
                                                 <button class="btn btn--radius-2 btn--blue-2" type="submit">ثبت</button>
                                             </div>
                                         </form>

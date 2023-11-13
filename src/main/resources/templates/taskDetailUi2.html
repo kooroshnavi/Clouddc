@@ -63,9 +63,9 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">ثبت گزارش روزانه</a>
-                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادهای ثبت شده '}"></a>
+                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادها '}"></a>
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
+                                    <s class="nav-link" href="layout-static.html" >ثبت گزارش روزانه (در حال توسعه)</s>
                                 </nav>
                             </div>
 
@@ -77,9 +77,9 @@
                             </a>
                             <div class="collapse" id="collapsePages" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">گزارش وظایف و عملکرد</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">نظارت تصویری</a>
+                                    <s class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">گزارش وظایف و عملکرد (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">نظارت تصویری (در حال توسعه)</s>
 
                                 </nav>
                             </div>
@@ -107,7 +107,7 @@
                             </div>
                         </div>
                         <div class="card mb-4">
-                            <div class="card-header" th:text="${name + ' شماره ارجاع ' + taskId + ' سررسید ' + duedate + ' تاخیر ' + delay + ' روز '}">
+                            <div class="card-header" th:text="${name + ' شماره ارجاع ' + taskId + ' سررسید ' + duedate + ' تاخیر ' + delay + ' روز '}" dir="rtl">
                                 <i class="fas fa-table me-1" ></i>
                             </div>
                             <div class="card-body">

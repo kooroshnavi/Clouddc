@@ -65,9 +65,9 @@
                             </a>
                             <div class="collapse" id="collapseLayouts" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">ثبت گزارش روزانه</a>
-                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادهای ثبت شده '}"></a>
+                                    <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادها '}"></a>
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
+                                    <s class="nav-link" href="layout-static.html" >ثبت گزارش روزانه (در حال توسعه)</s>
                                 </nav>
                             </div>
 
@@ -79,9 +79,9 @@
                             </a>
                             <div class="collapse" id="collapsePages" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
-                                    <a class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">گزارش وظایف و عملکرد</a>
-                                    <a class="nav-link" href="layout-sidenav-light.html">نظارت تصویری</a>
+                                    <s class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">گزارش وظایف و عملکرد (در حال توسعه)</s>
+                                    <s class="nav-link" href="layout-static.html">نظارت تصویری (در حال توسعه)</s>
 
                                 </nav>
                             </div>
@@ -107,28 +107,28 @@
                             <div class="wrapper wrapper--w900">
                                 <div class="card card-6">
                                     <div class="card-heading">
-                                        <h2 class="title">فرم وظیفه</h2>
+                                        <h2 class="title" dir="rtl">تعریف PM جدید</h2>
                                     </div>
 
                                     <div class="card-body">
                                         <form  action="#" th:action="@{/app/main/pm/register/form/submit}" th:object="${pmRegister}" method="POST">
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">عنوان وظیفه</div>
                                                 <div class="name">
                                                     <input class="input--style-6" type="text" th:field="*{name}" required="required">
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">توضیحات</div>
                                                 <div class="value" >
                                                     <div class="input-group" >
-                                                        <textarea class="textarea--style-6" th:field="*{description}" ></textarea>
+                                                        <textarea class="textarea--style-6" th:field="*{description}" dir="rtl" maxlength="1000" required="required" ></textarea>
                                                     </div>
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">انتساب به کارتابل</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -144,7 +144,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">انتخاب سالن</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -160,7 +160,7 @@
                                                 </div>
                                             </div>
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">دوره تکرار</div>
                                                 <div class="value" >
                                                     <div class="input-group">
@@ -182,7 +182,7 @@
                                             </div>
 
 
-                                            <div class="form-row">
+                                            <div class="form-row" dir="rtl">
                                                 <div class="name">پیوست</div>
                                                 <div class="value">
                                                     <div class="input-group js-input-file">
@@ -190,10 +190,10 @@
                                                         <label class="label--file" for="file">بارگذاری</label>
                                                         <span class="input-file__info">فایلی انتخاب نشده است</span>
                                                     </div>
-                                                    <div class="label--desc">Upload your CV/Resume or any other relevant file. Max file size 50 MB</div>
+                                                    <div class="label--desc">حداکثر 10 مگابایت</div>
                                                 </div>
                                             </div>
-                                            <div class="card-footer">
+                                            <div class="card-footer" dir="rtl">
                                                 <button class="btn btn--radius-2 btn--blue-2" type="submit">ثبت</button>
                                             </div>
                                         </form>

@@ -54,13 +54,13 @@
   --bs-black-rgb: 0, 0, 0;
   --bs-body-color-rgb: 33, 37, 41;
   --bs-body-bg-rgb: 255, 255, 255;
-  --bs-font-sans-serif: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", "Noto Sans", "Liberation Sans", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  --bs-font-sans-serif:   "IRANSansWeb(FaNum)";   /*FONT*/
+  --bs-font-monospace: SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace, "Yekan", "Cambria";
   --bs-gradient: linear-gradient(180deg, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0));
   --bs-body-font-family: var(--bs-font-sans-serif);
   --bs-body-font-size: 1rem;
   --bs-body-font-weight: 400;
-  --bs-body-line-height: 1.5;
+  --bs-body-line-height: 2;
   --bs-body-color: #212529;
   --bs-body-bg: #fff;
   --bs-border-width: 1px;
@@ -6533,6 +6533,8 @@ textarea.form-control-lg {
   background-clip: padding-box;
   outline: 0;
   transition: transform 0.3s ease-in-out;
+
+
 }
 @media (prefers-reduced-motion: reduce) {
   .offcanvas {
@@ -11100,14 +11102,14 @@ body {
 .datatable-top > div:first-child,
 .datatable-bottom > nav:first-child,
 .datatable-bottom > div:first-child {
-  float: left;
+  float: center;
 }
 
 .datatable-top > nav:last-child,
 .datatable-top > div:last-child,
 .datatable-bottom > nav:last-child,
 .datatable-bottom > div:last-child {
-  float: right;
+  float: center;
 }
 
 .datatable-selector {
@@ -11164,27 +11166,31 @@ body {
 .datatable-table > thead > tr > th {
   vertical-align: top;
   padding: 0.5rem 0.5rem;
+  text-align: center;
+  direction: rtl;
 }
 
 .datatable-table > thead > tr > th {
   vertical-align: bottom;
-  text-align: left;
+  text-align: center;
   border-bottom: none;
+
 }
 
 .datatable-table > tfoot > tr > th {
   vertical-align: bottom;
-  text-align: left;
+  text-align: center;
 }
 
 .datatable-table th {
   vertical-align: bottom;
-  text-align: left;
+  text-align: center;
 }
 
 .datatable-table th a {
   text-decoration: none;
   color: inherit;
+
 }
 
 .datatable-sorter {

@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
-    List<Event> findAllByPerson_IdAndActive(int id, boolean active);
+    List<Event> findAllByActive(boolean active);
 
 }
