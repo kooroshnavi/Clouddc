@@ -50,7 +50,7 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = {CascadeType.ALL})
     private List<TaskDetail> taskDetailList;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "daily_report")
     private DailyReport dailyReport;
 

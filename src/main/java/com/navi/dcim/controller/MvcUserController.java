@@ -288,7 +288,7 @@ public class MvcUserController {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
         Person person = taskService.getPersonByName(personName);
-        var permission = taskService.checkPermission(personName, taskDetailList.stream().findAny().filter(taskDetail -> taskDetail.isActive()));
+        var permission = taskService.checkPermission(personName, taskDetailList.stream().findAny().filter(TaskDetail::isActive));
         System.out.println(permission);
         model.addAttribute("permission", permission);
         model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
