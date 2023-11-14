@@ -50,6 +50,22 @@ public class Task {
     @OneToMany(mappedBy = "task", cascade = {CascadeType.ALL})
     private List<TaskDetail> taskDetailList;
 
+    @ManyToOne
+    @JoinColumn(name = "daily_report")
+    private DailyReport dailyReport;
+
+
+    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
+        this.taskDetailList = taskDetailList;
+    }
+
+    public DailyReport getDailyReport() {
+        return dailyReport;
+    }
+
+    public void setDailyReport(DailyReport dailyReport) {
+        this.dailyReport = dailyReport;
+    }
 
     public List<TaskDetail> getTaskDetailList() {
         return taskDetailList;
