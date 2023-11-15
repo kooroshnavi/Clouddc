@@ -32,6 +32,8 @@ public class TaskService {
     private EventTypeRepository eventTypeRepository;
     private EventRepository eventRepository;
 
+    private ReportRepository reportRepository;
+
 
     @Autowired
     public TaskService(TaskStatusRepository taskStatusRepository,
@@ -40,7 +42,8 @@ public class TaskService {
                        CenterRepository centerRepository,
                        TaskDetailRepository taskDetailRepository,
                        EventTypeRepository eventTypeRepository,
-                       EventRepository eventRepository) {
+                       EventRepository eventRepository,
+                       ReportRepository reportRepository) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
         this.personRepository = personRepository;
@@ -48,6 +51,7 @@ public class TaskService {
         this.taskDetailRepository = taskDetailRepository;
         this.eventTypeRepository = eventTypeRepository;
         this.eventRepository = eventRepository;
+        this.reportRepository = reportRepository;
     }
 
 
@@ -56,12 +60,15 @@ public class TaskService {
         List<Task> taskList = taskRepository.findAll(Sort.unsorted());
         List<Center> centers = centerRepository.findAll();
         List<Person> personList = personRepository.findAll();
+        DailyReport report = new DailyReport();
+        report.setActive(true);
+
 
         delayCalculation(taskList);
 
         for (TaskStatus status : taskStatusList
         ) {
-            if (isTodayTask(status)) {
+            if (isTodayTask(status) && !status.isActive()) {
                 Task todayTask = setupTask(status, centers);
                 TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
                 todayTask.setTaskDetailList(taskDetail);
@@ -73,6 +80,7 @@ public class TaskService {
                 status.setActive(false);
             }
         }
+        reportRepository.save(report);
         taskStatusRepository.saveAll(taskStatusList);
     }
 
@@ -153,11 +161,15 @@ public class TaskService {
 
     public TaskStatus updateTask(Task task) {
         TaskStatus taskStatus = task.getTaskStatus();
+        DailyReport report = reportRepository.findByActive(true);
 
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         task.setSuccessDate(LocalDateTime.now());
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setActive(false);
+        task.setDailyReport(report);
+        System.out.println("Task Added" + report.getTaskList());
+
 
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
@@ -305,6 +317,7 @@ public class TaskService {
 
     public void eventRegister(EventForm eventForm, Person person) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        DailyReport report = reportRepository.findByActive(true);
         var eventType = eventTypeRepository.findById(eventForm.getEventType()).get();
         var registerDate = LocalDateTime.now();
         Event event = new Event(registerDate
@@ -320,6 +333,9 @@ public class TaskService {
                 , centerRepository.findById(eventForm.getCenterId()).get());
         eventType.setEvent(event);
         event.setType(eventType);
+        event.setDailyReportList(report);
+        report.setEventList(event);
+        System.out.println("event added" + report.getEventList());
         eventTypeRepository.save(eventType);
     }
 
@@ -357,9 +373,10 @@ public class TaskService {
         return event;
     }
 
-    public void updateEvent(int id, EventForm eventForm) {
+    public void updateEvent(int eventId, EventForm eventForm) {
+        DailyReport report = reportRepository.findByActive(true);
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Event event = eventRepository.findById(id).get();
+        Event event = eventRepository.findById(eventId).get();
         event.setActive(eventForm.isActive());
         event.setUpdateDate(LocalDateTime.now());
         event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
@@ -372,6 +389,14 @@ public class TaskService {
                 + " ) "
                 + System.lineSeparator();
         event.setDescription(description);
+
+        if (!report.getEventList().stream().anyMatch(event1 -> event1.getId() == eventId)) {
+            event.setDailyReportList(report);
+            report.setEventList(event);
+            System.out.println("Event updated:    " + report.getEventList());
+        }
+
+
         eventRepository.save(event);
 
     }

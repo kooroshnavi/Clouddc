@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,7 +26,7 @@ public class DailyReport {
     @OneToMany(mappedBy = "dailyReport")
     private List<Task> taskList;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @ManyToMany()
     @JoinTable(name = "report_event", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
 
@@ -50,8 +51,11 @@ public class DailyReport {
         this.taskList = taskList;
     }
 
-    public void setEventList(List<Event> eventList) {
-        this.eventList = eventList;
+    public void setEventList(Event event) {
+        if (this.eventList == null) {
+            this.eventList = new ArrayList<>();
+        }
+        this.eventList.add(event);
     }
 
     public List<Event> getEventList() {
@@ -68,5 +72,16 @@ public class DailyReport {
 
     public List<Task> getTaskList() {
         return taskList;
+    }
+
+    @Override
+    public String toString() {
+        return "DailyReport{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", active=" + active +
+                ", taskList=" + taskList +
+                ", eventList=" + eventList +
+                '}';
     }
 }
