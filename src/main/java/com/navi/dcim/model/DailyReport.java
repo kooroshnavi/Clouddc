@@ -3,7 +3,7 @@ package com.navi.dcim.model;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class DailyReport {
     private int id;
 
     @Column
-    private LocalDateTime dateTime;
+    private LocalDate date;
 
     @Column
     private boolean active;
@@ -30,13 +30,20 @@ public class DailyReport {
     @JoinTable(name = "report_event", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
 
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
+    }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public void setDateTime(LocalDateTime dateTime) {
-        this.dateTime = dateTime;
     }
 
     public boolean isActive() {
@@ -66,10 +73,6 @@ public class DailyReport {
         return id;
     }
 
-    public LocalDateTime getDateTime() {
-        return dateTime;
-    }
-
     public List<Task> getTaskList() {
         return taskList;
     }
@@ -78,7 +81,7 @@ public class DailyReport {
     public String toString() {
         return "DailyReport{" +
                 "id=" + id +
-                ", dateTime=" + dateTime +
+                ", date=" + date +
                 ", active=" + active +
                 ", taskList=" + taskList +
                 ", eventList=" + eventList +

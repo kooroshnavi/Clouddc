@@ -10,11 +10,12 @@ import com.navi.dcim.repository.*;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -22,6 +23,7 @@ import java.util.stream.Collectors;
 
 @Service
 @NoArgsConstructor
+@EnableScheduling
 public class TaskService {
 
     private TaskStatusRepository taskStatusRepository;
@@ -31,7 +33,6 @@ public class TaskService {
     private CenterRepository centerRepository;
     private EventTypeRepository eventTypeRepository;
     private EventRepository eventRepository;
-
     private ReportRepository reportRepository;
 
 
@@ -55,32 +56,40 @@ public class TaskService {
     }
 
 
+    @Scheduled(cron = "@midnight")
     public void updateTodayTasks() {
-        List<TaskStatus> taskStatusList = taskStatusRepository.findAll(Sort.unsorted());
-        List<Task> taskList = taskRepository.findAll(Sort.unsorted());
+        System.out.println("updateTodayTasks method started by scheduler at:" + LocalDateTime.now());
+        System.out.println();
+        List<TaskStatus> taskStatusList = taskStatusRepository.findAll();
+        List<Task> taskList = taskRepository.findAll();
         List<Center> centers = centerRepository.findAll();
         List<Person> personList = personRepository.findAll();
-        DailyReport report = new DailyReport();
-        report.setActive(true);
+        DailyReport yesterday = reportRepository.findByActive(true);
 
 
         delayCalculation(taskList);
 
         for (TaskStatus status : taskStatusList
         ) {
-            if (isTodayTask(status) && !status.isActive()) {
+            if (isTodayTask(status)) {
                 Task todayTask = setupTask(status, centers);
                 TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
                 todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
                 status.setActive(true);
-            } else if (status.getTasks().stream().anyMatch(task -> task.isActive())) {
-                status.setActive(true);
-            } else {
-                status.setActive(false);
             }
         }
-        reportRepository.save(report);
+
+        yesterday.setDate(LocalDate.now().minusDays(1));
+        yesterday.setActive(false);
+        DailyReport today = new DailyReport();
+        today.setDate(LocalDate.now());
+        today.setActive(true);
+        List<DailyReport> reports = new ArrayList<>();
+        reports.add(yesterday);
+        reports.add(today);
+        reportRepository.saveAll(reports);
+
         taskStatusRepository.saveAll(taskStatusList);
     }
 
@@ -109,20 +118,21 @@ public class TaskService {
     }
 
     private void delayCalculation(List<Task> taskList) {
-        var currentDate = LocalDate.now();
-        if (!taskList.isEmpty() && !isWeekend(currentDate)) {
+        if (!taskList.isEmpty() && !isWeekend()) {
             for (Task task : taskList
             ) {
                 if (task.isActive()) {
-                    var delayedDays = currentDate.compareTo(ChronoLocalDate.from(task.getDueDate()));
-                    task.setDelay(delayedDays);
+                    var delay = task.getDelay();
+                    delay += 1;
+                    task.setDelay(delay);
                 }
             }
+            taskRepository.saveAll(taskList);
         }
-        taskRepository.saveAll(taskList);
     }
 
-    private boolean isWeekend(LocalDate currentDate) {
+    private boolean isWeekend() {
+        var currentDate = LocalDate.now();
         if (Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Thu")
                 || Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Fri")) {
             return true;
