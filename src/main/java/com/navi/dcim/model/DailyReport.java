@@ -26,7 +26,7 @@ public class DailyReport {
     @OneToMany(mappedBy = "dailyReport")
     private List<Task> taskList;
 
-    @ManyToMany()
+    @ManyToMany
     @JoinTable(name = "report_event", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
 

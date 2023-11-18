@@ -35,8 +35,7 @@ import static java.util.Map.entry;
 @Controller
 public class MvcUserController {
 
-    @Autowired
-    private TaskService taskService;
+    private final TaskService taskService;
     static Map<String, String> persianDay = Map.ofEntries(
             entry("Sat", "شنبه"),
             entry("Sun", "یکشنبه"),

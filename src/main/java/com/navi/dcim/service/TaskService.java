@@ -331,10 +331,9 @@ public class TaskService {
                 , eventType
                 , person
                 , centerRepository.findById(eventForm.getCenterId()).get());
-        eventType.setEvent(event);
-        event.setType(eventType);
         event.setDailyReportList(report);
-        report.setEventList(event);
+        event.setType(eventType);
+        eventType.setEvent(event);
         System.out.println("event added" + report.getEventList());
         eventTypeRepository.save(eventType);
     }
@@ -390,15 +389,12 @@ public class TaskService {
                 + System.lineSeparator();
         event.setDescription(description);
 
-        if (!report.getEventList().stream().anyMatch(event1 -> event1.getId() == eventId)) {
+        if (report.getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
+            System.out.println("Today report does not contain event id: " + eventId);
             event.setDailyReportList(report);
-            report.setEventList(event);
             System.out.println("Event updated:    " + report.getEventList());
         }
-
-
         eventRepository.save(event);
-
     }
 
     public List<Event> getPendingEventList() {
