@@ -249,7 +249,6 @@ public class MvcUserController {
         model.addAttribute("person", taskService.getPerson(person.getId()));
         model.addAttribute("date", getCurrentDate());
 
-
         return "userTaskList";
     }
 
@@ -299,8 +298,6 @@ public class MvcUserController {
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
         model.addAttribute("date", getCurrentDate());
-
-
 
         return "taskDetailUi2";
     }
@@ -374,7 +371,6 @@ public class MvcUserController {
 
         model.addAttribute("date", fullDate);
         model.addAttribute("date", getCurrentDate());
-
 
         return "userTaskList";
     }

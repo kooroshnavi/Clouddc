@@ -11,8 +11,13 @@ import java.util.List;
 
 @RestController
 public class RestUserController {
+
+    private final TaskService taskService;
+
     @Autowired
-    private TaskService taskService;
+    public RestUserController(TaskService taskService) {
+        this.taskService = taskService;
+    }
 
    /* @GetMapping("/")
     private PersianDate getTime() {

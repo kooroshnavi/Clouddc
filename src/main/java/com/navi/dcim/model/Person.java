@@ -32,7 +32,6 @@ public class Person {
     private Role role;
 
 
-
     public String getUsername() {
         return username;
     }

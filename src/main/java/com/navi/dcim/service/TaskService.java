@@ -7,7 +7,6 @@ import com.navi.dcim.form.EventForm;
 import com.navi.dcim.form.PmRegisterForm;
 import com.navi.dcim.model.*;
 import com.navi.dcim.repository.*;
-import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
@@ -22,29 +21,28 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
-@NoArgsConstructor
 @EnableScheduling
 public class TaskService {
 
-    private TaskStatusRepository taskStatusRepository;
-    private TaskRepository taskRepository;
-    private TaskDetailRepository taskDetailRepository;
-    private PersonRepository personRepository;
-    private CenterRepository centerRepository;
-    private EventTypeRepository eventTypeRepository;
-    private EventRepository eventRepository;
-    private ReportRepository reportRepository;
+    private final TaskStatusRepository taskStatusRepository;
+    private final TaskRepository taskRepository;
+    private final TaskDetailRepository taskDetailRepository;
+    private final PersonRepository personRepository;
+    private final CenterRepository centerRepository;
+    private final EventTypeRepository eventTypeRepository;
+    private final EventRepository eventRepository;
+    private final ReportRepository reportRepository;
 
 
     @Autowired
-    public TaskService(TaskStatusRepository taskStatusRepository,
-                       TaskRepository taskRepository,
-                       PersonRepository personRepository,
-                       CenterRepository centerRepository,
-                       TaskDetailRepository taskDetailRepository,
-                       EventTypeRepository eventTypeRepository,
-                       EventRepository eventRepository,
-                       ReportRepository reportRepository) {
+    TaskService(TaskStatusRepository taskStatusRepository,
+                TaskRepository taskRepository,
+                PersonRepository personRepository,
+                CenterRepository centerRepository,
+                TaskDetailRepository taskDetailRepository,
+                EventTypeRepository eventTypeRepository,
+                EventRepository eventRepository,
+                ReportRepository reportRepository) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
         this.personRepository = personRepository;
@@ -58,14 +56,11 @@ public class TaskService {
 
     @Scheduled(cron = "@midnight")
     public void updateTodayTasks() {
-        System.out.println("updateTodayTasks method started by scheduler at:" + LocalDateTime.now());
-        System.out.println();
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll();
         List<Task> taskList = taskRepository.findAll();
         List<Center> centers = centerRepository.findAll();
         List<Person> personList = personRepository.findAll();
         DailyReport yesterday = reportRepository.findByActive(true);
-
 
         delayCalculation(taskList);
 
@@ -80,7 +75,6 @@ public class TaskService {
             }
         }
 
-        yesterday.setDate(LocalDate.now().minusDays(1));
         yesterday.setActive(false);
         DailyReport today = new DailyReport();
         today.setDate(LocalDate.now());
@@ -89,8 +83,10 @@ public class TaskService {
         reports.add(yesterday);
         reports.add(today);
         reportRepository.saveAll(reports);
-
         taskStatusRepository.saveAll(taskStatusList);
+        System.out.println();
+        System.out.println("Scheduler successful @: " + LocalDateTime.now());
+        System.out.println();
     }
 
     private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
@@ -111,7 +107,6 @@ public class TaskService {
         todayTask.setDueDate(status.getNextDue());
         return todayTask;
     }
-
 
     private boolean isTodayTask(TaskStatus status) {
         return status.getNextDue().equals(LocalDate.now());
