@@ -1,17 +1,22 @@
-package com.navi.dcim.service;
+package com.navi.dcim.task;
 
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
+import com.navi.dcim.center.CenterService;
+import com.navi.dcim.event.EventService;
 import com.navi.dcim.form.AssignForm;
-import com.navi.dcim.form.EventForm;
 import com.navi.dcim.form.PmRegisterForm;
 import com.navi.dcim.model.*;
+import com.navi.dcim.person.PersonService;
+import com.navi.dcim.report.ReportService;
 import com.navi.dcim.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -20,47 +25,48 @@ import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static com.navi.dcim.utils.UtilService.getCurrentDate;
+
 @Service
 @EnableScheduling
-public class TaskService {
+public final class TaskServiceImpl implements TaskService {
 
     private final TaskStatusRepository taskStatusRepository;
     private final TaskRepository taskRepository;
     private final TaskDetailRepository taskDetailRepository;
-    private final PersonRepository personRepository;
-    private final CenterRepository centerRepository;
-    private final EventTypeRepository eventTypeRepository;
-    private final EventRepository eventRepository;
-    private final ReportRepository reportRepository;
+    private final CenterService centerService;
+    private final PersonService personService;
+    private final ReportService reportService;
+    private final EventService eventService;
 
 
     @Autowired
-    TaskService(TaskStatusRepository taskStatusRepository,
-                TaskRepository taskRepository,
-                PersonRepository personRepository,
-                CenterRepository centerRepository,
-                TaskDetailRepository taskDetailRepository,
-                EventTypeRepository eventTypeRepository,
-                EventRepository eventRepository,
-                ReportRepository reportRepository) {
+    TaskServiceImpl(TaskStatusRepository taskStatusRepository,
+                    TaskRepository taskRepository,
+                    TaskDetailRepository taskDetailRepository, CenterService centerService, PersonService personService, ReportService reportService, EventService eventService) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
-        this.personRepository = personRepository;
-        this.centerRepository = centerRepository;
         this.taskDetailRepository = taskDetailRepository;
-        this.eventTypeRepository = eventTypeRepository;
-        this.eventRepository = eventRepository;
-        this.reportRepository = reportRepository;
+        this.centerService = centerService;
+        this.personService = personService;
+        this.reportService = reportService;
+        this.eventService = eventService;
     }
 
 
     @Scheduled(cron = "@midnight")
     public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll();
-        List<Task> taskList = taskRepository.findAll();
-        List<Center> centers = centerRepository.findAll();
-        List<Person> personList = personRepository.findAll();
-        DailyReport yesterday = reportRepository.findByActive(true);
+        List<Center> centers = centerService.getCenterList();
+        List<Person> personList = personService.getPersonList();
+        DailyReport yesterday = reportService.findActive(true);
+        List<Task> taskList = new ArrayList<>();
+        for (TaskStatus taskStatus : taskStatusList
+        ) {
+            if (taskStatus.isActive()) {
+                taskList.add(taskStatus.getTasks().stream().filter(Task::isActive).limit(1).findFirst().get());
+            }
+        }
 
         delayCalculation(taskList);
 
@@ -82,7 +88,7 @@ public class TaskService {
         List<DailyReport> reports = new ArrayList<>();
         reports.add(yesterday);
         reports.add(today);
-        reportRepository.saveAll(reports);
+        reportService.saveAll(reports);
         taskStatusRepository.saveAll(taskStatusList);
         System.out.println();
         System.out.println("Scheduler successful @: " + LocalDateTime.now());
@@ -166,7 +172,7 @@ public class TaskService {
 
     public TaskStatus updateTask(Task task) {
         TaskStatus taskStatus = task.getTaskStatus();
-        DailyReport report = reportRepository.findByActive(true);
+        DailyReport report = reportService.findActive(true);
 
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         task.setSuccessDate(LocalDateTime.now());
@@ -185,6 +191,8 @@ public class TaskService {
         return taskStatusRepository.save(taskStatus);
     }
 
+
+    @Override
     public List<Task> getTaskListById(int taskStatusId) {
         TaskStatus taskStatus = taskStatusRepository.findById(taskStatusId).get();
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -285,14 +293,15 @@ public class TaskService {
         return personRepository.findById(i).get();
     }
 
-    public void pmRegister(PmRegisterForm pmRegisterForm) {
+    @Override
+    public void taskRegister(PmRegisterForm pmRegisterForm) {
         var newTaskStatus = new TaskStatus();
         newTaskStatus.setActive(true);
         newTaskStatus.setNextDue(LocalDate.now());
         newTaskStatus.setName(pmRegisterForm.getName());
         newTaskStatus.setPeriod(pmRegisterForm.getPeriod());
 
-        Center center = centerRepository.findById(pmRegisterForm.getCenterId()).get();
+        Center center = centerService.getCenter(pmRegisterForm.getCenterId());
 
         Task todayTask = new Task();
         todayTask.setTaskStatus(newTaskStatus);
@@ -304,10 +313,10 @@ public class TaskService {
         TaskDetail taskDetail = new TaskDetail();
         taskDetail.setTask(todayTask);
         if (pmRegisterForm.getPersonId() == 1) { // Random
-            List<Person> personList = personRepository.findAll();
+            List<Person> personList = personService.getPersonList();
             taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
         } else { // assign to specified user
-            Person person = personRepository.findById(pmRegisterForm.getPersonId()).get();
+            Person person = personService.getPerson(pmRegisterForm.getPersonId());
             taskDetail.setPerson(person);
         }
 
@@ -320,29 +329,6 @@ public class TaskService {
 
     }
 
-    public void eventRegister(EventForm eventForm, Person person) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        DailyReport report = reportRepository.findByActive(true);
-        var eventType = eventTypeRepository.findById(eventForm.getEventType()).get();
-        var registerDate = LocalDateTime.now();
-        Event event = new Event(registerDate
-                , registerDate
-                , eventForm.isActive()
-                , " ( "
-                + dateTime.format(PersianDateTime.fromGregorian(registerDate))
-                + "-->" + eventForm.getDescription()
-                + " ) "
-                + System.lineSeparator()
-                , eventType
-                , person
-                , centerRepository.findById(eventForm.getCenterId()).get());
-        event.setDailyReportList(report);
-        event.setType(eventType);
-        eventType.setEvent(event);
-        System.out.println("event added" + report.getEventList());
-        eventTypeRepository.save(eventType);
-    }
-
 
     public List<Person> getPersonList() {
         return personRepository.findAll();
@@ -352,55 +338,6 @@ public class TaskService {
         return centerRepository.findAll();
     }
 
-    public List<EventType> getEventType() {
-        return eventTypeRepository.findAll();
-    }
-
-    public List<Event> getEventList() {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
-        List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
-        for (Event event : eventList
-        ) {
-            event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-            event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
-        }
-
-        return eventList;
-    }
-
-    public Event getEvent(int eventId) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Event event = eventRepository.findById(eventId).get();
-        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-        event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
-        return event;
-    }
-
-    public void updateEvent(int eventId, EventForm eventForm) {
-        DailyReport report = reportRepository.findByActive(true);
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Event event = eventRepository.findById(eventId).get();
-        event.setActive(eventForm.isActive());
-        event.setUpdateDate(LocalDateTime.now());
-        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-        event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
-        var description = event.getDescription()
-                + " ( "
-                + event.getPersianUpdate()
-                + "-->"
-                + eventForm.getDescription()
-                + " ) "
-                + System.lineSeparator();
-        event.setDescription(description);
-
-        if (report.getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
-            System.out.println("Today report does not contain event id: " + eventId);
-            event.setDailyReportList(report);
-            System.out.println("Event updated:    " + report.getEventList());
-        }
-        eventRepository.save(event);
-    }
 
     public List<Event> getPendingEventList() {
         return eventRepository.findAllByActive(true);
@@ -421,6 +358,64 @@ public class TaskService {
         } else {
             return false;
         }
+    }
+
+    @Override
+    public List<Task> getPersonTask() {
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = personService.getPerson(personName);
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(person.getId(), true);
+        List<Task> userTasks = new ArrayList<>();
+        for (TaskDetail taskDetail : taskDetailList
+        ) {
+            taskDetail.getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(taskDetail.getTask().getDueDate())));
+            userTasks.add(taskDetail.getTask());
+        }
+        return userTasks
+                .stream()
+                .sorted(Comparator.comparing(Task::getDelay).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Model modelForMainPage(Model model) {
+        model.addAttribute("statusList", getTaskStatus());
+        return model;
+    }
+
+    @Override
+    public Model modelForRegisterTask(Model model) {
+        model.addAttribute("personList", personService.getPersonList());
+        model.addAttribute("centerList", centerService.getCenterList());
+        model.addAttribute("pmRegister", new PmRegisterForm());
+
+        return model;
+    }
+
+    @Override
+    public Model modelForTaskController(Model model) {
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = personService.getPerson(personName);
+        model.addAttribute("person", person);
+        model.addAttribute("pending", getPersonTask().size());
+        model.addAttribute("pendingEvents", getPendingEventList().size());
+        model.addAttribute("date", getCurrentDate());
+        return model;
+    }
+
+    @Override
+    public Model modelForTaskDetail(Model model) {
+        return null;
+    }
+
+    @Override
+    public Model modelForPersonTaskList(Model model) {
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = personService.getPerson(personName);
     }
 
 

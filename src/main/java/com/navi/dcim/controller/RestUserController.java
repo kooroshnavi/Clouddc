@@ -1,22 +1,18 @@
 package com.navi.dcim.controller;
 
-import com.navi.dcim.model.Task;
-import com.navi.dcim.model.TaskStatus;
-import com.navi.dcim.service.TaskService;
+import com.navi.dcim.task.TaskServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-
 @RestController
 public class RestUserController {
 
-    private final TaskService taskService;
+    private final TaskServiceImpl taskServiceImpl;
 
     @Autowired
-    public RestUserController(TaskService taskService) {
-        this.taskService = taskService;
+    public RestUserController(TaskServiceImpl taskServiceImpl) {
+        this.taskServiceImpl = taskServiceImpl;
     }
 
    /* @GetMapping("/")
@@ -25,7 +21,7 @@ public class RestUserController {
         return today;
     }*/
 
-    @GetMapping("/api/gettodaytasks")
+  /*  @GetMapping("/api/gettodaytasks")
     private List<Task> getTasks() {
         return taskService.getTaskList();
     }
@@ -33,7 +29,7 @@ public class RestUserController {
     @GetMapping("/api/gettaskstatus")
     private List<TaskStatus> getTaskStatus() {
         return taskService.getTaskStatus();
-    }
+    }*/
 
     /*@GetMapping("/api/usertasks/{id}")
     private List<Task> getUserTask(@PathVariable int id) {
@@ -42,7 +38,7 @@ public class RestUserController {
 
     @GetMapping("/api/settodaytask")
     private void setTodayTasks() {
-        taskService.updateTodayTasks();
+        taskServiceImpl.updateTodayTasks();
     }
 
 

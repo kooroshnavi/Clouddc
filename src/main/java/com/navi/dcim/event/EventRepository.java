@@ -1,4 +1,4 @@
-package com.navi.dcim.repository;
+package com.navi.dcim.event;
 
 import com.navi.dcim.model.Event;
 import org.springframework.data.jpa.repository.JpaRepository;

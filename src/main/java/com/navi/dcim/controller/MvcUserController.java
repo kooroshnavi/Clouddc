@@ -2,14 +2,14 @@ package com.navi.dcim.controller;
 
 import com.github.mfathi91.time.PersianDate;
 import com.navi.dcim.form.AssignForm;
-import com.navi.dcim.form.EventForm;
 import com.navi.dcim.form.PmRegisterForm;
-import com.navi.dcim.model.Event;
 import com.navi.dcim.model.Person;
 import com.navi.dcim.model.Task;
 import com.navi.dcim.model.TaskDetail;
-import com.navi.dcim.service.TaskService;
+import com.navi.dcim.task.TaskService;
+import com.navi.dcim.task.TaskServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.Banner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
@@ -28,26 +28,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
-
-import static java.util.Map.entry;
 
 @Controller
 public class MvcUserController {
 
     private final TaskService taskService;
-    static Map<String, String> persianDay = Map.ofEntries(
-            entry("Sat", "شنبه"),
-            entry("Sun", "یکشنبه"),
-            entry("Mon", "دوشنبه"),
-            entry("Tue", "سه شنبه"),
-            entry("Wed", "چهارشنبه"),
-            entry("Thu", "پنج شنبه"),
-            entry("Fri", "جمعه")
-    );
 
     @Autowired
-    public MvcUserController(TaskService taskService) {
+    public MvcUserController(TaskServiceImpl taskService) {
         this.taskService = taskService;
     }
 
@@ -78,36 +66,16 @@ public class MvcUserController {
         return new InMemoryUserDetailsManager(navi, vijeh, nikoo);
     }
 
-
     @GetMapping("/app/main")
     public String index(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("statusList", taskService.getTaskStatus());
-        model.addAttribute("date", getCurrentDate());
-
+        taskService.modelForMainPage(model);
         return "home";
     }
 
 
     @GetMapping("/app/main/pm/register/form")
     public String pmForm(Model model) {
-        var pmRegister = new PmRegisterForm();
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("personList", taskService.getPersonList());
-        model.addAttribute("centerList", taskService.getCenterList());
-        model.addAttribute("pmRegister", pmRegister);
-        model.addAttribute("date", getCurrentDate());
-
+        taskService.modelForRegisterTask(model);
         return "pmRegisterForm";
     }
 
@@ -115,140 +83,19 @@ public class MvcUserController {
     public String pmPost(
             Model model,
             @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm) {
-        taskService.pmRegister(pmRegisterForm);
-
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("statusList", taskService.getTaskStatus());
-        model.addAttribute("date", getCurrentDate());
-
+        taskService.taskRegister(pmRegisterForm);
+        taskService.modelForMainPage(model);
         return "home";
-    }
-
-    @GetMapping("/app/main/event/register/form")
-    public String eventForm(Model model) {
-        var eventRegister = new EventForm();
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("centerList", taskService.getCenterList());
-        model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("eventRegister", eventRegister);
-        model.addAttribute("date", getCurrentDate());
-
-        return "eventRegisterForm";
-    }
-
-    @PostMapping("/app/main/event/register/form/submit")
-    public String eventPost(
-            Model model,
-            @ModelAttribute("eventRegister") EventForm eventForm) {
-
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        taskService.eventRegister(eventForm, person);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("statusList", taskService.getTaskStatus());
-        model.addAttribute("eventList", taskService.getEventList());
-        model.addAttribute("date", getCurrentDate());
-
-        return "eventList";
-    }
-
-
-    @GetMapping("/app/main/event/view")
-    public String viewEvent(Model model) {
-
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-
-        model.addAttribute("centerList", taskService.getCenterList());
-        model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("eventList", taskService.getEventList());
-        model.addAttribute("date", getCurrentDate());
-
-
-        return "eventList";
-    }
-
-    @GetMapping("/app/main/event/{id}")
-    public String viewEvent(Model model, @PathVariable int id) {
-
-        Event event = taskService.getEvent(id);
-        EventForm eventForm = new EventForm();
-
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-
-        model.addAttribute("event", event);
-        model.addAttribute("id", id);
-        model.addAttribute("eventForm", eventForm);
-        model.addAttribute("centerList", taskService.getCenterList());
-        model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("eventList", taskService.getEventList());
-        model.addAttribute("date", getCurrentDate());
-
-
-        return "eventUpdate";
-    }
-
-    @PostMapping("/app/main/event/form/update/{id}")
-    public String updateEvent(Model model
-            , @PathVariable int id
-            , @ModelAttribute("eventForm") EventForm eventForm) {
-        taskService.updateEvent(id, eventForm);
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("eventForm", eventForm);
-        model.addAttribute("centerList", taskService.getCenterList());
-        model.addAttribute("eventTypeList", taskService.getEventType());
-        model.addAttribute("eventList", taskService.getEventList());
-        model.addAttribute("date", getCurrentDate());
-
-
-        return "eventList";
     }
 
 
     @GetMapping("/app/main/mytask")
     private String getUserTask(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        List<Task> userTaskList = taskService.getUserTask(person.getId());
+        List<Task> userTaskList = taskService.getPersonTask();
         if (!userTaskList.isEmpty()) {
-            var name = userTaskList.get(0).getTaskStatus().getName();
-            model.addAttribute("name", name);
+            taskService.modelForPersonTaskList(model);
             model.addAttribute("userTaskList", userTaskList);
         }
-
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-        model.addAttribute("date", getCurrentDate());
-
         return "userTaskList";
     }
 
@@ -260,17 +107,6 @@ public class MvcUserController {
             model.addAttribute("name", name);
             model.addAttribute("taskList", tasks);
         }
-
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
-
-        model.addAttribute("date", getCurrentDate());
-
-
         return "taskListUi2";
     }
 
@@ -285,19 +121,13 @@ public class MvcUserController {
 
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
-        Person person = taskService.getPersonByName(personName);
         var permission = taskService.checkPermission(personName, taskDetailList.stream().findAny().filter(TaskDetail::isActive));
-        System.out.println(permission);
         model.addAttribute("permission", permission);
-        model.addAttribute("pending", taskService.getUserTask(person.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person.getId()));
         model.addAttribute("taskDetailList", taskDetailList);
         model.addAttribute("name", taskStatusName);
         model.addAttribute("taskId", taskId);
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
-        model.addAttribute("date", getCurrentDate());
 
         return "taskDetailUi2";
     }
@@ -324,9 +154,6 @@ public class MvcUserController {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
         Person person2 = taskService.getPersonByName(personName);
-        model.addAttribute("pending", taskService.getUserTask(person2.getId()).size());
-        model.addAttribute("pendingEvents", taskService.getPendingEventList().size());
-        model.addAttribute("person", taskService.getPerson(person2.getId()));
         AssignForm assignForm = new AssignForm();
         model.addAttribute("id", id);
         model.addAttribute("taskName", taskName);
@@ -376,13 +203,18 @@ public class MvcUserController {
     }
 
 
+    @ModelAttribute
+    public void addAttributes(Model model) {
+        taskService.modelForTaskController(model);
+    }
+
+
     private static String getCurrentDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
-        dayName = persianDay.get(dayName);
 
         return (dayName + "  -  " + day + "     " + month.toString() + "  -  " + year);
     }

@@ -14,6 +14,10 @@ public class EventType {
         this.eventList = new ArrayList<>();
     }
 
+    public EventType(int id) {
+        this.id = id;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -22,7 +26,7 @@ public class EventType {
     @Column
     private String name;
 
-    @OneToMany(mappedBy = "eventType", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "eventType")
     private List<Event> eventList;
 
     @JsonIgnore
