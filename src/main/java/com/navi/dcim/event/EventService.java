@@ -1,14 +1,10 @@
 package com.navi.dcim.event;
 
-import com.navi.dcim.model.Event;
-import com.navi.dcim.model.EventType;
-import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Service
 public interface EventService {
 
 

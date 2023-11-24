@@ -1,6 +1,7 @@
-package com.navi.dcim.model;
+package com.navi.dcim.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.navi.dcim.event.Event;
 import jakarta.persistence.*;
 
 import java.util.ArrayList;

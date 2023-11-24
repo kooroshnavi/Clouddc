@@ -1,4 +1,4 @@
-package com.navi.dcim.form;
+package com.navi.dcim.task;
 
 import lombok.NoArgsConstructor;
 

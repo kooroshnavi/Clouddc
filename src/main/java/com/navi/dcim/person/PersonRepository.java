@@ -1,6 +1,6 @@
-package com.navi.dcim.repository;
+package com.navi.dcim.person;
 
-import com.navi.dcim.model.Person;
+import com.navi.dcim.person.Person;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

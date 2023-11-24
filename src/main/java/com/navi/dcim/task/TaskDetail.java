@@ -1,6 +1,8 @@
-package com.navi.dcim.model;
+package com.navi.dcim.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.navi.dcim.person.Person;
+import com.navi.dcim.task.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

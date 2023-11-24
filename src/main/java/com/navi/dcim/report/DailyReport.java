@@ -1,5 +1,7 @@
-package com.navi.dcim.model;
+package com.navi.dcim.report;
 
+import com.navi.dcim.event.Event;
+import com.navi.dcim.task.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

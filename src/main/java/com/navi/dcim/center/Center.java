@@ -1,4 +1,4 @@
-package com.navi.dcim.model;
+package com.navi.dcim.center;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;

@@ -1,7 +1,10 @@
-package com.navi.dcim.model;
+package com.navi.dcim.event;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.navi.dcim.center.Center;
+import com.navi.dcim.person.Person;
+import com.navi.dcim.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

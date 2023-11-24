@@ -1,6 +1,6 @@
-package com.navi.dcim.repository;
+package com.navi.dcim.report;
 
-import com.navi.dcim.model.DailyReport;
+import com.navi.dcim.report.DailyReport;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
