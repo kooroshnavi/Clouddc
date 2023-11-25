@@ -1,17 +1,9 @@
 package com.navi.dcim.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Bean;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,26 +17,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @Bean
-    public UserDetailsService users() {
-        // The builder will ensure the passwords are encoded before saving in memory
-        User.UserBuilder users = User.withDefaultPasswordEncoder();
-        UserDetails navi = users
-                .username("navi")
-                .password("123456")
-                .build();
-        UserDetails vijeh = users
-                .username("vijeh")
-                .password("123456")
-                .build();
-        UserDetails nikoo = users
-                .username("nikooei")
-                .password("123456")
-                .build();
-        return new InMemoryUserDetailsManager(navi, vijeh, nikoo);
-    }
-
-    @GetMapping("/app/main")
+    @RequestMapping(value = {"/app/main", "", "/"}, method = {RequestMethod.GET})
     public String index(Model model) {
         taskService.modelForMainPage(model);
         return "home";
@@ -115,11 +88,11 @@ public class TaskController {
 
         return "userTaskList";
     }
-
+/*
     @ModelAttribute
     public void addAttributes(Model model) {
         taskService.modelForTaskController(model);
-    }
+    }*/
 
 
 }

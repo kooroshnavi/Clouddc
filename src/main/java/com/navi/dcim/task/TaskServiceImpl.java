@@ -322,6 +322,7 @@ final class TaskServiceImpl implements TaskService {
         List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(person.getId(), true);
         List<Task> userTasks = new ArrayList<>();
         for (TaskDetail taskDetail : taskDetailList
+
         ) {
             taskDetail.getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(taskDetail.getTask().getDueDate())));
             userTasks.add(taskDetail.getTask());

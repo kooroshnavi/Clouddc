@@ -5,11 +5,11 @@
 </head>
 <body>
 <h1>Please Log In</h1>
-<div th:if="${param.error}">
+<div th:if="${error}">
     Invalid username and password.</div>
-<div th:if="${param.logout}">
+<div th:if="${logout}">
     You have been logged out.</div>
-<form th:action="@{/login}" method="post">
+<form th:action="@{/app/login}" method="post">
     <div>
         <input type="text" name="username" placeholder="Username"/>
     </div>

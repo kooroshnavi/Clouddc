@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class RestUserController {
 /*
-    private final TaskServiceImpl taskServiceImpl;
+    private final TaskService taskService;
 
     @Autowired
-    public RestUserController(TaskServiceImpl taskServiceImpl) {
-        this.taskServiceImpl = taskServiceImpl;
+    public RestUserController(TaskService taskService) {
+        this.taskService = taskService;
     }
 
    /* @GetMapping("/")
@@ -32,11 +32,11 @@ public class RestUserController {
     private List<Task> getUserTask(@PathVariable int id) {
         return taskService.getUserTask(id);
     }*/
-
- /*   @GetMapping("/api/settodaytask")
+/*
+  @GetMapping("/api/settodaytask")
     private void setTodayTasks() {
-        taskServiceImpl.updateTodayTasks();
-    }
-*/
+      taskService.updateTodayTasks();
+    }*/
+
 
 }
