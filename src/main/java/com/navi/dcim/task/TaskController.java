@@ -88,11 +88,11 @@ public class TaskController {
 
         return "userTaskList";
     }
-/*
+
     @ModelAttribute
     public void addAttributes(Model model) {
         taskService.modelForTaskController(model);
-    }*/
+    }
 
 
 }
