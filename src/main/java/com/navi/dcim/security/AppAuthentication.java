@@ -38,7 +38,9 @@ public class AppAuthentication implements AuthenticationProvider {
         Person person = personService.getPerson(requestUsername);
 
         if (person != null && person.getId() > 0 && passwordEncoder.matches(requestPassword, person.getPassword())) {
-            return new UsernamePasswordAuthenticationToken(person.getName(), null, getGrantedAuthority(person.getRole()));
+
+            return new UsernamePasswordAuthenticationToken(person.getUsername(), null, getGrantedAuthority(person.getRole()));
+
         } else {
             throw new BadCredentialsException("invalid username and/or password");
         }
@@ -54,7 +56,6 @@ public class AppAuthentication implements AuthenticationProvider {
     public boolean supports(Class<?> authentication) {
         return authentication.equals(UsernamePasswordAuthenticationToken.class);
     }
-
 
 
 }
