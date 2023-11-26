@@ -1,4 +1,4 @@
-package com.navi.dcim.config;
+package com.navi.dcim.security;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
