@@ -1,6 +1,9 @@
 package com.navi.dcim.person;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,9 +14,12 @@ final class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
 
+    private final UserDetailsManager userDetailsManager;
+
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository) {
+    public PersonServiceImpl(PersonRepository personRepository, UserDetailsManager userDetailsManager) {
         this.personRepository = personRepository;
+        this.userDetailsManager = userDetailsManager;
     }
 
 
@@ -46,6 +52,7 @@ final class PersonServiceImpl implements PersonService {
 
     @Override
     public Person updatePerson(Person person) {
+
         return null;
     }
 }

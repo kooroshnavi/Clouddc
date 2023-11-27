@@ -317,6 +317,7 @@ final class TaskServiceImpl implements TaskService {
     public List<Task> getPersonTask() {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
+        System.out.println(authenticated.getAuthorities().toString());
         System.out.println(personName);
         Person person = personService.getPerson(personName);
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
