@@ -139,7 +139,7 @@
                                         <td th:text="${detail.getPerson.getName}"/>
 
                                         <td>
-                                            <a th:if="${iter.first} and ${detail.active} and ${permission}"  th:href="@{/app/main/task/detail/{id}/form(id=${detail.id})}" th:text="${detail.getPersianDate}" />
+                                            <a th:if="${iter.first} and ${detail.active} and ${permission}"  th:href="@{/app/main/task/detail/{username}/{id}/form(id=${detail.id}, username=${detail.person.username})}" th:text="${detail.getPersianDate}" />
                                             <a th:if="${iter.first} and ${detail.active} and ${not permission}" th:text="${detail.getPersianDate}" />
                                             <a th:if="${iter.first} and ${not detail.active}" th:text="${detail.getPersianDate}"/>
                                             <a th:if="${not iter.first}" th:text="${detail.getPersianDate}"/>

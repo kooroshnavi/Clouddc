@@ -1,8 +1,6 @@
 package com.navi.dcim.person;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.User;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
 
@@ -12,9 +10,9 @@ import java.util.List;
 @Service
 final class PersonServiceImpl implements PersonService {
 
-    private final PersonRepository personRepository;
+    private  PersonRepository personRepository;
 
-    private final UserDetailsManager userDetailsManager;
+    private  UserDetailsManager userDetailsManager;
 
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository, UserDetailsManager userDetailsManager) {

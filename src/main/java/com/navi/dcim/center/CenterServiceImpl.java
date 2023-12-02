@@ -8,7 +8,7 @@ import java.util.List;
 @Service
 final class CenterServiceImpl implements CenterService {
 
-    private final CenterRepository centerRepository;
+    private CenterRepository centerRepository;
 
     @Autowired
     CenterServiceImpl(CenterRepository centerRepository) {

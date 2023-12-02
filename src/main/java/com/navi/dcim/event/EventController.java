@@ -53,6 +53,7 @@ public class EventController {
         return "eventList";
     }
 
+
     @ModelAttribute
     public void addAttributes(Model model) {
         eventService.modelForEventController(model);

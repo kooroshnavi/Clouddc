@@ -29,7 +29,7 @@ import static com.navi.dcim.utils.UtilService.getCurrentDate;
 
 @Service
 @EnableScheduling
-final class TaskServiceImpl implements TaskService {
+public class TaskServiceImpl implements TaskService {
 
     private final TaskStatusRepository taskStatusRepository;
     private final TaskRepository taskRepository;
@@ -234,7 +234,7 @@ final class TaskServiceImpl implements TaskService {
     public void updateTaskDetail(int taskDetailId, AssignForm assignForm) {
         TaskDetail taskDetail = taskDetailRepository.findById(taskDetailId).get();
         switch (assignForm.getActionType()) {
-            case 1:     // Ends task. No assign
+            case 100:     // Ends task. No assign
                 taskDetail.setDescription(assignForm.getDescription());
                 taskDetail.setActive(false);
                 updateTask(taskDetail.getTask());
@@ -385,7 +385,7 @@ final class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Model modelForActionForm(Model model, int taskDetailId) {
+    public Model modelForActionForm(Model model, int taskDetailId, String username) {
         List<Person> personList = getOtherPersonList();
         Task thisTask = getTask(taskDetailId);
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");

@@ -2,9 +2,9 @@ package com.navi.dcim.event;
 
 import com.github.mfathi91.time.PersianDateTime;
 import com.navi.dcim.center.CenterService;
-import com.navi.dcim.report.DailyReport;
 import com.navi.dcim.person.Person;
 import com.navi.dcim.person.PersonService;
+import com.navi.dcim.report.DailyReport;
 import com.navi.dcim.report.ReportService;
 import com.navi.dcim.task.TaskService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +21,7 @@ import java.util.Optional;
 import static com.navi.dcim.utils.UtilService.getCurrentDate;
 
 @Service
-final class EventServiceImpl implements EventService {
+public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final ReportService reportService;

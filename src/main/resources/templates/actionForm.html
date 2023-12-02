@@ -110,7 +110,7 @@
                                         <h2 class="title" dir="rtl">فرم وظیفه</h2>
                                     </div>
                                     <div class="card-body">
-                                        <form  action="#" th:action="@{/app/main/task/detail/form/submit/} + ${{id}}" th:object="${assignForm}" method="POST">
+                                        <form  action="#" th:action="@{/app/main/task/detail/{username}/{id}/form} + ${{id}}" th:object="${assignForm}" method="POST">
                                             <div class="form-row" dir="rtl">
                                                 <div class="name">عنوان وظیفه</div>
                                                 <div class="name" th:text="${taskName}">
@@ -170,7 +170,7 @@
                                                         <div class="rs-select2 js-select-simple select--no-search">
                                                             <select name="subject" th:field="*{actionType}" >
                                                                 <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                                                <option th:value="1">اتمام وظیفه</option>
+                                                                <option th:value="100">اتمام وظیفه</option>
                                                                 <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
                                                             </select>
                                                             <div class="select-dropdown"></div>

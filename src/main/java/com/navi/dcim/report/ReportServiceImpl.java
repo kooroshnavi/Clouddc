@@ -11,7 +11,7 @@ import java.util.Optional;
 @Service
 final class ReportServiceImpl implements ReportService {
 
-    private final ReportRepository reportRepository;
+    private ReportRepository reportRepository;
 
     @Autowired
     ReportServiceImpl(ReportRepository reportRepository) {
