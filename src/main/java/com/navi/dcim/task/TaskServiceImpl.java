@@ -59,11 +59,11 @@ final class TaskServiceImpl implements TaskService {
 
 
     @Scheduled(cron = "@midnight")
-    private void updateTodayTasks() {
+    public void updateTodayTasks() {
         List<TaskStatus> taskStatusList = taskStatusRepository.findAll();
         List<Center> centers = centerService.getCenterList();
         List<Person> personList = personService.getPersonList();
-        DailyReport yesterday = reportService.findActive(true);
+        reportService.setTodayReport();
         List<Task> taskList = new ArrayList<>();
         for (TaskStatus taskStatus : taskStatusList
         ) {
@@ -85,14 +85,6 @@ final class TaskServiceImpl implements TaskService {
             }
         }
 
-        yesterday.setActive(false);
-        DailyReport today = new DailyReport();
-        today.setDate(LocalDate.now());
-        today.setActive(true);
-        List<DailyReport> reports = new ArrayList<>();
-        reports.add(yesterday);
-        reports.add(today);
-        reportService.saveAll(reports);
         taskStatusRepository.saveAll(taskStatusList);
         System.out.println();
         System.out.println("Scheduler successful @: " + LocalDateTime.now());
@@ -162,14 +154,14 @@ final class TaskServiceImpl implements TaskService {
 
     private TaskStatus updateTask(Task task) {
         TaskStatus taskStatus = task.getTaskStatus();
-        DailyReport report = reportService.findActive(true);
+        Optional<DailyReport> report = reportService.findActive(true);
 
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         task.setSuccessDate(LocalDateTime.now());
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setActive(false);
-        task.setDailyReport(report);
-        System.out.println("Task Added" + report.getTaskList());
+        task.setDailyReport(report.get());
+        System.out.println("Task Added" + report.get().getTaskList());
 
 
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");

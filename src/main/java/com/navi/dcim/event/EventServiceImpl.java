@@ -16,6 +16,7 @@ import org.springframework.ui.Model;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import static com.navi.dcim.utils.UtilService.getCurrentDate;
 
@@ -45,7 +46,7 @@ final class EventServiceImpl implements EventService {
     @Override
     public void eventRegister(EventForm eventForm) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        DailyReport report = reportService.findActive(true);
+        Optional<DailyReport> report = reportService.findActive(true);
         var eventType = new EventType(eventForm.getEventType());
         var registerDate = LocalDateTime.now();
         Event event = new Event(registerDate
@@ -59,10 +60,10 @@ final class EventServiceImpl implements EventService {
                 , new EventType(eventForm.getEventType())
                 , personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName())
                 , centerService.getCenter(eventForm.getCenterId()));
-        event.setDailyReportList(report);
+        event.setDailyReportList(report.get());
         event.setType(eventType);
         eventType.setEvent(event);
-        System.out.println("event added" + report.getEventList());
+        System.out.println("event added" + report.get().getEventList());
         eventRepository.save(event);
 
     }
@@ -136,7 +137,7 @@ final class EventServiceImpl implements EventService {
 
     @Override
     public void updateEvent(int eventId, EventForm eventForm) {
-        DailyReport report = reportService.findActive(true);
+        Optional<DailyReport> report = reportService.findActive(true);
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         Event event = eventRepository.findById(eventId).get();
         event.setActive(eventForm.isActive());
@@ -152,10 +153,10 @@ final class EventServiceImpl implements EventService {
                 + System.lineSeparator();
         event.setDescription(description);
 
-        if (report.getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
+        if (report.get().getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
             System.out.println("Today report does not contain event id: " + eventId);
-            event.setDailyReportList(report);
-            System.out.println("Event updated:    " + report.getEventList());
+            event.setDailyReportList(report.get());
+            System.out.println("Event updated:    " + report.get().getEventList());
         }
         eventRepository.save(event);
 

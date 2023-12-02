@@ -1,10 +1,14 @@
 package com.navi.dcim.rest;
 
+import com.navi.dcim.task.TaskService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class RestUserController {
-/*
+
+
     private final TaskService taskService;
 
     @Autowired
@@ -32,11 +36,11 @@ public class RestUserController {
     private List<Task> getUserTask(@PathVariable int id) {
         return taskService.getUserTask(id);
     }*/
-/*
+
   @GetMapping("/api/settodaytask")
     private void setTodayTasks() {
       taskService.updateTodayTasks();
-    }*/
+    }
 
 
 }

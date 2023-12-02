@@ -18,6 +18,8 @@ public interface TaskService {
 
     Model modelForActionForm(Model model, int taskDetailId);
 
+    void updateTodayTasks();
+
     void taskRegister(PmRegisterForm pmRegisterForm);
 
     void updateTaskDetail(int id, AssignForm assignForm);
