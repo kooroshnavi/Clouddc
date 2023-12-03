@@ -1,7 +1,6 @@
 package com.navi.dcim.task;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -70,11 +69,10 @@ public class TaskController {
 
 
     @GetMapping("/app/main/task/detail/{username}/{id}/form")
-    @PreAuthorize("#username == authentication.name")
     public String showAssignForm(@PathVariable("id") int id,
                                  @PathVariable("username") String username, Model model) {
 
-        taskService.modelForActionForm(model, id, username);
+        taskService.modelForActionForm(model, id);
 
         return "actionForm";
     }

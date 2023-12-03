@@ -16,7 +16,7 @@ public interface TaskService {
     Model modelForTaskDetail(Model model, int taskId);
     Model modelForPersonTaskList(Model model);
 
-    Model modelForActionForm(Model model, int taskDetailId, String username);
+    TaskDetail modelForActionForm(Model model, int taskDetailId);
 
     void updateTodayTasks();
 

@@ -14,6 +14,7 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -385,7 +386,9 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Model modelForActionForm(Model model, int taskDetailId, String username) {
+    @PostAuthorize("returnObject.person.username == authentication.name")
+    public TaskDetail modelForActionForm(Model model, int taskDetailId) {
+        taskDetailRepository.findById(taskDetailId);
         List<Person> personList = getOtherPersonList();
         Task thisTask = getTask(taskDetailId);
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -403,6 +406,7 @@ public class TaskServiceImpl implements TaskService {
         }
         AssignForm assignForm = new AssignForm();
         model.addAttribute("id", taskDetailId);
+        model.addAttribute("taskDetail", taskDetailRepository.findById(taskDetailId));
         model.addAttribute("taskName", taskName);
         model.addAttribute("dueDate", dueDate);
         model.addAttribute("center", center);
@@ -410,7 +414,7 @@ public class TaskServiceImpl implements TaskService {
         model.addAttribute("personList", personList);
         model.addAttribute("delay", delay);
         model.addAttribute("assignForm", assignForm);
-        return model;
+        return taskDetailRepository.findById(taskDetailId).get();
     }
 
 
