@@ -4,12 +4,22 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class AssignForm {
+
+    private int id;
     private String description;
     private int actionType;
 
     public AssignForm(String description, int actionType) {
         this.description = description;
         this.actionType = actionType;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public void setDescription(String description) {
@@ -31,7 +41,8 @@ public class AssignForm {
     @Override
     public String toString() {
         return "AssignForm{" +
-                "description='" + description + '\'' +
+                "id=" + id +
+                ", description='" + description + '\'' +
                 ", actionType=" + actionType +
                 '}';
     }

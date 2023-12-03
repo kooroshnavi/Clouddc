@@ -22,5 +22,5 @@ public interface TaskService {
 
     void taskRegister(PmRegisterForm pmRegisterForm);
 
-    void updateTaskDetail(int id, AssignForm assignForm);
+    void updateTaskDetail(AssignForm assignForm, int id);
 }

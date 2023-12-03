@@ -68,9 +68,9 @@ public class TaskController {
     }
 
 
-    @GetMapping("/app/main/task/detail/{username}/{id}/form")
+    @GetMapping("/app/main/task/detail/{id}/form")
     public String showAssignForm(@PathVariable("id") int id,
-                                 @PathVariable("username") String username, Model model) {
+                                 Model model) {
 
         taskService.modelForActionForm(model, id);
 
@@ -78,12 +78,12 @@ public class TaskController {
     }
 
 
-    @PostMapping("/app/main/task/detail/form/submit/{id}")
-    public String assignTaskDetail(@PathVariable("id") int id,
-                                   Model model,
+    @PostMapping("/app/main/task/detail/{id}/form")
+    public String assignTaskDetail(Model model, @PathVariable("id") int id,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
+        System.out.println("Captured: " + model.getAttribute("assignForm").toString());
 
-        taskService.updateTaskDetail(id, assignForm);
+        taskService.updateTaskDetail(assignForm, id);
         taskService.modelForPersonTaskList(model);
 
         return "userTaskList";

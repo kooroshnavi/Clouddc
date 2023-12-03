@@ -9,6 +9,7 @@ import com.navi.dcim.person.Person;
 import com.navi.dcim.person.PersonService;
 import com.navi.dcim.report.DailyReport;
 import com.navi.dcim.report.ReportService;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
@@ -69,6 +70,7 @@ public class TaskServiceImpl implements TaskService {
         for (TaskStatus taskStatus : taskStatusList
         ) {
             if (taskStatus.isActive()) {
+                Hibernate.initialize(taskStatus.getTasks());
                 taskList.add(taskStatus.getTasks().stream().filter(Task::isActive).limit(1).findFirst().get());
             }
         }
@@ -232,8 +234,8 @@ public class TaskServiceImpl implements TaskService {
     }// returns a list of users that will be shown in the drop-down list of assignForm.
 
     @Override
-    public void updateTaskDetail(int taskDetailId, AssignForm assignForm) {
-        TaskDetail taskDetail = taskDetailRepository.findById(taskDetailId).get();
+    public void updateTaskDetail(AssignForm assignForm, int id) {
+        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
         switch (assignForm.getActionType()) {
             case 100:     // Ends task. No assign
                 taskDetail.setDescription(assignForm.getDescription());
@@ -386,7 +388,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @PostAuthorize("returnObject.person.username == authentication.name")
+    @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
     public TaskDetail modelForActionForm(Model model, int taskDetailId) {
         taskDetailRepository.findById(taskDetailId);
         List<Person> personList = getOtherPersonList();
@@ -405,6 +407,8 @@ public class TaskServiceImpl implements TaskService {
             }
         }
         AssignForm assignForm = new AssignForm();
+        assignForm.setId(taskDetailId);
+        System.out.println("Assigned: " + assignForm.getId());
         model.addAttribute("id", taskDetailId);
         model.addAttribute("taskDetail", taskDetailRepository.findById(taskDetailId));
         model.addAttribute("taskName", taskName);
