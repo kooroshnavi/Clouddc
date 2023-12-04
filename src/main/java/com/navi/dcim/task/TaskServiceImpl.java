@@ -9,7 +9,6 @@ import com.navi.dcim.person.Person;
 import com.navi.dcim.person.PersonService;
 import com.navi.dcim.report.DailyReport;
 import com.navi.dcim.report.ReportService;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
@@ -23,7 +22,6 @@ import org.springframework.ui.Model;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -40,6 +38,7 @@ public class TaskServiceImpl implements TaskService {
     private final PersonService personService;
     private final ReportService reportService;
     private final EventService eventService;
+    private static LocalDate CurrentDate;
 
 
     @Autowired
@@ -59,21 +58,16 @@ public class TaskServiceImpl implements TaskService {
         this.eventService = eventService;
     }
 
-
-    @Scheduled(cron = "@midnight")
+    @Scheduled(cron = "@noon")
     public void updateTodayTasks() {
-        List<TaskStatus> taskStatusList = taskStatusRepository.findAll();
+
+        CurrentDate = LocalDate.now();
+        List<TaskStatus> taskStatusList = taskStatusRepository.findBynextDue(CurrentDate);
+        List<Task> taskList = taskRepository.findByActive(true);
         List<Center> centers = centerService.getCenterList();
         List<Person> personList = personService.getPersonList();
+
         reportService.setTodayReport();
-        List<Task> taskList = new ArrayList<>();
-        for (TaskStatus taskStatus : taskStatusList
-        ) {
-            if (taskStatus.isActive()) {
-                Hibernate.initialize(taskStatus.getTasks());
-                taskList.add(taskStatus.getTasks().stream().filter(Task::isActive).limit(1).findFirst().get());
-            }
-        }
 
         delayCalculation(taskList);
 
@@ -118,7 +112,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private void delayCalculation(List<Task> taskList) {
-        if (!taskList.isEmpty() && !isWeekend()) {
+        if (!taskList.isEmpty()) {
             for (Task task : taskList
             ) {
                 if (task.isActive()) {
@@ -130,7 +124,7 @@ public class TaskServiceImpl implements TaskService {
             taskRepository.saveAll(taskList);
         }
     }
-
+/*
     private boolean isWeekend() {
         var currentDate = LocalDate.now();
         if (Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Thu")
@@ -138,11 +132,12 @@ public class TaskServiceImpl implements TaskService {
             return true;
         }
         return false;
-    }
+    }*/
 
     private List<TaskStatus> getTaskStatus() {
         List<TaskStatus> taskStatusList = taskStatusRepository
                 .findAll(Sort.by("active").descending());
+
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (TaskStatus taskStatus : taskStatusList
