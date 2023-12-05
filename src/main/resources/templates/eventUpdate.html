@@ -7,9 +7,9 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Static Navigation - SB Admin</title>
-        <link href="/dashboard/css/styles.css" rel="stylesheet" />
-        <link href="/assignForm/css/main.css" rel="stylesheet" media="all">
-        <script src="/dashboard/js/all.js" crossorigin="anonymous"></script>
+        <link th:href="@{/dashboard/css/styles.css}" rel="stylesheet" />
+        <link th:href="@{/assignForm/css/main.css}" rel="stylesheet" media="all">
+        <script th:src="@{/dashboard/js/all.js}" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -239,9 +239,9 @@
                 </footer>
             </div>
         </div>
-        <script src="/dashboard/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="/dashboard/js/scripts.js"></script>
-        <script src="/assignForm/vendor/jquery/jquery.min.js"></script>
-        <script src="/assignForm/js/global.js"></script>
+        <script th:src="@{/dashboard/js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{/dashboard/js/scripts.js}"></script>
+        <script th:src="@{/assignForm/vendor/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assignForm/js/global.js}"></script>
     </body>
 </html>

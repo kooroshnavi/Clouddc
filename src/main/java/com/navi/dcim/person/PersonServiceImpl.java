@@ -23,6 +23,7 @@ final class PersonServiceImpl implements PersonService {
 
     @Override
     public Person getPerson(int personId) {
+
         return personRepository.findById(personId).get();
     }
 

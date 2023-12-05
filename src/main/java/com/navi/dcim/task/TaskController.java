@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
+@RequestMapping(value = {"/app/main"})
 public class TaskController {
     private TaskService taskService;
 
@@ -16,20 +17,20 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @RequestMapping(value = {"/app/main", "", "/"}, method = {RequestMethod.GET})
+    @GetMapping
     public String index(Model model) {
         taskService.modelForMainPage(model);
         return "home";
     }
 
 
-    @GetMapping("/app/main/pm/register/form")
+    @GetMapping("/pm/register/form")
     public String pmForm(Model model) {
         taskService.modelForRegisterTask(model);
         return "pmRegisterForm";
     }
 
-    @PostMapping("/app/main/pm/register/form/submit")
+    @PostMapping("/pm/register/form/submit")
     public String pmPost(
             Model model,
             @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm) {
@@ -39,7 +40,7 @@ public class TaskController {
     }
 
 
-    @GetMapping("/app/main/mytask")
+    @GetMapping("/mytask")
     private String getUserTask(Model model) {
 
         taskService.modelForPersonTaskList(model);
@@ -47,7 +48,7 @@ public class TaskController {
         return "userTaskList";
     }
 
-    @GetMapping("/app/main/task/{id}")
+    @GetMapping("/task/{id}")
     public String getTaskList(@PathVariable("id") int id, Model model) {
         List<Task> tasks = taskService.getTaskListById(id);
         if (!tasks.isEmpty()) {
@@ -59,7 +60,7 @@ public class TaskController {
     }
 
 
-    @GetMapping("/app/main/task/{id}/detail")
+    @GetMapping("/task/{id}/detail")
     public String getTaskDetail(@PathVariable("id") int id, Model model) {
 
         taskService.modelForTaskDetail(model, id);
@@ -68,7 +69,7 @@ public class TaskController {
     }
 
 
-    @GetMapping("/app/main/task/detail/{id}/form")
+    @GetMapping("/task/detail/{id}/form")
     public String showAssignForm(@PathVariable("id") int id,
                                  Model model) {
 
@@ -78,7 +79,7 @@ public class TaskController {
     }
 
 
-    @PostMapping("/app/main/task/detail/{id}/form")
+    @PostMapping("/task/detail/{id}/form")
     public String assignTaskDetail(Model model, @PathVariable("id") int id,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
         System.out.println("Captured: " + model.getAttribute("assignForm").toString());
@@ -93,6 +94,5 @@ public class TaskController {
     public void addAttributes(Model model) {
         taskService.modelForTaskController(model);
     }
-
 
 }

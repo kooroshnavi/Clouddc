@@ -58,7 +58,7 @@ public class TaskServiceImpl implements TaskService {
         this.eventService = eventService;
     }
 
-    @Scheduled(cron = "@noon")
+    @Scheduled(cron = "@midnight")
     public void updateTodayTasks() {
 
         CurrentDate = LocalDate.now();
@@ -73,13 +73,11 @@ public class TaskServiceImpl implements TaskService {
 
         for (TaskStatus status : taskStatusList
         ) {
-            if (isTodayTask(status)) {
-                Task todayTask = setupTask(status, centers);
-                TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
-                todayTask.setTaskDetailList(taskDetail);
-                status.setTasks(todayTask);
-                status.setActive(true);
-            }
+            Task todayTask = setupTask(status, centers);
+            TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
+            todayTask.setTaskDetailList(taskDetail);
+            status.setTasks(todayTask);
+            status.setActive(true);
         }
 
         taskStatusRepository.saveAll(taskStatusList);
@@ -115,11 +113,9 @@ public class TaskServiceImpl implements TaskService {
         if (!taskList.isEmpty()) {
             for (Task task : taskList
             ) {
-                if (task.isActive()) {
-                    var delay = task.getDelay();
-                    delay += 1;
-                    task.setDelay(delay);
-                }
+                var delay = task.getDelay();
+                delay += 1;
+                task.setDelay(delay);
             }
             taskRepository.saveAll(taskList);
         }
