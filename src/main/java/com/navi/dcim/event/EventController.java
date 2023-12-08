@@ -6,7 +6,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@ControllerAdvice
 @RequestMapping("/app/main/event")
 public class EventController {
 

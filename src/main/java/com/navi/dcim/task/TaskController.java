@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Controller
-@RequestMapping(value = {"/app/main"})
+@RequestMapping(value = {"", "/", "/app/main"})
 public class TaskController {
     private TaskService taskService;
 
@@ -17,7 +17,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping
+    @GetMapping(value = {"", "/",})
     public String index(Model model) {
         taskService.modelForMainPage(model);
         return "home";

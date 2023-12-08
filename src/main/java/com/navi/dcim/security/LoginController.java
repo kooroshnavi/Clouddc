@@ -3,6 +3,7 @@ package com.navi.dcim.security;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
@@ -14,16 +15,18 @@ public class LoginController {
 
         String errorMessage = null;
         if (error != null) {
-            errorMessage = "Invalid username or password";
+            model.addAttribute("error", error);
         }
 
         if (logout != null) {
-            errorMessage = "You've been logged out.";
+            model.addAttribute("logout", logout);
         }
-
-        model.addAttribute("errorMessage", errorMessage);
 
         return "login";
 
     }
+
+
+
+
 }

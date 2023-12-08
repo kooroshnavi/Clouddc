@@ -34,7 +34,9 @@
                 <li>
                     <hr class="dropdown-divider"/>
                 </li>
-                <li><a class="dropdown-item" th:href="@{/logout}">خروج</a></li>
+                <form th:action="@{/logout}" method="post">
+                    <input type="submit" value="خروج"/>
+                </form>
             </ul>
         </li>
     </ul>
