@@ -1,22 +1,76 @@
-<!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org">
+<!doctype html>
+<html lang="fa" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Please Log In</title>
+    <title>شرکت ارتباطات زیرساخت</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+
+    <link rel="stylesheet" th:href="@{/login/css/style.css}">
+
 </head>
-<body>
-<h1>Please Log In</h1>
-<div th:if="${param.error}">
-    Invalid username and password.</div>
-<div th:if="${param.logout}">
-    You have been logged out.</div>
-<form th:action="@{/login}" method="post">
-    <div>
-        <input type="text" name="username" placeholder="Username"/>
+<body class="img js-fullheight" style="background-image: url(/login/images/bg.jpg);">
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-md-6 text-center mb-5">
+                <h2 class="heading-section">سامانه مدیریت و نگه داری مراکز زیرساخت ابری </h2>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+
+            <div class="col-md-6 col-lg-4">
+
+                <div class="login-wrap p-0">
+
+                    <form class="signin-form" th:action="@{/login}" method="post">
+
+                        <div th:if="${error}" class="alert-warning">
+                            نام کاربری و یا کلمه عبور اشتباه است
+                        </div>
+                        <div th:if="${logout}" class="alert alert-success">
+                            خروج از سیستم انجام شد
+                        </div>
+                        <br>
+
+                        <div class="form-group">
+                            <input type="text" dir="ltr" name="username" class="form-control" placeholder="Username"
+                                   required>
+                        </div>
+
+                        <div class="form-group">
+                            <input dirname="asda" id="password-field" name="password" type="password" dir="ltr"
+                                   class="form-control" placeholder="Password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <button type="submit" class="form-control btn btn-primary submit px-3">ورود</button>
+                        </div>
+
+                        <div class="form-group d-md-flex">
+                            <div class="w-40">
+                            </div>
+                            <div class="w-50 text-md-right">
+                                <a href="#" style="color: #fff">بازیابی کلمه عبور</a>
+                            </div>
+                        </div>
+                    </form>
+                    <div class="social d-flex text-center">
+                        <a href="#" class="px-2 py-2 ml-md-1 rounded"><span class="ion-logo-twitter mr-2"></span> ورود
+                            با کد تیک گرام</a>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
-    <div>
-        <input type="password" name="password" placeholder="Password"/>
-    </div>
-    <input type="submit" value="Log in" />
-</form>
+</section>
+
+<script th:src="@{/login/js/jquery.min.js}"></script>
+<script th:src="@{/login/js/popper.js}"></script>
+<script th:src="@{/login/js/bootstrap.min.js}"></script>
+<script th:src="@{/login/js/main.js}"></script>
+
 </body>
 </html>
+

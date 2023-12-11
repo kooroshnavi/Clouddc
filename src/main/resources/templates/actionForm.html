@@ -7,9 +7,9 @@
         <meta name="description" content="" />
         <meta name="author" content="" />
         <title>Static Navigation - SB Admin</title>
-        <link href="/dashboard/css/styles.css" rel="stylesheet" />
-        <link href="/assignForm/css/main.css" rel="stylesheet" media="all">
-        <script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js" crossorigin="anonymous"></script>
+        <link th:href="@{/dashboard/css/styles.css}" rel="stylesheet" />
+        <link th:href="@{/assignForm/css/main.css}" rel="stylesheet" media="all">
+        <script src="/assignForm/js/all.js" crossorigin="anonymous"></script>
     </head>
     <body>
         <nav class="sb-topnav navbar navbar-expand navbar-dark bg-dark">
@@ -31,7 +31,9 @@
                         <li><a class="dropdown-item" href="#!">Settings</a></li>
                         <li><a class="dropdown-item" href="#!">Activity Log</a></li>
                         <li><hr class="dropdown-divider" /></li>
-                        <li><a class="dropdown-item" href="#!">Logout</a></li>
+                        <form th:action="@{/logout}" method="post">
+                            <input type="submit" value="خروج"/>
+                        </form>
                     </ul>
                 </li>
             </ul>
@@ -110,7 +112,7 @@
                                         <h2 class="title" dir="rtl">فرم وظیفه</h2>
                                     </div>
                                     <div class="card-body">
-                                        <form  action="#" th:action="@{/app/main/task/detail/form/submit/} + ${{id}}" th:object="${assignForm}" method="POST">
+                                        <form  action="#" th:action="@{/app/main/task/detail/{id}/form(id=${id})}" th:object="${assignForm}" method="POST">
                                             <div class="form-row" dir="rtl">
                                                 <div class="name">عنوان وظیفه</div>
                                                 <div class="name" th:text="${taskName}">
@@ -170,7 +172,7 @@
                                                         <div class="rs-select2 js-select-simple select--no-search">
                                                             <select name="subject" th:field="*{actionType}" >
                                                                 <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                                                <option th:value="1">اتمام وظیفه</option>
+                                                                <option th:value="100">اتمام وظیفه</option>
                                                                 <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
                                                             </select>
                                                             <div class="select-dropdown"></div>
@@ -217,9 +219,9 @@
                 </footer>
             </div>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
-        <script src="/dashboard/js/scripts.js"></script>
-        <script src="/assignForm/vendor/jquery/jquery.min.js"></script>
-        <script src="/assignForm/js/global.js"></script>
+        <script th:src="@{/dashboard/js/bootstrap.bundle.min.js}" crossorigin="anonymous"></script>
+        <script th:src="@{/dashboard/js/scripts.js}"></script>
+        <script th:src="@{/assignForm/vendor/jquery/jquery.min.js}"></script>
+        <script th:src="@{/assignForm/js/global.js}"></script>
     </body>
 </html>

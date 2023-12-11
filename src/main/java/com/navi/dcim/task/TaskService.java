@@ -1,0 +1,26 @@
+package com.navi.dcim.task;
+
+import org.springframework.ui.Model;
+
+import java.util.List;
+
+public interface TaskService {
+
+
+    Task getTask(int taskId);
+    List<Task> getTaskListById(int taskStatusId);
+    List<Task> getPersonTask();
+    Model modelForMainPage(Model model);
+    Model modelForRegisterTask(Model model);
+    Model modelForTaskController(Model model);
+    Model modelForTaskDetail(Model model, int taskId);
+    Model modelForPersonTaskList(Model model);
+
+    TaskDetail modelForActionForm(Model model, int taskDetailId);
+
+    void updateTodayTasks();
+
+    void taskRegister(PmRegisterForm pmRegisterForm);
+
+    void updateTaskDetail(AssignForm assignForm, int id);
+}
