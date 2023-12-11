@@ -10,9 +10,9 @@ import java.util.List;
 @Service
 final class PersonServiceImpl implements PersonService {
 
-    private  PersonRepository personRepository;
+    private PersonRepository personRepository;
 
-    private  UserDetailsManager userDetailsManager;
+    private UserDetailsManager userDetailsManager;
 
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository, UserDetailsManager userDetailsManager) {
@@ -53,5 +53,10 @@ final class PersonServiceImpl implements PersonService {
     public Person updatePerson(Person person) {
 
         return null;
+    }
+
+    @Override
+    public void changePassword(String old, String newPwd) {
+        userDetailsManager.changePassword(old, newPwd);
     }
 }

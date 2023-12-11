@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="fa" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="fa" dir="ltr" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" >
     <head>
         <meta charset="utf-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
@@ -19,8 +20,8 @@
             <button class="btn btn-link btn-sm order-1 order-lg-0 me-4 me-lg-0" id="sidebarToggle" href="#!"><i class="fas fa-bars"></i></button>
             <!-- Navbar Search-->
             <form class="d-none d-md-inline-block form-inline ms-auto me-0 me-md-3 my-2 my-md-0">
-                <div class="input-group">
-                    <input class="form-control" type="text"  aria-describedby="btnNavbarSearch" />
+                <div class="navbar-brand ps-3">
+                    <h4 class="navbar-brand ps-3" th:text="${date}" dir="rtl"/>
                 </div>
             </form>
             <!-- Navbar-->
@@ -69,17 +70,20 @@
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <a class="nav-link" th:href="@{/app/main/event/view}" th:text="${'(' + pendingEvents + ')' + ' رخدادها '}"></a>
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
-                                    <s class="nav-link" href="layout-static.html" >ثبت گزارش روزانه (در حال توسعه)</s>
                                 </nav>
                             </div>
 
-                            <div class="sb-sidenav-menu-heading">Managers</div>
-                            <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages" aria-expanded="false" aria-controls="collapseLayouts">
-                                <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
+                            <div sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')" class="sb-sidenav-menu-heading">Managers</div>
+                            <a  sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"
+                                aria-expanded="false" aria-controls="collapseLayouts">
+                                <div class="sb-nav-link-icon">
+                                    <i class="fas fa-columns"></i>
+                                </div>
                                 گزارش و نظارت
                                 <div class="sb-sidenav-collapse-arrow"><i class="fas fa-angle-down"></i></div>
                             </a>
-                            <div class="collapse" id="collapsePages" aria-labelledby="headingOne" data-bs-parent="#sidenavAccordion">
+                            <div class="collapse" id="collapsePages" aria-labelledby="headingOne"
+                                 data-bs-parent="#sidenavAccordion">
                                 <nav class="sb-sidenav-menu-nested nav">
                                     <s class="nav-link" href="layout-static.html">گزارش وضعیت سالن ها (در حال توسعه)</s>
                                     <s class="nav-link" href="layout-static.html">گزارش وظایف و عملکرد (در حال توسعه)</s>
@@ -161,7 +165,6 @@
                                                     <div class="input-group" >
                                                         <textarea class="textarea--style-6" th:field="*{description}" required="required" dir="rtl" maxlength="1000"></textarea>
                                                     </div>
-                                                    <div class="label--desc" dir="rtl">شامل محدودیت کاراکتر - اگر توضیحات مفصل و شامل جداول و عکس است خلاصه آن را بنویسید و گزارش کامل را در فایل پیوست ضمیمه کنید.</div>
                                                 </div>
                                             </div>
 
@@ -183,17 +186,7 @@
 
 
 
-                                            <div class="form-row" dir="rtl">
-                                                <div class="name">پیوست</div>
-                                                <div class="value">
-                                                    <div class="input-group js-input-file">
-                                                        <input class="input-file" type="file" name="file_cv" id="file">
-                                                        <label class="label--file" for="file">بارگذاری</label>
-                                                        <span class="input-file__info">فایلی انتخاب نشده است</span>
-                                                    </div>
-                                                    <div class="label--desc" dir="rtl">حداکثر 10 مگابایت</div>
-                                                </div>
-                                            </div>
+
                                             <div class="card-footer" dir="rtl">
                                                 <button class="btn btn--radius-2 btn--blue-2" type="submit">ثبت</button>
                                             </div>

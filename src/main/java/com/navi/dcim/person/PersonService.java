@@ -13,4 +13,6 @@ public interface PersonService {
     Person addPerson(Person person);
 
     Person updatePerson(Person person);
+
+    void changePassword(String old, String newPwd);
 }
