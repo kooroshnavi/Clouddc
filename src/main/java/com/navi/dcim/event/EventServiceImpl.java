@@ -7,6 +7,7 @@ import com.navi.dcim.person.PersonService;
 import com.navi.dcim.report.DailyReport;
 import com.navi.dcim.report.ReportService;
 import com.navi.dcim.task.TaskService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -20,6 +21,7 @@ import java.util.Optional;
 
 import static com.navi.dcim.utils.UtilService.getCurrentDate;
 
+@Slf4j
 @Service
 public class EventServiceImpl implements EventService {
 
@@ -63,7 +65,7 @@ public class EventServiceImpl implements EventService {
         event.setDailyReportList(report.get());
         event.setType(eventType);
         eventType.setEvent(event);
-        System.out.println("event added" + report.get().getEventList());
+        log.info("event added" + report.get().getEventList());
         eventRepository.save(event);
 
     }
@@ -154,9 +156,7 @@ public class EventServiceImpl implements EventService {
         event.setDescription(description);
 
         if (report.get().getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
-            System.out.println("Today report does not contain event id: " + eventId);
             event.setDailyReportList(report.get());
-            System.out.println("Event updated:    " + report.get().getEventList());
         }
         eventRepository.save(event);
 

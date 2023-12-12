@@ -1,5 +1,6 @@
 package com.navi.dcim.report;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -8,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+@Slf4j
 @Service
 final class ReportServiceImpl implements ReportService {
 
@@ -27,8 +29,8 @@ final class ReportServiceImpl implements ReportService {
     public void setTodayReport() {
         List<DailyReport> dailyReportList = new ArrayList<>();
         Optional<DailyReport> yesterday = findActive(true);
-        if (yesterday.isPresent()){
-            System.out.println("yesterday is present");
+        if (yesterday.isPresent()) {
+            log.info("yesterday is present");
             yesterday.get().setActive(false);
             dailyReportList.add(yesterday.get());
         }

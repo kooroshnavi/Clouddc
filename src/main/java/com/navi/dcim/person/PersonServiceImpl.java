@@ -1,5 +1,6 @@
 package com.navi.dcim.person;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Service;
@@ -7,6 +8,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+@Slf4j
 @Service
 final class PersonServiceImpl implements PersonService {
 
@@ -58,5 +60,6 @@ final class PersonServiceImpl implements PersonService {
     @Override
     public void changePassword(String old, String newPwd) {
         userDetailsManager.changePassword(old, newPwd);
+        log.info("Credential updated");
     }
 }

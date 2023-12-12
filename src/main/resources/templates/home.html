@@ -157,7 +157,7 @@
                             <tr th:each="status, iter : ${statusList}">
 
                                 <td>
-                                    <a th:href="@{/app/main/task/{id}(id=${status.id})} "
+                                    <a th:href="@{/app/main/task(id=${status.id})}"
                                        th:text="${status.isActive} ? 'فعال' : 'منتظر سررسید'"/>
                                 </td>
 

@@ -48,8 +48,8 @@ public class TaskController {
         return "userTaskList";
     }
 
-    @GetMapping("/task/{id}")
-    public String getTaskList(@PathVariable("id") int id, Model model) {
+    @GetMapping("/task")
+    public String getTaskList(@RequestParam int id, Model model) {
         List<Task> tasks = taskService.getTaskListById(id);
         if (!tasks.isEmpty()) {
             var name = tasks.get(0).getTaskStatus().getName();

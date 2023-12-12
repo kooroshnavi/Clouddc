@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-final class CenterServiceImpl implements CenterService {
+public class CenterServiceImpl implements CenterService {
 
     private CenterRepository centerRepository;
 

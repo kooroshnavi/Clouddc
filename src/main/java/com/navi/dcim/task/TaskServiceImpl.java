@@ -9,6 +9,7 @@ import com.navi.dcim.person.Person;
 import com.navi.dcim.person.PersonService;
 import com.navi.dcim.report.DailyReport;
 import com.navi.dcim.report.ReportService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 
 import static com.navi.dcim.utils.UtilService.getCurrentDate;
 
+@Slf4j
 @Service
 @EnableScheduling
 public class TaskServiceImpl implements TaskService {
@@ -82,7 +84,7 @@ public class TaskServiceImpl implements TaskService {
 
         taskStatusRepository.saveAll(taskStatusList);
         System.out.println();
-        System.out.println("Scheduler successful @: " + LocalDateTime.now());
+        log.info("Scheduler successful @: " + LocalDateTime.now());
         System.out.println();
     }
 
@@ -155,8 +157,6 @@ public class TaskServiceImpl implements TaskService {
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setActive(false);
         task.setDailyReport(report.get());
-        System.out.println("Task Added" + report.get().getTaskList());
-
 
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
@@ -290,8 +290,6 @@ public class TaskServiceImpl implements TaskService {
         if (!taskDetail.isPresent()) {
             return false;
         }
-        System.out.println(authenticatedName);
-        System.out.println(taskDetail.get().getPerson().getUsername());
         if (Objects.equals(authenticatedName, taskDetail.get().getPerson().getUsername())) {
             return true;
         } else {
@@ -399,7 +397,6 @@ public class TaskServiceImpl implements TaskService {
         }
         AssignForm assignForm = new AssignForm();
         assignForm.setId(taskDetailId);
-        System.out.println("Assigned: " + assignForm.getId());
         model.addAttribute("id", taskDetailId);
         model.addAttribute("taskDetail", taskDetailRepository.findById(taskDetailId));
         model.addAttribute("taskName", taskName);
