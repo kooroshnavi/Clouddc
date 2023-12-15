@@ -39,12 +39,14 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 )
+
                 // other configuration options
                 .authorizeHttpRequests(authCustomizer -> authCustomizer
                         .requestMatchers("login/**", "assignForm/**", "dashboard/**", "fonts/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 );
+
 
         return http.build();
     }

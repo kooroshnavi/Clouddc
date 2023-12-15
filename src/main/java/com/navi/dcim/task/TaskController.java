@@ -1,12 +1,18 @@
 package com.navi.dcim.task;
 
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 
+@Slf4j
 @Controller
 @RequestMapping(value = {"", "/", "/app/main"})
 public class TaskController {
@@ -23,7 +29,6 @@ public class TaskController {
         return "home";
     }
 
-
     @GetMapping("/pm/register/form")
     public String pmForm(Model model) {
         taskService.modelForRegisterTask(model);
@@ -33,7 +38,14 @@ public class TaskController {
     @PostMapping("/pm/register/form/submit")
     public String pmPost(
             Model model,
-            @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm) {
+            @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
+            Errors errors) {
+
+        if (errors.hasErrors()) {
+            log.error("Failed to register task due to validation error on input data: " + errors);
+            return pmForm(model);
+        }
+
         taskService.taskRegister(pmRegisterForm);
         taskService.modelForMainPage(model);
         return "home";

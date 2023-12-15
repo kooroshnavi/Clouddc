@@ -6,6 +6,8 @@ import com.navi.dcim.center.Center;
 import com.navi.dcim.person.Person;
 import com.navi.dcim.report.DailyReport;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -17,16 +19,17 @@ import java.util.List;
 @NoArgsConstructor
 public class Event {
 
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
 
     @Column
+    @NotBlank
     private LocalDateTime eventDate;
 
     @Column
+    @NotBlank
     private LocalDateTime updateDate;
 
     @Column
@@ -34,6 +37,7 @@ public class Event {
 
     @Column
     private String description;
+
 
     @ManyToOne
     @JoinColumn(name = "event_type_id")

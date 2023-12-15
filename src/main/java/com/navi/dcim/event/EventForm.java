@@ -1,13 +1,19 @@
 package com.navi.dcim.event;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class EventForm {
 
+    @NotBlank
     private int eventType;
+    @NotBlank
     private String description;
+    @NotNull
     private boolean active;
+    @NotBlank
     private int centerId;
 
     public int getCenterId() {

@@ -1,12 +1,21 @@
 package com.navi.dcim.task;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class AssignForm {
 
+    @NotNull
     private int id;
+
+    @NotBlank(message = "Description is obligatory")
+    @Size(min = 5, max = 1000)
     private String description;
+
+    @NotBlank
     private int actionType;
 
     public AssignForm(String description, int actionType) {

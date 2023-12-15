@@ -1,24 +1,29 @@
 package com.navi.dcim.task;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class PmRegisterForm {
+    @NotBlank(message = "عنوان نباید خالی باشد")
     private String name;
 
+    @NotBlank(message = "توضیحات نباید خالی باشد")
     private String description;
 
-    private String persianDue;
-
+    @NotNull
     private int period;
 
+    @NotNull
     private int personId;
 
+    @NotNull
     private int centerId;
 
-    public PmRegisterForm(String name, String persianDue, int period, int personId, int centerId) {
+    public PmRegisterForm(String name, int period, int personId, int centerId) {
         this.name = name;
-        this.persianDue = persianDue;
         this.period = period;
         this.personId = personId;
         this.centerId = centerId;
@@ -34,10 +39,6 @@ public class PmRegisterForm {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public void setPersianDue(String persianDue) {
-        this.persianDue = persianDue;
     }
 
     public void setPeriod(int period) {
@@ -56,10 +57,6 @@ public class PmRegisterForm {
         return name;
     }
 
-    public String getPersianDue() {
-        return persianDue;
-    }
-
     public int getPeriod() {
         return period;
     }
@@ -76,7 +73,6 @@ public class PmRegisterForm {
     public String toString() {
         return "pmRegisterForm{" +
                 "name='" + name + '\'' +
-                ", persianDue='" + persianDue + '\'' +
                 ", period=" + period +
                 ", personId=" + personId +
                 ", centerId=" + centerId +
