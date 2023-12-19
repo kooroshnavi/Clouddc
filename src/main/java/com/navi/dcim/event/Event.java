@@ -25,11 +25,9 @@ public class Event {
     private int id;
 
     @Column
-    @NotBlank
     private LocalDateTime eventDate;
 
     @Column
-    @NotBlank
     private LocalDateTime updateDate;
 
     @Column
@@ -37,7 +35,6 @@ public class Event {
 
     @Column
     private String description;
-
 
     @ManyToOne
     @JoinColumn(name = "event_type_id")

@@ -29,6 +29,11 @@ public class TaskController {
         return "home";
     }
 
+    @GetMapping("/update")
+    public void updateTask(Model model) {
+        taskService.updateTodayTasks();
+    }
+
     @GetMapping("/pm/register/form")
     public String pmForm(Model model) {
         taskService.modelForRegisterTask(model);
@@ -92,7 +97,8 @@ public class TaskController {
 
 
     @PostMapping("/task/detail/{id}/form")
-    public String assignTaskDetail(Model model, @PathVariable("id") int id,
+    public String assignTaskDetail(Model model,
+                                   @PathVariable("id") int id,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
         System.out.println("Captured: " + model.getAttribute("assignForm").toString());
 

@@ -42,7 +42,6 @@ public class TaskServiceImpl implements TaskService {
     private final EventService eventService;
     private static LocalDate CurrentDate;
 
-
     @Autowired
     TaskServiceImpl(TaskStatusRepository taskStatusRepository,
                     TaskRepository taskRepository,
