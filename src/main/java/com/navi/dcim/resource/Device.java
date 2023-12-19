@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table
@@ -50,6 +51,9 @@ public class Device {
     @ManyToOne
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
+
+    @OneToMany(mappedBy = "connectedDevice")
+    private List<Module> moduleList;
 
     @Column
     private boolean healthy;

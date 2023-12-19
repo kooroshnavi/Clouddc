@@ -19,9 +19,6 @@ public class DeviceType {
     private String type; //1. server 2. enclosure 3. sw  4.fw
 
     @Column
-    private String provider; // hp cisco fortigate huawei
-
-    @Column
     private String model;   // DL,380,G10 - 2960 - 1100,E
 
     @Column
@@ -32,6 +29,11 @@ public class DeviceType {
 
     @OneToMany(mappedBy = "deviceType")
     private List<Device> deviceList;
+
+    @ManyToOne
+    @JoinColumn(name = "provider_id")
+    private Provider provider; // hp cisco fortigate huawei
+
 
 
     public int getId() {
@@ -58,12 +60,48 @@ public class DeviceType {
         this.deviceList = deviceList;
     }
 
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public String getFactor() {
+        return factor;
+    }
+
+    public void setFactor(String factor) {
+        this.factor = factor;
+    }
+
+    public String getPartNumber() {
+        return partNumber;
+    }
+
+    public void setPartNumber(String partNumber) {
+        this.partNumber = partNumber;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
     @Override
     public String toString() {
         return "DeviceType{" +
                 "id=" + id +
-                ", name='" + type + '\'' +
+                ", type='" + type + '\'' +
+                ", model='" + model + '\'' +
+                ", factor='" + factor + '\'' +
+                ", partNumber='" + partNumber + '\'' +
                 ", deviceList=" + deviceList +
+                ", provider=" + provider +
                 '}';
     }
 }
