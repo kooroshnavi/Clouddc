@@ -22,7 +22,7 @@ public class DeviceType {
     private String provider; // hp cisco fortigate huawei
 
     @Column
-    private String model;   // DL380G10 - 2960 - 1100E
+    private String model;   // DL,380,G10 - 2960 - 1100,E
 
     @Column
     private String factor;   // 24,SFF - 48,4
