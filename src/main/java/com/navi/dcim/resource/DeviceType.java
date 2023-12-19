@@ -13,10 +13,22 @@ public class DeviceType {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private int id; // 1 2 3 4 5
 
     @Column
-    private String name;
+    private String type; //1. server 2. enclosure 3. sw  4.fw
+
+    @Column
+    private String provider; // hp cisco fortigate huawei
+
+    @Column
+    private String model;   // DL380G10 - 2960 - 1100E
+
+    @Column
+    private String factor;   // 24,SFF - 48,4
+
+    @Column
+    private String partNumber;
 
     @OneToMany(mappedBy = "deviceType")
     private List<Device> deviceList;
@@ -30,12 +42,12 @@ public class DeviceType {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String type) {
+        this.type = type;
     }
 
     public List<Device> getDeviceList() {
@@ -50,7 +62,7 @@ public class DeviceType {
     public String toString() {
         return "DeviceType{" +
                 "id=" + id +
-                ", name='" + name + '\'' +
+                ", name='" + type + '\'' +
                 ", deviceList=" + deviceList +
                 '}';
     }

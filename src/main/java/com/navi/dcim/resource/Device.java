@@ -5,6 +5,7 @@ import com.navi.dcim.person.Utilizer;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,14 +16,19 @@ public class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private int id;   //388
 
     @Column
-    private LocalDateTime dateAdded;
-
+    private LocalDate installationDate;  //2023-11-18
 
     @Column
-    private LocalDateTime lastUpdated;
+    private LocalDateTime lastUpdated;   //2024-05-20 10:15
+
+    @Transient
+    private String persianInstallationDate;
+
+    @Transient
+    private String persianLastUpdated;
 
     @Column
     private boolean active;
@@ -31,11 +37,11 @@ public class Device {
     private String serialNumber;
 
     @Column
-    private String details;
+    private String description;
 
     @ManyToOne
     @JoinColumn(name = "device_type_id")
-    private DeviceType deviceType;
+    private DeviceType deviceType; //1: server...
 
     @ManyToOne
     @JoinColumn(name = "location_id")
@@ -45,6 +51,12 @@ public class Device {
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
 
+    @Column
+    private boolean healthy;
+
+    @Column
+    private boolean redundantPower;
+
     public int getId() {
         return id;
     }
@@ -53,12 +65,12 @@ public class Device {
         this.id = id;
     }
 
-    public LocalDateTime getDateAdded() {
-        return dateAdded;
+    public LocalDate getInstallationDate() {
+        return installationDate;
     }
 
-    public void setDateAdded(LocalDateTime dateAdded) {
-        this.dateAdded = dateAdded;
+    public void setInstallationDate(LocalDate installationDate) {
+        this.installationDate = installationDate;
     }
 
     public LocalDateTime getLastUpdated() {
@@ -85,12 +97,12 @@ public class Device {
         this.serialNumber = serialNumber;
     }
 
-    public String getDetails() {
-        return details;
+    public String getDescription() {
+        return description;
     }
 
-    public void setDetails(String details) {
-        this.details = details;
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public DeviceType getDeviceType() {
@@ -121,11 +133,11 @@ public class Device {
     public String toString() {
         return "Device{" +
                 "id=" + id +
-                ", dateAdded=" + dateAdded +
+                ", dateAdded=" + installationDate +
                 ", dateUpdated=" + lastUpdated +
                 ", active=" + active +
                 ", serialNumber='" + serialNumber + '\'' +
-                ", details='" + details + '\'' +
+                ", details='" + description + '\'' +
                 ", deviceType=" + deviceType +
                 ", location=" + location +
                 ", utilizer=" + utilizer +
