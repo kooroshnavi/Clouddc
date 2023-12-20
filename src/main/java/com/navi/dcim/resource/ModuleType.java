@@ -14,16 +14,22 @@ public class ModuleType {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id; // 1 2 3 ...
+
     @Column
     private float capacity; //1. 14,20,3.84... 2. 32,64,... 3. 1,10,40,100,...
+
     @Column
     private String category; // 1. Storage 2. Memory 3. Transceiver
+
     @Column
     private String type; // 1. Hdd, ssd   2. RAM    3. SFP, QSFP, CVR
+
     @Column
     private String model; // 1. Sas, sas   3. SR, 28, LR4,...
+
     @Column
     private String partNumber;
+
     @OneToMany(mappedBy = "moduleType")
     private List<Module> moduleList;
 

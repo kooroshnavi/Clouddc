@@ -11,6 +11,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
+import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import javax.sql.DataSource;
 
@@ -19,7 +21,9 @@ import javax.sql.DataSource;
 public class SecurityConfig {
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+
+        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
 
         http
                 .formLogin(formLogin -> {
@@ -42,7 +46,13 @@ public class SecurityConfig {
 
                 // other configuration options
                 .authorizeHttpRequests(authCustomizer -> authCustomizer
-                        .requestMatchers("login/**", "assignForm/**", "dashboard/**", "fonts/**")
+                        .requestMatchers(mvcMatcherBuilder.pattern("login/**"))
+                        .permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern("assignForm/**"))
+                        .permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern("dashboard/**"))
+                        .permitAll()
+                        .requestMatchers(mvcMatcherBuilder.pattern( "fonts/**"))
                         .permitAll()
                         .anyRequest().authenticated()
                 );

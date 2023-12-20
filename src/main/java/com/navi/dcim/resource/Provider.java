@@ -22,4 +22,45 @@ public class Provider {
 
     @OneToMany(mappedBy = "provider")
     private List<ModuleType> moduleTypeList;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<DeviceType> getDeviceTypeList() {
+        return deviceTypeList;
+    }
+
+    public void setDeviceTypeList(List<DeviceType> deviceTypeList) {
+        this.deviceTypeList = deviceTypeList;
+    }
+
+    public List<ModuleType> getModuleTypeList() {
+        return moduleTypeList;
+    }
+
+    public void setModuleTypeList(List<ModuleType> moduleTypeList) {
+        this.moduleTypeList = moduleTypeList;
+    }
+    @Override
+    public String toString() {
+        return "Provider{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", deviceTypeList=" + deviceTypeList +
+                ", moduleTypeList=" + moduleTypeList +
+                '}';
+    }
 }

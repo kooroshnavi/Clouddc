@@ -11,6 +11,7 @@ public class Module {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
+
     @Column
     private boolean active;
 
