@@ -58,7 +58,6 @@
                                 تعریف وظیفه جدید
                             </a>
 
-
                             <div class="sb-sidenav-menu-heading">Daily</div>
                             <a class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapseLayouts" aria-expanded="false" aria-controls="collapseLayouts">
                                 <div class="sb-nav-link-icon"><i class="fas fa-columns"></i></div>
@@ -71,7 +70,6 @@
                                     <a class="nav-link" th:href="@{/app/main/event/register/form}">ثبت رخداد جدید</a>
                                 </nav>
                             </div>
-
 
                             <div sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')" class="sb-sidenav-menu-heading">Managers</div>
                             <a  sec:authorize="hasAnyAuthority('MANAGER', 'ADMIN')" class="nav-link collapsed" href="#" data-bs-toggle="collapse" data-bs-target="#collapsePages"
@@ -93,7 +91,6 @@
                             </div>
 
 
-
                             </div>
 
                     </div>
@@ -111,12 +108,13 @@
                             <li class="breadcrumb-item active">وظایف در یک نگاه</li>
                         </ol>
                         <div class="card mb-4">
-                            <div class="card-body" >
-                                 Koorosh
+                            <div class="card-body">
+                                Koorosh
                             </div>
                         </div>
                         <div class="card mb-4">
-                            <div class="card-header" th:text="${name}" >
+                            <div class="card-header" dir="rtl" >
+                                <a th:if="${event.active}" th:href="@{/app/main/event/detail/form(eventId=${event.getId})}" th:text="'بروزرسانی وضعیت رخداد'"></a>
                                 <i class="fas fa-table me-1" ></i>
                             </div>
                             <div class="card-body">
@@ -124,33 +122,29 @@
                                     <thead>
                                     <tr>
 
-                                        <th>وضعیت و جزئیات</th>
-                                        <th>مرکز</th>
-                                        <th>تاریخ ثبت</th>
-                                        <th>دسته بندی رخداد</th>
+                                        <th>توضیحات کاربر</th>
+                                        <th>کارتابل</th>
+                                        <th>تاریخ بروزرسانی</th>
                                         <th>ردیف</th>
+
 
                                     </tr>
                                     </thead>
                                     <tfoot>
                                         <tr>
-                                            <th>وضعیت و جزئیات</th>
-                                            <th>مرکز</th>
-                                            <th>تاریخ ثبت</th>
-                                            <th>دسته بندی رخداد</th>
+                                            <th>توضیحات کاربر</th>
+                                            <th>کارتابل</th>
+                                            <th>تاریخ بروزرسانی</th>
                                             <th>ردیف</th>
 
                                         </tr>
                                     </tfoot>
                                     <tbody>
-                                    <tr th:each="event, iter : ${eventList}">
-                                        <td>
-                                            <a th:href="@{/app/main/event/detail(eventId=${event.id})} " th:text="${event.isActive} ? 'فعال' : 'خاتمه رخداد'" />
-                                        </td>
-                                        <td th:text="${event.getCenter.getNamePersian}"/>
-                                        <td th:text="${event.getPersianDate}"/>
+                                    <tr th:each="detail, iter : ${eventDetailList}">
 
-                                        <td th:text="${event.getEventType.getName}"/>
+                                        <td th:text="${detail.description}"/>
+                                        <td th:text="${detail.getPerson.getName}"/>
+                                        <td th:text="${detail.getPersianDate}"/>
                                         <td th:text="${iter.count}"/>
 
                                     </tr>

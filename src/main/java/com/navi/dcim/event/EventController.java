@@ -21,6 +21,7 @@ public class EventController {
         eventService.modelForEventRegisterForm(model);
         return "eventRegisterForm";
     }
+
     @PostMapping("/register/form/submit")
     public String eventPost(
             Model model,
@@ -37,17 +38,25 @@ public class EventController {
         return "eventList";
     }
 
-    @GetMapping("/{id}")
-    public String viewEvent(Model model, @PathVariable int id) {
-        eventService.modelForEventUpdate(model, id);
+    @GetMapping("/detail")
+    public String viewEvent(@RequestParam int eventId, Model model) {
+        eventService.modelForEventDetail(model, eventId);
+        return "eventDetail";
+    }
+
+    @GetMapping("/detail/form")
+    public String viewDetail(Model model, @RequestParam int eventId) {
+        //addAttributes(model);
+        model.addAttribute("eventForm", new EventForm());
+        model.addAttribute("event",eventService.getEvent(eventId));
         return "eventUpdate";
     }
 
-    @PostMapping("/form/update/{id}")
+    @PostMapping("/update")
     public String updateEvent(Model model
-            , @PathVariable int id
+            , @RequestParam int eventId
             , @ModelAttribute("eventForm") EventForm eventForm) {
-        eventService.updateEvent(id, eventForm);
+        eventService.updateEvent(eventId, eventForm);
         eventService.modelForEventList(model);
         return "eventList";
     }
