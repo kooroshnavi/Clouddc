@@ -25,9 +25,6 @@ public class EventDetail {
     @Column
     private String description;
 
-    @Column
-    private boolean active;
-
     @ManyToOne
     @JoinColumn(name = "event_id")
     private Event event;
@@ -69,13 +66,6 @@ public class EventDetail {
         this.description = description;
     }
 
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
 
     public Event getEvent() {
         return event;
@@ -100,7 +90,6 @@ public class EventDetail {
                 ", updated=" + updated +
                 ", persianDate='" + persianDate + '\'' +
                 ", description='" + description + '\'' +
-                ", active=" + active +
                 ", event=" + event +
                 ", person=" + person +
                 '}';
