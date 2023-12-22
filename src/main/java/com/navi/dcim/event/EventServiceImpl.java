@@ -62,11 +62,7 @@ public class EventServiceImpl implements EventService {
                 , new EventType(eventForm.getEventType())
                 , centerService.getCenter(eventForm.getCenterId()));
 
-        EventDetail eventDetail1 = defaultEventDetail(eventForm);
-        eventDetail1.setUpdated(registerDate);
-        eventDetail1.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(registerDate)));
-        eventDetail1.setEvent(event);
-        event.setEventDetailList(eventDetail1);
+        eventDetailRegister(eventForm, event, registerDate);
 
         event.setDailyReportList(report.get());
         event.setType(eventType);
@@ -76,23 +72,15 @@ public class EventServiceImpl implements EventService {
 
     }
 
-    private EventDetail defaultEventDetail(EventForm eventForm) {
+    private void eventDetailRegister(EventForm eventForm, Event event, LocalDateTime eventDetailDate) {
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         EventDetail eventDetail = new EventDetail();
         eventDetail.setPerson(personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName()));
-        eventDetail.setActive(false);
         eventDetail.setDescription(eventForm.getDescription());
-        return eventDetail;
-    }
-
-    private EventDetail activeEventDetailRegister(Event event, EventForm eventForm) {
-        EventDetail eventDetail = new EventDetail();
-        eventDetail.setActive(false);
-        eventDetail.setUpdated(LocalDateTime.now());
+        eventDetail.setUpdated(eventDetailDate);
+        eventDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(eventDetailDate)));
         eventDetail.setEvent(event);
-        eventDetail.setDescription(eventForm.getDescription());
-        eventDetail.setPerson(personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName()));
         event.setEventDetailList(eventDetail);
-        return eventDetail;
     }
 
 
@@ -181,11 +169,9 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void updateEvent(int eventId, EventForm eventForm) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         Optional<DailyReport> report = reportService.findActive(true);
         Event event = eventRepository.findById(eventId).get();
-        EventDetail eventDetail = activeEventDetailRegister(event, eventForm);
-        eventDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(eventDetail.getUpdated())));
+        eventDetailRegister(eventForm, event, LocalDateTime.now());
 
         if (!eventForm.isActive()) {
             event.setActive(false);
