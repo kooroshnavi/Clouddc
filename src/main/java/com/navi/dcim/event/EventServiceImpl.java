@@ -16,8 +16,10 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static com.navi.dcim.utils.UtilService.getCurrentDate;
 
@@ -32,11 +34,14 @@ public class EventServiceImpl implements EventService {
     private final TaskService taskService;
     private final EventTypeRepository eventTypeRepository;
 
-
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , ReportService reportService, CenterService centerService, PersonService personService, TaskService taskService, EventTypeRepository eventTypeRepository) {
+            , ReportService reportService
+            , CenterService centerService
+            , PersonService personService
+            , TaskService taskService
+            , EventTypeRepository eventTypeRepository) {
         this.eventRepository = eventRepository;
         this.reportService = reportService;
         this.centerService = centerService;
@@ -51,17 +56,18 @@ public class EventServiceImpl implements EventService {
         Optional<DailyReport> report = reportService.findActive(true);
         var eventType = new EventType(eventForm.getEventType());
         var registerDate = LocalDateTime.now();
+
         Event event = new Event(registerDate
-                , registerDate
                 , eventForm.isActive()
-                , " ( "
-                + dateTime.format(PersianDateTime.fromGregorian(registerDate))
-                + "-->" + eventForm.getDescription()
-                + " ) "
-                + System.lineSeparator()
                 , new EventType(eventForm.getEventType())
-                , personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName())
                 , centerService.getCenter(eventForm.getCenterId()));
+
+        EventDetail eventDetail1 = defaultEventDetail(eventForm);
+        eventDetail1.setUpdated(registerDate);
+        eventDetail1.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(registerDate)));
+        eventDetail1.setEvent(event);
+        event.setEventDetailList(eventDetail1);
+
         event.setDailyReportList(report.get());
         event.setType(eventType);
         eventType.setEvent(event);
@@ -70,13 +76,31 @@ public class EventServiceImpl implements EventService {
 
     }
 
+    private EventDetail defaultEventDetail(EventForm eventForm) {
+        EventDetail eventDetail = new EventDetail();
+        eventDetail.setPerson(personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName()));
+        eventDetail.setActive(false);
+        eventDetail.setDescription(eventForm.getDescription());
+        return eventDetail;
+    }
+
+    private EventDetail activeEventDetailRegister(Event event, EventForm eventForm) {
+        EventDetail eventDetail = new EventDetail();
+        eventDetail.setActive(false);
+        eventDetail.setUpdated(LocalDateTime.now());
+        eventDetail.setEvent(event);
+        eventDetail.setDescription(eventForm.getDescription());
+        eventDetail.setPerson(personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName()));
+        event.setEventDetailList(eventDetail);
+        return eventDetail;
+    }
+
 
     @Override
     public Event getEvent(int eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         Event event = eventRepository.findById(eventId).get();
         event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-        event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
         return event;
     }
 
@@ -106,13 +130,33 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Model modelForEventUpdate(Model model, int eventId) {
+    public Model modelForEventDetail(Model model, int eventId) {
+        List<EventDetail> eventDetailList = getEventDetailList(eventId);
+
+        model.addAttribute("eventDetailList", eventDetailList);
         model.addAttribute("event", this.getEvent(eventId));
         model.addAttribute("id", eventId);
         model.addAttribute("eventForm", new EventForm());
         model.addAttribute("centerList", centerService.getCenterList());
         model.addAttribute("eventTypeList", getEventTypeList());
         return model;
+    }
+
+    private List<EventDetail> getEventDetailList(int eventId) {
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        Event event = eventRepository.findById(eventId).get();
+        for (EventDetail eventDetail : event.getEventDetailList()
+        ) {
+            eventDetail.setPersianDate(dateTime.format
+                    (PersianDateTime
+                            .fromGregorian
+                                    (eventDetail.getUpdated())));
+        }
+
+        return event.getEventDetailList()
+                .stream()
+                .sorted(Comparator.comparing(EventDetail::getId).reversed())
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -128,10 +172,8 @@ public class EventServiceImpl implements EventService {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
         List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
-        for (Event event : eventList
-        ) {
+        for (Event event : eventList) {
             event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-            event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
         }
 
         return eventList;
@@ -139,25 +181,20 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void updateEvent(int eventId, EventForm eventForm) {
-        Optional<DailyReport> report = reportService.findActive(true);
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        Optional<DailyReport> report = reportService.findActive(true);
         Event event = eventRepository.findById(eventId).get();
-        event.setActive(eventForm.isActive());
-        event.setUpdateDate(LocalDateTime.now());
-        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-        event.setPersianUpdate(dateTime.format(PersianDateTime.fromGregorian(event.getUpdateDate())));
-        var description = event.getDescription()
-                + " ( "
-                + event.getPersianUpdate()
-                + "-->"
-                + eventForm.getDescription()
-                + " ) "
-                + System.lineSeparator();
-        event.setDescription(description);
+        EventDetail eventDetail = activeEventDetailRegister(event, eventForm);
+        eventDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(eventDetail.getUpdated())));
+
+        if (!eventForm.isActive()) {
+            event.setActive(false);
+        }
 
         if (report.get().getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
             event.setDailyReportList(report.get());
         }
+
         eventRepository.save(event);
 
     }

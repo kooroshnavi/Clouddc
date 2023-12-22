@@ -18,7 +18,7 @@ public interface EventService {
 
     Model modelForEventController(Model model);
 
-    Model modelForEventUpdate(Model model, int eventId);
+    Model modelForEventDetail(Model model, int eventId);
 
     Model modelForEventList(Model model);
 
