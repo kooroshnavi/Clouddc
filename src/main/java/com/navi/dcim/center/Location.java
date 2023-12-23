@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Center")
 @NoArgsConstructor
 public class Location {
 

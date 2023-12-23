@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table
+@Table(schema = "Event")
 @NoArgsConstructor
 public class EventDetail {
 

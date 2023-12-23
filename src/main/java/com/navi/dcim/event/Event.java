@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Event")
 @NoArgsConstructor
 public class Event {
 
