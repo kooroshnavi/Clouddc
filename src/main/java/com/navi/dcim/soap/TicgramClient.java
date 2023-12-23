@@ -15,7 +15,7 @@ import javax.xml.transform.stream.StreamSource;
 import java.awt.*;
 import java.io.StringReader;
 import java.util.Map;
-
+/*
 @Configuration
 @Slf4j
 public class TicgramClient {
@@ -30,7 +30,7 @@ public class TicgramClient {
 
         System.out.println(result);
     }*/
-
+/*
     private final static String wsUrl = "http://webservices.oorsprong.org/websamples.countryinfo/CountryInfoService.wso";
 
     private static final String MESSAGE =
@@ -66,3 +66,4 @@ public class TicgramClient {
 
     }
 }
+*/
