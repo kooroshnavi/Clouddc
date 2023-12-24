@@ -1,10 +1,10 @@
 package com.navi.dcim.notification;
 
+import com.navi.dcim.person.Person;
+
+import java.time.LocalDateTime;
+
 public interface NotificationService {
 
-    void postNotification();
-
-    void getNotification();
-
-    void getNotificationList();
+    void sendSuccessLoginMessage(Person person, String ipAddress, LocalDateTime dateTime);
 }
