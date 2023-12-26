@@ -26,12 +26,9 @@ public class SecurityConfig {
 
 
     private final NotificationService notificationService;
-    private final PersonService personService;
-
     @Autowired
-    public SecurityConfig(NotificationService notificationService, PersonService personService) {
+    public SecurityConfig(NotificationService notificationService) {
         this.notificationService = notificationService;
-        this.personService = personService;
     }
 
     @Bean
@@ -47,10 +44,10 @@ public class SecurityConfig {
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect("/");
                             log.info(request.getRemoteAddr());
-                            notificationService.sendSuccessLoginMessage(
-                                    personService.getPerson(authentication.getName())
+                         /*   notificationService.(
+                                    authentication.getName()
                                     , request.getRemoteAddr()
-                                    , LocalDateTime.now());
+                                    , LocalDateTime.now());*/
                         })
                         .failureUrl("/login?error=true")
                         .permitAll()// If the user fails to login, application will redirect the user to this endpoint
