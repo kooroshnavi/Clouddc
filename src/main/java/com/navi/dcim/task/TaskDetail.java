@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 @Entity
-@Table
+@Table(schema = "Task")
 @NoArgsConstructor
 public class TaskDetail {
     @Id

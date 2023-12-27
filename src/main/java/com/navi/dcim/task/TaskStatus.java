@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Task")
 @NoArgsConstructor
 public class TaskStatus {
     @Id
