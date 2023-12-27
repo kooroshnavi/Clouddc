@@ -41,7 +41,6 @@ public class SoapClientService {
 
     private void sendMessage(String message, String address) {
 
-
         URL url;
         URLConnection connection;
         HttpURLConnection httpConn;
@@ -70,7 +69,7 @@ public class SoapClientService {
             connection = url.openConnection();
             httpConn = (HttpURLConnection) connection;
 
-            byte[] buffer = xmlInput.getBytes();
+            final byte[] buffer = xmlInput.getBytes();
 
             httpConn.setRequestProperty("Content-Type",
                     "text/xml; charset=utf-8");
