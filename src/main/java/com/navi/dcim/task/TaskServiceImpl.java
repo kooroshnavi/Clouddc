@@ -5,6 +5,7 @@ import com.github.mfathi91.time.PersianDateTime;
 import com.navi.dcim.center.Center;
 import com.navi.dcim.center.CenterService;
 import com.navi.dcim.event.EventService;
+import com.navi.dcim.notification.NotificationService;
 import com.navi.dcim.person.Person;
 import com.navi.dcim.person.PersonService;
 import com.navi.dcim.report.DailyReport;
@@ -22,6 +23,7 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -40,7 +42,9 @@ public class TaskServiceImpl implements TaskService {
     private final PersonService personService;
     private final ReportService reportService;
     private final EventService eventService;
+    private final NotificationService notificationService;
     private static LocalDate CurrentDate;
+
 
     @Autowired
     TaskServiceImpl(TaskStatusRepository taskStatusRepository,
@@ -49,7 +53,7 @@ public class TaskServiceImpl implements TaskService {
                     CenterService centerService,
                     PersonService personService,
                     ReportService reportService,
-                    @Lazy EventService eventService) {
+                    @Lazy EventService eventService, NotificationService notificationService) {
         this.taskStatusRepository = taskStatusRepository;
         this.taskRepository = taskRepository;
         this.taskDetailRepository = taskDetailRepository;
@@ -57,6 +61,7 @@ public class TaskServiceImpl implements TaskService {
         this.personService = personService;
         this.reportService = reportService;
         this.eventService = eventService;
+        this.notificationService = notificationService;
     }
 
     @Scheduled(cron = "@midnight")
@@ -72,19 +77,19 @@ public class TaskServiceImpl implements TaskService {
 
         delayCalculation(taskList);
 
-        for (TaskStatus status : taskStatusList
-        ) {
-            Task todayTask = setupTask(status, centers);
-            TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
-            todayTask.setTaskDetailList(taskDetail);
-            status.setTasks(todayTask);
-            status.setActive(true);
+        if (!taskStatusList.isEmpty()) {
+            for (TaskStatus status : taskStatusList
+            ) {
+                Task todayTask = setupTask(status, centers);
+                TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
+                todayTask.setTaskDetailList(taskDetail);
+                status.setTasks(todayTask);
+                status.setActive(true);
+            }
         }
 
         taskStatusRepository.saveAll(taskStatusList);
-        System.out.println();
-        log.info("Scheduler successful @: " + LocalDateTime.now());
-        System.out.println();
+        notificationService.sendScheduleUpdateMessage(null, "Scheduler successful @: " + LocalDateTime.now());
     }
 
     private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
@@ -114,8 +119,7 @@ public class TaskServiceImpl implements TaskService {
         if (!taskList.isEmpty()) {
             for (Task task : taskList
             ) {
-                var delay = task.getDelay();
-                delay += 1;
+                var delay = LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
                 task.setDelay(delay);
             }
             taskRepository.saveAll(taskList);
@@ -213,9 +217,10 @@ public class TaskServiceImpl implements TaskService {
         newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
         newTaskDetail.setPerson(person);
         newTaskDetail.setTask(thisTask);
-
         thisTask.getTaskDetailList().add(newTaskDetail);
         taskRepository.save(thisTask);
+
+        notificationService.sendActiveTaskAssignedMessage(person.getAddress(), thisTask.getTaskStatus().getName(), thisTask.getDelay(), newTaskDetail.getAssignedDate());
         return thisTask.getTaskDetailList();
     }
 
@@ -265,20 +270,16 @@ public class TaskServiceImpl implements TaskService {
 
         TaskDetail taskDetail = new TaskDetail();
         taskDetail.setTask(todayTask);
-        if (pmRegisterForm.getPersonId() == 1) { // Random
-            List<Person> personList = personService.getPersonList();
-            taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
-        } else { // assign to specified user
-            Person person = personService.getPerson(pmRegisterForm.getPersonId());
-            taskDetail.setPerson(person);
-        }
-
+        // assign to specified user
+        Person person = personService.getPerson(pmRegisterForm.getPersonId());
+        final String address = person.getAddress();
+        taskDetail.setPerson(person);
         taskDetail.setAssignedDate(LocalDateTime.now());
         taskDetail.setActive(true);
-
         todayTask.setTaskDetailList(taskDetail);
         newTaskStatus.setTasks(todayTask);
         taskStatusRepository.save(newTaskStatus);
+        notificationService.sendNewTaskAssignedMessage(address, newTaskStatus.getName(), taskDetail.getAssignedDate());
     }
 
     private Person getCurrentPerson() {

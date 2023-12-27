@@ -1,13 +1,12 @@
-package com.navi.dcim.person;
+package com.navi.dcim.resource;
 
-import com.navi.dcim.resource.Device;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Resource")
 @NoArgsConstructor
 public class Utilizer {
 

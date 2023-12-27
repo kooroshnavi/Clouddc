@@ -142,13 +142,12 @@
                                             </div>
 
                                             <div class="form-row" dir="rtl">
-                                                <div class="name">انتساب به کارتابل</div>
+                                                <div class="name">انتساب به کارتابل همکار</div>
                                                 <div class="value" >
                                                     <div class="input-group">
                                                         <div class="rs-select2 js-select-simple select--no-search">
                                                             <select name="subject" th:field="*{personId}" >
                                                                 <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                                                <option th:value="1">خودکار</option>
                                                                 <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
                                                             </select>
                                                             <div class="select-dropdown"></div>
@@ -164,7 +163,6 @@
                                                         <div class="rs-select2 js-select-simple select--no-search">
                                                             <select name="subject" th:field="*{centerId}" >
                                                                 <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                                                <option th:value="0">تمام سالن ها</option>
                                                                 <option th:each="center : ${centerList}" th:value="${center.getId}" th:text="${center.getNamePersian}"></option>
                                                             </select>
                                                             <div class="select-dropdown"></div>
@@ -183,6 +181,8 @@
                                                                 <option th:value="0">فقط یکبار</option>
                                                                 <option th:value="1">روزانه</option>
                                                                 <option th:value="7">هفتگی</option>
+                                                                <option th:value="14">هر دو هفته</option>
+                                                                <option th:value="21">هر سه هفته</option>
                                                                 <option th:value="30">ماهانه</option>
                                                                 <option th:value="90">سه ماهه</option>
                                                                 <option th:value="180">شش ماهه</option>
@@ -197,19 +197,19 @@
 
                                             <div class="form-row" dir="rtl">
                                                 <div class="name">پیوست</div>
-                                                <div class="value">
+                                                <div class="value" >
                                                     <div class="input-group js-input-file">
-                                                        <input class="input-file" type="file" name="file_cv" id="file">
-                                                        <label class="label--file" for="file">بارگذاری</label>
+                                                        <input class="input-file" type="file" name="file_cv" id="file" disabled="disabled">
+                                                        <label class="label--file" for="file" >بارگذاری</label>
                                                         <span class="input-file__info">فایلی انتخاب نشده است</span>
                                                     </div>
-                                                    <div class="label--desc">حداکثر 10 مگابایت</div>
+                                                    <div class="label--desc">در حال توسعه</div>
                                                 </div>
                                             </div>
 
                                             <div class="card-footer" dir="rtl">
-                                                <button class="btn btn--radius-2 btn--blue-2" type="submit">ثبت</button>
-                                                <div class="label--desc" dir="rtl">وظیفه پس از ثبت به کارتابل مربوطه منتسب می شود.</div>
+                                                <button class="btn btn--radius-2 btn--blue-2" type="submit" >ثبت</button>
+                                                <div class="label--desc" dir="rtl">وظیفه پس از ثبت به کارتابل مربوطه منتسب و اطلاع رسانی به همکار منتسب از طریق تیک گرام انجام می شود.</div>
                                             </div>
                                         </form>
                                     </div>

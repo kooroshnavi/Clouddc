@@ -1,7 +1,6 @@
 package com.navi.dcim.resource;
 
 import com.navi.dcim.center.Location;
-import com.navi.dcim.person.Utilizer;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -10,7 +9,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Resource")
 @NoArgsConstructor
 public class Device {
 

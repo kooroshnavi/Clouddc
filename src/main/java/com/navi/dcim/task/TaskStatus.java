@@ -1,7 +1,6 @@
 package com.navi.dcim.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.navi.dcim.task.Task;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -12,7 +11,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Task")
 @NoArgsConstructor
 public class TaskStatus {
     @Id

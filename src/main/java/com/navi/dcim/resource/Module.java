@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(schema = "Resource")
 @NoArgsConstructor
 public class Module {
     @Id

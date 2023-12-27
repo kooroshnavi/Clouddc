@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table
+@Table(schema = "Center")
 @NoArgsConstructor
 public class Center {
 
@@ -13,9 +13,6 @@ public class Center {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private int id;
-
-    @Column
-    private String name;
 
     @Column
     private String location;
@@ -31,15 +28,6 @@ public class Center {
     public void setId(int id) {
         this.id = id;
     }
-    @JsonIgnore
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
     @JsonIgnore
     public String getLocation() {
         return location;

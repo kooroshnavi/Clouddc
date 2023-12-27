@@ -1,13 +1,10 @@
 package com.navi.dcim.center;
 
-import com.navi.dcim.resource.Device;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
-@Table
+@Table(schema = "Center")
 @NoArgsConstructor
 public class Location {
 
@@ -28,9 +25,6 @@ public class Location {
     @OneToOne
     @JoinColumn(name = "center_id")
     private Center center;
-
-    @OneToMany(mappedBy = "location")
-    private List<Device> devices;
 
     public int getId() {
         return id;
@@ -72,14 +66,6 @@ public class Location {
         this.center = center;
     }
 
-    public List<Device> getDevices() {
-        return devices;
-    }
-
-    public void setDevices(List<Device> devices) {
-        this.devices = devices;
-    }
-
 
     @Override
     public String toString() {
@@ -89,7 +75,6 @@ public class Location {
                 ", rack=" + rack +
                 ", power=" + power +
                 ", center=" + center +
-                ", devices=" + devices +
                 '}';
     }
 }

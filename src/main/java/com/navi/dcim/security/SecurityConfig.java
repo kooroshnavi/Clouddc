@@ -1,7 +1,6 @@
 package com.navi.dcim.security;
 
 import com.navi.dcim.notification.NotificationService;
-import com.navi.dcim.person.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -43,11 +42,10 @@ public class SecurityConfig {
                         .permitAll()
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect("/");
-                            log.info(request.getRemoteAddr());
-                         /*   notificationService.(
+                            notificationService.sendSuccessLoginMessage(
                                     authentication.getName()
                                     , request.getRemoteAddr()
-                                    , LocalDateTime.now());*/
+                                    , LocalDateTime.now());
                         })
                         .failureUrl("/login?error=true")
                         .permitAll()// If the user fails to login, application will redirect the user to this endpoint

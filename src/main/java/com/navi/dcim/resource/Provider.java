@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Resource")
 @NoArgsConstructor
 public class Provider {
     @Id

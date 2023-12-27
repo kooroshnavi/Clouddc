@@ -6,8 +6,6 @@ import com.navi.dcim.center.Center;
 import com.navi.dcim.person.Person;
 import com.navi.dcim.report.DailyReport;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -15,7 +13,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table
+@Table(schema = "Event")
 @NoArgsConstructor
 public class Event {
 
@@ -49,7 +47,7 @@ public class Event {
     private Center center;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinTable(name = "report_event", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "report_id"))
+    @JoinTable(name = "report_event", schema = "Report", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "report_id"))
     private List<DailyReport> dailyReportList;
 
     @Transient
@@ -66,7 +64,7 @@ public class Event {
             , EventType eventType
             , Person person
             , Center center
-            ) {
+    ) {
         this.eventDate = eventDate;
         this.updateDate = updateDate;
         this.active = active;
@@ -81,8 +79,8 @@ public class Event {
     }
 
     public void setDailyReportList(DailyReport report) {
-        if (this.dailyReportList == null){
-            this.dailyReportList =  new ArrayList<>();
+        if (this.dailyReportList == null) {
+            this.dailyReportList = new ArrayList<>();
         }
         this.dailyReportList.add(report);
     }
