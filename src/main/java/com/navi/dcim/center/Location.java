@@ -25,7 +25,7 @@ public class Location {
     @Column
     private boolean power; // Has power or not
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "center_id")
     private Center center;
 

@@ -4,8 +4,10 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
-@Table(name = "Center", schema = "Center")
+@Table(schema = "Center")
 @NoArgsConstructor
 public class Center {
 
@@ -18,10 +20,18 @@ public class Center {
     private String name;
 
     @Column
-    private String location;
-
-    @Column
     private String namePersian;
+
+    @OneToMany(mappedBy = "center")
+    private List<Location> locationList;
+
+    public List<Location> getLocationList() {
+        return locationList;
+    }
+
+    public void setLocationList(List<Location> locationList) {
+        this.locationList = locationList;
+    }
 
     @JsonIgnore
     public int getId() {
@@ -38,15 +48,6 @@ public class Center {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    @JsonIgnore
-    public String getLocation() {
-        return location;
-    }
-
-    public void setLocation(String location) {
-        this.location = location;
     }
 
     public String getNamePersian() {

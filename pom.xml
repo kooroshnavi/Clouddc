@@ -110,6 +110,7 @@
     </dependencies>
 
     <build>
+        <finalName>app-231229</finalName>
         <resources>
             <resource>
                 <directory>src/main/resources</directory>
@@ -122,6 +123,9 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <executable>
+                        true
+                    </executable>
                     <excludes>
                         <exclude>
                             <groupId>org.projectlombok</groupId>

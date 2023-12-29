@@ -1,7 +1,10 @@
 package com.navi.dcim.security;
 
 import com.navi.dcim.notification.NotificationService;
+import com.ulisesbocchio.jasyptspringboot.encryptor.SimpleGCMConfig;
+import com.ulisesbocchio.jasyptspringboot.encryptor.SimpleGCMStringEncryptor;
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.encryption.StringEncryptor;
 import org.jasypt.encryption.pbe.PBEStringEncryptor;
 import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
 import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
@@ -19,13 +22,14 @@ import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
 import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import javax.sql.DataSource;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.time.LocalDateTime;
 
 @Configuration
 @EnableMethodSecurity
 @Slf4j
 public class SecurityConfig {
-
 
     private final NotificationService notificationService;
 
