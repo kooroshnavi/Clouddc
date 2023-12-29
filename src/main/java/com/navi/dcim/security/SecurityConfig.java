@@ -2,6 +2,9 @@ package com.navi.dcim.security;
 
 import com.navi.dcim.notification.NotificationService;
 import lombok.extern.slf4j.Slf4j;
+import org.jasypt.encryption.pbe.PBEStringEncryptor;
+import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
+import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,6 +28,7 @@ public class SecurityConfig {
 
 
     private final NotificationService notificationService;
+
     @Autowired
     public SecurityConfig(NotificationService notificationService) {
         this.notificationService = notificationService;
@@ -84,4 +88,5 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 }

@@ -42,7 +42,7 @@ public class Event {
     private List<EventDetail> eventDetailList;
 
     @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinTable(name = "report_event", joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "report_id"))
+    @JoinTable(name = "report_event", schema = "Report" ,joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "report_id"))
     private List<DailyReport> dailyReportList;
 
     @Transient

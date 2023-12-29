@@ -1,6 +1,7 @@
 package com.navi.dcim.soap2;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -17,9 +18,10 @@ import java.net.URLConnection;
 @Slf4j
 public class SoapClientService {
 
-    private static final String PRINCIPAL = "khadamatnovin.cen";
-
-    private static final String CREDENTIAL = "yhnYHNujmUJM123!@#";
+    @Value("${soap.principal}")
+    private static String PRINCIPAL;
+    @Value("${soap.credential}")
+    private static String CREDENTIAL;
 
     private static final String WEBSERVICE_URL = "http://emas.tic.ir/sendingsmsto.asmx";
 
