@@ -1,10 +1,14 @@
 package com.navi.dcim.notification;
 
+import java.time.LocalDateTime;
+
 public interface NotificationService {
 
-    void postNotification();
+    void sendSuccessLoginMessage(String personAddress, String ipAddress, LocalDateTime dateTime);
 
-    void getNotification();
+    void sendNewTaskAssignedMessage(String personAddress, String taskTitle, LocalDateTime dateTime);
 
-    void getNotificationList();
+    void sendActiveTaskAssignedMessage(String personAddress, String taskTitle, int delay, LocalDateTime dateTime);
+
+    void sendScheduleUpdateMessage(String personAddress, String log);
 }

@@ -1,7 +1,6 @@
 package com.navi.dcim.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.navi.dcim.task.Task;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

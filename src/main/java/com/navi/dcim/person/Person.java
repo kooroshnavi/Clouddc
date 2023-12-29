@@ -2,11 +2,13 @@ package com.navi.dcim.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(schema = "Person")
+@NoArgsConstructor
 public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,6 +23,22 @@ public class Person {
 
     @Column(name = "last_login")
     private LocalDateTime lastLogin;
+
+    @Column
+    private String address;
+
+    @Column
+    private boolean assignee; // false for managers
+
+    @JsonIgnore
+    public boolean isAssignee() {
+        return assignee;
+    }
+
+    @JsonIgnore
+    public String getAddress() {
+        return address;
+    }
 
     public void setUsername(String username) {
         this.username = username;

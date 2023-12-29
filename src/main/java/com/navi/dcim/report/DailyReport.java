@@ -29,7 +29,7 @@ public class DailyReport {
     private List<Task> taskList;
 
     @ManyToMany
-    @JoinTable(name = "report_event", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
+    @JoinTable(name = "report_event", schema = "Report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
 
     public LocalDate getDate() {

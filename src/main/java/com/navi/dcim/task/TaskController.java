@@ -3,6 +3,7 @@ package com.navi.dcim.task;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -23,7 +24,7 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @GetMapping(value = {"", "/",})
+    @RequestMapping(value = {"", "/",}, method = {RequestMethod.GET})
     public String index(Model model) {
         taskService.modelForMainPage(model);
         return "home";

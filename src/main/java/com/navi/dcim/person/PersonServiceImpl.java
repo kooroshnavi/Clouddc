@@ -36,14 +36,14 @@ final class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> getPersonList() {
-        return personRepository.findAll();
+        return personRepository.findAllByAssignee(true);
     }
 
     @Override
     public List getPersonListNotIn(int personId) {
         List<Integer> ids = new ArrayList<>();
         ids.add(personId);
-        return personRepository.findAllByIdNotIn(ids);
+        return personRepository.findAllByIdNotInAndAssignee(ids, true);
     }
 
     @Override
