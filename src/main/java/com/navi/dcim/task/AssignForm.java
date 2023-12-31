@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 public class AssignForm {
 
     @NotNull
-    private int id;
+    private Long id;
 
     @NotBlank(message = "Description is obligatory")
     @Size(min = 5, max = 1000)
@@ -23,11 +23,11 @@ public class AssignForm {
         this.actionType = actionType;
     }
 
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

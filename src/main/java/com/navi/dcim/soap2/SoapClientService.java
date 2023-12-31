@@ -1,7 +1,9 @@
 package com.navi.dcim.soap2;
 
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
@@ -14,36 +16,37 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.charset.StandardCharsets;
 
+@Service
 @Slf4j
+@NoArgsConstructor
 public class SoapClientService {
 
     @Value("${soap.principal}")
-    private static String PRINCIPAL;
+    private String principal;
     @Value("${soap.credential}")
-    private static String CREDENTIAL;
+    private String credential;
 
     private static final String WEBSERVICE_URL = "http://emas.tic.ir/sendingsmsto.asmx";
 
     private static final String HEADER  = "     'سامانه نگه داری و پایش زیرساخت ابر'    ";
 
-    private final String message;
+    private String message;
 
-    private final String address;
+    private String address;
 
     private String response;
-
-    public SoapClientService(String message, String address) {
-        this.message = HEADER + System.lineSeparator() +  message;
-        this.address = address;
-        this.sendMessage(this.message, this.address);
-    }
 
     public String getResponse() {
         return response;
     }
 
-    private void sendMessage(String message, String address) {
+    public void sendMessage(String message, String address) {
+
+        this.message = HEADER + System.lineSeparator() + System.lineSeparator() + message + System.lineSeparator();
+        this.address = address;
+        log.info(this.message);
 
         URL url;
         URLConnection connection;
@@ -58,11 +61,11 @@ public class SoapClientService {
                 "<soap12:Envelope xmlns:soap12=\"http://www.w3.org/2003/05/soap-envelope\">\n" +
                         "  <soap12:Body>\n" +
                         "    <sendmessage xmlns=\"http://tempuri.org/\">\n" +
-                        "      <us>" + PRINCIPAL + "</us>\n" +
-                        "      <ps>" + CREDENTIAL + "</ps>\n" +
-                        "      <text>" + message +
+                        "      <us>" + this.principal + "</us>\n" +
+                        "      <ps>" + this.credential + "</ps>\n" +
+                        "      <text>" + this.message +
                         "                        </text>\n" +
-                        "      <tell>" + address + "</tell>\n" +
+                        "      <tell>" + this.address + "</tell>\n" +
                         "    </sendmessage>\n" +
                         "  </soap12:Body>\n" +
                         "</soap12:Envelope>";
@@ -73,7 +76,7 @@ public class SoapClientService {
             connection = url.openConnection();
             httpConn = (HttpURLConnection) connection;
 
-            final byte[] buffer = xmlInput.getBytes();
+            final byte[] buffer = xmlInput.getBytes(StandardCharsets.UTF_8);
 
             httpConn.setRequestProperty("Content-Type",
                     "text/xml; charset=utf-8");

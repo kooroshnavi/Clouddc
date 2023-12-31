@@ -3,13 +3,10 @@ package com.navi.dcim.task;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.HttpServerErrorException;
 
 import java.util.List;
 
@@ -79,7 +76,7 @@ public class TaskController {
 
 
     @GetMapping("/task/{id}/detail")
-    public String getTaskDetail(@PathVariable("id") int id, Model model) {
+    public String getTaskDetail(@PathVariable("id") Long id, Model model) {
 
         taskService.modelForTaskDetail(model, id);
 
@@ -88,7 +85,7 @@ public class TaskController {
 
 
     @GetMapping("/task/detail/{id}/form")
-    public String showAssignForm(@PathVariable("id") int id,
+    public String showAssignForm(@PathVariable("id") Long id,
                                  Model model) {
 
         taskService.modelForActionForm(model, id);
@@ -99,7 +96,7 @@ public class TaskController {
 
     @PostMapping("/task/detail/{id}/form")
     public String assignTaskDetail(Model model,
-                                   @PathVariable("id") int id,
+                                   @PathVariable("id") Long id,
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
         System.out.println("Captured: " + model.getAttribute("assignForm").toString());
 

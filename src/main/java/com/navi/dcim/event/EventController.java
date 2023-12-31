@@ -39,13 +39,13 @@ public class EventController {
     }
 
     @GetMapping("/detail")
-    public String viewEvent(@RequestParam int eventId, Model model) {
+    public String viewEvent(@RequestParam Long eventId, Model model) {
         eventService.modelForEventDetail(model, eventId);
         return "eventDetail";
     }
 
     @GetMapping("/detail/form")
-    public String viewDetail(Model model, @RequestParam int eventId) {
+    public String viewDetail(Model model, @RequestParam Long eventId) {
         //addAttributes(model);
         model.addAttribute("eventForm", new EventForm());
         model.addAttribute("event",eventService.getEvent(eventId));
@@ -54,7 +54,7 @@ public class EventController {
 
     @PostMapping("/update")
     public String updateEvent(Model model
-            , @RequestParam int eventId
+            , @RequestParam Long eventId
             , @ModelAttribute("eventForm") EventForm eventForm) {
         eventService.updateEvent(eventId, eventForm);
         eventService.modelForEventList(model);

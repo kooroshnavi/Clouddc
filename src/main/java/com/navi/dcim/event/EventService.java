@@ -10,7 +10,7 @@ public interface EventService {
 
     void eventRegister(EventForm eventForm);
 
-    Event getEvent(int eventId);
+    Event getEvent(Long eventId);
 
     List<EventType> getEventTypeList();
 
@@ -18,13 +18,13 @@ public interface EventService {
 
     Model modelForEventController(Model model);
 
-    Model modelForEventDetail(Model model, int eventId);
+    Model modelForEventDetail(Model model, Long eventId);
 
     Model modelForEventList(Model model);
 
     List<Event> getEventList();
 
-    void updateEvent(int eventId, EventForm eventForm);
+    void updateEvent(Long eventId, EventForm eventForm);
 
     List<Event> getPendingEventList();
 

@@ -1,8 +1,11 @@
 package com.navi.dcim.notification;
 
 import com.github.mfathi91.time.PersianDateTime;
+import com.navi.dcim.person.PersonService;
 import com.navi.dcim.soap2.SoapClientService;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -12,11 +15,21 @@ import java.time.format.DateTimeFormatter;
 @Slf4j
 public class SoapNotificationService implements NotificationService {
 
+    private final SoapClientService soapClientService;
+
+    private final PersonService personService;
+    @Autowired
+    public SoapNotificationService(SoapClientService soapClientService, @Lazy PersonService personService) {
+        this.soapClientService = soapClientService;
+        this.personService = personService;
+    }
 
     @Override
-    public void sendSuccessLoginMessage(String personAddress, String ipAddress, LocalDateTime originDatetime) {
+    public void sendSuccessLoginMessage(String personName, String ipAddress, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
+        var person  = personService.getPerson(personName);
+        var address = person.getAddress().getValue();
 
         final String successLoginMessage =
                 "ورود موفق" +
@@ -28,7 +41,7 @@ public class SoapNotificationService implements NotificationService {
                         persianDateTime +
                         System.lineSeparator();
 
-        SoapClientService soapClientService = new SoapClientService(successLoginMessage, "09127016653");
+        soapClientService.sendMessage(successLoginMessage, address);
         log.info(soapClientService.getResponse());
     }
 
@@ -44,11 +57,11 @@ public class SoapNotificationService implements NotificationService {
                         "در تاریخ و ساعت: " +
                         persianDateTime +
                         System.lineSeparator() +
-                        "تعریف و در کارتابل شما قرار گرفت." +
+                        "ثبت و در کارتابل شما قرار گرفت." +
                         System.lineSeparator();
 
 
-        SoapClientService soapClientService = new SoapClientService(newTaskAssignMessage, personAddress);
+        soapClientService.sendMessage(newTaskAssignMessage, personAddress);
         log.info(soapClientService.getResponse());
     }
 
@@ -65,10 +78,10 @@ public class SoapNotificationService implements NotificationService {
                                 "در تاریخ و ساعت: " +
                                 persianDateTime +
                                 System.lineSeparator() +
-                                "از طریق انتساب دیگر همکاران در کارتابل شما قرار گرفت." +
+                                "با انتساب دیگر همکاران در کارتابل شما قرار گرفت." +
                                 System.lineSeparator();
 
-                SoapClientService soapClientService = new SoapClientService(activeAssignMessage, personAddress);
+                soapClientService.sendMessage(activeAssignMessage, personAddress);
                 log.info(soapClientService.getResponse());
                 break;
             }
@@ -80,14 +93,14 @@ public class SoapNotificationService implements NotificationService {
                                 "در تاریخ و ساعت: " +
                                 persianDateTime +
                                 System.lineSeparator() +
-                                "از طریق انتساب دیگر همکاران در کارتابل شما قرار گرفت. " +
+                                "با انتساب دیگر همکاران در کارتابل شما قرار گرفت. " +
                                 System.lineSeparator() +
-                                "تاخیر اتمام انجام این وظیفه تا امروز برابر با " +
+                                "تاخیر در اتمام انجام این وظیفه برابر با " +
                                 delay +
                                 " روز می باشد." +
                                 System.lineSeparator();
 
-                SoapClientService soapClientService = new SoapClientService(activeAssignMessage, personAddress);
+                soapClientService.sendMessage(activeAssignMessage, personAddress);
                 log.info(soapClientService.getResponse());
                 break;
         }
@@ -97,7 +110,7 @@ public class SoapNotificationService implements NotificationService {
     @Override
     public void sendScheduleUpdateMessage(String personAddress, String logMessage) {
         final String scheduleLogMessage = logMessage;
-        SoapClientService soapClientService = new SoapClientService(scheduleLogMessage, "09127016653");
+        soapClientService.sendMessage(scheduleLogMessage, "09127016653");
         log.info(soapClientService.getResponse());
     }
 }

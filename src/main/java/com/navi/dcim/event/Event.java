@@ -3,11 +3,8 @@ package com.navi.dcim.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.navi.dcim.center.Center;
-import com.navi.dcim.person.Person;
 import com.navi.dcim.report.DailyReport;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
@@ -22,7 +19,7 @@ public class Event {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Long id;
 
     @Column
     private LocalDateTime eventDate;
@@ -84,7 +81,7 @@ public class Event {
         this.dailyReportList.add(report);
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -113,7 +110,7 @@ public class Event {
     }
 
     @JsonIgnore
-    public int getId() {
+    public Long getId() {
         return id;
     }
 

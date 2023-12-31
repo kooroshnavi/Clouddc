@@ -7,20 +7,20 @@ import java.util.List;
 public interface TaskService {
 
 
-    Task getTask(int taskId);
+    Task getTask(Long taskId);
     List<Task> getTaskListById(int taskStatusId);
     List<Task> getPersonTask();
     Model modelForMainPage(Model model);
     Model modelForRegisterTask(Model model);
     Model modelForTaskController(Model model);
-    Model modelForTaskDetail(Model model, int taskId);
+    Model modelForTaskDetail(Model model, Long taskId);
     Model modelForPersonTaskList(Model model);
 
-    TaskDetail modelForActionForm(Model model, int taskDetailId);
+    TaskDetail modelForActionForm(Model model, Long taskDetailId);
 
     void updateTodayTasks();
 
     void taskRegister(PmRegisterForm pmRegisterForm);
 
-    void updateTaskDetail(AssignForm assignForm, int id);
+    void updateTaskDetail(AssignForm assignForm, Long id);
 }

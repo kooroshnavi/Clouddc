@@ -89,7 +89,7 @@ public class TaskServiceImpl implements TaskService {
         }
 
         taskStatusRepository.saveAll(taskStatusList);
-        notificationService.sendScheduleUpdateMessage(null, "Scheduler successful @: " + LocalDateTime.now());
+        notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
     private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
@@ -188,7 +188,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
 
-    private List<TaskDetail> getTaskDetailById(int taskId) {
+    private List<TaskDetail> getTaskDetailById(Long taskId) {
         Task task = taskRepository.findById(taskId).get();
 
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
@@ -220,7 +220,7 @@ public class TaskServiceImpl implements TaskService {
         thisTask.getTaskDetailList().add(newTaskDetail);
         taskRepository.save(thisTask);
 
-        notificationService.sendActiveTaskAssignedMessage(person.getAddress(), thisTask.getTaskStatus().getName(), thisTask.getDelay(), newTaskDetail.getAssignedDate());
+        notificationService.sendActiveTaskAssignedMessage(person.getAddress().getValue(), thisTask.getTaskStatus().getName(), thisTask.getDelay(), newTaskDetail.getAssignedDate());
         return thisTask.getTaskDetailList();
     }
 
@@ -229,7 +229,7 @@ public class TaskServiceImpl implements TaskService {
     }// returns a list of users that will be shown in the drop-down list of assignForm.
 
     @Override
-    public void updateTaskDetail(AssignForm assignForm, int id) {
+    public void updateTaskDetail(AssignForm assignForm, Long id) {
         TaskDetail taskDetail = taskDetailRepository.findById(id).get();
         switch (assignForm.getActionType()) {
             case 100:     // Ends task. No assign
@@ -246,7 +246,7 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    public Task getTask(int taskDetailId) {
+    public Task getTask(Long taskDetailId) {
         return taskDetailRepository.findById(taskDetailId).get().getTask();
     }
 
@@ -272,14 +272,14 @@ public class TaskServiceImpl implements TaskService {
         taskDetail.setTask(todayTask);
         // assign to specified user
         Person person = personService.getPerson(pmRegisterForm.getPersonId());
-        final String address = person.getAddress();
+        //final String address = person.getAddress();
         taskDetail.setPerson(person);
         taskDetail.setAssignedDate(LocalDateTime.now());
         taskDetail.setActive(true);
         todayTask.setTaskDetailList(taskDetail);
         newTaskStatus.setTasks(todayTask);
         taskStatusRepository.save(newTaskStatus);
-        notificationService.sendNewTaskAssignedMessage(address, newTaskStatus.getName(), taskDetail.getAssignedDate());
+        notificationService.sendNewTaskAssignedMessage(person.getAddress().getValue(), newTaskStatus.getName(), taskDetail.getAssignedDate());
     }
 
     private Person getCurrentPerson() {
@@ -349,7 +349,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Model modelForTaskDetail(Model model, int taskId) {
+    public Model modelForTaskDetail(Model model, Long taskId) {
         List<TaskDetail> taskDetailList = getTaskDetailById(taskId);
         var delay = taskDetailList.get(0).getTask().getDelay();
         var duedate = PersianDate.fromGregorian(taskDetailList.get(0).getTask().getDueDate());
@@ -378,7 +378,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
-    public TaskDetail modelForActionForm(Model model, int taskDetailId) {
+    public TaskDetail modelForActionForm(Model model, Long taskDetailId) {
         taskDetailRepository.findById(taskDetailId);
         List<Person> personList = getOtherPersonList();
         Task thisTask = getTask(taskDetailId);

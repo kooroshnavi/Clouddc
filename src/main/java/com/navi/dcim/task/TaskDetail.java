@@ -14,7 +14,7 @@ public class TaskDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Long id;
 
     @Column
     private String description;
@@ -46,7 +46,7 @@ public class TaskDetail {
     }
 
     @JsonIgnore
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
@@ -58,7 +58,7 @@ public class TaskDetail {
         this.persianDate = persianDate;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 

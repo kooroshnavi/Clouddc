@@ -25,20 +25,20 @@ public class Person {
     private LocalDateTime lastLogin;
 
     @Column
-    private String address;
-
-    @Column
     private boolean assignee; // false for managers
 
-    @JsonIgnore
+    @OneToOne
+    @PrimaryKeyJoinColumn
+    private Address address;
+
+    public Address getAddress() {
+        return address;
+    }
+
     public boolean isAssignee() {
         return assignee;
     }
 
-    @JsonIgnore
-    public String getAddress() {
-        return address;
-    }
 
     public void setUsername(String username) {
         this.username = username;

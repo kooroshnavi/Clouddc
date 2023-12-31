@@ -85,7 +85,7 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public Event getEvent(int eventId) {
+    public Event getEvent(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         Event event = eventRepository.findById(eventId).get();
         event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
@@ -118,7 +118,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Model modelForEventDetail(Model model, int eventId) {
+    public Model modelForEventDetail(Model model, Long eventId) {
         List<EventDetail> eventDetailList = getEventDetailList(eventId);
 
         model.addAttribute("eventDetailList", eventDetailList);
@@ -130,7 +130,7 @@ public class EventServiceImpl implements EventService {
         return model;
     }
 
-    private List<EventDetail> getEventDetailList(int eventId) {
+    private List<EventDetail> getEventDetailList(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         Event event = eventRepository.findById(eventId).get();
         for (EventDetail eventDetail : event.getEventDetailList()
@@ -168,7 +168,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void updateEvent(int eventId, EventForm eventForm) {
+    public void updateEvent(Long eventId, EventForm eventForm) {
         Optional<DailyReport> report = reportService.findActive(true);
         Event event = eventRepository.findById(eventId).get();
         eventDetailRegister(eventForm, event, LocalDateTime.now());

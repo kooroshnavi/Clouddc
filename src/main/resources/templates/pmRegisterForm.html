@@ -148,7 +148,6 @@
                                                         <div class="rs-select2 js-select-simple select--no-search">
                                                             <select name="subject" th:field="*{personId}" >
                                                                 <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                                                <option th:value="1">خودکار</option>
                                                                 <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
                                                             </select>
                                                             <div class="select-dropdown"></div>
