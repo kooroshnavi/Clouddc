@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/app/main/event")
+@RequestMapping("/event")
 public class EventController {
 
     private final EventService eventService;
@@ -29,19 +29,19 @@ public class EventController {
 
         eventService.eventRegister(eventForm);
         eventService.modelForEventList(model);
-        return "eventList";
+        return "events";
+    }
+
+    @GetMapping("/list")
+    public String viewEvent(Model model) {
+        eventService.modelForEventList(model);
+        return "events";
     }
 
     @GetMapping("/view")
-    public String viewEvent(Model model) {
-        eventService.modelForEventList(model);
-        return "eventList";
-    }
-
-    @GetMapping("/detail")
     public String viewEvent(@RequestParam Long eventId, Model model) {
         eventService.modelForEventDetail(model, eventId);
-        return "eventDetail";
+        return "eventDetailList";
     }
 
     @GetMapping("/detail/form")

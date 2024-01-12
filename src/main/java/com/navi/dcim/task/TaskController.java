@@ -24,8 +24,34 @@ public class TaskController {
     @RequestMapping(value = {"", "/",}, method = {RequestMethod.GET})
     public String index(Model model) {
         taskService.modelForMainPage(model);
-        return "home";
+        return "index2";
     }
+
+    @GetMapping("/pmList")
+    public String pmList(Model model){
+        taskService.modelForMainPage(model);
+        return "pmList";
+    }
+
+    @GetMapping("/pm")
+    public String pmTask(@RequestParam int id, Model model) {
+        List<Task> tasks = taskService.getTaskListById(id);
+        if (!tasks.isEmpty()) {
+            var name = tasks.get(0).getTaskStatus().getName();
+            model.addAttribute("name", name);
+            model.addAttribute("taskList", tasks);
+        }
+        return "taskList";
+    }
+
+    @GetMapping("/pm/task")
+    public String getTaskDetail(@RequestParam Long id, Model model) {
+
+        taskService.modelForTaskDetail(model, id);
+
+        return "taskDetail";
+    }
+
 
     @GetMapping("/update")
     public void updateTask(Model model) {
@@ -55,33 +81,15 @@ public class TaskController {
     }
 
 
-    @GetMapping("/mytask")
+    @GetMapping("/pm/myTask")
     private String getUserTask(Model model) {
 
         taskService.modelForPersonTaskList(model);
 
-        return "userTaskList";
-    }
-
-    @GetMapping("/task")
-    public String getTaskList(@RequestParam int id, Model model) {
-        List<Task> tasks = taskService.getTaskListById(id);
-        if (!tasks.isEmpty()) {
-            var name = tasks.get(0).getTaskStatus().getName();
-            model.addAttribute("name", name);
-            model.addAttribute("taskList", tasks);
-        }
-        return "taskListUi2";
+        return "userTask";
     }
 
 
-    @GetMapping("/task/{id}/detail")
-    public String getTaskDetail(@PathVariable("id") Long id, Model model) {
-
-        taskService.modelForTaskDetail(model, id);
-
-        return "taskDetailUi2";
-    }
 
 
     @GetMapping("/task/detail/{id}/form")

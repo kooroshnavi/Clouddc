@@ -23,8 +23,8 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.chrono.ChronoLocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -85,6 +85,12 @@ public class TaskServiceImpl implements TaskService {
                 todayTask.setTaskDetailList(taskDetail);
                 status.setTasks(todayTask);
                 status.setActive(true);
+                var nextDateDay= CurrentDate.plusDays(status.getPeriod());
+                if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")){
+                    status.setNextDue(LocalDate.now().plusDays(status.getPeriod() + 2));
+                } else if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+                    status.setNextDue(LocalDate.now().plusDays(status.getPeriod() + 1));
+                }
             }
         }
 
@@ -119,7 +125,8 @@ public class TaskServiceImpl implements TaskService {
         if (!taskList.isEmpty()) {
             for (Task task : taskList
             ) {
-                var delay = LocalDate.now().compareTo(ChronoLocalDate.from(task.getDueDate()));
+                var delay = task.getDelay();
+                delay += 1;
                 task.setDelay(delay);
             }
             taskRepository.saveAll(taskList);
@@ -163,7 +170,6 @@ public class TaskServiceImpl implements TaskService {
 
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
-        taskStatus.setNextDue(taskStatus.getLastSuccessful().toLocalDate().plusDays(taskStatus.getPeriod()));
         taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
         taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
         taskStatus.setActive(false);// task is inactive til next due
@@ -334,6 +340,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model modelForMainPage(Model model) {
+        List<TaskStatus> taskStatusList = getTaskStatus();
         model.addAttribute("statusList", getTaskStatus());
 
         return model;
@@ -351,6 +358,8 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public Model modelForTaskDetail(Model model, Long taskId) {
         List<TaskDetail> taskDetailList = getTaskDetailById(taskId);
+        var task = taskRepository.findById(taskId);
+        var active = task.get().isActive();
         var delay = taskDetailList.get(0).getTask().getDelay();
         var duedate = PersianDate.fromGregorian(taskDetailList.get(0).getTask().getDueDate());
         var taskStatusName = taskDetailList.get(0).getTask().getTaskStatus().getName();
@@ -363,6 +372,8 @@ public class TaskServiceImpl implements TaskService {
         model.addAttribute("taskId", taskId);
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
+        model.addAttribute("active", active);
+
 
         return model;
     }

@@ -1,13 +1,7 @@
 package com.navi.dcim.security;
 
 import com.navi.dcim.notification.NotificationService;
-import com.ulisesbocchio.jasyptspringboot.encryptor.SimpleGCMConfig;
-import com.ulisesbocchio.jasyptspringboot.encryptor.SimpleGCMStringEncryptor;
 import lombok.extern.slf4j.Slf4j;
-import org.jasypt.encryption.StringEncryptor;
-import org.jasypt.encryption.pbe.PBEStringEncryptor;
-import org.jasypt.encryption.pbe.PooledPBEStringEncryptor;
-import org.jasypt.encryption.pbe.StandardPBEStringEncryptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -18,13 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.servlet.util.matcher.MvcRequestMatcher;
-import org.springframework.web.servlet.handler.HandlerMappingIntrospector;
 
 import javax.sql.DataSource;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.time.LocalDateTime;
 
 @Configuration
 @EnableMethodSecurity
@@ -39,9 +28,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http, HandlerMappingIntrospector introspector) throws Exception {
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-        MvcRequestMatcher.Builder mvcMatcherBuilder = new MvcRequestMatcher.Builder(introspector);
 
         http
 
@@ -50,10 +38,10 @@ public class SecurityConfig {
                         .permitAll()
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect("/");
-                            notificationService.sendSuccessLoginMessage(
+                          /*  notificationService.sendSuccessLoginMessage(
                                     authentication.getName()
                                     , request.getRemoteAddr()
-                                    , LocalDateTime.now());
+                                    , LocalDateTime.now());*/
                         })
                         .failureUrl("/login?error=true")
                         .permitAll()// If the user fails to login, application will redirect the user to this endpoint
@@ -69,13 +57,13 @@ public class SecurityConfig {
 
                 // other configuration options
                 .authorizeHttpRequests(authCustomizer -> authCustomizer
-                        .requestMatchers(mvcMatcherBuilder.pattern("login/**"))
+                        .requestMatchers("login/**")
                         .permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("assignForm/**"))
+                        .requestMatchers("assignForm/**")
                         .permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("dashboard/**"))
+                        .requestMatchers("dashboard/**")
                         .permitAll()
-                        .requestMatchers(mvcMatcherBuilder.pattern("fonts/**"))
+                        .requestMatchers("fonts/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 );
