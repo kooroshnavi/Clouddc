@@ -29,7 +29,7 @@
   <link href="/panel/assets/css/semi-dark.css" rel="stylesheet" />
   <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
 
-  <title>Snacked - Bootstrap 5 Admin Template</title>
+  <title>جزئیات رخداد</title>
 </head>
 
 <body>
@@ -49,18 +49,37 @@
        <main class="page-content">
 				<!--breadcrumb-->
 				<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-					<div class="breadcrumb-title pe-3">lndvdj</div>
+					<div class="breadcrumb-title pe-3">رخدادها</div>
 					<div class="ps-3">
 						<nav aria-label="breadcrumb">
 							<ol class="breadcrumb mb-0 p-0">
 								<li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
 								</li>
-								<li class="breadcrumb-item active" aria-current="page">لیست وظایف</li>
+								<li class="breadcrumb-item active" aria-current="page">جزئیات</li>
 							</ol>
 						</nav>
 					</div>
 				</div>
 				<!--end breadcrumb-->
+
+		   <div class="col">
+			   <div class="card border shadow-none radius-10">
+				   <div class="card-body">
+					   <div class="d-flex align-items-center gap-3">
+						   <div class="icon-box bg-light-success border-0">
+							   <i class="lni lni-chevron-left"></i>
+						   </div>
+						   <div class="info">
+							   <h6 class="mb-2" ><strong th:text=" 'دسته بندی رخداد: ' + ${event.getEventType.getName}"></strong></h6>
+							   <p class="mb-1" th:text=" 'شماره رخداد: ' + ${id}"></p>
+							   <p class="mb-1" th:text=" 'مرکز: ' + ${event.getCenter.getNamePersian}"></p>
+							   <p class="mb-1" th:text=" 'تاریخ ثبت: ' + ${event.persianDate}"></p>
+							   <p class="mb-1" th:text=" 'گزارش کننده رخداد: ' + ${firstReport.person.name}"></p>
+						   </div>
+					   </div>
+				   </div>
+			   </div>
+		   </div>
 
 
 		   <div th:if="${not event.active}" class="col">
@@ -117,7 +136,7 @@
 
 		   <hr/>
 		   <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="center">
-			   <strong>بروزرسانی رخداد</strong>
+			   <strong>فرم بروزرسانی وضعیت رخداد</strong>
 		   </h6>
 
 
@@ -175,25 +194,6 @@
 								   </div>
 							   </div>
 
-							   <div class="col">
-								   <div class="card border shadow-none radius-10">
-									   <div class="card-body">
-										   <div class="d-flex align-items-center gap-3">
-											   <div class="icon-box bg-light-success border-0">
-												   <i class="lni lni-chevron-left"></i>
-											   </div>
-											   <div class="info">
-												   <h6 class="mb-2" ><strong th:text=" 'رخداد: ' + ${event.getEventType.getName}"></strong></h6>
-												   <p class="mb-1" th:text=" 'شماره رخداد: ' + ${id}"></p>
-												   <p class="mb-1" th:text=" 'مرکز: ' + ${event.getCenter.getNamePersian}"></p>
-												   <p class="mb-1" th:text=" 'تاریخ ثبت: ' + ${event.persianDate}"></p>
-												   <p class="mb-1" th:text=" 'همکار ثبت کننده گزارش: ' + ${firstReport.person.name}"></p>
-												   <h6 class="mb-2" ><strong>جدول تاریخچه رخداد در بالا، سایر جزئیات رخداد را نمایش می دهد.</strong></h6>
-											   </div>
-										   </div>
-									   </div>
-								   </div>
-							   </div>
 
 
 						   </div><!--end row-->

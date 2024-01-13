@@ -331,6 +331,7 @@ public class TaskServiceImpl implements TaskService {
         var personName = authenticated.getName();
         Person person = personService.getPerson(personName);
         model.addAttribute("person", person);
+        model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("pending", getPersonTask().size());
         model.addAttribute("pendingEvents", eventService.getPendingEventList().size());
         model.addAttribute("date", getCurrentDate());
@@ -357,11 +358,12 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model modelForTaskDetail(Model model, Long taskId) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         List<TaskDetail> taskDetailList = getTaskDetailById(taskId);
-        var task = taskRepository.findById(taskId);
-        var active = task.get().isActive();
+        var task = taskRepository.findById(taskId).get();
+        var active = task.isActive();
         var delay = taskDetailList.get(0).getTask().getDelay();
-        var duedate = PersianDate.fromGregorian(taskDetailList.get(0).getTask().getDueDate());
+        var duedate = date.format(PersianDate.fromGregorian(taskDetailList.get(0).getTask().getDueDate()));
         var taskStatusName = taskDetailList.get(0).getTask().getTaskStatus().getName();
         var currentDetailId = taskDetailList.get(0).getId();
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
@@ -375,6 +377,7 @@ public class TaskServiceImpl implements TaskService {
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", duedate);
         model.addAttribute("active", active);
+        model.addAttribute("task", task);
 
 
         return model;

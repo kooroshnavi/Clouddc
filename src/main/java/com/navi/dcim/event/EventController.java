@@ -58,7 +58,7 @@ public class EventController {
             , @ModelAttribute("eventForm") EventForm eventForm) {
         eventService.updateEvent(eventId, eventForm);
         eventService.modelForEventList(model);
-        return "eventList";
+        return "events";
     }
 
 

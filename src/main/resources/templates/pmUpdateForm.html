@@ -29,7 +29,7 @@
     <link href="/panel/assets/css/semi-dark.css" rel="stylesheet" />
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
 
-    <title>Snacked - Bootstrap 5 Admin Template</title>
+    <title>بروزرسانی وظیفه در کارتابل</title>
 </head>
 
 <body>
@@ -64,6 +64,31 @@
 
             </div>
             <!--end breadcrumb-->
+
+              <div class="col">
+                  <div class="card border shadow-none radius-10">
+                      <div class="card-body">
+                          <div class="d-flex align-items-center gap-3">
+                              <div  th:if="${delay} == 0" class="icon-box bg-light-success border-0">
+                                  <i class="lni lni-chevron-left"></i>
+                              </div>
+                              <div  th:if="${delay} > 0" class="icon-box bg-light-danger border-0">
+                                  <i class="lni lni-chevron-left"></i>
+                              </div>
+                              <div class="info">
+                                  <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${taskName}"></strong></h6>
+                                  <p class="mb-1" th:text=" 'مرکز: ' + ${center}"></p>
+                                  <p class="mb-1" th:text=" 'سررسید: ' + ${dueDate}"></p>
+                                  <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${delay}"></p>
+                              </div>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <hr/>
+              <h6 class="mb-0 text-uppercase" align="center">فرم بروزرسانی وظیفه</h6>
+              <hr/>
 
               <div class="row">
                  <div class="col-lg-12 mx-auto">
@@ -120,26 +145,7 @@
                             </div>
                          </div>
 
-                           <div class="col">
-                               <div class="card border shadow-none radius-10">
-                                   <div class="card-body">
-                                       <div class="d-flex align-items-center gap-3">
-                                           <div  th:if="${delay} == 0" class="icon-box bg-light-success border-0">
-                                               <i class="lni lni-chevron-left"></i>
-                                           </div>
-                                           <div  th:if="${delay} > 0" class="icon-box bg-light-danger border-0">
-                                               <i class="lni lni-chevron-left"></i>
-                                           </div>
-                                           <div class="info">
-                                               <h6 class="mb-2" ><strong th:text="${taskName}"></strong></h6>
-                                               <p class="mb-1" th:text=" 'مرکز: ' + ${center}"></p>
-                                               <p class="mb-1" th:text=" 'سررسید: ' + ${dueDate}"></p>
-                                               <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${delay}"></p>
-                                           </div>
-                                       </div>
-                                   </div>
-                               </div>
-                           </div>
+
 
 
                        </div><!--end row-->

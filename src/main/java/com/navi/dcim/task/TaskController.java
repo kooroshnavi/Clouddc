@@ -1,5 +1,6 @@
 package com.navi.dcim.task;
 
+import com.github.mfathi91.time.PersianDateTime;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -35,10 +37,12 @@ public class TaskController {
 
     @GetMapping("/pm")
     public String pmTask(@RequestParam int id, Model model) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         List<Task> tasks = taskService.getTaskListById(id);
         if (!tasks.isEmpty()) {
-            var name = tasks.get(0).getTaskStatus().getName();
-            model.addAttribute("name", name);
+            var status = tasks.get(0).getTaskStatus();
+            model.addAttribute("status", status);
+            model.addAttribute("lastSuccessful", date.format(PersianDateTime.fromGregorian(status.getLastSuccessful())));
             model.addAttribute("taskList", tasks);
         }
         return "taskList";

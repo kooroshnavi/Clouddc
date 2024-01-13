@@ -103,6 +103,7 @@ public class EventServiceImpl implements EventService {
         var personName = authenticated.getName();
         Person person = personService.getPerson(personName);
         model.addAttribute("person", person);
+        model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("pending", taskService.getPersonTask().size());
         model.addAttribute("pendingEvents", getPendingEventList().size());
         model.addAttribute("date", getCurrentDate());

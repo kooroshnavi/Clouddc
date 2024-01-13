@@ -147,17 +147,17 @@
             <li class="nav-item dropdown dropdown-user-setting">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                 <div class="user-setting d-flex align-items-center">
-                  <img src="/panel/assets/images/avatars/avatar-1.png" class="user-img" alt="">
+                  <img th:src="@{${'/panel/assets/images/avatars/' + person.username + '.png'}}" class="user-img" alt="">
                 </div>
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                    <a class="dropdown-item" href="#">
                      <div class="d-flex align-items-center">
-                        <img src="/panel/assets/images/avatars/avatar-1.png" alt="" class="rounded-circle" width="54" height="54">
+                        <img th:src="@{${'/panel/assets/images/avatars/' + person.username + '.png'}}" alt="" class="rounded-circle" width="54" height="54">
                         <div class="ms-3">
-                          <h6 class="mb-0 dropdown-user-name">جان دیو</h6>
-                          <small class="mb-0 dropdown-user-designation text-secondary">مدیریت منابع انسانی</small>
+                          <h6 class="mb-0 dropdown-user-name" th:text="${person.name}"></h6>
+                          <small class="mb-0 dropdown-user-designation text-secondary" th:text="${role}"></small>
                         </div>
                      </div>
                    </a>
@@ -206,7 +206,7 @@
        <aside class="sidebar-wrapper" data-simplebar="true" th:fragment="sidebar">
           <div class="sidebar-header">
             <div>
-              <img src="/panel/assets/images/logo-icon.png" class="logo-icon" alt="logo icon">
+              <img src="/panel/assets/images/tic.png" class="logo-icon" alt="logo icon">
             </div>
             <div>
               <h3 class="logo-text" th:text="${date}" dir="rtl"></h3>
@@ -240,9 +240,9 @@
               <ul>
                 <li> <a href="/pm/myTask"><i class="bi bi-circle"></i>کارتابل من</a>
                 </li>
-                <li> <a href="/event/list"><i class="bi bi-circle"></i>رخدادها</a>
-                </li>
                   <li> <a href="/pmList"><i class="bi bi-circle"></i>لیست وظایف</a>
+                  </li>
+                  <li> <a href="/event/list"><i class="bi bi-circle"></i>رخدادها</a>
                   </li>
                   <li> <a href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>گزارشات روزانه</a>
                   </li>
