@@ -27,7 +27,7 @@ public final class UtilService {
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         dayName = persianDay.get(dayName);
 
-        return (dayName + "    " + day + "     " + month.toString() + "    " + year);
+        return (dayName + "    " + day + "     " + month.toString());
     }
 
 
