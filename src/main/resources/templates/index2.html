@@ -1,0 +1,360 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="base :: links"></head>
+
+<body>
+
+  <!--start wrapper-->
+  <div class="wrapper">
+    <!--start top header-->
+    <header th:replace="base :: header"></header>
+     <!--end top header-->
+
+        <!--start sidebar -->
+        <aside class="sidebar-wrapper" data-simplebar="true" th:replace="base :: sidebar"></aside>
+       <!--end sidebar -->
+
+       <!--start content-->
+          <main class="page-content">
+           
+            <div class="card rounded-4">
+              <div class="card-body">
+               <div class="d-flex align-items-center mb-3">
+                 <h6 class="mb-0">فعالیت سالن (میانگین گردش کار در هر ماه - سال جاری)</h6>
+                 <div class="fs-5 ms-auto dropdown">
+                    <div class="dropdown-toggle dropdown-toggle-nocaret cursor-pointer" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></div>
+                      <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#">عمل</a></li>
+                        <li><a class="dropdown-item" href="#">یک اقدام دیگر</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#">یه چیز دیگه اینجا</a></li>
+                      </ul>
+                  </div>
+                </div>
+                 <div id="chart1"></div>
+              </div>
+            </div>
+
+
+            <div class="row row-cols-1 row-cols-lg-4">
+              <div class="col">
+                <div class="card rounded-4 overflow-hidden">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center justify-content-between mb-3">
+                      <div class="">
+                        <h5 class="mb-0">سالن شماره 1</h5>
+                        <p class="mb-0">48 ساعت اخیر</p>
+                     </div>
+                     </div>
+                     <div id="chart2"></div>
+                  </div>
+                 
+                </div>
+              </div>
+              <div class="col">
+                <div class="card rounded-4 overflow-hidden">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center justify-content-between mb-3">
+                      <div class="">
+                        <h5 class="mb-0">سالن شماره 1</h5>
+                        <p class="mb-0">برخط</p>
+                     </div>
+                     </div>
+                     <div id="chart3"></div>
+                  </div>
+                 
+                </div>
+              </div>
+              <div class="col">
+                <div class="card rounded-4 overflow-hidden">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center justify-content-between mb-3">
+                      <div class="">
+                        <h5 class="mb-0">سالن شماره 2</h5>
+                        <p class="mb-0">برخط</p>
+                     </div>
+                     <div class="fs-4">
+                      <i class="bi bi-currency-dollar"></i>
+                    </div>
+                     </div>
+                     <div id="chart4"></div>
+                  </div>
+                  
+                </div>
+              </div>
+              <div class="col">
+                <div class="card rounded-4 overflow-hidden">
+                  <div class="card-body">
+                     <div class="d-flex align-items-center justify-content-between mb-3">
+                      <div class="">
+                        <h5 class="mb-0">سالن شماره 2</h5>
+                        <p class="mb-0">48 ساعت اخیر</p>
+                     </div>
+                     <div class="fs-4">
+                      <i class="bi bi-cup-hot"></i>
+                    </div>
+                     </div>
+                     <div id="chart5"></div>
+                  </div>
+                 
+                </div>
+              </div>
+    
+            </div><!--end row-->
+
+
+            <div class="row row-cols-1 row-cols-lg-3">
+              <div class="col d-flex">
+                 <div class="card rounded-4 w-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <h6 class="mb-0">انجام وظایف بدون تاخیر</h6>
+                      <div class="fs-5 ms-auto dropdown">
+                         <div class="dropdown-toggle dropdown-toggle-nocaret cursor-pointer" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></div>
+                           <ul class="dropdown-menu">
+                             <li><a class="dropdown-item" href="#">عمل</a></li>
+                             <li><a class="dropdown-item" href="#">یک اقدام دیگر</a></li>
+                             <li><hr class="dropdown-divider"></li>
+                             <li><a class="dropdown-item" href="#">یه چیز دیگه اینجا</a></li>
+                           </ul>
+                       </div>
+                     </div>
+                     <div id="chart6"></div>
+                  </div>
+                 </div>
+              </div>
+              <div class="col d-flex">
+                <div class="card rounded-4 w-100">
+                 <div class="card-body">
+                   <div class="d-flex align-items-center mb-3">
+                     <h6 class="mb-0">میانگین دمای سالن ها (هفته اخیر - درجه سانتی گراد)</h6>
+                     <div class="fs-5 ms-auto dropdown">
+                        <div class="dropdown-toggle dropdown-toggle-nocaret cursor-pointer" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></div>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">عمل</a></li>
+                            <li><a class="dropdown-item" href="#">یک اقدام دیگر</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">یه چیز دیگه اینجا</a></li>
+                          </ul>
+                      </div>
+                    </div>
+                    <div id="chart7"></div>
+                 </div>
+                </div>
+             </div>
+             <div class="col d-flex">
+              <div class="card rounded-4 w-100">
+               <div class="card-body">
+                 <div class="d-flex align-items-center mb-3">
+                   <h6 class="mb-0">منابع در اختیار بهره برداران</h6>
+                   <div class="fs-5 ms-auto dropdown">
+                      <div class="dropdown-toggle dropdown-toggle-nocaret cursor-pointer" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></div>
+                        <ul class="dropdown-menu">
+                          <li><a class="dropdown-item" href="#">عمل</a></li>
+                          <li><a class="dropdown-item" href="#">یک اقدام دیگر</a></li>
+                          <li><hr class="dropdown-divider"></li>
+                          <li><a class="dropdown-item" href="#">یه چیز دیگه اینجا</a></li>
+                        </ul>
+                    </div>
+                  </div>
+                  <div id="chart8"></div>
+               </div>
+              </div>
+             </div>
+
+            </div><!--end row-->
+
+
+            <div class="row row-cols-1 row-cols-lg-2">
+              <div class="col d-flex">
+                 <div class="card rounded-4 w-100">
+                  <div class="card-body">
+                    <div class="d-flex align-items-center mb-3">
+                      <h6 class="mb-0">منابع آزاد</h6>
+                      <div class="fs-5 ms-auto dropdown">
+                         <div class="dropdown-toggle dropdown-toggle-nocaret cursor-pointer" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></div>
+                           <ul class="dropdown-menu">
+                             <li><a class="dropdown-item" href="#">عمل</a></li>
+                             <li><a class="dropdown-item" href="#">یک اقدام دیگر</a></li>
+                             <li><hr class="dropdown-divider"></li>
+                             <li><a class="dropdown-item" href="#">یه چیز دیگه اینجا</a></li>
+                           </ul>
+                       </div>
+                     </div>
+                     <div class="social-leads">
+                         <div class="d-flex align-items-center gap-3">
+                          <div class="widget-icon bg-facebook text-white">
+                            <i class="bi bi-facebook"></i>
+                          </div>
+						  <div class="fs-5 flex-grow-1"><p class="mb-0">سرور</p></div>
+                          <div class="leads-count">
+                             <p class="mb-0">11</p>
+                          </div>
+                         </div>
+                         <hr>
+                         <div class="d-flex align-items-center gap-3">
+                          <div class="widget-icon bg-twitter text-white">
+                            <i class="bi bi-twitter"></i>
+                          </div>
+						  <div class="fs-5 flex-grow-1"><p class="mb-0">سوییچ</p></div>
+                          <div class="leads-count">
+                             <p class="mb-0">5</p>
+                          </div>
+                         </div>
+                         <hr>
+                         <div class="d-flex align-items-center gap-3">
+                          <div class="widget-icon bg-linkedin text-white">
+                            <i class="bi bi-linkedin"></i>
+                          </div>
+						  <div class="fs-5 flex-grow-1"><p class="mb-0">فورتی نت</p></div>
+                          <div class="leads-count">
+                             <p class="mb-0">1</p>
+                          </div>
+                         </div>
+                         <hr>
+
+
+                     </div>
+                  </div>
+                 </div>
+              </div>
+              <div class="col d-flex">
+                <div class="card rounded-4 w-100">
+                 <div class="card-body">
+                   <div class="d-flex align-items-center mb-3">
+                     <h6 class="mb-0">تبادل منابع اخیر با بهره برداران</h6>
+                     <div class="fs-5 ms-auto dropdown">
+                        <div class="dropdown-toggle dropdown-toggle-nocaret cursor-pointer" data-bs-toggle="dropdown"><i class="bi bi-three-dots"></i></div>
+                          <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="#">عمل</a></li>
+                            <li><a class="dropdown-item" href="#">یک اقدام دیگر</a></li>
+                            <li><hr class="dropdown-divider"></li>
+                            <li><a class="dropdown-item" href="#">یه چیز دیگه اینجا</a></li>
+                          </ul>
+                      </div>
+                    </div>
+                    <div class="table-responsive">
+                      <table class="table align-items-center">
+                      <tbody>
+                      <tr>
+                        <td>سروش</td>
+                          <td>10</td>
+                      <td>سرور</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                      <td>آزادسازی</td>
+                      </tr>
+                      <tr>
+                        <td>سروش</td>
+                      <td>2</td>
+                          <td>سرور</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                          <td>آزادسازی</td>
+                      </tr>
+                      <tr>
+                        <td>گپ</td>
+                      <td>10</td>
+                          <td>سرور</td>
+                      <td><i class="bi bi-arrow-down text-danger"></i></td>
+                          <td>تحویل</td>
+                      </tr>
+                      <tr>
+                        <td>ایتا</td>
+                      <td>1</td>
+                          <td>سرور</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                          <td>آزادسازی</td>
+                      </tr>
+                      <tr>
+                        <td>سروش</td>
+                      <td>40</td>
+                          <td>سرور</td>
+                      <td><i class="bi bi-arrow-down text-danger"></i></td>
+                          <td>تحویل</td>
+                      </tr>
+                      <tr>
+                        <td>سروش</td>
+                      <td>2</td>
+                          <td>سوییچ</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                          <td>آزادسازی</td>
+                      </tr>
+                      <tr>
+                        <td>گپ</td>
+                      <td>5</td>
+                          <td>سرور</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                          <td>آزادسازی</td>
+                      </tr>
+                      <tr>
+                        <td>گپ</td>
+                      <td>1</td>
+                          <td>سوییچ</td>
+                      <td><i class="bi bi-arrow-down text-danger"></i></td>
+                          <td>تحویل</td>
+                      </tr>
+                      <tr>
+                        <td>ایتا</td>
+                      <td>2</td>
+                          <td>سوییچ</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                          <td>آزادسازی</td>
+                      </tr>
+                      <tr>
+                        <td>ایتا</td>
+                      <td>20</td>
+                          <td>سرور</td>
+                      <td><i class="bi bi-arrow-up text-success"></i></td>
+                          <td>آزادسازی</td>
+                      </tr>
+
+                    </tbody></table>
+                    </div>
+                 </div>
+                </div>
+             </div>
+
+            </div><!--end row-->
+
+
+
+          </main>
+       <!--end page main-->
+
+       <!--start overlay-->
+        <div class="overlay nav-toggle-icon"></div>
+       <!--end overlay-->
+
+       <!--Start Back To Top Button-->
+		     <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+       <!--End Back To Top Button-->
+
+       <!--start switcher-->
+       <div class="switcher-body" th:replace="base :: switcher"></div>
+       <!--end switcher-->
+
+  </div>
+  <!--end wrapper-->
+
+
+  <!-- Bootstrap bundle JS -->
+  <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+  <!--plugins-->
+  <script src="/panel/assets/js/jquery.min.js"></script>
+  <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+  <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+  <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+  <script src="/panel/assets/js/pace.min.js"></script>
+ 
+  <script src="/panel/assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+  <script src="/panel/assets/js/index2.js"></script>
+  <!--app-->
+  <script src="/panel/assets/js/app.js"></script>
+  
+  <script>
+ </script>
+
+
+</body>
+
+</html>

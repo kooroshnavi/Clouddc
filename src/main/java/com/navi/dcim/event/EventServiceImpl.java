@@ -121,12 +121,13 @@ public class EventServiceImpl implements EventService {
     public Model modelForEventDetail(Model model, Long eventId) {
         List<EventDetail> eventDetailList = getEventDetailList(eventId);
 
+        var firstReport = eventDetailList.get(eventDetailList.size() - 1);
+
         model.addAttribute("eventDetailList", eventDetailList);
         model.addAttribute("event", this.getEvent(eventId));
         model.addAttribute("id", eventId);
         model.addAttribute("eventForm", new EventForm());
-        model.addAttribute("centerList", centerService.getCenterList());
-        model.addAttribute("eventTypeList", getEventTypeList());
+        model.addAttribute("firstReport", firstReport);
         return model;
     }
 
