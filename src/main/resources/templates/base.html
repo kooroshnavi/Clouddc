@@ -18,6 +18,7 @@
   <link href="/panel/assets/css/icons.css" rel="stylesheet">
   <link href="/panel/assets/css/roboto.css" rel="stylesheet">
   <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
   <!-- loader-->
 	<link href="/panel/assets/css/pace.min.css" rel="stylesheet" />
@@ -30,6 +31,7 @@
   <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
 
   <title>سامانه نگهداری و پایش زیرساخت ابر</title>
+
 </head>
 
 <body>
@@ -44,6 +46,8 @@
             <i class="bi bi-list"></i>
           </div>
 
+
+
           <div class="top-navbar-right ms-auto">
             <ul class="navbar-nav align-items-center">
               <li class="nav-item search-toggle-icon">
@@ -53,6 +57,10 @@
                   </div>
                 </a>
             </li>
+                <li>
+                    <div id="clock"></div>
+                    <div th:text="${date}"/>
+                </li>
 
             <li class="nav-item dropdown dropdown-large">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
@@ -97,7 +105,6 @@
                          </a>
                      </div>
 
-
                   <div class="col">
                     <a href="javascript:;">
                     <div class="apps p-2 radius-10 text-center">
@@ -109,10 +116,10 @@
                     </a>
                   </div>
 
-
-
                  </div><!--end row-->
               </div>
+
+
 
             <li class="nav-item dropdown dropdown-large">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
@@ -120,6 +127,7 @@
                   <i class="bi bi-bell-fill"></i>
                 </div>
               </a>
+
               <div class="dropdown-menu dropdown-menu-end p-0">
                 <div class="p-2 border-bottom m-2">
                     <h5 class="h5 mb-0">اطلاعیه</h5>
@@ -134,8 +142,8 @@
                          </div>
                       </div>
                     </a>
-
                </div>
+
                <div class="p-2">
                  <div><hr class="dropdown-divider"></div>
                    <a class="dropdown-item" href="#">
@@ -144,6 +152,7 @@
                </div>
               </div>
             </li>
+
             <li class="nav-item dropdown dropdown-user-setting">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                 <div class="user-setting d-flex align-items-center">
@@ -172,7 +181,7 @@
                      </a>
                   </li>
                   <li>
-                      <a class="dropdown-item" href="#">
+                      <a class="dropdown-item" href="/profile/changePassword">
                           <div class="d-flex align-items-center">
                               <div class=""><i class="bi bi-gear-fill"></i></div>
                               <div class="ms-3"><span>تغییر کلمه عبور</span></div>
@@ -199,6 +208,45 @@
             </ul>
             </div>
       </nav>
+        <script>
+        setInterval(showTime, 1000);
+        function showTime() {
+            let time = new Date();
+            let hour =
+                time.getHours();
+            let min =
+                time.getMinutes();
+            let sec =
+                time.getSeconds();
+
+            hour =
+                hour < 10
+                    ? "0" + hour
+                    : hour;
+            min =
+                min < 10
+                    ? "0" + min
+                    : min;
+            sec =
+                sec < 10
+                    ? "0" + sec
+                    : sec;
+
+            let currentTime =
+                hour +
+                ":" +
+                min +
+                ":" +
+                sec;
+
+            document.getElementById(
+                "clock"
+            ).innerHTML =
+                currentTime;
+        }
+
+        showTime();
+    </script>
     </header>
      <!--end top header-->
 
@@ -209,7 +257,7 @@
               <img src="/panel/assets/images/tic.png" class="logo-icon" alt="logo icon">
             </div>
             <div>
-              <h3 class="logo-text" th:text="${date}" dir="rtl"></h3>
+              <h class="logo-text" dir="rtl"></h>
             </div>
             <div class="toggle-icon ms-auto"> <i class="bi bi-list"></i>
             </div>
@@ -408,6 +456,9 @@
   <script src="/panel/assets/js/pace.min.js"></script>
   <!--app-->
   <script src="/panel/assets/js/app.js"></script>
+
+
+
 
 </body>
 

@@ -28,6 +28,7 @@
   <link href="/panel/assets/css/light-theme.css" rel="stylesheet" />
   <link href="/panel/assets/css/semi-dark.css" rel="stylesheet" />
   <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
+	<link href="/panel/assets/css/clock.css" rel="stylesheet">
 
   <title>تاریخچه PM</title>
 </head>
@@ -72,8 +73,8 @@
 						   </div>
 						   <div class="info">
 							   <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${status.name}"></strong></h6>
-							   <p class="mb-1" th:text=" 'آخرین اقدام: ' + ${lastSuccessful}"></p>
 							   <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${status.period}"></p>
+							   <p class="mb-1" th:text=" 'سایر توضیحات: ' + ${status.description}"></p>
 						   </div>
 					   </div>
 				   </div>

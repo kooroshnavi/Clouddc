@@ -28,6 +28,7 @@
   <link href="/panel/assets/css/light-theme.css" rel="stylesheet" />
   <link href="/panel/assets/css/semi-dark.css" rel="stylesheet" />
   <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
+  <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
   <title>وظیفه جدید</title>
 </head>
@@ -76,12 +77,12 @@
 
                         <div class="col-12">
                           <label class="form-label">عنوان وظیفه</label>
-                          <input type="text" class="form-control" placeholder="عنوان در لیست وظایف نمایش داده می شود">
+                          <input type="text" th:field="*{name}" class="form-control" placeholder="عنوان در لیست وظایف نمایش داده می شود">
                         </div>
 
                         <div class="col-12">
                           <label class="form-label">توضیحات</label>
-                          <textarea class="form-control" placeholder="خلاصه ای از اینکه چه اقدامی باید انجام شود" rows="4" cols="4"></textarea>
+                          <textarea class="form-control" th:field="*{description}" placeholder="خلاصه ای از اینکه چه اقدامی باید انجام شود" rows="4" cols="4"></textarea>
                         </div>
 
                         <div class="col-12 col-md-6">
@@ -110,8 +111,8 @@
                         <div class="col-12 col-md-6">
                           <label class="form-label">مرکز</label>
                           <select class="form-select" name="subject" th:field="*{centerId}" >
-                            <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                            <option th:value="0">تمام سالن ها</option>
+                            <option th:value="-1" disabled="disabled" selected="selected">انتخاب</option>
+                            <option th:value="0">بومهن - هردو سالن</option>
                             <option th:each="center : ${centerList}" th:value="${center.getId}" th:text="${center.getNamePersian}"></option>
                           </select>
                         </div>

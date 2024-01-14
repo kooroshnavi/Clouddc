@@ -44,6 +44,7 @@ public class TaskServiceImpl implements TaskService {
     private final EventService eventService;
     private final NotificationService notificationService;
     private static LocalDate CurrentDate;
+    private static final int DEFAULT_ASSIGNEE_ID = 5;
 
 
     @Autowired
@@ -68,57 +69,60 @@ public class TaskServiceImpl implements TaskService {
     public void updateTodayTasks() {
 
         CurrentDate = LocalDate.now();
-        List<TaskStatus> taskStatusList = taskStatusRepository.findBynextDue(CurrentDate);
+        List<TaskStatus> todayPm = taskStatusRepository.findBynextDue(CurrentDate);
         List<Task> taskList = taskRepository.findByActive(true);
-        List<Center> centers = centerService.getCenterList();
-        List<Person> personList = personService.getPersonList();
+        Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
 
         reportService.setTodayReport();
 
         delayCalculation(taskList);
 
-        if (!taskStatusList.isEmpty()) {
-            for (TaskStatus status : taskStatusList
+        if (!todayPm.isEmpty()) {
+            for (TaskStatus status : todayPm
             ) {
-                Task todayTask = setupTask(status, centers);
-                TaskDetail taskDetail = setupTaskDetail(todayTask, personList);
-                todayTask.setTaskDetailList(taskDetail);
-                status.setTasks(todayTask);
-                status.setActive(true);
-                var nextDateDay= CurrentDate.plusDays(status.getPeriod());
-                if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")){
+                if (status.getId() == 15) { // for mmRoom
+                    Task todayTask = taskSetup(status, centerService.getCenter(3));
+                    taskDetailSetup(todayTask, defaultPerson);
+                    status.setActive(true);
+                } else {  // other salons
+                    for (int i = 1; i < 3; i++) {
+                        Task todayTask = taskSetup(status, centerService.getCenter(i));
+                        taskDetailSetup(todayTask, defaultPerson);
+                    }
+                    status.setActive(true);
+                }
+                /*var nextDateDay = CurrentDate.plusDays(status.getPeriod());
+                if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
                     status.setNextDue(LocalDate.now().plusDays(status.getPeriod() + 2));
                 } else if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
                     status.setNextDue(LocalDate.now().plusDays(status.getPeriod() + 1));
-                }
+                }*/
             }
         }
 
-        taskStatusRepository.saveAll(taskStatusList);
+        taskStatusRepository.saveAll(todayPm);
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
-    private TaskDetail setupTaskDetail(Task todayTask, List<Person> personList) {
+    private TaskDetail taskDetailSetup(Task todayTask, Person person) {
         TaskDetail taskDetail = new TaskDetail();
-        taskDetail.setPerson(personList.get(new Random().nextInt(personList.size())));
+        taskDetail.setPerson(person);
         taskDetail.setAssignedDate(LocalDateTime.now());
         taskDetail.setActive(true);
         taskDetail.setTask(todayTask);
+        todayTask.setTaskDetailList(taskDetail);
         return taskDetail;
     }
 
-    private Task setupTask(TaskStatus status, List<Center> centers) {
+    private Task taskSetup(TaskStatus status, Center center) {
         Task todayTask = new Task();
         todayTask.setTaskStatus(status);
+        status.setTasks(todayTask);
         todayTask.setDelay(0);
         todayTask.setActive(true);
-        todayTask.setCenter(centers.get(new Random().nextInt(centers.size())));
+        todayTask.setCenter(center);
         todayTask.setDueDate(status.getNextDue());
         return todayTask;
-    }
-
-    private boolean isTodayTask(TaskStatus status) {
-        return status.getNextDue().equals(LocalDate.now());
     }
 
     private void delayCalculation(List<Task> taskList) {
@@ -132,15 +136,17 @@ public class TaskServiceImpl implements TaskService {
             taskRepository.saveAll(taskList);
         }
     }
-/*
-    private boolean isWeekend() {
-        var currentDate = LocalDate.now();
-        if (Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Thu")
-                || Objects.equals(currentDate.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault()), "Fri")) {
-            return true;
+
+    @Override
+    public TaskStatus getStatusForEdit(int id) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        var status = taskStatusRepository.findById(id).get();
+        status.setNextDuePersian(date.format(PersianDate.fromGregorian(status.getNextDue())));
+        if (status.getLastSuccessful() != null) {
+            status.setLastSuccessfulPersian(date.format(PersianDateTime.fromGregorian(status.getLastSuccessful())));
         }
-        return false;
-    }*/
+        return status;
+    }
 
     private List<TaskStatus> getTaskStatus() {
         List<TaskStatus> taskStatusList = taskStatusRepository
@@ -168,12 +174,21 @@ public class TaskServiceImpl implements TaskService {
         task.setActive(false);
         task.setDailyReport(report.get());
 
+        var possibleNextDue = CurrentDate.plusDays(taskStatus.getPeriod());
+        if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+            taskStatus.setNextDue(LocalDate.now().plusDays(taskStatus.getPeriod() + 2));
+        } else if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+            taskStatus.setNextDue(LocalDate.now().plusDays(taskStatus.getPeriod() + 1));
+        } else {
+            taskStatus.setNextDue(possibleNextDue);
+        }
+
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
         taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
         taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
         taskStatus.setActive(false);// task is inactive til next due
-        return taskStatusRepository.save(taskStatus);
+        return taskStatusRepository.saveAndFlush(taskStatus);
     }
 
 
@@ -259,33 +274,28 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public void taskRegister(PmRegisterForm pmRegisterForm) {
-        var newTaskStatus = new TaskStatus();
-        newTaskStatus.setActive(true);
-        newTaskStatus.setNextDue(LocalDate.now());
-        newTaskStatus.setName(pmRegisterForm.getName());
-        newTaskStatus.setPeriod(pmRegisterForm.getPeriod());
+        var person = personService.getPerson(pmRegisterForm.getPersonId());
+        var centers = centerService.getCenterList();
+        var newPm = new TaskStatus();
+        newPm.setActive(true);
+        newPm.setNextDue(LocalDate.now());
+        newPm.setName(pmRegisterForm.getName());
+        newPm.setPeriod(pmRegisterForm.getPeriod());
+        newPm.setDescription(pmRegisterForm.getDescription());
 
-        Center center = centerService.getCenter(pmRegisterForm.getCenterId());
+        if (pmRegisterForm.getCenterId() == 0) { // both salons
+            for (int i = 0; i < 2; i++) {
+                Task newTask = taskSetup(newPm, centers.get(i));
+                var newTaskDetail = taskDetailSetup(newTask, person);
+                notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getName(), newTaskDetail.getAssignedDate());
+            }
+        } else { // selected salon
+            Task newTask = taskSetup(newPm, centerService.getCenter(pmRegisterForm.getCenterId()));
+            var newTaskDetail = taskDetailSetup(newTask, person);
+            notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getName(), newTaskDetail.getAssignedDate());
+        }
 
-        Task todayTask = new Task();
-        todayTask.setTaskStatus(newTaskStatus);
-        todayTask.setDelay(0);
-        todayTask.setActive(true);
-        todayTask.setCenter(center);
-        todayTask.setDueDate(newTaskStatus.getNextDue());
-
-        TaskDetail taskDetail = new TaskDetail();
-        taskDetail.setTask(todayTask);
-        // assign to specified user
-        Person person = personService.getPerson(pmRegisterForm.getPersonId());
-        //final String address = person.getAddress();
-        taskDetail.setPerson(person);
-        taskDetail.setAssignedDate(LocalDateTime.now());
-        taskDetail.setActive(true);
-        todayTask.setTaskDetailList(taskDetail);
-        newTaskStatus.setTasks(todayTask);
-        taskStatusRepository.save(newTaskStatus);
-        notificationService.sendNewTaskAssignedMessage(person.getAddress().getValue(), newTaskStatus.getName(), taskDetail.getAssignedDate());
+        taskStatusRepository.saveAndFlush(newPm);
     }
 
     private Person getCurrentPerson() {
@@ -324,6 +334,16 @@ public class TaskServiceImpl implements TaskService {
                 .sorted(Comparator.comparing(Task::getDelay).reversed())
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public void updateStatus(PmRegisterForm editForm, int id) {
+        var status = taskStatusRepository.findById(id).get();
+        status.setName(editForm.getName());
+        status.setPeriod(editForm.getPeriod());
+        status.setDescription(editForm.getDescription());
+        taskStatusRepository.saveAndFlush(status);
+    }
+
 
     @Override
     public Model modelForTaskController(Model model) {

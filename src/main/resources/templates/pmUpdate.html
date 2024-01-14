@@ -30,7 +30,7 @@
   <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
   <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-  <title>گزارش رخداد</title>
+  <title>ویرایش وظیفه</title>
 </head>
 
 <body>
@@ -50,90 +50,94 @@
           <main class="page-content">
             <!--breadcrumb-->
             <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-              <div class="breadcrumb-title pe-3">رخدادها</div>
+              <div class="breadcrumb-title pe-3">وظایف</div>
               <div class="ps-3">
                 <nav aria-label="breadcrumb">
                   <ol class="breadcrumb mb-0 p-0">
                     <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                     </li>
-                    <li class="breadcrumb-item active" aria-current="page">گزارش جدید</li>
+                    <li class="breadcrumb-item active" aria-current="page">ویرایش PM</li>
                   </ol>
                 </nav>
               </div>
 
             </div>
             <!--end breadcrumb-->
+            <div class="col">
+              <div class="card border shadow-none radius-10">
+                <div class="card-body">
+                  <div class="d-flex align-items-center gap-3">
+                    <div class="icon-box bg-light-success border-0">
+                      <i class="lni lni-chevron-left"></i>
+                    </div>
+                    <div class="info">
+                      <h6 class="mb-2" ><strong th:text=" 'PM: ' + ${pmEdit.name}"></strong></h6>
+                      <a class="mb-1" th:href="@{/pm(id=${statusId})}" th:text=" 'تعداد وظایف: ' + ${taskSize}"></a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
 
               <div class="row">
                  <div class="col-lg-8 mx-auto">
                   <div class="card">
                     <div class="card-header py-3 bg-transparent" align="center">
-                       <h5 class="mb-0">فرم گزارش رخداد</h5>
+                       <h5 class="mb-0" >فرم ویرایش PM</h5>
                       </div>
                     <div class="card-body">
                       <div class="border p-3 rounded">
 
-                      <form class="row g-3"  th:action="@{/event/register}" th:object="${eventRegister}" method="POST">
+                      <form class="row g-3"  th:action="@{/pm/edit(id=${statusId})}" th:object="${pmEdit}" method="POST">
 
-                        <div class="col-12 col-md-6">
-                          <label class="form-label">دسته بندی</label>
-                          <select class="form-select" name="subject" th:field="*{eventType}" >
-                            <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                            <option th:each="eventType : ${eventTypeList}" th:value="${eventType.getId}" th:text="${eventType.getName}"></option>
-                          </select>
+                        <div class="col-12">
+                          <label class="form-label">عنوان PM</label>
+                          <input type="text" class="form-control" th:field="*{name}" placeholder="عنوان در لیست وظایف نمایش داده می شود">
                         </div>
 
                         <div class="col-12">
-                          <label class="form-label">شرح رخداد</label>
-                          <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4" th:field="*{description}" required="required" dir="rtl"></textarea>
+                          <label class="form-label">توضیحات</label>
+                          <textarea class="form-control" th:field="*{description}" placeholder="خلاصه ای از اینکه چه اقدامی باید انجام شود" rows="4" cols="4"></textarea>
                         </div>
 
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">دوره تکرار</label>
+                          <select class="form-select" name="subject" th:field="*{period}" >
+                            <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
+                            <option th:value="0">فقط یکبار</option>
+                            <option th:value="1">روزانه</option>
+                            <option th:value="7">هفتگی</option>
+                            <option th:value="10">10 روز</option>
+                            <option th:value="15">15 روز</option>
+                            <option th:value="20">20 روز</option>
+                            <option th:value="30">ماهانه</option>
+                            <option th:value="60">2 ماهه</option>
+                            <option th:value="90">3 ماهه</option>
+                            <option th:value="120">4 ماهه</option>
+                            <option th:value="180">6 ماهه</option>
+                          </select>
+                        </div>
 
                         <div class="col-12">
                           <label class="form-label">فایل پیوست (در حال توسعه)</label>
                           <input class="form-control" type="file" disabled="disabled">
                         </div>
 
-                        <div class="col-12 col-md-6">
-                          <label class="form-label">مرکز</label>
-                          <select class="form-select" name="subject" th:field="*{centerId}" >
-                            <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                            <option th:value="0">تمام سالن ها</option>
-                            <option th:each="center : ${centerList}" th:value="${center.getId}" th:text="${center.getNamePersian}"></option>
-                          </select>
-                        </div>
-
-                        <div class="col-12 col-md-6">
-                          <label class="form-label">آیا رخداد پیش آمده رفع شده است؟</label>
-                          <select class="form-select" name="subject" th:field="*{active}" >
-                            <option th:value="0">بله - پایان رخداد</option>
-                            <option th:value="1">خیر - در حال پیگیری</option>
-                          </select>
-                        </div>
-
-
-                        <div class="col-12">
-                          <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" disabled="disabled">
-                            <label class="form-check-label" for="flexSwitchCheckChecked">ارسال اعلان تیک گرام به دیگر همکاران</label>
-                          </div>
-                        </div>
 
                         <div class="col">
                           <!-- Button trigger modal -->
-                          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleLargeModal">ثبت</button>
+                          <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleWarningModal">ثبت</button>
                           <!-- Modal -->
-                          <div class="modal fade" id="exampleLargeModal" tabindex="-1" aria-hidden="true">
+                          <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
                             <div class="modal-dialog modal-lg">
-                              <div class="modal-content">
-                                <div class="modal-header">
-                                  <h5 class="modal-title">همکار گرامی</h5>
+                              <div class="modal-content bg-warning">
+                                <div class="modal-header border-dark">
+                                  <h5 class="modal-title text-dark">همکار گرامی، تغییرات این PM در تمامی وظایف مرتبط با آن اعمال می شود.</h5>
                                   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
-                                <div class="modal-body">رخداد اعلامی به تاریخ و ساعت حال حاضر ثبت می شود.</div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
-                                  <button type="submit" class="btn btn-primary">ثبت رخداد جدید</button>
+                                <div class="modal-footer border-dark">
+                                  <button type="button" class="btn btn-light" data-bs-dismiss="modal">بستن</button>
+                                  <button type="submit" class="btn btn-dark">ویرایش PM</button>
                                 </div>
                               </div>
                             </div>

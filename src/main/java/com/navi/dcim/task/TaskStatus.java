@@ -133,7 +133,9 @@ public class TaskStatus {
     }
 
     public void setTasks(Task task) {
-        this.tasks = new ArrayList<>();
+        if (this.tasks == null) {
+            this.tasks = new ArrayList<>();
+        }
         this.tasks.add(task);
     }
 }

@@ -74,7 +74,10 @@ public class Task {
     }
 
     public void setTaskDetailList(TaskDetail taskDetail) {
-        this.taskDetailList = new ArrayList<>();
+        if (this.taskDetailList == null) {
+            this.taskDetailList = new ArrayList<>();
+        }
+
         this.taskDetailList.add(taskDetail);
     }
 

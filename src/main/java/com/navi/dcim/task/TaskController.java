@@ -1,6 +1,5 @@
 package com.navi.dcim.task;
 
-import com.github.mfathi91.time.PersianDateTime;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,15 +36,44 @@ public class TaskController {
 
     @GetMapping("/pm")
     public String pmTask(@RequestParam int id, Model model) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         List<Task> tasks = taskService.getTaskListById(id);
         if (!tasks.isEmpty()) {
             var status = tasks.get(0).getTaskStatus();
             model.addAttribute("status", status);
-            model.addAttribute("lastSuccessful", date.format(PersianDateTime.fromGregorian(status.getLastSuccessful())));
             model.addAttribute("taskList", tasks);
         }
         return "taskList";
+    }
+
+    @GetMapping("/pm/edit")
+    public String editForm(@RequestParam int id, Model model) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        var status = taskService.getStatusForEdit(id);
+        PmRegisterForm pmEdit = new PmRegisterForm();
+        pmEdit.setName(status.getName());
+        pmEdit.setDescription(status.getDescription());
+        pmEdit.setPeriod(status.getPeriod());
+        model.addAttribute("pmEdit", pmEdit);
+        model.addAttribute("taskSize", status.getTasks().size());
+        model.addAttribute("statusId", status.getId());
+        taskService.modelForRegisterTask(model);
+        return "pmUpdate";
+    }
+
+    @PostMapping("/pm/edit")
+    public String pmEdit( Model model,
+                          @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
+                          @RequestParam int id,
+                          Errors errors){
+
+        if (errors.hasErrors()) {
+            log.error("Failed to register task due to validation error on input data: " + errors);
+            return pmForm(model);
+        }
+        taskService.updateStatus(editForm, id);
+        taskService.modelForMainPage(model);
+        return "pmList";
     }
 
     @GetMapping("/pm/task")
@@ -81,7 +109,7 @@ public class TaskController {
 
         taskService.taskRegister(pmRegisterForm);
         taskService.modelForMainPage(model);
-        return "home";
+        return "pmList";
     }
 
 
@@ -115,7 +143,7 @@ public class TaskController {
         taskService.updateTaskDetail(assignForm, id);
         taskService.modelForPersonTaskList(model);
 
-        return "userTaskList";
+        return "userTask";
     }
 
     @ModelAttribute
