@@ -12,7 +12,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.provisioning.JdbcUserDetailsManager;
 import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import javax.sql.DataSource;
 
@@ -60,14 +59,14 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("assignForm/**")
                         .permitAll()
-                        .requestMatchers("dashboard/**")
+                        .requestMatchers("panel/**")
                         .permitAll()
                         .requestMatchers("fonts/**")
                         .permitAll()
                         .anyRequest().authenticated()
 
-                )
-                .addFilterBefore(JwtFilter.class.newInstance(), UsernamePasswordAuthenticationFilter.class);
+                );
+
         return http.build();
     }
 
