@@ -43,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
     private final ReportService reportService;
     private final EventService eventService;
     private final NotificationService notificationService;
-    private static LocalDate CurrentDate = LocalDate.now();
+    private static LocalDate CurrentDate;
     private static final int DEFAULT_ASSIGNEE_ID = 5;
 
 
@@ -67,6 +67,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Scheduled(cron = "@midnight")
     public void updateTodayTasks() {
+        CurrentDate = LocalDate.now();
 
         final List<Center> defaultCenterList = centerService.getDefaultCenterList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);

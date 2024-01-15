@@ -101,12 +101,9 @@ public class SoapClientService {
             // Get the response from the web service call
             Document document = parseXmlFile(outputString);
             NodeList nodeLst = document.getElementsByTagName("sendmessageResponse");
-            final String webServiceResponse = nodeLst.item(0).getTextContent();
-            responseMessage = webServiceResponse;
+            responseMessage = nodeLst.item(0).getTextContent();
 
 
-        } catch (java.net.SocketTimeoutException socketTimeoutException) {
-            log.error(socketTimeoutException.getMessage());
         } catch (IOException e) {
             log.error(e.getMessage());
         }
@@ -120,9 +117,7 @@ public class SoapClientService {
             DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();
             InputSource inputSource = new InputSource(new StringReader(input));
             return documentBuilder.parse(inputSource);
-        } catch (ParserConfigurationException e) {
-            throw new RuntimeException(e);
-        } catch (SAXException e) {
+        } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
             System.out.println(e.getMessage());

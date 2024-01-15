@@ -1,7 +1,6 @@
 package com.navi.dcim.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -29,7 +28,6 @@ public class TaskStatus {
     private int period;
 
     @Column
-    @Nullable
     private boolean active;
 
     @Column
