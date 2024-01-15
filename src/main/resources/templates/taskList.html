@@ -115,13 +115,13 @@
 										<span th:if="${task.getSuccessDatePersian == null}" class="badge bg-light-warning text-warning w-100">اقدام نشده</span>
 										<span th:if="${task.getSuccessDatePersian != null}" th:text="${task.getSuccessDatePersian}" class="badge bg-light-success text-success w-100"></span>
 									</td>
-									<td>
+									<td class="clock">
 										<span th:if="${task.getDelay} > 0" th:text="${task.getDelay}" class="badge bg-light-danger text-danger w-100"></span>
 										<span th:if="${task.getDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
 									</td>
 									<td>
 										<span th:if="${task.isActive}" class="badge rounded-pill bg-info text-dark">فعال</span>
-										<span th:if="${not task.isActive}" class="badge bg-light-success text-success w-100">اتمام وظیفه</span>
+										<span th:if="${not task.isActive}" class="badge bg-light-success text-success w-5">اتمام وظیفه</span>
 									</td>
 
 									<td>

@@ -6,14 +6,13 @@ import java.util.List;
 
 public interface TaskService {
 
-
     Task getTask(Long taskId);
     List<Task> getTaskListById(int taskStatusId);
     List<Task> getPersonTask();
-
+    List<Task> getActiveTaskList(int statusId);
     void updateStatus(PmRegisterForm editForm, int id);
 
-    TaskStatus getStatusForEdit(int id);
+    TaskStatus getStatus(int id);
     Model modelForMainPage(Model model);
     Model modelForRegisterTask(Model model);
     Model modelForTaskController(Model model);

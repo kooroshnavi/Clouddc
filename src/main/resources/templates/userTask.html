@@ -84,7 +84,9 @@
 								<tr th:each="task, iter : ${userTaskList}">
 
 									<td th:text="${iter.count}"/>
-									<td th:text="${task.getTaskStatus.name}"/>
+									<td>
+										<strong th:text="${task.getTaskStatus.name}" ></strong>
+									</td>
 									<td th:text="${task.getCenter.getNamePersian}"/>
 									<td th:text="${task.getDueDatePersian}"/>
 									<td>

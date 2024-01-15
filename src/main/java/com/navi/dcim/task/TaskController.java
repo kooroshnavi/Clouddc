@@ -29,19 +29,17 @@ public class TaskController {
     }
 
     @GetMapping("/pmList")
-    public String pmList(Model model){
+    public String pmList(Model model) {
         taskService.modelForMainPage(model);
         return "pmList";
     }
 
     @GetMapping("/pm")
     public String pmTask(@RequestParam int id, Model model) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        List<Task> tasks = taskService.getTaskListById(id);
-        if (!tasks.isEmpty()) {
-            var status = tasks.get(0).getTaskStatus();
-            model.addAttribute("status", status);
-            model.addAttribute("taskList", tasks);
+        var pm = taskService.getStatus(id);
+        model.addAttribute("status", pm);
+        if (!pm.getTasks().isEmpty()) {
+            model.addAttribute("taskList", taskService.getTaskListById(id));
         }
         return "taskList";
     }
@@ -49,7 +47,7 @@ public class TaskController {
     @GetMapping("/pm/edit")
     public String editForm(@RequestParam int id, Model model) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        var status = taskService.getStatusForEdit(id);
+        var status = taskService.getStatus(id);
         PmRegisterForm pmEdit = new PmRegisterForm();
         pmEdit.setName(status.getName());
         pmEdit.setDescription(status.getDescription());
@@ -62,10 +60,10 @@ public class TaskController {
     }
 
     @PostMapping("/pm/edit")
-    public String pmEdit( Model model,
-                          @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
-                          @RequestParam int id,
-                          Errors errors){
+    public String pmEdit(Model model,
+                         @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
+                         @RequestParam int id,
+                         Errors errors) {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
@@ -76,6 +74,16 @@ public class TaskController {
         return "pmList";
     }
 
+    @GetMapping("/pm/active")
+    public String getActivePmList(@RequestParam int id, Model model) {
+        List<Task> activeTaskList = taskService.getActiveTaskList(id);
+        var pm = taskService.getStatus(id);
+        model.addAttribute("status", pm);
+        model.addAttribute("taskList", activeTaskList);
+
+        return "taskList";
+    }
+
     @GetMapping("/pm/task")
     public String getTaskDetail(@RequestParam Long id, Model model) {
 
@@ -83,7 +91,6 @@ public class TaskController {
 
         return "taskDetail";
     }
-
 
     @GetMapping("/update")
     public void updateTask(Model model) {
@@ -120,8 +127,6 @@ public class TaskController {
 
         return "userTask";
     }
-
-
 
 
     @GetMapping("/task/form")

@@ -43,7 +43,7 @@ public class TaskServiceImpl implements TaskService {
     private final ReportService reportService;
     private final EventService eventService;
     private final NotificationService notificationService;
-    private static LocalDate CurrentDate;
+    private static LocalDate CurrentDate = LocalDate.now();
     private static final int DEFAULT_ASSIGNEE_ID = 5;
 
 
@@ -68,39 +68,33 @@ public class TaskServiceImpl implements TaskService {
     @Scheduled(cron = "@midnight")
     public void updateTodayTasks() {
 
-        CurrentDate = LocalDate.now();
-        List<TaskStatus> todayPm = taskStatusRepository.findBynextDue(CurrentDate);
-        List<Task> taskList = taskRepository.findByActive(true);
-        Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
+        final List<Center> defaultCenterList = centerService.getDefaultCenterList();
+        final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
+        List<TaskStatus> todayPmList = taskStatusRepository.findBynextDue(CurrentDate);
+        List<Task> activeTaskList = taskRepository.findByActive(true);
 
         reportService.setTodayReport();
 
-        delayCalculation(taskList);
+        delayCalculation(activeTaskList);
 
-        if (!todayPm.isEmpty()) {
-            for (TaskStatus status : todayPm
+        if (!todayPmList.isEmpty()) {
+            for (TaskStatus status : todayPmList
             ) {
-                if (status.getId() == 15) { // for mmRoom
-                    Task todayTask = taskSetup(status, centerService.getCenter(3));
+                if (status.getId() == 15) { // specific salon
+                    Task todayTask = taskSetup(status, defaultCenterList.get(defaultCenterList.size() - 1));
                     taskDetailSetup(todayTask, defaultPerson);
                     status.setActive(true);
                 } else {  // other salons
-                    for (int i = 1; i < 3; i++) {
-                        Task todayTask = taskSetup(status, centerService.getCenter(i));
+                    for (int i = 0; i < 2; i++) {
+                        Task todayTask = taskSetup(status, defaultCenterList.get(i));
                         taskDetailSetup(todayTask, defaultPerson);
                     }
                     status.setActive(true);
                 }
-                /*var nextDateDay = CurrentDate.plusDays(status.getPeriod());
-                if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-                    status.setNextDue(LocalDate.now().plusDays(status.getPeriod() + 2));
-                } else if (nextDateDay.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-                    status.setNextDue(LocalDate.now().plusDays(status.getPeriod() + 1));
-                }*/
             }
         }
 
-        taskStatusRepository.saveAll(todayPm);
+        taskStatusRepository.saveAll(todayPmList);
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
@@ -138,7 +132,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public TaskStatus getStatusForEdit(int id) {
+    public TaskStatus getStatus(int id) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var status = taskStatusRepository.findById(id).get();
         status.setNextDuePersian(date.format(PersianDate.fromGregorian(status.getNextDue())));
@@ -333,6 +327,17 @@ public class TaskServiceImpl implements TaskService {
                 .stream()
                 .sorted(Comparator.comparing(Task::getDelay).reversed())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<Task> getActiveTaskList(int statusId) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        List<Task> activeTaskList = taskRepository.findByActiveAndTaskStatusId(true, statusId);
+        for (Task task : activeTaskList
+        ) {
+            task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+        }
+        return activeTaskList;
     }
 
     @Override

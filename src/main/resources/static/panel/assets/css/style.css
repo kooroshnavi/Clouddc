@@ -50,7 +50,8 @@ File: style.css
   }
   
 body {
-    font-size: 14px;
+    font-size: 15px;
+    text-align: center;
 	color: #4c5258;
 	letter-spacing: .5px;
     font-family: IRANSans-web, sans-serif;
@@ -700,6 +701,7 @@ a {
 
 .table-responsive {
     white-space: nowrap;
+    align-items: center;
 }
 
 .fm-menu .list-group a {
