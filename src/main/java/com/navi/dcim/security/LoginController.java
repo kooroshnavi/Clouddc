@@ -1,9 +1,11 @@
 package com.navi.dcim.security;
 
+import com.navi.dcim.otp.OtpService;
 import com.navi.dcim.person.Address;
 import com.navi.dcim.person.AddressRepository;
 import com.navi.dcim.person.PersonService;
 import com.navi.dcim.utils.UtilService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,11 +22,14 @@ import java.util.Optional;
 public class LoginController {
 
     private final PersonService personService;
+
+    private final OtpService otpService;
     private final AddressRepository addressRepository;
 
     @Autowired
-    public LoginController(PersonService personService, AddressRepository addressRepository) {
+    public LoginController(PersonService personService, OtpService otpService, AddressRepository addressRepository) {
         this.personService = personService;
+        this.otpService = otpService;
         this.addressRepository = addressRepository;
     }
 
@@ -67,7 +72,8 @@ public class LoginController {
     }
 
     @PostMapping("/login/otp")
-    public String recieveAddress(Model model, @Valid @ModelAttribute("otpRequest") OtpRequest otpRequest, Errors errors) {
+    public String recieveAddress(Model model, @Valid @ModelAttribute("otpRequest") OtpRequest otpRequest, Errors errors
+                                    , HttpServletRequest request) {
 
         System.out.println(otpRequest.getAddress());
 
@@ -83,6 +89,11 @@ public class LoginController {
             var notFound = true;
             model.addAttribute("notFound", notFound);
             return "otp1";
+        }
+
+        if (address.isPresent()){
+           // otpService.sendOtpMessage(address.get(), request.getRemoteAddr(), LocalDateTime.now());
+            return "otp-verify";
         }
 
 

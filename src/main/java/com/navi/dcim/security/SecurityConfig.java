@@ -57,7 +57,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(authCustomizer -> authCustomizer
                         .requestMatchers("login/**")
                         .permitAll()
-                        .requestMatchers("assignForm/**")
+                        .requestMatchers("otp/**")
                         .permitAll()
                         .requestMatchers("panel/**")
                         .permitAll()
@@ -79,5 +79,6 @@ public class SecurityConfig {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+
 
 }

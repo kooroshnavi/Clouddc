@@ -113,4 +113,10 @@ public class SoapNotificationService implements NotificationService {
         soapClientService.sendMessage(scheduleLogMessage, "09127016653");
         log.info(soapClientService.getResponse());
     }
+
+    @Override
+    public void sendOTPMessage(String address, String message) {
+        soapClientService.sendMessage(message, address);
+        log.info(soapClientService.getResponse());
+    }
 }
