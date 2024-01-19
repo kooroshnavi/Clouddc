@@ -20,23 +20,26 @@
             <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
                 <div class="card-body p-5 text-center">
                     <h4></h4>
-                    <p>همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
+                    <p dir="rtl">همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
 
-                    <form th:action="@{/login/otp/verify(otpUid=${otpUid})}" th:object="${otpInput}" method="POST">
-                        <div th:if="${invalid}" class="alert-warning" dir="rtl">
-                            کد ارسال شده نادرست است.
+                    <div th:if="${invalid}" class="alert-warning" dir="rtl">
+                       کد وارد شده اشتباه است.
+                    </div>
+
+                    <form class="otp-form" th:action="@{/login}" method="POST">
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+
+                        <!-- Store OTP Value -->
+                        <input type="hidden" th:value="${otpUid}" name="username"/>
+                        <input type="hidden" class="otp-value" name="password"/>
+                        <div class="d-block mt-4">
+                            <button class="btn btn-primary" type="submit">بررسی</button>
                         </div>
-                        <div class="otp-field mb-4">
-                            <input type="number" th:field="*{d1}"/>
-                            <input type="number" th:field="*{d2}" disabled="disabled"/>
-                            <input type="number" th:field="*{d3}" disabled="disabled"/>
-                            <input type="number" th:field="*{d4}" disabled="disabled"/>
-                            <input type="number" th:field="*{d5}" disabled="disabled"/>
-                            <input type="number" th:field="*{d6}" disabled="disabled"/>
-                        </div>
-                        <button type="submit" class="btn btn-primary mb-3">
-                            بررسی
-                        </button>
                     </form>
 
                     <div class="text-center mt-5">
@@ -53,9 +56,12 @@
 </main>
 
 <!-- Script JS -->
-<script src="/otp/js/script.js"></script>
+<script th:src="@{/otp/js/jquery.min.js}"></script>
+<script th:src="@{/otp/js/script.js}"></script>
+<script th:src="@{/otp/js/bootstrap.bundle.min.js}"></script>
 <script th:inline="javascript">
      var secondsLeft = [[${secondsLeft}]];
+
 </script>
 <script type="text/javascript" th:src="@{/otp/js/main.js}">
 </script>

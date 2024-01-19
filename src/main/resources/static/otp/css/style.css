@@ -1,33 +1,30 @@
+
 @font-face {
-  font-family: 'IRANSansWeb(FaNum)';
-  src: url('/panel/assets/fonts/IRANSansWeb(FaNum).woff2') format('woff2')
-}
-.otp-field {
-font-family: 'IRANSansWeb(FaNum)';
-  flex-direction: row;
-  column-gap: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  	font-family: 'IRANSans';
+  	font-style: normal;
+  	font-weight: normal;
+  	src: url('/fonts/eot/IRANSansWeb(FaNum).eot?#iefix') format('embedded-opentype'),  /* IE6-8 */ url('/fonts/woff2/IRANSansWeb(FaNum).woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/ url('/fonts/woff/IRANSansWeb(FaNum).woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/ url('/fonts/ttf/IRANSansWeb(FaNum).ttf') format('truetype');
+  }
+
+
+body {
+	background: var(--bs-dark);
+	font-family: 'IRANSans';
 }
 
-.otp-field input {
-  height: 45px;
-  width: 42px;
-  border-radius: 6px;
-  outline: none;
-  font-size: 1.125rem;
-  text-align: center;
-  border: 1px solid #ddd;
-}
-.otp-field input:focus {
-  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
-}
-.otp-field input::-webkit-inner-spin-button,
-.otp-field input::-webkit-outer-spin-button {
-  display: none;
+.otp-form .otp-field {
+	display: inline-block;
+	font-family: 'IRANSans';
+	width: 4rem;
+	height: 4rem;
+	font-size: 2rem;
+	line-height: 4rem;
+	text-align: center;
+	border: none;
+	border-bottom: 2px solid var(--bs-secondary);
+	outline: none;
 }
 
-.resend {
-  font-size: 12px;
+.otp-form .otp-field:focus {
+	border-bottom-color: var(--bs-dark);
 }

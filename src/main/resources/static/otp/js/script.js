@@ -1,67 +1,37 @@
-const inputs = document.querySelectorAll(".otp-field > input");
-const button = document.querySelector(".btn");
+$(document).ready(function () {
 
-window.addEventListener("load", () => inputs[0].focus());
-button.setAttribute("disabled", "disabled");
-
-inputs[0].addEventListener("paste", function (event) {
-  event.preventDefault();
-
-  const pastedValue = (event.clipboardData || window.clipboardData).getData(
-    "text"
-  );
-  const otpLength = inputs.length;
-
-  for (let i = 0; i < otpLength; i++) {
-    if (i < pastedValue.length) {
-      inputs[i].value = pastedValue[i];
-      inputs[i].removeAttribute("disabled");
-      inputs[i].focus;
-    } else {
-      inputs[i].value = ""; // Clear any remaining inputs
-      inputs[i].focus;
-    }
-  }
-});
-
-inputs.forEach((input, index1) => {
-  input.addEventListener("keyup", (e) => {
-    const currentInput = input;
-    const nextInput = input.nextElementSibling;
-    const prevInput = input.previousElementSibling;
-
-    if (currentInput.value.length > 1) {
-      currentInput.value = "";
-      return;
-    }
-
-    if (
-      nextInput &&
-      nextInput.hasAttribute("disabled") &&
-      currentInput.value !== ""
-    ) {
-      nextInput.removeAttribute("disabled");
-      nextInput.focus();
-    }
-
-    if (e.key === "Backspace") {
-      inputs.forEach((input, index2) => {
-        if (index1 <= index2 && prevInput) {
-          input.setAttribute("disabled", true);
-          input.value = "";
-          prevInput.focus();
-        }
-      });
-    }
-
-    button.classList.remove("active");
-    button.setAttribute("disabled", "disabled");
-
-    const inputsNo = inputs.length;
-    if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
-      button.removeAttribute("disabled");
-
-      return;
-    }
-  });
+	$(".otp-form *:input[type!=hidden]:first").focus();
+	let otp_fields = $(".otp-form .otp-field"),
+		otp_value_field = $(".otp-form .otp-value");
+	otp_fields
+		.on("input", function (e) {
+			$(this).val(
+				$(this)
+					.val()
+					.replace(/[^0-9]/g, "")
+			);
+			let password = "";
+			otp_fields.each(function () {
+				let field_value = $(this).val();
+				if (field_value != "") password += field_value;
+			});
+			otp_value_field.val(password);
+		})
+		.on("keyup", function (e) {
+			let key = e.keyCode || e.charCode;
+			if (key == 8 || key == 46 || key == 37 || key == 40) {
+				// Backspace or Delete or Left Arrow or Down Arrow
+				$(this).prev().focus();
+			} else if (key == 38 || key == 39 || $(this).val() != "") {
+				// Right Arrow or Top Arrow or Value not empty
+				$(this).next().focus();
+			}
+		})
+		.on("paste", function (e) {
+			let paste_data = e.originalEvent.clipboardData.getData("text");
+			let paste_data_splitted = paste_data.split("");
+			$.each(paste_data_splitted, function (index, value) {
+				otp_fields.eq(index).val(value);
+			});
+		});
 });

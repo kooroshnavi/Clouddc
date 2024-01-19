@@ -21,19 +21,24 @@ import javax.sql.DataSource;
 public class SecurityConfig {
 
     private final NotificationService notificationService;
+    private final OtpFailureHandler otpFailureHandler;
 
     @Autowired
-    public SecurityConfig(NotificationService notificationService) {
+    public SecurityConfig(NotificationService notificationService, OtpFailureHandler otpFailureHandler) {
         this.notificationService = notificationService;
+        this.otpFailureHandler = otpFailureHandler;
     }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
+
         http
+
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .permitAll()
+                        .failureHandler(otpFailureHandler)
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect("/");
                           /*  notificationService.sendSuccessLoginMessage(
@@ -41,9 +46,8 @@ public class SecurityConfig {
                                     , request.getRemoteAddr()
                                     , LocalDateTime.now());*/
                         })
-                        .failureUrl("/login?error=true")
-                        .permitAll()// If the user fails to login, application will redirect the user to this endpoint
                 )
+
 
                 .logout(logout -> logout
                         .invalidateHttpSession(true)
@@ -74,6 +78,7 @@ public class SecurityConfig {
     public UserDetailsManager userDetailsService(DataSource dataSource) {
         return new JdbcUserDetailsManager(dataSource);
     }
+
 
     @Bean
     public PasswordEncoder passwordEncoder() {
