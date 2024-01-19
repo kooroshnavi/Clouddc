@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -19,23 +19,26 @@
         <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
             <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
                 <div class="card-body p-5 text-center">
-                    <h4>احراز هویت تلفن همراه</h4>
-                    <p>همکاری گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
+                    <h4></h4>
+                    <p>همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
 
-                    <form action="/fad">
-                        <div class="otp-field mb-4" dir="ltr">
-                            <input type="number"/>
-                            <input type="number" disabled/>
-                            <input type="number" disabled/>
-                            <input type="number" disabled/>
-                            <input type="number" disabled/>
-                            <input type="number" disabled/>
+                    <form th:action="@{/login/otp/verify(otpUid=${otpUid})}" th:object="${otpInput}" method="POST">
+                        <div th:if="${invalid}" class="alert-warning" dir="rtl">
+                            کد ارسال شده نادرست است.
                         </div>
-
+                        <div class="otp-field mb-4">
+                            <input type="number" th:field="*{d1}"/>
+                            <input type="number" th:field="*{d2}" disabled="disabled"/>
+                            <input type="number" th:field="*{d3}" disabled="disabled"/>
+                            <input type="number" th:field="*{d4}" disabled="disabled"/>
+                            <input type="number" th:field="*{d5}" disabled="disabled"/>
+                            <input type="number" th:field="*{d6}" disabled="disabled"/>
+                        </div>
                         <button type="submit" class="btn btn-primary mb-3">
                             بررسی
                         </button>
                     </form>
+
                     <div class="text-center mt-5">
                         <span class="d-block mobile-text" id="countdown"></span>
                         <a href="/login/otp/verify" class="d-block mobile-text" id="resend"></a>
@@ -47,12 +50,16 @@
     </div>
 
     </body>
-    <!-- END EDMO HTML (Happy Coding!)-->
 </main>
 
 <!-- Script JS -->
 <script src="/otp/js/script.js"></script>
-<script src="/otp/js/main.js"></script>
+<script th:inline="javascript">
+     var secondsLeft = [[${secondsLeft}]];
+</script>
+<script type="text/javascript" th:src="@{/otp/js/main.js}">
+</script>
+
 <!--$%analytics%$-->
 </body>
 </html>

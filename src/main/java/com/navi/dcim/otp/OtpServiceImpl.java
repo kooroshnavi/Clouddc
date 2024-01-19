@@ -5,29 +5,32 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.navi.dcim.notification.NotificationService;
-import com.navi.dcim.person.Address;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 @Service
 @Slf4j
 public class OtpServiceImpl implements OtpService {
 
-    private static final Integer EXPIRE_MIN = 7;
+    private static final long EXPIRE_MIN = 4;
 
-    private LoadingCache<String,String> otpCache;
+    private LoadingCache<String, String> otpCache;
 
-    private NotificationService notificationService;
+    private final NotificationService notificationService;
 
     @Autowired
-    public OtpServiceImpl() {
+    public OtpServiceImpl(NotificationService notificationService) {
+        this.notificationService = notificationService;
         otpCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(EXPIRE_MIN, TimeUnit.MINUTES)
                 .build(new CacheLoader<>() {
@@ -36,16 +39,17 @@ public class OtpServiceImpl implements OtpService {
                         return "";
                     }
                 });
-
-        this.notificationService = notificationService;
     }
 
     @Override
-    public void sendOtpMessage(Address address, String machine, LocalDateTime requestDateTime) {
+    public void generateOtp(String address, String otpUid, String expiryTimeUUID, String machine, LocalDateTime requestDateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(requestDateTime));
-        String otp = getRandomOTP(address.getValue());
-        log.info(otp);
+        String otp = getRandomOTP(otpUid);
+        otpCache.put(address, otpUid);
+        otpCache.put(otpUid, otp);
+        otpCache.put(otp, address);
+        otpCache.put(expiryTimeUUID, requestDateTime.plusMinutes(EXPIRE_MIN).toString());
         String message = "همکار گرامی، لطفا کد ذیل را جهت ورود وارد نمایید." +
                 System.lineSeparator() +
                 otp +
@@ -56,20 +60,49 @@ public class OtpServiceImpl implements OtpService {
                 "تاریخ و ساعت درخواست: " +
                 persianDateTime +
                 System.lineSeparator() +
-                "این کد تا هفت دقیقه پس از ارسال درخواست معتبر است." +
+                "این کد یک بار مصرف بوده و تا چهار دقیقه پس از ارسال درخواست معتبر است." +
                 System.lineSeparator();
 
-        notificationService.sendOTPMessage(address.getValue(), message);
-
+        notificationService.sendOTPMessage(address, message);
 
     }
 
-    private String getRandomOTP(String value) {
+
+    private String getRandomOTP(String otpUid) {
         String otp = new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));
-        otpCache.put(value, otp);
         return otp;
+    }
 
+    public String getOtpUid(String address) throws ExecutionException {
+        var otpUid = otpCache.get(address);
+        if (otpUid.isBlank()) {
+            return "";
+        }
+        return otpUid;
+    }
+
+    @Override
+    public String getOtpExpiry(String otpUid) throws ExecutionException {
+        var expiryUUID = UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8));
+        return otpCache.get(expiryUUID.toString());
+    }
+
+    @Override
+    public String verifyOtp(String otpUid, String providedOtp) throws ExecutionException {
+        var realOtp = otpCache.get(otpUid);
+        if (realOtp.isBlank()) { //expired or maybe malformed UID
+            return "0";
+        } else if (!realOtp.equals(providedOtp)) { //invalid otp
+            return "-1";
+        }
+        var address = otpCache.get(realOtp);
+        otpCache.invalidate(otpUid);
+        otpCache.invalidate(address);
+        otpCache.invalidate(UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8)).toString());
+        otpCache.invalidate(realOtp);
+
+        return address;
     }
 
 

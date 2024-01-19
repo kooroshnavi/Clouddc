@@ -1,11 +1,16 @@
 package com.navi.dcim.otp;
 
-import com.navi.dcim.person.Address;
-
 import java.time.LocalDateTime;
+import java.util.concurrent.ExecutionException;
 
 public interface OtpService {
 
 
-    void sendOtpMessage(Address address, String machine, LocalDateTime localDateTime);
+    void generateOtp(String address, String otpUid, String expireUid, String machine, LocalDateTime localDateTime);
+
+    String getOtpExpiry(String otpUid) throws ExecutionException;
+
+    String getOtpUid(String key) throws ExecutionException;
+
+    String verifyOtp(String otpUid, String requestOtp) throws ExecutionException;
 }

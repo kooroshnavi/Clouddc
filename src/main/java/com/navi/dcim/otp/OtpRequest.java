@@ -1,4 +1,4 @@
-package com.navi.dcim.security;
+package com.navi.dcim.otp;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

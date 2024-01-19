@@ -59,7 +59,6 @@ inputs.forEach((input, index1) => {
 
     const inputsNo = inputs.length;
     if (!inputs[inputsNo - 1].disabled && inputs[inputsNo - 1].value !== "") {
-      button.classList.add("active");
       button.removeAttribute("disabled");
 
       return;
