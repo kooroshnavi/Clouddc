@@ -1,9 +1,8 @@
 <!DOCTYPE html>
-<html lang="fa" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="author" content="CodeHim">
     <title> احراز هویت با تیک گرام </title>
     <!-- Style CSS -->
     <link rel="stylesheet" href="/otp/css/style.css">
@@ -44,7 +43,6 @@
 
                     <div class="text-center mt-5">
                         <span class="d-block mobile-text" id="countdown"></span>
-                        <a href="/login/otp/verify" class="d-block mobile-text" id="resend"></a>
                     </div>
 
                 </div>
@@ -61,11 +59,9 @@
 <script th:src="@{/otp/js/bootstrap.bundle.min.js}"></script>
 <script th:inline="javascript">
      var secondsLeft = [[${secondsLeft}]];
-
 </script>
 <script type="text/javascript" th:src="@{/otp/js/main.js}">
 </script>
-
 <!--$%analytics%$-->
 </body>
 </html>

@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
@@ -34,16 +33,13 @@ public class LoginController {
     private final PersonService personService;
     private final OtpService otpService;
     private final AddressRepository addressRepository;
-    private final UserDetailsManager userDetailsManager;
-
     private final TaskService taskService;
 
     @Autowired
-    public LoginController(PersonService personService, OtpService otpService, AddressRepository addressRepository, UserDetailsManager userDetailsManager, TaskService taskService) {
+    public LoginController(PersonService personService, OtpService otpService, AddressRepository addressRepository, TaskService taskService) {
         this.personService = personService;
         this.otpService = otpService;
         this.addressRepository = addressRepository;
-        this.userDetailsManager = userDetailsManager;
         this.taskService = taskService;
     }
 
@@ -119,7 +115,7 @@ public class LoginController {
         model.addAttribute("invalid", invalid);
         model.addAttribute("otpInput", new OtpForm());
         model.addAttribute("otpUid", otpUid);
-        model.addAttribute("secondsLeft", (LocalDateTime.now().until(expiry, ChronoUnit.SECONDS) - 10L));
+        model.addAttribute("secondsLeft", (LocalDateTime.now().until(expiry, ChronoUnit.SECONDS)));
         return "otp-verify";
 
     }

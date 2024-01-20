@@ -127,6 +127,7 @@
 									<td>
 										<div class="table-actions d-flex align-items-center gap-3 fs-6">
 											<a th:href="@{/pm/task(id=${task.id})}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="گردش کار"><i class="bi bi-eye-fill"></i></a>
+											<p th:if="${task.isActive}" th:href="@{/pm/task/edit(id=${task.id})}" class="text-warning" data-bs-toggle="tooltip" data-bs-placement="bottom" title="ویرایش - در حال توسعه"><i class="bi bi-pencil-fill"></i></p>
 										</div>
 									</td>
 

@@ -16,6 +16,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -26,6 +27,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     private final OtpService otpService;
     private final PersonService personService;
     private final AddressRepository addressRepository;
+    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER");
 
     @Autowired
     public OtpAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
@@ -50,6 +52,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
             throw new RuntimeException(e);
         }
 
+
         if (result.equals("0")) {
             throw new CredentialsExpiredException("OTP Expired");
         } else if (result.equals("-1")) {
@@ -58,9 +61,22 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
 
         var personAddressObject = addressRepository.findByValue(result);
         var person = personService.getPerson(personAddressObject.get().getId());
+        /*
+        List<String > roleList = new ArrayList<>();
+        roleList.add(ROLES.get(0));
+        roleList.add(ROLES.get(1));
+        roleList.add(ROLES.get(3));
+        person.setRoles(roleList);
+        String random = new DecimalFormat("0000")
+                .format(new Random().nextInt(9999));
+        person.setUsername("user" + random + person.getId());
+        personService.updatePerson(person);
+*/
         List<GrantedAuthority> authorityList = new ArrayList<>();
-        authorityList.add(new SimpleGrantedAuthority("ADMIN"));
-
+        for (String role : person.getRoles()
+        ) {
+            authorityList.add(new SimpleGrantedAuthority(role));
+        }
         return new UsernamePasswordAuthenticationToken(person.getUsername(), null, authorityList);
     }
 

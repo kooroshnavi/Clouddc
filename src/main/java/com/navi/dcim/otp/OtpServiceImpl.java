@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class OtpServiceImpl implements OtpService {
 
-    private static final long EXPIRE_MIN = 4;
+    private static final long EXPIRE_MIN =10;
 
     private LoadingCache<String, String> otpCache;
 
@@ -60,16 +60,14 @@ public class OtpServiceImpl implements OtpService {
                 "تاریخ و ساعت درخواست: " +
                 persianDateTime +
                 System.lineSeparator() +
-                "این کد یک بار مصرف بوده و تا چهار دقیقه پس از ارسال درخواست معتبر است." +
+                "این کد یک بار مصرف بوده و تا ده دقیقه پس از ارسال درخواست معتبر است." +
                 System.lineSeparator();
 
         notificationService.sendOTPMessage(address, message);
-
     }
 
-
     private String getRandomOTP(String otpUid) {
-        String otp = new DecimalFormat("000000")
+        String otp = new DecimalFormat( "000000")
                 .format(new Random().nextInt(999999));
         return otp;
     }

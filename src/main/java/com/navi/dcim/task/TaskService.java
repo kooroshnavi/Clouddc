@@ -3,6 +3,7 @@ package com.navi.dcim.task;
 import org.springframework.ui.Model;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskService {
 
@@ -11,7 +12,7 @@ public interface TaskService {
     List<Task> getPersonTask();
     List<Task> getActiveTaskList(int statusId);
     void updateStatus(PmRegisterForm editForm, int id);
-
+    Optional<TaskDetail> activeTaskDetail(long taskId, boolean active);
     TaskStatus getStatus(int id);
     Model modelForMainPage(Model model);
     Model modelForRegisterTask(Model model);

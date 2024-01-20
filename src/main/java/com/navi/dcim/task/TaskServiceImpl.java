@@ -19,6 +19,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
@@ -66,6 +68,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Scheduled(cron = "@midnight")
+    @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
     public void updateTodayTasks() {
         CurrentDate = LocalDate.now();
 
@@ -87,7 +90,8 @@ public class TaskServiceImpl implements TaskService {
                     status.setActive(true);
                 } else {  // other salons
                     for (int i = 0; i < 2; i++) {
-                        Task todayTask = taskSetup(status, defaultCenterList.get(i));
+                        Center center = defaultCenterList.get(i);
+                        Task todayTask = taskSetup(status, center);
                         taskDetailSetup(todayTask, defaultPerson);
                     }
                     status.setActive(true);
@@ -160,6 +164,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private TaskStatus updateTask(Task task) {
+        CurrentDate = LocalDate.now();
         TaskStatus taskStatus = task.getTaskStatus();
         Optional<DailyReport> report = reportService.findActive(true);
 
@@ -312,8 +317,6 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getPersonTask() {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
-        System.out.println(authenticated.getAuthorities().toString());
-        System.out.println(personName);
         Person person = personService.getPerson(personName);
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(person.getId(), true);
@@ -350,6 +353,18 @@ public class TaskServiceImpl implements TaskService {
         taskStatusRepository.saveAndFlush(status);
     }
 
+    @Override
+    public Optional<TaskDetail> activeTaskDetail(long taskId, boolean active) {
+        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        Optional<TaskDetail> activeTaskDetail = taskDetailRepository.findByTaskIdAndActive(taskId, active);
+        if (activeTaskDetail.isPresent()) {
+            var dueDate = activeTaskDetail.get().getTask().getDueDate();
+            activeTaskDetail.get().getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(dueDate)));
+            return activeTaskDetail;
+        }
+        return Optional.empty();
+    }
+
 
     @Override
     public Model modelForTaskController(Model model) {
@@ -358,8 +373,6 @@ public class TaskServiceImpl implements TaskService {
         Person person = personService.getPerson(personName);
         model.addAttribute("person", person);
         model.addAttribute("role", authenticated.getAuthorities());
-        model.addAttribute("pending", getPersonTask().size());
-        model.addAttribute("pendingEvents", eventService.getPendingEventList().size());
         model.addAttribute("date", getCurrentDate());
 
         return model;
@@ -377,7 +390,6 @@ public class TaskServiceImpl implements TaskService {
     public Model modelForRegisterTask(Model model) {
         model.addAttribute("personList", personService.getPersonList());
         model.addAttribute("centerList", centerService.getCenterList());
-        model.addAttribute("pmRegister", new PmRegisterForm());
 
         return model;
     }

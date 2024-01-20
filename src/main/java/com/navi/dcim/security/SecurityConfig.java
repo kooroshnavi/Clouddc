@@ -7,13 +7,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.provisioning.JdbcUserDetailsManager;
-import org.springframework.security.provisioning.UserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
 
-import javax.sql.DataSource;
+import java.time.LocalDateTime;
 
 @Configuration
 @EnableMethodSecurity
@@ -31,23 +27,19 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
-
         http
-
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .permitAll()
                         .failureHandler(otpFailureHandler)
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect("/");
-                          /*  notificationService.sendSuccessLoginMessage(
+                            notificationService.sendSuccessLoginMessage(
                                     authentication.getName()
                                     , request.getRemoteAddr()
-                                    , LocalDateTime.now());*/
+                                    , LocalDateTime.now());
                         })
                 )
-
 
                 .logout(logout -> logout
                         .invalidateHttpSession(true)
@@ -56,7 +48,6 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 )
-
                 // other configuration options
                 .authorizeHttpRequests(authCustomizer -> authCustomizer
                         .requestMatchers("login/**")
@@ -68,22 +59,9 @@ public class SecurityConfig {
                         .requestMatchers("fonts/**")
                         .permitAll()
                         .anyRequest().authenticated()
-
                 );
 
         return http.build();
     }
-
-    @Bean
-    public UserDetailsManager userDetailsService(DataSource dataSource) {
-        return new JdbcUserDetailsManager(dataSource);
-    }
-
-
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
-
 
 }

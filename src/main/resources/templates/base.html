@@ -48,7 +48,6 @@
           </div>
 
 
-
           <div class="top-navbar-right ms-auto">
             <ul class="navbar-nav align-items-center">
               <li class="nav-item search-toggle-icon">
@@ -157,14 +156,14 @@
             <li class="nav-item dropdown dropdown-user-setting">
               <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                 <div class="user-setting d-flex align-items-center">
-                  <img th:src="@{${'/panel/assets/images/avatars/' + person.username + '.png'}}" class="user-img" alt="">
+                  <img src='/panel/assets/images/avatars/tic.png' class="user-img" alt="">
                 </div>
               </a>
               <ul class="dropdown-menu dropdown-menu-end">
                 <li>
                    <a class="dropdown-item" href="#">
                      <div class="d-flex align-items-center">
-                        <img th:src="@{${'/panel/assets/images/avatars/' + person.username + '.png'}}" alt="" class="rounded-circle" width="54" height="54">
+                        <img src='/panel/assets/images/avatars/tic.png' alt="" class="rounded-circle" width="54" height="54">
                         <div class="ms-3">
                           <h6 class="mb-0 dropdown-user-name" th:text="${person.name}"></h6>
                           <small class="mb-0 dropdown-user-designation text-secondary" th:text="${role}"></small>
@@ -341,12 +340,12 @@
                 </li>
               </ul>
             </li>
-            <li class="menu-label">مدیریت</li>
+            <li sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-label">مدیریت</li>
             <li>
-              <a class="has-arrow" href="javascript:;">
-                <div class="parent-icon"><i class="bi bi-lock-fill"></i>
+              <a  sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="has-arrow" href="javascript:;">
+                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i class="bi bi-lock-fill"></i>
                 </div>
-                <div class="menu-title">گزارشات</div>
+                <div   class="menu-title">گزارشات</div>
               </a>
               <ul>
                 <li> <a href="authentication-signin.html" target="_blank"><i class="bi bi-circle"></i>عملکرد وظایف</a>
@@ -360,10 +359,10 @@
               </ul>
             </li>
             <li>
-              <a href="pages-user-profile.html">
-                <div class="parent-icon"><i class="bi bi-person-lines-fill"></i>
+              <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" href="pages-user-profile.html">
+                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i class="bi bi-person-lines-fill"></i>
                 </div>
-                <div class="menu-title">نظارت تصویری</div>
+                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-title">نظارت تصویری</div>
               </a>
             </li>
           </ul>

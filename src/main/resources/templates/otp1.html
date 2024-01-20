@@ -16,14 +16,15 @@
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
-                <h2 class="heading-section">سامانه نگه داری و پایش زیرساخت ابر (آزمایشی)</h2>
+                <h2 class="heading-section">
+                    <strong>سامانه نگه داری و پایش زیرساخت ابر (آزمایشی)</strong>
+                </h2>
             </div>
         </div>
 
         <div class="row justify-content-center">
 
             <div class="col-md-6 col-lg-4">
-
                 <div class="login-wrap p-0">
 
                     <form class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}" method="Post">
@@ -36,12 +37,12 @@
                             شماره وارد شده در لیست کاربران این سامانه یافت نشد.
                         </div>
                         <br>
+
                         <div th:if="${error2}" class="alert-warning">
                             شماره موبایل را به درستی وارد نمایید.
                         </div>
-
                         <div class="form-group">
-                            <input type="number" size="11" dir="ltr"  th:field="*{address}" name="username" class="form-control" placeholder="09..."
+                            <input type="number" size="11" dir="rtl"  th:field="*{address}" name="username" class="form-control" placeholder="تلفن همراه حساب تیک گرام"
                                    required>
                         </div>
 
@@ -54,46 +55,6 @@
         </div>
     </div>
 </section>
-
-<script>
-        setInterval(showTime, 1000);
-        function showTime() {
-            let time = new Date();
-            let hour =
-                time.getHours();
-            let min =
-                time.getMinutes();
-            let sec =
-                time.getSeconds();
-
-            hour =
-                hour < 10
-                    ? "0" + hour
-                    : hour;
-            min =
-                min < 10
-                    ? "0" + min
-                    : min;
-            sec =
-                sec < 10
-                    ? "0" + sec
-                    : sec;
-
-            let currentTime =
-                hour +
-                ":" +
-                min +
-                ":" +
-                sec;
-
-            document.getElementById(
-                "clock"
-            ).innerHTML =
-                currentTime;
-        }
-
-        showTime();
-    </script>
 
 <script th:src="@{/login/js/jquery.min.js}"></script>
 <script th:src="@{/login/js/popper.js}"></script>
