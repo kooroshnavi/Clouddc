@@ -27,14 +27,13 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     private final OtpService otpService;
     private final PersonService personService;
     private final AddressRepository addressRepository;
-    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER");
+    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");
 
     @Autowired
     public OtpAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
         this.otpService = otpService;
         this.personService = personService;
         this.addressRepository = addressRepository;
-
     }
 
     @Override
@@ -42,7 +41,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
         var otpUid = authentication.getPrincipal().toString();
         var providedOtp = authentication.getCredentials().toString();
         if (providedOtp.isBlank() || providedOtp.isEmpty() || providedOtp.toCharArray().length < 6) {
-            throw new BadCredentialsException("Invalid OTP");
+            throw new BadCredentialsException("Bad Input");
         }
 
         String result;
@@ -52,7 +51,6 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
             throw new RuntimeException(e);
         }
 
-
         if (result.equals("0")) {
             throw new CredentialsExpiredException("OTP Expired");
         } else if (result.equals("-1")) {
@@ -61,23 +59,11 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
 
         var personAddressObject = addressRepository.findByValue(result);
         var person = personService.getPerson(personAddressObject.get().getId());
-        /*
-        List<String > roleList = new ArrayList<>();
-        roleList.add(ROLES.get(0));
-        roleList.add(ROLES.get(1));
-        roleList.add(ROLES.get(3));
-        person.setRoles(roleList);
-        String random = new DecimalFormat("0000")
-                .format(new Random().nextInt(9999));
-        person.setUsername("user" + random + person.getId());
-        personService.updatePerson(person);
-*/
-        List<GrantedAuthority> authorityList = new ArrayList<>();
-        for (String role : person.getRoles()
-        ) {
-            authorityList.add(new SimpleGrantedAuthority(role));
-        }
-        return new UsernamePasswordAuthenticationToken(person.getUsername(), null, authorityList);
+
+        List<GrantedAuthority> personRoles = new ArrayList<>();
+        personRoles.add(new SimpleGrantedAuthority("ADMIN")); // map: 01234/5:13
+
+        return new UsernamePasswordAuthenticationToken(person.getUsername(), null, personRoles);
     }
 
     @Override

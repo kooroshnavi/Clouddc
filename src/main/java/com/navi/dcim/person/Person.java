@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(schema = "Person")
@@ -26,21 +25,22 @@ public class Person {
     private LocalDateTime lastLogin;
 
     @Column
-    private boolean assignee; // false for managers
+    private boolean assignee; // false for manager and viewer
 
     @Column
-    private List<String> roles;
+    private char role;
 
     @OneToOne
     @PrimaryKeyJoinColumn
     private Address address;
 
-    public List<String> getRoles() {
-        return roles;
+
+    public char getRole() {
+        return role;
     }
 
-    public void setRoles(List<String> roles) {
-        this.roles = roles;
+    public void setRole(char role) {
+        this.role = role;
     }
 
     public void setAssignee(boolean assignee) {

@@ -29,7 +29,7 @@
 
                     <form class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}" method="Post">
 
-                        <div th:if="${logout}" class="alert-warning">
+                        <div th:if="${logout}" class="alert-success">
                             خروج از سیستم انجام شد.
                         </div>
 

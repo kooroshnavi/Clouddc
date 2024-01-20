@@ -12,5 +12,5 @@ public interface NotificationService {
 
     void sendScheduleUpdateMessage(String personAddress, String log);
 
-    void sendOTPMessage(String address, String message);
+    void sendOTPMessage(String address, String otp, String machine, String date);
 }

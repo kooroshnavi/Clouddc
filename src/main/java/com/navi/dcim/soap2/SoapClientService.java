@@ -42,7 +42,7 @@ public class SoapClientService {
         return response;
     }
 
-    public void sendMessage(String message, String address) {
+    public void sendMessage(String address, String message) {
 
         this.message = HEADER + System.lineSeparator() + System.lineSeparator() + message + System.lineSeparator();
         this.address = address;

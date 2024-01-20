@@ -18,6 +18,7 @@ public class SoapNotificationService implements NotificationService {
     private final SoapClientService soapClientService;
 
     private final PersonService personService;
+
     @Autowired
     public SoapNotificationService(SoapClientService soapClientService, @Lazy PersonService personService) {
         this.soapClientService = soapClientService;
@@ -28,10 +29,10 @@ public class SoapNotificationService implements NotificationService {
     public void sendSuccessLoginMessage(String personName, String ipAddress, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
-        var person  = personService.getPerson(personName);
+        var person = personService.getPerson(personName);
         var address = person.getAddress().getValue();
 
-        final String successLoginMessage =
+        final String message =
                 "ورود موفق" +
                         System.lineSeparator() +
                         "آدرس ماشین: " +
@@ -41,16 +42,16 @@ public class SoapNotificationService implements NotificationService {
                         persianDateTime +
                         System.lineSeparator();
 
-        soapClientService.sendMessage(successLoginMessage, address);
+        soapClientService.sendMessage(address, message);
         log.info(soapClientService.getResponse());
     }
 
     @Override
-    public void sendNewTaskAssignedMessage(String personAddress, String taskTitle, LocalDateTime originDatetime) {
+    public void sendNewTaskAssignedMessage(String address, String taskTitle, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
 
-        final String newTaskAssignMessage =
+        final String message =
                 "وظیفه جدید با عنوان: " +
                         taskTitle +
                         System.lineSeparator() +
@@ -61,17 +62,17 @@ public class SoapNotificationService implements NotificationService {
                         System.lineSeparator();
 
 
-        soapClientService.sendMessage(newTaskAssignMessage, personAddress);
+        soapClientService.sendMessage(address, message);
         log.info(soapClientService.getResponse());
     }
 
     @Override
-    public void sendActiveTaskAssignedMessage(String personAddress, String taskTitle, int delay, LocalDateTime originDatetime) {
+    public void sendActiveTaskAssignedMessage(String address, String taskTitle, int delay, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
         switch (delay) {
             case 0: {
-                final String activeAssignMessage =
+                final String message =
                         "وظیفه فعال با عنوان: " +
                                 taskTitle +
                                 System.lineSeparator() +
@@ -81,12 +82,12 @@ public class SoapNotificationService implements NotificationService {
                                 "با انتساب دیگر همکاران در کارتابل شما قرار گرفت." +
                                 System.lineSeparator();
 
-                soapClientService.sendMessage(activeAssignMessage, personAddress);
+                soapClientService.sendMessage(address, message);
                 log.info(soapClientService.getResponse());
                 break;
             }
             default:
-                final String activeAssignMessage =
+                final String message =
                         "وظیفه فعال با عنوان: " +
                                 taskTitle +
                                 System.lineSeparator() +
@@ -100,7 +101,7 @@ public class SoapNotificationService implements NotificationService {
                                 " روز می باشد." +
                                 System.lineSeparator();
 
-                soapClientService.sendMessage(activeAssignMessage, personAddress);
+                soapClientService.sendMessage(address, message);
                 log.info(soapClientService.getResponse());
                 break;
         }
@@ -109,14 +110,25 @@ public class SoapNotificationService implements NotificationService {
 
     @Override
     public void sendScheduleUpdateMessage(String personAddress, String logMessage) {
-        final String scheduleLogMessage = logMessage;
-        soapClientService.sendMessage(scheduleLogMessage, "09127016653");
+        soapClientService.sendMessage("09127016653", logMessage);
         log.info(soapClientService.getResponse());
     }
 
     @Override
-    public void sendOTPMessage(String address, String message) {
-        soapClientService.sendMessage(message, address);
+    public void sendOTPMessage(String address, String otp, String machine, String date) {
+        final String otpMessage = "همکار گرامی، کد ورود شما:" +
+                System.lineSeparator() +
+                otp +
+                System.lineSeparator() +
+                "آدرس ماشین: " +
+                machine +
+                System.lineSeparator() +
+                "تاریخ و ساعت درخواست: " +
+                date +
+                System.lineSeparator() +
+                "این کد تا 12 ساعت آینده به دفعات قابل استفاده می باشد." +
+                System.lineSeparator();
+        soapClientService.sendMessage(address, otp);
         log.info(soapClientService.getResponse());
     }
 }

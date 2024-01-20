@@ -5,7 +5,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -13,8 +12,6 @@ import java.util.List;
 final class PersonServiceImpl implements PersonService {
 
     private PersonRepository personRepository;
-
-    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER");
 
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository) {
@@ -43,7 +40,6 @@ final class PersonServiceImpl implements PersonService {
         ids.add(personId);
         return personRepository.findAllByIdNotInAndAssignee(ids, true);
     }
-
 
     @Override
     public Person addPerson(Person person) {

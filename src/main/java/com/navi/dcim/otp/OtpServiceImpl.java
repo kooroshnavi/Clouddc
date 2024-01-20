@@ -22,7 +22,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class OtpServiceImpl implements OtpService {
 
-    private static final long EXPIRE_MIN =10;
+    private static final long EXPIRE_HOUR = 12;
 
     private LoadingCache<String, String> otpCache;
 
@@ -32,7 +32,7 @@ public class OtpServiceImpl implements OtpService {
     public OtpServiceImpl(NotificationService notificationService) {
         this.notificationService = notificationService;
         otpCache = CacheBuilder.newBuilder()
-                .expireAfterWrite(EXPIRE_MIN, TimeUnit.MINUTES)
+                .expireAfterWrite(EXPIRE_HOUR, TimeUnit.HOURS)
                 .build(new CacheLoader<>() {
                     @Override
                     public String load(String s) {
@@ -49,25 +49,12 @@ public class OtpServiceImpl implements OtpService {
         otpCache.put(address, otpUid);
         otpCache.put(otpUid, otp);
         otpCache.put(otp, address);
-        otpCache.put(expiryTimeUUID, requestDateTime.plusMinutes(EXPIRE_MIN).toString());
-        String message = "همکار گرامی، لطفا کد ذیل را جهت ورود وارد نمایید." +
-                System.lineSeparator() +
-                otp +
-                System.lineSeparator() +
-                "آدرس ماشین: " +
-                machine +
-                System.lineSeparator() +
-                "تاریخ و ساعت درخواست: " +
-                persianDateTime +
-                System.lineSeparator() +
-                "این کد یک بار مصرف بوده و تا ده دقیقه پس از ارسال درخواست معتبر است." +
-                System.lineSeparator();
-
-        notificationService.sendOTPMessage(address, message);
+        otpCache.put(expiryTimeUUID, requestDateTime.plusHours(EXPIRE_HOUR).toString());
+        notificationService.sendOTPMessage(address, otp, machine, persianDateTime);
     }
 
     private String getRandomOTP(String otpUid) {
-        String otp = new DecimalFormat( "000000")
+        String otp = new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));
         return otp;
     }
@@ -95,10 +82,10 @@ public class OtpServiceImpl implements OtpService {
             return "-1";
         }
         var address = otpCache.get(realOtp);
-        otpCache.invalidate(otpUid);
+       /* otpCache.invalidate(otpUid);
         otpCache.invalidate(address);
         otpCache.invalidate(UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8)).toString());
-        otpCache.invalidate(realOtp);
+        otpCache.invalidate(realOtp);*/
 
         return address;
     }
