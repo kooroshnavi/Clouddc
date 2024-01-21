@@ -112,8 +112,10 @@ public class TaskController {
     }*/
 
     @GetMapping("/update")
-    public void updateTask(Model model) {
+    public String updateTask(Model model) {
         taskService.updateTodayTasks();
+        taskService.modelForMainPage(model);
+        return "index2";
     }
 
     @GetMapping("/pm/register")

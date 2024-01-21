@@ -19,8 +19,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
@@ -68,10 +66,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Scheduled(cron = "@midnight")
-    @Transactional(propagation= Propagation.REQUIRED, readOnly=true, noRollbackFor=Exception.class)
     public void updateTodayTasks() {
         CurrentDate = LocalDate.now();
-
         final List<Center> defaultCenterList = centerService.getDefaultCenterList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<TaskStatus> todayPmList = taskStatusRepository.findBynextDue(CurrentDate);
@@ -85,23 +81,32 @@ public class TaskServiceImpl implements TaskService {
             for (TaskStatus status : todayPmList
             ) {
                 if (status.getId() == 15) { // specific salon
-                    Task todayTask = taskSetup(status, defaultCenterList.get(defaultCenterList.size() - 1));
-                    taskDetailSetup(todayTask, defaultPerson);
+                    helper2(status, defaultCenterList, defaultPerson);
                     status.setActive(true);
                 } else {  // other salons
-                    for (int i = 0; i < 2; i++) {
-                        Center center = defaultCenterList.get(i);
-                        Task todayTask = taskSetup(status, center);
-                        taskDetailSetup(todayTask, defaultPerson);
-                    }
+                    helper(status, defaultCenterList, defaultPerson);
                     status.setActive(true);
                 }
             }
+            taskStatusRepository.saveAll(todayPmList);
         }
 
-        taskStatusRepository.saveAll(todayPmList);
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
+
+    private void helper(TaskStatus status, List<Center> defaultCenterList, Person person) {
+        for (int i = 0; i < 2; i++) {
+            Task todayTask = taskSetup(status, defaultCenterList.get(i));
+            taskDetailSetup(todayTask, person);
+        }
+    }
+
+    private void helper2(TaskStatus status, List<Center> defaultCenterList, Person defaultPerson) {
+        var center = defaultCenterList.get(defaultCenterList.size() - 1);
+        Task todayTask = taskSetup(status, center);
+        taskDetailSetup(todayTask, defaultPerson);
+    }
+
 
     private TaskDetail taskDetailSetup(Task todayTask, Person person) {
         TaskDetail taskDetail = new TaskDetail();
