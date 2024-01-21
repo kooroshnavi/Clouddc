@@ -110,10 +110,10 @@
                                     </button>
                                 </div>
                                 <div class="col">
-                                    <a th:if="${status.lastSuccessfulPersian != null}" href="/pm"
+                                    <button th:if="${status.lastSuccessfulPersian != null}" href="/pm"
                                        th:text="${status.lastSuccessfulPersian}"
                                        class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="جزئیات آخرین اقدام"></a>
+                                       data-bs-placement="bottom" title="جزئیات آخرین اقدام" disabled="disabled"></button>
                                 </div>
                             </td>
                             <td>
