@@ -178,21 +178,23 @@ public class TaskServiceImpl implements TaskService {
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setActive(false);
         task.setDailyReport(report.get());
-
-        var possibleNextDue = CurrentDate.plusDays(taskStatus.getPeriod());
-        if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-            taskStatus.setNextDue(LocalDate.now().plusDays(taskStatus.getPeriod() + 2));
-        } else if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-            taskStatus.setNextDue(LocalDate.now().plusDays(taskStatus.getPeriod() + 1));
-        } else {
-            taskStatus.setNextDue(possibleNextDue);
-        }
-
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         taskStatus.setLastSuccessful(task.getSuccessDate());
         taskStatus.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(taskStatus.getLastSuccessful())));
-        taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
-        taskStatus.setActive(false);// task is inactive til next due
+
+
+        if (taskStatus.getTasks().stream().noneMatch(Task::isActive)){
+            taskStatus.setActive(false);// task is inactive til next due
+            var possibleNextDue = CurrentDate.plusDays(taskStatus.getPeriod());
+            if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+                taskStatus.setNextDue(LocalDate.now().plusDays(taskStatus.getPeriod() + 2));
+            } else if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+                taskStatus.setNextDue(LocalDate.now().plusDays(taskStatus.getPeriod() + 1));
+            } else {
+                taskStatus.setNextDue(possibleNextDue);
+            }
+            taskStatus.setNextDuePersian(date.format(PersianDate.fromGregorian(taskStatus.getNextDue())));
+        }
         return taskStatusRepository.saveAndFlush(taskStatus);
     }
 
