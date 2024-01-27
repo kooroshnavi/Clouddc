@@ -11,4 +11,6 @@ public interface NotificationService {
     void sendActiveTaskAssignedMessage(String personAddress, String taskTitle, int delay, LocalDateTime dateTime);
 
     void sendScheduleUpdateMessage(String personAddress, String log);
+
+    void sendOTPMessage(String address, String otp, String machine, String date);
 }

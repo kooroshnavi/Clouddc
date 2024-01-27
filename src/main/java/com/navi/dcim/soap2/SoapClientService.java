@@ -42,7 +42,7 @@ public class SoapClientService {
         return response;
     }
 
-    public void sendMessage(String message, String address) {
+    public void sendMessage(String address, String message) {
 
         this.message = HEADER + System.lineSeparator() + System.lineSeparator() + message + System.lineSeparator();
         this.address = address;
@@ -102,7 +102,6 @@ public class SoapClientService {
             Document document = parseXmlFile(outputString);
             NodeList nodeLst = document.getElementsByTagName("sendmessageResponse");
             responseMessage = nodeLst.item(0).getTextContent();
-
 
         } catch (IOException e) {
             log.error(e.getMessage());

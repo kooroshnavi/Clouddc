@@ -9,50 +9,47 @@
     <link th:href="@{/login/css/style.css}" rel="stylesheet">
 
 </head>
+
 <body class="img js-fullheight" style="background-image: url(/login/images/bg.jpg);">
+
 <section class="ftco-section">
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
-                <h2 class="heading-section">سامانه نگه داری و پایش زیرساخت ابر (آزمایشی)</h2>
+                <h2 class="heading-section">
+                    <strong>سامانه نگه داری و پایش زیرساخت ابر (آزمایشی)</strong>
+                </h2>
             </div>
         </div>
 
         <div class="row justify-content-center">
 
             <div class="col-md-6 col-lg-4">
-
                 <div class="login-wrap p-0">
 
-                    <form class="signin-form" th:action="@{/login}" method="post">
+                    <form class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}" method="Post">
 
-                        <div th:if="${error}" class="alert-warning">
-                            نام کاربری و یا کلمه عبور اشتباه است
+                        <div th:if="${logout}" class="alert-success">
+                            خروج از سیستم انجام شد.
                         </div>
-                        <div th:if="${logout}" class="alert alert-success">
-                            خروج از سیستم انجام شد
+
+                        <div th:if="${notFound}" class="alert-warning">
+                            شماره وارد شده در لیست کاربران این سامانه یافت نشد.
                         </div>
                         <br>
 
+                        <div th:if="${error2}" class="alert-warning">
+                            شماره موبایل را به درستی وارد نمایید.
+                        </div>
                         <div class="form-group">
-                            <input type="text" dir="ltr" name="username" class="form-control" placeholder="Username"
+                            <input type="number" size="11" dir="rtl"  th:field="*{address}" name="username" class="form-control" placeholder="تلفن همراه تیک گرام"
                                    required>
                         </div>
 
                         <div class="form-group">
-                            <input dirname="asda" id="password-field" name="password" type="password" dir="ltr"
-                                   class="form-control" placeholder="Password" required>
+                            <button type="submit" class="form-control btn btn-primary submit px-3">بررسی</button>
                         </div>
-
-                        <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary submit px-3">ورود</button>
-                        </div>
-
                     </form>
-                    <div class="social d-flex text-center">
-                        <a href="/login/otp" class="px-2 py-2 ml-md-1 rounded"><span class="ion-logo-twitter mr-2"></span> ورود
-                            با کد تیک گرام</a>
-                    </div>
                 </div>
             </div>
         </div>

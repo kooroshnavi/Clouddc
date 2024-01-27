@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> احراز هویت با تیک گرام </title>
+    <!-- Style CSS -->
+    <link rel="stylesheet" href="/otp/css/style.css">
+    <link rel="stylesheet" href="/otp/css/style2.css">
+    <link rel="stylesheet" href="/otp/css/bootstrap.min.css">
+<body>
+
+<!--$%adsense%$-->
+<main class="cd__main">
+    <!-- Start DEMO HTML (Use the following code into your project)-->
+    <body class="container-fluid bg-body-tertiary d-block">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+            <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+                <div class="card-body p-5 text-center">
+                    <h4></h4>
+                    <p dir="rtl">همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
+
+                    <div th:if="${invalid}" class="alert-warning" dir="rtl">
+                       کد وارد شده اشتباه است.
+                    </div>
+
+                    <form class="otp-form" th:action="@{/login}" method="POST">
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+
+                        <!-- Store OTP Value -->
+                        <input type="hidden" th:value="${otpUid}" name="username"/>
+                        <input type="hidden" class="otp-value" name="password"/>
+                        <div class="d-block mt-4">
+                            <button class="btn btn-primary" type="submit">بررسی</button>
+                        </div>
+                    </form>
+
+                    <div class="text-center mt-5">
+                        <span class="d-block mobile-text" id="countdown"></span>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </body>
+</main>
+
+<!-- Script JS -->
+<script th:src="@{/otp/js/jquery.min.js}"></script>
+<script th:src="@{/otp/js/script.js}"></script>
+<script th:src="@{/otp/js/bootstrap.bundle.min.js}"></script>
+<script th:inline="javascript">
+     var secondsLeft = [[${secondsLeft}]];
+</script>
+<script type="text/javascript" th:src="@{/otp/js/main.js}">
+</script>
+<!--$%analytics%$-->
+</body>
+</html>

@@ -1,0 +1,30 @@
+
+@font-face {
+  	font-family: 'IRANSans';
+  	font-style: normal;
+  	font-weight: normal;
+  	src: url('/fonts/eot/IRANSansWeb(FaNum).eot?#iefix') format('embedded-opentype'),  /* IE6-8 */ url('/fonts/woff2/IRANSansWeb(FaNum).woff2') format('woff2'),  /* FF39+,Chrome36+, Opera24+*/ url('/fonts/woff/IRANSansWeb(FaNum).woff') format('woff'),  /* FF3.6+, IE9, Chrome6+, Saf5.1+*/ url('/fonts/ttf/IRANSansWeb(FaNum).ttf') format('truetype');
+  }
+
+
+body {
+	background: var(--bs-dark);
+	font-family: 'IRANSans';
+}
+
+.otp-form .otp-field {
+	display: inline-block;
+	font-family: 'IRANSans';
+	width: 4rem;
+	height: 4rem;
+	font-size: 2rem;
+	line-height: 4rem;
+	text-align: center;
+	border: none;
+	border-bottom: 2px solid var(--bs-secondary);
+	outline: none;
+}
+
+.otp-form .otp-field:focus {
+	border-bottom-color: var(--bs-dark);
+}

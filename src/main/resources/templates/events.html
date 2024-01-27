@@ -80,7 +80,6 @@
 									<th>تاریخ ثبت</th>
 									<th>مرکز</th>
 									<th>وضعیت</th>
-									<th>عملیات</th>
 								</tr>
 								</thead>
 								<tbody>
@@ -92,12 +91,16 @@
 									<td th:text="${event.getPersianDate}"/>
 									<td th:text="${event.getCenter.getNamePersian}"/>
 									<td>
-										<span th:if="${event.isActive}" class="badge rounded-pill bg-info text-dark">فعال</span>
-										<span th:if="${not event.isActive}" class="badge bg-light-success text-success w-100">خاتمه رخداد</span>
-									</td>
-									<td>
-										<div class="table-actions d-flex align-items-center gap-3 fs-6">
-											<a th:href="@{/event/view(eventId=${event.id})}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="جزئیات رخداد"><i class="bi bi-eye-fill"></i></a>
+										<div class="col">
+											<a th:if="${event.isActive}" th:href="@{/event/view(eventId=${event.id})}"
+											   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+											   data-bs-placement="bottom" title="مشاهده تاریخچه و بروزرسانی">فعال</a>
+										</div>
+
+										<div class="col">
+											<a th:if="${not event.isActive}" th:href="@{/event/view(eventId=${event.id})}"
+											   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
+											   data-bs-placement="bottom" title="مشاهده تاریخچه">خاتمه رخداد</a>
 										</div>
 									</td>
 

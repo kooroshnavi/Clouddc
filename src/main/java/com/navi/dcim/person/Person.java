@@ -25,11 +25,31 @@ public class Person {
     private LocalDateTime lastLogin;
 
     @Column
-    private boolean assignee; // false for managers
+    private boolean assignee; // false for manager and viewer
+
+    @Column
+    private char role;
 
     @OneToOne
     @PrimaryKeyJoinColumn
     private Address address;
+
+
+    public char getRole() {
+        return role;
+    }
+
+    public void setRole(char role) {
+        this.role = role;
+    }
+
+    public void setAssignee(boolean assignee) {
+        this.assignee = assignee;
+    }
+
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
     public Address getAddress() {
         return address;

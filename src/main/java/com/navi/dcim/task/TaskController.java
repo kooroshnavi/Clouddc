@@ -15,7 +15,9 @@ import java.util.List;
 @Controller
 @RequestMapping(value = {"", "/", "/app/main"})
 public class TaskController {
-    private TaskService taskService;
+
+
+    private final TaskService taskService;
 
     @Autowired
     public TaskController(TaskServiceImpl taskService) {
@@ -59,6 +61,7 @@ public class TaskController {
         return "pmUpdate";
     }
 
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
     @PostMapping("/pm/edit")
     public String pmEdit(Model model,
                          @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
@@ -91,18 +94,38 @@ public class TaskController {
 
         return "taskDetail";
     }
+/*
+    @GetMapping("/pm/task/edit")
+    public String modifyTask(@RequestParam long id, Model model) {
+        Optional<TaskDetail> taskDetail = taskService.activeTaskDetail(id, true);
+        if (taskDetail.isPresent()) {
+            model.addAttribute("modifyForm", new ModifyTaskForm());
+            model.addAttribute("name", taskDetail.get().getTask().getTaskStatus().getName());
+            model.addAttribute("taskPerson", taskDetail.get().getPerson().getName());
+            model.addAttribute("delay", taskDetail.get().getTask().getDelay());
+            model.addAttribute("dueDate", taskDetail.get().getTask().getDueDatePersian());
+            model.addAttribute("center", taskDetail.get().getTask().getCenter().getNamePersian());
+            taskService.modelForRegisterTask(model);
+            return "taskModify";
+        }
+        return "404";
+    }*/
 
     @GetMapping("/update")
-    public void updateTask(Model model) {
+    public String updateTask(Model model) {
         taskService.updateTodayTasks();
+        taskService.modelForMainPage(model);
+        return "index2";
     }
 
     @GetMapping("/pm/register")
     public String pmForm(Model model) {
         taskService.modelForRegisterTask(model);
+        model.addAttribute("pmRegister", new PmRegisterForm());
         return "pmRegister";
     }
 
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
     @PostMapping("/pm/register/form/submit")
     public String pmPost(
             Model model,
@@ -139,6 +162,7 @@ public class TaskController {
     }
 
 
+    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     @PostMapping("/task/form/update")
     public String assignTaskDetail(Model model,
                                    @RequestParam("id") Long id,
