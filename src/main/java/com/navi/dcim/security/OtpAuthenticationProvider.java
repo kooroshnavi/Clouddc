@@ -27,6 +27,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     private final OtpService otpService;
     private final PersonService personService;
     private final AddressRepository addressRepository;
+    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");
 
     @Autowired
     public OtpAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
@@ -56,11 +57,10 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
             throw new BadCredentialsException("Invalid OTP");
         }
 
-        final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");
-        var personAddressObject = addressRepository.findByValue(result);
-        var person = personService.getPerson(personAddressObject.get().getId());
+        var addressObject = addressRepository.findByValue(result);
+        var personObject = personService.getPerson(addressObject.get().getId());
 
-        var roleId = person.getRole();
+        var roleId = personObject.getRole();
         List<GrantedAuthority> personRoles = new ArrayList<>();
         switch (roleId) {
             case '0':
@@ -85,7 +85,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
         }
         // map: 01234/5:13
 
-        return new UsernamePasswordAuthenticationToken(person.getUsername(), null, personRoles);
+        return new UsernamePasswordAuthenticationToken(personObject.getUsername(), null, personRoles);
     }
 
     @Override

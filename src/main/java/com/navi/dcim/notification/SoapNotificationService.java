@@ -128,7 +128,7 @@ public class SoapNotificationService implements NotificationService {
                 System.lineSeparator() +
                 "این کد تا 12 ساعت آینده به دفعات قابل استفاده می باشد." +
                 System.lineSeparator();
-        soapClientService.sendMessage(address, otp);
+        soapClientService.sendMessage(address, otpMessage);
         log.info(soapClientService.getResponse());
     }
 }

@@ -103,7 +103,6 @@ public class SoapClientService {
             NodeList nodeLst = document.getElementsByTagName("sendmessageResponse");
             responseMessage = nodeLst.item(0).getTextContent();
 
-
         } catch (IOException e) {
             log.error(e.getMessage());
         }

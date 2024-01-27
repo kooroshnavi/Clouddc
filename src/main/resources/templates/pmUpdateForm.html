@@ -81,6 +81,7 @@
                                   <p class="mb-1" th:text=" 'مرکز: ' + ${center}"></p>
                                   <p class="mb-1" th:text=" 'سررسید: ' + ${dueDate}"></p>
                                   <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${delay}"></p>
+                                  <p class="mb-1" th:if="${description != null}" th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${description}"></p>
                               </div>
                           </div>
                       </div>
