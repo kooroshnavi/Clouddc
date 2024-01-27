@@ -19,9 +19,9 @@
 .progress-bar {
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: salon;
   color: $progress-bar-color;
-  text-align: center;
+  text-align: salon;
   white-space: nowrap;
   background-color: $progress-bar-bg;
   @include transition($progress-bar-transition);

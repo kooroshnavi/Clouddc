@@ -1,5 +1,5 @@
 Manifest-Version: 1.0
-Main-Class: com.navi.dcim.DcimApplication
+Main-Class: ir.tic.clouddc.DcimApplication
 Class-Path: tomcat-embed-websocket-10.1.15.jar spring-core-6.0.13.jar sp
  ring-boot-starter-data-jdbc-3.1.5.jar spring-boot-3.1.5.jar spring-boot
  -starter-thymeleaf-3.1.5.jar thymeleaf-spring6-3.1.2.RELEASE.jar microm
