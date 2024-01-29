@@ -6,6 +6,8 @@ import java.util.List;
 public interface CenterService {
     Salon getCenter(int centerId);
     List<Salon> getDefaultCenterList();
-    List<SalonChecklist> getTodayCenterPmList(LocalDate due);
-    List<Salon> getCenterList();
+    List<SalonPmDue> getTodayCenterPmList(LocalDate due);
+    List<Salon> getSalonList();
+
+    List<SalonPmDue> getTodaySalonPmList();
 }

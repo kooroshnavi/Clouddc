@@ -13,7 +13,7 @@ public interface TaskService {
     List<Task> getActiveTaskList(int statusId);
     void updateStatus(PmRegisterForm editForm, int id);
     Optional<TaskDetail> activeTaskDetail(long taskId, boolean active);
-    Pm getStatus(int id);
+    Pm getPm(int id);
     Model modelForMainPage(Model model);
     Model modelForRegisterTask(Model model);
     Model modelForTaskController(Model model);

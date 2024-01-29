@@ -1,9 +1,11 @@
 package ir.tic.clouddc.center;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ir.tic.clouddc.task.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -24,7 +26,21 @@ public class Salon {
     private Center center;
 
     @OneToMany(mappedBy = "salon")
-    private List<SalonChecklist> salonChecklists;
+    private List<SalonPmDue> salonPmDueList;
+
+    @OneToMany(mappedBy = "salon")
+    private List<Task> taskList;
+
+    public List<Task> getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(Task task) {
+        if (this.taskList == null) {
+            this.taskList = new ArrayList<>();
+        }
+        this.taskList.add(task);
+    }
 
     public Center getCenter() {
         return center;
@@ -34,12 +50,12 @@ public class Salon {
         this.center = center;
     }
 
-    public List<SalonChecklist> getSalonChecklists() {
-        return salonChecklists;
+    public List<SalonPmDue> getSalonPmDueList() {
+        return salonPmDueList;
     }
 
-    public void setSalonChecklists(List<SalonChecklist> salonChecklists) {
-        this.salonChecklists = salonChecklists;
+    public void setSalonPmDueList(List<SalonPmDue> salonPmDueList) {
+        this.salonPmDueList = salonPmDueList;
     }
 
     @JsonIgnore
@@ -50,6 +66,7 @@ public class Salon {
     public void setId(int id) {
         this.id = id;
     }
+
     @JsonIgnore
     public String getName() {
         return name;

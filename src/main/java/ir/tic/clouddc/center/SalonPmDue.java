@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class SalonChecklist {
+public class SalonPmDue {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column

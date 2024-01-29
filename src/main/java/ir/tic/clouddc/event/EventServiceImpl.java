@@ -111,7 +111,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Model modelForEventRegisterForm(Model model) {
-        model.addAttribute("centerList", centerService.getCenterList());
+        model.addAttribute("centerList", centerService.getSalonList());
         model.addAttribute("eventTypeList", eventTypeRepository.findAll());
         model.addAttribute("eventRegister", new EventForm());
         return model;
@@ -150,7 +150,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Model modelForEventList(Model model) {
-        model.addAttribute("centerList", centerService.getCenterList());
+        model.addAttribute("centerList", centerService.getSalonList());
         model.addAttribute("eventTypeList", getEventTypeList());
         model.addAttribute("eventList", getEventList());
         return model;

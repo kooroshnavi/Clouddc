@@ -38,7 +38,7 @@ public class TaskController {
 
     @GetMapping("/pm")
     public String pmTask(@RequestParam int id, Model model) {
-        var pm = taskService.getStatus(id);
+        var pm = taskService.getPm(id);
         model.addAttribute("status", pm);
         if (!pm.getTaskList().isEmpty()) {
             model.addAttribute("taskList", taskService.getTaskListById(id));
@@ -49,7 +49,7 @@ public class TaskController {
     @GetMapping("/pm/edit")
     public String editForm(@RequestParam int id, Model model) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        var status = taskService.getStatus(id);
+        var status = taskService.getPm(id);
         PmRegisterForm pmEdit = new PmRegisterForm();
         pmEdit.setName(status.getTitle());
         pmEdit.setDescription(status.getDescription());
@@ -80,7 +80,7 @@ public class TaskController {
     @GetMapping("/pm/active")
     public String getActivePmList(@RequestParam int id, Model model) {
         List<Task> activeTaskList = taskService.getActiveTaskList(id);
-        var pm = taskService.getStatus(id);
+        var pm = taskService.getPm(id);
         model.addAttribute("status", pm);
         model.addAttribute("taskList", activeTaskList);
 

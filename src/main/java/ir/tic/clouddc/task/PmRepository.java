@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Repository
-public interface TaskStatusRepository extends JpaRepository<Pm, Integer> {
+public interface PmRepository extends JpaRepository<Pm, Integer> {
 
     List<Pm> findByActive(boolean active);
 

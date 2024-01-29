@@ -45,8 +45,8 @@ public class Task {
     @JoinColumn(name = "pm_id")
     private Pm pm;
 
-    @OneToOne
-    @JoinColumn(name = "center_id")
+    @ManyToOne
+    @JoinColumn(name = "salon_id")
     private Salon salon;
 
     @OneToMany(mappedBy = "task", cascade = {CascadeType.ALL})
@@ -57,7 +57,7 @@ public class Task {
     private DailyReport dailyReport;
 
 
-    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
+    public void addTaskDetail(List<TaskDetail> taskDetailList) {
         this.taskDetailList = taskDetailList;
     }
 
@@ -73,7 +73,7 @@ public class Task {
         return taskDetailList;
     }
 
-    public void setTaskDetailList(TaskDetail taskDetail) {
+    public void addTaskDetail(TaskDetail taskDetail) {
         if (this.taskDetailList == null) {
             this.taskDetailList = new ArrayList<>();
         }

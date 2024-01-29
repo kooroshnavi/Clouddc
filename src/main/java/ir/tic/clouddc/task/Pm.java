@@ -1,6 +1,7 @@
 package ir.tic.clouddc.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ir.tic.clouddc.center.SalonPmDue;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -35,8 +36,19 @@ public class Pm { // Preventative_Maintenance
     @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
     private List<Task> taskList;
 
+    @OneToMany(mappedBy = "pm")
+    private List<SalonPmDue> salonPmDueList;
+
     @Transient
     private String lastSuccessfulPersian;
+
+    public List<SalonPmDue> getSalonPmDueList() {
+        return salonPmDueList;
+    }
+
+    public void setSalonPmDueList(List<SalonPmDue> salonPmDueList) {
+        this.salonPmDueList = salonPmDueList;
+    }
 
     public String getDescription() {
         return description;
@@ -55,7 +67,7 @@ public class Pm { // Preventative_Maintenance
         this.active = active;
     }
 
-    public void setTaskList(List<Task> taskList) {
+    public void addTask(List<Task> taskList) {
         this.taskList = taskList;
     }
 
@@ -106,7 +118,7 @@ public class Pm { // Preventative_Maintenance
         return taskList;
     }
 
-    public void setTaskList(Task task) {
+    public void addTask(Task task) {
         if (this.taskList == null) {
             this.taskList = new ArrayList<>();
         }

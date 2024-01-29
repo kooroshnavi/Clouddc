@@ -11,12 +11,12 @@ import java.util.List;
 public class CenterServiceImpl implements CenterService {
 
     private final CenterRepository centerRepository;
-    private final SalonChecklistRepository salonChecklistRepository;
+    private final SalonPmDueRepository salonPmDueRepository;
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, SalonChecklistRepository salonChecklistRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, SalonPmDueRepository salonPmDueRepository) {
         this.centerRepository = centerRepository;
-        this.salonChecklistRepository = salonChecklistRepository;
+        this.salonPmDueRepository = salonPmDueRepository;
     }
 
     @Override
@@ -31,12 +31,17 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public List<SalonChecklist> getTodayCenterPmList(LocalDate due) {
-        return salonChecklistRepository.findByDue(due);
+    public List<SalonPmDue> getTodayCenterPmList(LocalDate due) {
+        return salonPmDueRepository.findByDue(due);
     }
 
     @Override
-    public List<Salon> getCenterList() {
+    public List<Salon> getSalonList() {
         return centerRepository.findAll();
+    }
+
+    @Override
+    public List<SalonPmDue> getTodaySalonPmList() {
+        return salonPmDueRepository.findByDue(LocalDate.now());
     }
 }
