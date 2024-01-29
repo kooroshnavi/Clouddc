@@ -3,7 +3,6 @@ package ir.tic.clouddc.utils;
 import com.github.mfathi91.time.PersianDate;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,14 +34,24 @@ public final class UtilService {
         return (dayName + "    " + day + "     " + month.toString());
     }
 
-    public static List<String> getCalendarDate() {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+    public static List<Object> getCalendarList() {
+        //DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         CurrentDate = LocalDate.now();
         List<String> persianWeekDay = new ArrayList<>();
+        List<LocalDate> georgianDate = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
-
+            if (!CurrentDate.plusDays(i).getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")
+                    && !CurrentDate.plusDays(i).getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+                persianWeekDay.add((PersianDate.fromGregorian(CurrentDate.plusDays(i)))
+                        + " - "
+                        + PERSIAN_DAY.get(CurrentDate.plusDays(i).getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+                georgianDate.add(CurrentDate.plusDays(i));
+            }
         }
-        return null;
+        List<Object> calendars = new ArrayList<>();
+        calendars.add(persianWeekDay);
+        calendars.add(georgianDate);
+        return calendars;
     }
 
 

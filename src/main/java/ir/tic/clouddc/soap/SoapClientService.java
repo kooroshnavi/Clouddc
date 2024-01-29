@@ -1,4 +1,4 @@
-package ir.tic.clouddc.soap2;
+package ir.tic.clouddc.soap;
 
 import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

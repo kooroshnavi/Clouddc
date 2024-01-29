@@ -36,7 +36,7 @@ public class Pm { // Preventative_Maintenance
     @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
     private List<Task> taskList;
 
-    @OneToMany(mappedBy = "pm")
+    @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
     private List<SalonPmDue> salonPmDueList;
 
     @Transient
@@ -46,8 +46,11 @@ public class Pm { // Preventative_Maintenance
         return salonPmDueList;
     }
 
-    public void setSalonPmDueList(List<SalonPmDue> salonPmDueList) {
-        this.salonPmDueList = salonPmDueList;
+    public void setSalonPmDueList(SalonPmDue salonPmDueRecord) {
+        if (this.salonPmDueList == null) {
+            this.salonPmDueList = new ArrayList<>();
+        }
+        this.salonPmDueList.add(salonPmDueRecord);
     }
 
     public String getDescription() {

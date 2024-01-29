@@ -165,22 +165,28 @@ public class TaskServiceImpl implements TaskService {
         task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
         task.setActive(false);
         task.setDailyReport(report.get());
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         pm.setLastSuccessful(task.getSuccessDate());
         pm.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(pm.getLastSuccessful())));
 
+        var salonPmDueRecord = pm
+                .getSalonPmDueList()
+                .stream()
+                .filter(salonPmDue -> salonPmDue.getSalon().getId() == task.getSalon().getId())
+                .findAny();
+
+        if (salonPmDueRecord.isPresent()) {
+            var nextDue = CurrentDate.plusDays(pm.getPeriod());
+            if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+                salonPmDueRecord.get().setDue(LocalDate.now().plusDays(pm.getPeriod() + 2));
+            } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+                salonPmDueRecord.get().setDue(LocalDate.now().plusDays(pm.getPeriod() + 1));
+            } else {
+                salonPmDueRecord.get().setDue(nextDue);
+            }
+        }
 
         if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
             pm.setActive(false);    // task is inactive til next due
-            var possibleNextDue = CurrentDate.plusDays(pm.getPeriod());
-            if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-                pm.setNextDue(LocalDate.now().plusDays(pm.getPeriod() + 2));
-            } else if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-                pm.setNextDue(LocalDate.now().plusDays(pm.getPeriod() + 1));
-            } else {
-                pm.setNextDue(possibleNextDue);
-            }
-            pm.setNextDuePersian(date.format(PersianDate.fromGregorian(pm.getNextDue())));
         }
         return pmRepository.saveAndFlush(pm);
     }
@@ -271,25 +277,49 @@ public class TaskServiceImpl implements TaskService {
         var person = personService.getPerson(pmRegisterForm.getPersonId());
         var salonList = centerService.getSalonList();
         var newPm = new Pm();
-        newPm.setActive(true);
         newPm.setTitle(pmRegisterForm.getName());
         newPm.setPeriod(pmRegisterForm.getPeriod());
         newPm.setDescription(pmRegisterForm.getDescription());
+        salonPmDueSetup(newPm, salonList, pmRegisterForm.getDueDate(), pmRegisterForm.getSalonId());
 
-        if (pmRegisterForm.getCenterId() == 0) { // both salons
-            for (int i = 0; i < 2; i++) {
-                Task newTask = taskSetup(newPm, salonList.get(i));
+        if (pmRegisterForm.getDueDate().equals(LocalDate.now())) { // Activates Pm and creates related task and details
+            newPm.setActive(true);
+            if (pmRegisterForm.getSalonId() == 0) { // both salons
+                for (int i = 0; i < 2; i++) {
+                    Task newTask = taskSetup(newPm, salonList.get(i));
+                    var newTaskDetail = taskDetailSetup(newTask, person);
+                    notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getTitle(), newTaskDetail.getAssignedDate());
+                }
+            } else { // selected salon
+                Task newTask = taskSetup(newPm, centerService.getCenter(pmRegisterForm.getSalonId()));
                 var newTaskDetail = taskDetailSetup(newTask, person);
                 notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getTitle(), newTaskDetail.getAssignedDate());
             }
-        } else { // selected salon
-            Task newTask = taskSetup(newPm, centerService.getCenter(pmRegisterForm.getCenterId()));
-            var newTaskDetail = taskDetailSetup(newTask, person);
-            notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getTitle(), newTaskDetail.getAssignedDate());
+        } else {
+            newPm.setActive(false);
         }
 
         pmRepository.saveAndFlush(newPm);
     }
+
+    private void salonPmDueSetup(Pm newPm, List<Salon> salonList, LocalDate dueDate, int salonId) {
+        if (salonId == 0) { // 2 records for two salons
+            for (int i = 0; i < 2; i++) {
+                SalonPmDue salonPmDueRecord = new SalonPmDue();
+                salonPmDueRecord.setDue(dueDate);
+                salonPmDueRecord.setSalon(salonList.get(i));
+                salonPmDueRecord.setPm(newPm);
+                newPm.setSalonPmDueList(salonPmDueRecord);
+            }
+        } else { // record for selected salon
+            SalonPmDue salonPmDueRecord = new SalonPmDue();
+            salonPmDueRecord.setDue(dueDate);
+            salonPmDueRecord.setSalon(salonList.get(salonId));
+            salonPmDueRecord.setPm(newPm);
+            newPm.setSalonPmDueList(salonPmDueRecord);
+        }
+    }
+
 
     private Person getCurrentPerson() {
         return personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());

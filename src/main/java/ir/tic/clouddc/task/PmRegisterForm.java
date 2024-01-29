@@ -1,9 +1,9 @@
 package ir.tic.clouddc.task;
 
-import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
 
 @NoArgsConstructor
 public class PmRegisterForm {
@@ -13,20 +13,21 @@ public class PmRegisterForm {
     @NotBlank(message = "توضیحات نباید خالی باشد")
     private String description;
 
-    @NotNull
     private int period;
 
-    @NotNull
     private int personId;
 
-    @NotNull
-    private int centerId;
+    private int salonId;
 
-    public PmRegisterForm(String name, int period, int personId, int centerId) {
-        this.name = name;
-        this.period = period;
-        this.personId = personId;
-        this.centerId = centerId;
+    private LocalDate dueDate;
+
+
+    public LocalDate getDueDate() {
+        return dueDate;
+    }
+
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
     public String getDescription() {
@@ -49,8 +50,8 @@ public class PmRegisterForm {
         this.personId = personId;
     }
 
-    public void setCenterId(int centerId) {
-        this.centerId = centerId;
+    public void setSalonId(int salonId) {
+        this.salonId = salonId;
     }
 
     public String getName() {
@@ -65,8 +66,8 @@ public class PmRegisterForm {
         return personId;
     }
 
-    public int getCenterId() {
-        return centerId;
+    public int getSalonId() {
+        return salonId;
     }
 
     @Override
@@ -75,7 +76,7 @@ public class PmRegisterForm {
                 "name='" + name + '\'' +
                 ", period=" + period +
                 ", personId=" + personId +
-                ", centerId=" + centerId +
+                ", salonId=" + salonId +
                 '}';
     }
 }

@@ -8,6 +8,5 @@ public interface CenterService {
     List<Salon> getDefaultCenterList();
     List<SalonPmDue> getTodayCenterPmList(LocalDate due);
     List<Salon> getSalonList();
-
     List<SalonPmDue> getTodaySalonPmList();
 }
