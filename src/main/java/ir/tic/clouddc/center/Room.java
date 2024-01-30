@@ -17,8 +17,8 @@ public class Room {
     private String name;
 
     @ManyToOne
-    @JoinColumn(name = "center_id")
-    private Center center;
+    @JoinColumn(name = "datacenter")
+    private DataCenter dataCenter;
 
     @Column
     private boolean hasArchive;
@@ -39,12 +39,12 @@ public class Room {
         this.name = name;
     }
 
-    public Center getCenter() {
-        return center;
+    public DataCenter getDataCenter() {
+        return dataCenter;
     }
 
-    public void setCenter(Center center) {
-        this.center = center;
+    public void setDataCenter(DataCenter dataCenter) {
+        this.dataCenter = dataCenter;
     }
 
     public boolean isHasArchive() {
@@ -60,7 +60,7 @@ public class Room {
         return "Room{" +
                 "id=" + id +
                 ", name='" + name + '\'' +
-                ", center=" + center +
+                ", center=" + dataCenter +
                 ", hasArchive=" + hasArchive +
                 '}';
     }

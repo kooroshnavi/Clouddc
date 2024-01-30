@@ -11,7 +11,7 @@ public interface TaskService {
     List<Task> getTaskListById(int taskStatusId);
     List<Task> getPersonTask();
     List<Task> getActiveTaskList(int statusId);
-    void updateStatus(PmRegisterForm editForm, int id);
+    void modifyPm(PmRegisterForm editForm, int id);
     Optional<TaskDetail> activeTaskDetail(long taskId, boolean active);
     Pm getPm(int id);
     Model modelForMainPage(Model model);

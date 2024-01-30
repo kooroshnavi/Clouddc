@@ -71,22 +71,22 @@ public class TaskServiceImpl implements TaskService {
     public void updateTodayTasks() {
         CurrentDate = LocalDate.now();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
-        List<SalonPmDue> todayDueList = centerService.getTodaySalonPmList();
+        List<SalonPmDue> todayRecordList = centerService.getTodaySalonPmList();
         List<Task> activeTaskList = taskRepository.findByActive(true);
 
         reportService.setTodayReport();
 
         delayCalculation(activeTaskList);
 
-        if (!todayDueList.isEmpty()) {
+        if (!todayRecordList.isEmpty()) {
             List<Pm> todayPmList = new ArrayList<>();
-            for (SalonPmDue todayDue : todayDueList
+            for (SalonPmDue todayRecord : todayRecordList
             ) {
-                Task task = taskSetup(todayDue.getPm(), todayDue.getSalon());
+                Task task = taskSetup(todayRecord.getPm(), todayRecord.getSalon());
                 taskDetailSetup(task, defaultPerson);
-                if (!todayDue.getPm().isActive()) {
-                    todayDue.getPm().setActive(true);
-                    todayPmList.add(todayDue.getPm());
+                if (!todayRecord.getPm().isActive()) {
+                    todayRecord.getPm().setActive(true);
+                    todayPmList.add(todayRecord.getPm());
                 }
             }
             pmRepository.saveAll(todayPmList);
@@ -132,22 +132,15 @@ public class TaskServiceImpl implements TaskService {
     public Pm getPm(int id) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var status = pmRepository.findById(id).get();
-        status.setNextDuePersian(date.format(PersianDate.fromGregorian(status.getNextDue())));
-        if (status.getLastSuccessful() != null) {
-            status.setLastSuccessfulPersian(date.format(PersianDateTime.fromGregorian(status.getLastSuccessful())));
-        }
         return status;
     }
 
-    private List<Pm> getTaskStatus() {
+    private List<Pm> getPmList() {
         List<Pm> pmList = pmRepository
                 .findAll(Sort.by("active").descending());
-
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (Pm pm : pmList
         ) {
-            pm.setNextDuePersian(date.format(PersianDate.fromGregorian(pm.getNextDue())));
             if (pm.getLastSuccessful() != null) {
                 pm.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(pm.getLastSuccessful())));
             }
@@ -177,9 +170,9 @@ public class TaskServiceImpl implements TaskService {
         if (salonPmDueRecord.isPresent()) {
             var nextDue = CurrentDate.plusDays(pm.getPeriod());
             if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-                salonPmDueRecord.get().setDue(LocalDate.now().plusDays(pm.getPeriod() + 2));
+                salonPmDueRecord.get().setDue(CurrentDate.plusDays(pm.getPeriod() + 2));
             } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-                salonPmDueRecord.get().setDue(LocalDate.now().plusDays(pm.getPeriod() + 1));
+                salonPmDueRecord.get().setDue(CurrentDate.plusDays(pm.getPeriod() + 1));
             } else {
                 salonPmDueRecord.get().setDue(nextDue);
             }
@@ -291,7 +284,7 @@ public class TaskServiceImpl implements TaskService {
                     notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getTitle(), newTaskDetail.getAssignedDate());
                 }
             } else { // selected salon
-                Task newTask = taskSetup(newPm, centerService.getCenter(pmRegisterForm.getSalonId()));
+                Task newTask = taskSetup(newPm, centerService.getSalon(pmRegisterForm.getSalonId()));
                 var newTaskDetail = taskDetailSetup(newTask, person);
                 notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getTitle(), newTaskDetail.getAssignedDate());
             }
@@ -357,23 +350,33 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public List<Task> getActiveTaskList(int statusId) {
+    public List<Task> getActiveTaskList(int pmId) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        List<Task> activeTaskList = taskRepository.findByActiveAndTaskStatusId(true, statusId);
-        for (Task task : activeTaskList
-        ) {
-            task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+        var pm = pmRepository.findById(pmId);
+        if (pm.isPresent()) {
+            var activeTaskList = pm
+                    .get()
+                    .getTaskList()
+                    .stream()
+                    .filter(Task::isActive)
+                    .toList();
+            for (Task task : activeTaskList
+            ) {
+                task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+            }
+            return activeTaskList;
+        } else {
+            return null;
         }
-        return activeTaskList;
     }
 
     @Override
-    public void updateStatus(PmRegisterForm editForm, int id) {
-        var status = pmRepository.findById(id).get();
-        status.setTitle(editForm.getName());
-        status.setPeriod(editForm.getPeriod());
-        status.setDescription(editForm.getDescription());
-        pmRepository.saveAndFlush(status);
+    public void modifyPm(PmRegisterForm editForm, int id) {
+        var pm = pmRepository.findById(id).get();
+        pm.setTitle(editForm.getName());
+        pm.setPeriod(editForm.getPeriod());
+        pm.setDescription(editForm.getDescription());
+        pmRepository.saveAndFlush(pm);
     }
 
     @Override
@@ -395,7 +398,6 @@ public class TaskServiceImpl implements TaskService {
         var personName = authenticated.getName();
         Person person = personService.getPerson(personName);
         model.addAttribute("person", person);
-        model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("date", UtilService.getCurrentDate());
 
         return model;
@@ -403,8 +405,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model modelForMainPage(Model model) {
-        List<Pm> pmList = getTaskStatus();
-        model.addAttribute("statusList", getTaskStatus());
+        model.addAttribute("pmList", getPmList());
 
         return model;
     }
@@ -462,7 +463,7 @@ public class TaskServiceImpl implements TaskService {
         var taskName = thisTask.getPm().getTitle();
         var description = thisTask.getPm().getDescription();
         var dueDate = date.format(PersianDate.fromGregorian(thisTask.getDueDate()));
-        var center = thisTask.getSalon().getNamePersian();
+        var center = thisTask.getSalon().getName();
         var delay = thisTask.getDelay();
         String person = "";
         for (TaskDetail taskdetail : thisTask.getTaskDetailList()

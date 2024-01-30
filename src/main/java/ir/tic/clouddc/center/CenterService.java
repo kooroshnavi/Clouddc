@@ -4,7 +4,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CenterService {
-    Salon getCenter(int centerId);
+    Salon getSalon(int salonId);
     List<Salon> getDefaultCenterList();
     List<SalonPmDue> getTodayCenterPmList(LocalDate due);
     List<Salon> getSalonList();

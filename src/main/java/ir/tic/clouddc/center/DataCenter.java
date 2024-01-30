@@ -8,7 +8,7 @@ import java.util.List;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Center {
+public class DataCenter {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -17,10 +17,10 @@ public class Center {
     @Column
     private String name;
 
-    @OneToMany(mappedBy = "center")
+    @OneToMany(mappedBy = "dataCenter")
     private List<Salon> salonList;
 
-    @OneToMany(mappedBy = "center")
+    @OneToMany(mappedBy = "dataCenter")
     private List<Room> roomList;
 
     public int getId() {

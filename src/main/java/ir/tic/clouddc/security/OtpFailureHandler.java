@@ -26,5 +26,4 @@ public class OtpFailureHandler extends SimpleUrlAuthenticationFailureHandler {
         super.setDefaultFailureUrl(redirectURL);
         super.onAuthenticationFailure(request, response, exception);
     }
-
 }

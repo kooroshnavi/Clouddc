@@ -40,7 +40,6 @@ public class SecurityConfig {
                                     , LocalDateTime.now());
                         })
                 )
-
                 .logout(logout -> logout
                         .invalidateHttpSession(true)
                         .deleteCookies("JSESSIONID")

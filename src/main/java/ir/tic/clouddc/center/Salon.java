@@ -23,7 +23,7 @@ public class Salon {
 
     @ManyToOne
     @JoinColumn(name = "center_id")
-    private Center center;
+    private DataCenter dataCenter;
 
     @OneToMany(mappedBy = "salon")
     private List<SalonPmDue> salonPmDueList;
@@ -42,12 +42,12 @@ public class Salon {
         this.taskList.add(task);
     }
 
-    public Center getCenter() {
-        return center;
+    public DataCenter getDataCenter() {
+        return dataCenter;
     }
 
-    public void setCenter(Center center) {
-        this.center = center;
+    public void setDataCenter(DataCenter dataCenter) {
+        this.dataCenter = dataCenter;
     }
 
     public List<SalonPmDue> getSalonPmDueList() {

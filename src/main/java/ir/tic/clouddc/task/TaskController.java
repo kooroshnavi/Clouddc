@@ -13,21 +13,14 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping(value = {"", "/", "/app/main"})
+@RequestMapping(value = {"/task"})
 public class TaskController {
-
 
     private final TaskService taskService;
 
     @Autowired
     public TaskController(TaskServiceImpl taskService) {
         this.taskService = taskService;
-    }
-
-    @RequestMapping(value = {"", "/",}, method = {RequestMethod.GET})
-    public String index(Model model) {
-        taskService.modelForMainPage(model);
-        return "index2";
     }
 
     @GetMapping("/pmList")
@@ -47,7 +40,7 @@ public class TaskController {
     }
 
     @GetMapping("/pm/edit")
-    public String editForm(@RequestParam int id, Model model) {
+    public String pmEditForm(@RequestParam int id, Model model) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var status = taskService.getPm(id);
         PmRegisterForm pmEdit = new PmRegisterForm();
@@ -72,7 +65,7 @@ public class TaskController {
             log.error("Failed to register task due to validation error on input data: " + errors);
             return pmForm(model);
         }
-        taskService.updateStatus(editForm, id);
+        taskService.modifyPm(editForm, id);
         taskService.modelForMainPage(model);
         return "pmList";
     }

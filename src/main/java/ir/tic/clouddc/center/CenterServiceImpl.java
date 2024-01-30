@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Service
-public class CenterServiceImpl implements CenterService {
+class CenterServiceImpl implements CenterService {
 
     private final CenterRepository centerRepository;
     private final SalonPmDueRepository salonPmDueRepository;
@@ -20,8 +20,8 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Salon getCenter(int centerId) {
-        return centerRepository.findById(centerId).get();
+    public Salon getSalon(int salonId) {
+        return centerRepository.findById(salonId).get();
     }
 
     @Override
