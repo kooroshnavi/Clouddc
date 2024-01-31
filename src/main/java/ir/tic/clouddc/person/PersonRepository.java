@@ -6,10 +6,10 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PersonRepository extends JpaRepository<Person, Integer> {
+public interface PersonRepository extends JpaRepository<Person, Long> {
 
     List<Person> findAllByAssignee(boolean assignee);
-    List<Person> findAllByIdNotInAndAssignee(List personList, boolean assignee);
+    List<Person> findAllByIdNotInAndAssignee(List<Long> personList, boolean assignee);
     Person findByUsername(String name);
 
 

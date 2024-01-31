@@ -1,32 +1,26 @@
 package ir.tic.clouddc.task;
 
-import com.github.mfathi91.time.PersianDate;
-import com.github.mfathi91.time.PersianDateTime;
-import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.center.SalonPmDue;
-import ir.tic.clouddc.event.EventService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.utils.UtilService;
+import ir.tic.clouddc.utils.UtilityService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -43,8 +37,8 @@ public class TaskServiceImpl implements TaskService {
     private final CenterService centerService;
     private final PersonService personService;
     private final ReportService reportService;
-    private final EventService eventService;
     private final NotificationService notificationService;
+    private final UtilityService utilityService;
     private static LocalDate CurrentDate;
     private static final int DEFAULT_ASSIGNEE_ID = 5;
 
@@ -55,16 +49,15 @@ public class TaskServiceImpl implements TaskService {
                     CenterService centerService,
                     PersonService personService,
                     ReportService reportService,
-                    @Lazy EventService eventService,
-                    NotificationService notificationService) {
+                    NotificationService notificationService, UtilityService utilityService) {
         this.pmRepository = pmRepository;
         this.taskRepository = taskRepository;
         this.taskDetailRepository = taskDetailRepository;
         this.centerService = centerService;
         this.personService = personService;
         this.reportService = reportService;
-        this.eventService = eventService;
         this.notificationService = notificationService;
+        this.utilityService = utilityService;
     }
 
     @Scheduled(cron = "@midnight")
@@ -130,7 +123,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Pm getPm(int id) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var status = pmRepository.findById(id).get();
         return status;
     }
@@ -138,11 +130,10 @@ public class TaskServiceImpl implements TaskService {
     private List<Pm> getPmList() {
         List<Pm> pmList = pmRepository
                 .findAll(Sort.by("active").descending());
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (Pm pm : pmList
         ) {
             if (pm.getLastSuccessful() != null) {
-                pm.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(pm.getLastSuccessful())));
+                pm.setLastSuccessfulPersian(utilityService.getPersianFormattedDateTime(pm.getLastSuccessful()));
             }
         }
         return pmList;
@@ -153,13 +144,12 @@ public class TaskServiceImpl implements TaskService {
         Pm pm = task.getPm();
         Optional<DailyReport> report = reportService.findActive(true);
 
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         task.setSuccessDate(LocalDateTime.now());
-        task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+        task.setSuccessDatePersian(utilityService.getPersianFormattedDateTime(task.getSuccessDate()));
         task.setActive(false);
         task.setDailyReport(report.get());
         pm.setLastSuccessful(task.getSuccessDate());
-        pm.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(pm.getLastSuccessful())));
+        pm.setLastSuccessfulPersian(utilityService.getPersianFormattedDateTime(pm.getLastSuccessful()));
 
         var salonPmDueRecord = pm
                 .getSalonPmDueList()
@@ -188,30 +178,22 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public List<Task> getTaskListById(int taskStatusId) {
         Pm pm = pmRepository.findById(taskStatusId).get();
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
         for (Task task : pm.getTaskList()
         ) {
-            task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+            task.setDueDatePersian(utilityService.getPersianFormattedDate(task.getDueDate()));
             if (!task.isActive()) {
-                task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+                task.setSuccessDatePersian(utilityService.getPersianFormattedDateTime(task.getSuccessDate()));
             }
         }
         return pm.getTaskList();
     }
 
 
-    private List<TaskDetail> getTaskDetailById(Long taskId) {
+    private List<TaskDetail> getDetailList(Long taskId) {
         Task task = taskRepository.findById(taskId).get();
-
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (TaskDetail taskDetail : task.getTaskDetailList()
         ) {
-            taskDetail.setPersianDate(dateTime.format
-                    (PersianDateTime
-                            .fromGregorian
-                                    (taskDetail.getAssignedDate())));
+            taskDetail.setPersianDate(utilityService.getPersianFormattedDateTime(taskDetail.getAssignedDate()));
         }
 
         return task.getTaskDetailList()
@@ -223,12 +205,11 @@ public class TaskServiceImpl implements TaskService {
     private List<TaskDetail> assignNewTaskDetail(TaskDetail taskDetail, int actionType) {
         Task thisTask = taskDetail.getTask();
         Person person = personService.getPerson(actionType);
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
         TaskDetail newTaskDetail = new TaskDetail();
         newTaskDetail.setAssignedDate(LocalDateTime.now());
         newTaskDetail.setActive(true);
-        newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
+        newTaskDetail.setPersianDate(utilityService.getPersianFormattedDateTime(newTaskDetail.getAssignedDate()));
         newTaskDetail.setPerson(person);
         newTaskDetail.setTask(thisTask);
         thisTask.getTaskDetailList().add(newTaskDetail);
@@ -238,25 +219,18 @@ public class TaskServiceImpl implements TaskService {
         return thisTask.getTaskDetailList();
     }
 
-    private List<Person> getOtherPersonList() {
-        return personService.getPersonListNotIn(getCurrentPerson().getId());
-    }// returns a list of users that will be shown in the drop-down list of assignForm.
-
     @Override
     public void updateTaskDetail(AssignForm assignForm, Long id) {
         TaskDetail taskDetail = taskDetailRepository.findById(id).get();
-        switch (assignForm.getActionType()) {
-            case 100:     // Ends task. No assign
-                taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setActive(false);
-                updateTask(taskDetail.getTask());
-                break;
 
-            default: // Updates current taskDetail ,creates a new taskDetail and assigns it to specified person
-                taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setActive(false);
-                assignNewTaskDetail(taskDetail, assignForm.getActionType());
-                break;
+        if (assignForm.getActionType() == 100) {     // Ends task. No assign
+            taskDetail.setDescription(assignForm.getDescription());
+            taskDetail.setActive(false);
+            updateTask(taskDetail.getTask());
+        } else { // Updates current taskDetail ,creates a new taskDetail and assigns it to specified person
+            taskDetail.setDescription(assignForm.getDescription());
+            taskDetail.setActive(false);
+            assignNewTaskDetail(taskDetail, assignForm.getActionType());
         }
     }
 
@@ -313,34 +287,20 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-
-    private Person getCurrentPerson() {
-        return personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
-    }
-
-    private boolean checkPermission(String authenticatedName, Optional<TaskDetail> taskDetail) {
-        if (!taskDetail.isPresent()) {
-            return false;
-        }
-        if (Objects.equals(authenticatedName, taskDetail.get().getPerson().getUsername())) {
-            return true;
-        } else {
-            return false;
-        }
+    private boolean checkPermission(long authenticatedId, Optional<TaskDetail> taskDetail) {
+        return taskDetail.filter(detail -> Objects.equals(authenticatedId, detail.getPerson().getId())).isPresent();
     }
 
     @Override
     public List<Task> getPersonTask() {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        Person person = personService.getPerson(personService.getAuthenticatedPersonId());
         List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(person.getId(), true);
         List<Task> userTasks = new ArrayList<>();
         for (TaskDetail taskDetail : taskDetailList
 
         ) {
-            taskDetail.getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(taskDetail.getTask().getDueDate())));
+            var dueDate = taskDetail.getTask().getDueDate();
+            taskDetail.getTask().setDueDatePersian(utilityService.getPersianFormattedDate(dueDate));
             userTasks.add(taskDetail.getTask());
         }
         return userTasks
@@ -351,7 +311,6 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getActiveTaskList(int pmId) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var pm = pmRepository.findById(pmId);
         if (pm.isPresent()) {
             var activeTaskList = pm
@@ -362,7 +321,7 @@ public class TaskServiceImpl implements TaskService {
                     .toList();
             for (Task task : activeTaskList
             ) {
-                task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+                task.setDueDatePersian(utilityService.getPersianFormattedDate(task.getDueDate()));
             }
             return activeTaskList;
         } else {
@@ -380,25 +339,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Optional<TaskDetail> activeTaskDetail(long taskId, boolean active) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        Optional<TaskDetail> activeTaskDetail = taskDetailRepository.findByTaskIdAndActive(taskId, active);
-        if (activeTaskDetail.isPresent()) {
-            var dueDate = activeTaskDetail.get().getTask().getDueDate();
-            activeTaskDetail.get().getTask().setDueDatePersian(date.format(PersianDate.fromGregorian(dueDate)));
-            return activeTaskDetail;
+    public Optional<TaskDetail> activeTaskDetail(long taskId) {
+        var task = taskRepository.findById(taskId);
+        if (task.isPresent()) {
+            var dueDate = task
+                    .get()
+                    .getDueDate();
+            task.get().setDueDatePersian(utilityService.getPersianFormattedDate(dueDate));
+            return task
+                    .get()
+                    .getTaskDetailList()
+                    .stream()
+                    .filter(TaskDetail::isActive)
+                    .findFirst();
         }
+
         return Optional.empty();
     }
 
-
     @Override
     public Model modelForTaskController(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
+        Person person = personService.getPerson(personService.getAuthenticatedPersonId());
         model.addAttribute("person", person);
-        model.addAttribute("date", UtilService.getCurrentDate());
+        model.addAttribute("date", UtilityService.getCurrentPersianDate());
 
         return model;
     }
@@ -420,17 +383,15 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model modelForTaskDetail(Model model, Long taskId) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        List<TaskDetail> taskDetailList = getTaskDetailById(taskId);
+        List<TaskDetail> taskDetailList = getDetailList(taskId);
         var task = taskRepository.findById(taskId).get();
         var active = task.isActive();
         var delay = taskDetailList.get(0).getTask().getDelay();
-        var duedate = date.format(PersianDate.fromGregorian(taskDetailList.get(0).getTask().getDueDate()));
+        var duedate = utilityService.getPersianFormattedDate(taskDetailList.get(0).getTask().getDueDate());
         var taskStatusName = taskDetailList.get(0).getTask().getPm().getTitle();
         var currentDetailId = taskDetailList.get(0).getId();
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        var permission = checkPermission(personName, taskDetailList.stream().findAny().filter(TaskDetail::isActive));
+        var personId = personService.getAuthenticatedPersonId();
+        var permission = checkPermission(personId, taskDetailList.stream().findAny().filter(TaskDetail::isActive));
         model.addAttribute("currentDetailId", currentDetailId);
         model.addAttribute("permission", permission);
         model.addAttribute("taskDetailList", taskDetailList);
@@ -456,35 +417,29 @@ public class TaskServiceImpl implements TaskService {
     @Override
     @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
     public TaskDetail modelForActionForm(Model model, Long taskDetailId) {
-        taskDetailRepository.findById(taskDetailId);
-        List<Person> personList = getOtherPersonList();
-        Task thisTask = getTask(taskDetailId);
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        var taskName = thisTask.getPm().getTitle();
-        var description = thisTask.getPm().getDescription();
-        var dueDate = date.format(PersianDate.fromGregorian(thisTask.getDueDate()));
-        var center = thisTask.getSalon().getName();
-        var delay = thisTask.getDelay();
-        String person = "";
-        for (TaskDetail taskdetail : thisTask.getTaskDetailList()
-        ) {
-            if (taskdetail.getId() == taskDetailId) {
-                person = taskdetail.getPerson().getName();
-                break;
-            }
+        List<Person> personList = personService.getPersonListNotIn(personService.getAuthenticatedPersonId());
+        var taskDetail = taskDetailRepository.findById(taskDetailId);
+        if (taskDetail.isPresent()) {
+            Task task = taskDetail.get().getTask();
+            var taskName = task.getPm().getTitle();
+            var description = task.getPm().getDescription();
+            var dueDate = utilityService.getPersianFormattedDate(task.getDueDate());
+            var center = task.getSalon().getName();
+            var delay = task.getDelay();
+            var personName = taskDetail.get().getPerson().getName();
+            AssignForm assignForm = new AssignForm();
+            assignForm.setId(taskDetailId);
+            model.addAttribute("id", taskDetailId);
+            model.addAttribute("taskDetail", taskDetailRepository.findById(taskDetailId));
+            model.addAttribute("taskName", taskName);
+            model.addAttribute("dueDate", dueDate);
+            model.addAttribute("center", center);
+            model.addAttribute("personName", personName);
+            model.addAttribute("personList", personList);
+            model.addAttribute("delay", delay);
+            model.addAttribute("assignForm", assignForm);
+            model.addAttribute("description", description);
         }
-        AssignForm assignForm = new AssignForm();
-        assignForm.setId(taskDetailId);
-        model.addAttribute("id", taskDetailId);
-        model.addAttribute("taskDetail", taskDetailRepository.findById(taskDetailId));
-        model.addAttribute("taskName", taskName);
-        model.addAttribute("dueDate", dueDate);
-        model.addAttribute("center", center);
-        model.addAttribute("personName", person);
-        model.addAttribute("personList", personList);
-        model.addAttribute("delay", delay);
-        model.addAttribute("assignForm", assignForm);
-        model.addAttribute("description", description);
 
         return taskDetailRepository.findById(taskDetailId).get();
     }

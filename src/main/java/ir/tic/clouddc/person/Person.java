@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-
 @Entity
 @Table(schema = "Person")
 @NoArgsConstructor
@@ -13,16 +11,10 @@ public class Person {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
-
-    @Column
-    private String username;
+    private long id;
 
     @Column
     private String name;
-
-    @Column(name = "last_login")
-    private LocalDateTime lastLogin;
 
     @Column
     private boolean assignee; // false for manager and viewer
@@ -33,7 +25,6 @@ public class Person {
     @OneToOne
     @PrimaryKeyJoinColumn
     private Address address;
-
 
     public char getRole() {
         return role;
@@ -59,26 +50,12 @@ public class Person {
         return assignee;
     }
 
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     @JsonIgnore
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    @JsonIgnore
-    public int getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -88,9 +65,5 @@ public class Person {
 
     public void setName(String name) {
         this.name = name;
-    }
-
-    public String getUsername() {
-        return username;
     }
 }

@@ -1,8 +1,11 @@
 package ir.tic.clouddc.utils;
 
 import com.github.mfathi91.time.PersianDate;
+import com.github.mfathi91.time.PersianDateTime;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.List;
@@ -11,7 +14,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
-public final class UtilService {
+public final class UtilityService {
     private static LocalDate CurrentDate;
     static final Map<String, String> PERSIAN_DAY = Map.ofEntries(
             entry("Sat", "شنبه"),
@@ -23,9 +26,16 @@ public final class UtilService {
             entry("Fri", "جمعه")
     );
 
-    public static String getCurrentDate() {
+    public static LocalDate getCurrentDate() {
+        return LocalDate.now();
+    }
+
+    public static LocalDateTime getCurrentDateTime() {
+        return LocalDateTime.now();
+    }
+
+    public static String getCurrentPersianDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
-        var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
@@ -54,5 +64,14 @@ public final class UtilService {
         return calendars;
     }
 
+    public String getPersianFormattedDate(LocalDate date) {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        return pattern.format(PersianDate.fromGregorian(date));
+    }
+
+    public String getPersianFormattedDateTime(LocalDateTime dateTime) {
+        DateTimeFormatter pattern = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        return pattern.format(PersianDateTime.fromGregorian(dateTime));
+    }
 
 }

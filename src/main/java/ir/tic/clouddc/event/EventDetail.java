@@ -17,7 +17,7 @@ public class EventDetail {
     private Long id;
 
     @Column
-    private LocalDateTime updated;
+    private LocalDateTime updateDateTime;
 
     @Transient
     private String persianDate;
@@ -42,12 +42,12 @@ public class EventDetail {
         this.id = id;
     }
 
-    public LocalDateTime getUpdated() {
-        return updated;
+    public LocalDateTime getUpdateDateTime() {
+        return updateDateTime;
     }
 
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
+    public void setUpdateDateTime(LocalDateTime updateDateTime) {
+        this.updateDateTime = updateDateTime;
     }
 
     public String getPersianDate() {
@@ -87,7 +87,7 @@ public class EventDetail {
     public String toString() {
         return "EventDetail{" +
                 "id=" + id +
-                ", updated=" + updated +
+                ", updated=" + updateDateTime +
                 ", persianDate='" + persianDate + '\'' +
                 ", description='" + description + '\'' +
                 ", event=" + event +

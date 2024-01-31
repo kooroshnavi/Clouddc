@@ -56,8 +56,11 @@ public class DailyReport {
         this.active = active;
     }
 
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
+    public void setTaskList(Task task) {
+        if (this.taskList == null){
+            this.taskList = new ArrayList<>();
+        }
+        this.taskList.add(task);
     }
 
     public void setEventList(Event event) {

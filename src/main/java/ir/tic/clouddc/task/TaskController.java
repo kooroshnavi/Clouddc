@@ -8,7 +8,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
@@ -41,7 +40,6 @@ public class TaskController {
 
     @GetMapping("/pm/edit")
     public String pmEditForm(@RequestParam int id, Model model) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var status = taskService.getPm(id);
         PmRegisterForm pmEdit = new PmRegisterForm();
         pmEdit.setName(status.getTitle());

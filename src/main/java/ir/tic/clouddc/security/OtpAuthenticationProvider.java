@@ -75,7 +75,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
         }
         // map: 01234/5:13
 
-        return new UsernamePasswordAuthenticationToken(personObject.getUsername(), null, personRoles);
+        return new UsernamePasswordAuthenticationToken(personObject.getId(), null, personRoles);
     }
 
     @Override

@@ -2,7 +2,7 @@ package ir.tic.clouddc.controller;
 
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.utils.UtilService;
+import ir.tic.clouddc.utils.UtilityService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -26,7 +26,7 @@ public class MainController {
         var personName = authenticated.getName();
         Person person = personService.getPerson(personName);
         model.addAttribute("person", person);
-        model.addAttribute("date", UtilService.getCurrentDate());
+        model.addAttribute("date", UtilityService.getCurrentPersianDate());
         return "mainDashboard";
     }
 

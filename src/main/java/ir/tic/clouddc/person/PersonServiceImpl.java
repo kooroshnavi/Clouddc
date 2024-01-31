@@ -2,6 +2,7 @@ package ir.tic.clouddc.person;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -19,14 +20,9 @@ final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person getPerson(int personId) {
+    public Person getPerson(long personId) {
 
         return personRepository.findById(personId).get();
-    }
-
-    @Override
-    public Person getPerson(String name) {
-        return personRepository.findByUsername(name);
     }
 
     @Override
@@ -35,8 +31,8 @@ final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List getPersonListNotIn(int personId) {
-        List<Integer> ids = new ArrayList<>();
+    public List<Person> getPersonListNotIn(long personId) {
+        List<Long> ids = new ArrayList<>();
         ids.add(personId);
         return personRepository.findAllByIdNotInAndAssignee(ids, true);
     }
@@ -44,6 +40,15 @@ final class PersonServiceImpl implements PersonService {
     @Override
     public Person addPerson(Person person) {
         return null;
+    }
+
+    @Override
+    public long getAuthenticatedPersonId() {
+        return Long
+                .parseLong(SecurityContextHolder
+                        .getContext()
+                        .getAuthentication()
+                        .getPrincipal().toString());
     }
 
     @Override
