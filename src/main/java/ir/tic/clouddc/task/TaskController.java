@@ -1,5 +1,6 @@
 package ir.tic.clouddc.task;
 
+import ir.tic.clouddc.person.PersonService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -16,10 +18,12 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final PersonService personService;
 
     @Autowired
-    public TaskController(TaskServiceImpl taskService) {
+    public TaskController(TaskServiceImpl taskService, PersonService personService) {
         this.taskService = taskService;
+        this.personService = personService;
     }
 
     @GetMapping("/pmList")
@@ -102,12 +106,12 @@ public class TaskController {
         return "404";
     }*/
 
-    @GetMapping("/update")
+   /* @GetMapping("/update")
     public String updateTask(Model model) {
-        taskService.updateTodayTasks();
+        taskService.updateTodayTaskList();
         taskService.modelForMainPage(model);
         return "index2";
-    }
+    }*/
 
     @GetMapping("/pm/register")
     public String pmForm(Model model) {
@@ -144,16 +148,27 @@ public class TaskController {
 
 
     @GetMapping("/task/form")
-    public String showAssignForm(@RequestParam("id") Long id,
+    public String showAssignForm(@RequestParam("id") int pmId,
                                  Model model) {
 
-        taskService.modelForActionForm(model, id);
-
-        return "pmUpdateForm";
+        Pm pm = taskService.getPm(pmId);
+        Optional<Task> activeTask = pm.getTaskList().stream().filter(Task::isActive).findFirst();
+        if (activeTask.isPresent()) {
+            Optional<TaskDetail> activeDetail = activeTask.get().getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst();
+            if (activeDetail.isPresent()) {
+                long activeDetailId = activeDetail.get().getId();
+                long activeDetailPersonId = activeDetail.get().getPerson().getId();
+                long authenticatedPersonId = personService.getAuthenticatedPersonId();
+                taskService.modelForActionForm(model, activeDetailId, authenticatedPersonId, activeDetailPersonId);
+                return "pmUpdateForm";
+            } else {
+                return "404";
+            }
+        } else {
+            return "404";
+        }
     }
 
-
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     @PostMapping("/task/form/update")
     public String assignTaskDetail(Model model,
                                    @RequestParam("id") Long id,

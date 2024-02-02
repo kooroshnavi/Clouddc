@@ -7,9 +7,9 @@ import java.util.Optional;
 
 public interface TaskService {
     Task getTask(Long taskId);
-    List<Task> getTaskListById(int taskStatusId);
+    List<Task> getTaskListById(int pmId);
     List<Task> getPersonTask();
-    List<Task> getActiveTaskList(int statusId);
+    List<Task> getActiveTaskList(int pmId);
     void modifyPm(PmRegisterForm editForm, int id);
     Optional<TaskDetail> activeTaskDetail(long taskId);
     Pm getPm(int id);
@@ -18,8 +18,7 @@ public interface TaskService {
     Model modelForTaskController(Model model);
     Model modelForTaskDetail(Model model, Long taskId);
     Model modelForPersonTaskList(Model model);
-    TaskDetail modelForActionForm(Model model, Long taskDetailId);
-    void updateTodayTasks();
+    TaskDetail modelForActionForm(Model model, long taskDetailId, long authenticatedPersonId, long taskDetailPersonId);
     void taskRegister(PmRegisterForm pmRegisterForm);
     void updateTaskDetail(AssignForm assignForm, Long id);
 }

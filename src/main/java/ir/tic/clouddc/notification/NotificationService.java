@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 
 public interface NotificationService {
 
-    void sendSuccessLoginMessage(String personAddress, String ipAddress, LocalDateTime dateTime);
+    void sendSuccessLoginMessage(long personId, String ipAddress, LocalDateTime dateTime);
 
     void sendNewTaskAssignedMessage(String personAddress, String taskTitle, LocalDateTime dateTime);
 

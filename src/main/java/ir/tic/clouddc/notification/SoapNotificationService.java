@@ -26,12 +26,10 @@ public class SoapNotificationService implements NotificationService {
     }
 
     @Override
-    public void sendSuccessLoginMessage(String personName, String ipAddress, LocalDateTime originDatetime) {
+    public void sendSuccessLoginMessage(long personId, String ipAddress, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
-        var person = personService.getPerson(personName);
-        var address = person.getAddress().getValue();
-
+        var address = personService.getPersonAddress(personId);
         final String message =
                 "ورود موفق" +
                         System.lineSeparator() +
@@ -42,7 +40,7 @@ public class SoapNotificationService implements NotificationService {
                         persianDateTime +
                         System.lineSeparator();
 
-        soapClientService.sendMessage(address, message);
+        soapClientService.sendMessage(address.get().getValue(), message);
         log.info(soapClientService.getResponse());
     }
 

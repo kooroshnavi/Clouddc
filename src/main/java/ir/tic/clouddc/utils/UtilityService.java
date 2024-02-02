@@ -2,6 +2,7 @@ package ir.tic.clouddc.utils;
 
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -14,6 +15,7 @@ import java.util.Map;
 
 import static java.util.Map.entry;
 
+@Service
 public final class UtilityService {
     private static LocalDate CurrentDate;
     static final Map<String, String> PERSIAN_DAY = Map.ofEntries(

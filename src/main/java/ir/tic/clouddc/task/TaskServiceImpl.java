@@ -15,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -61,7 +61,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Scheduled(cron = "@midnight")
-    public void updateTodayTasks() {
+    private void updateTodayTasks() {
         CurrentDate = LocalDate.now();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<SalonPmDue> todayRecordList = centerService.getTodaySalonPmList();
@@ -88,13 +88,13 @@ public class TaskServiceImpl implements TaskService {
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
-    private TaskDetail taskDetailSetup(Task todayTask, Person person) {
+    private TaskDetail taskDetailSetup(Task task, Person person) {
         TaskDetail taskDetail = new TaskDetail();
         taskDetail.setPerson(person);
         taskDetail.setAssignedDate(LocalDateTime.now());
         taskDetail.setActive(true);
-        taskDetail.setTask(todayTask);
-        todayTask.addTaskDetail(taskDetail);
+        taskDetail.setTask(task);
+        task.addTaskDetail(taskDetail);
         return taskDetail;
     }
 
@@ -140,11 +140,12 @@ public class TaskServiceImpl implements TaskService {
     }
 
     private Pm updateTask(Task task) {
-        CurrentDate = LocalDate.now();
+        var successDateTime = LocalDateTime.now();
+        CurrentDate = successDateTime.toLocalDate();
         Pm pm = task.getPm();
         Optional<DailyReport> report = reportService.findActive(true);
 
-        task.setSuccessDate(LocalDateTime.now());
+        task.setSuccessDate(successDateTime);
         task.setSuccessDatePersian(utilityService.getPersianFormattedDateTime(task.getSuccessDate()));
         task.setActive(false);
         task.setDailyReport(report.get());
@@ -169,15 +170,15 @@ public class TaskServiceImpl implements TaskService {
         }
 
         if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
-            pm.setActive(false);    // task is inactive til next due
+            pm.setActive(false);    // pm is inactive til next due
         }
         return pmRepository.saveAndFlush(pm);
     }
 
 
     @Override
-    public List<Task> getTaskListById(int taskStatusId) {
-        Pm pm = pmRepository.findById(taskStatusId).get();
+    public List<Task> getTaskListById(int pmId) {
+        Pm pm = pmRepository.findById(pmId).get();
         for (Task task : pm.getTaskList()
         ) {
             task.setDueDatePersian(utilityService.getPersianFormattedDate(task.getDueDate()));
@@ -187,7 +188,6 @@ public class TaskServiceImpl implements TaskService {
         }
         return pm.getTaskList();
     }
-
 
     private List<TaskDetail> getDetailList(Long taskId) {
         Task task = taskRepository.findById(taskId).get();
@@ -202,23 +202,6 @@ public class TaskServiceImpl implements TaskService {
                 .collect(Collectors.toList());
     }
 
-    private List<TaskDetail> assignNewTaskDetail(TaskDetail taskDetail, int actionType) {
-        Task thisTask = taskDetail.getTask();
-        Person person = personService.getPerson(actionType);
-
-        TaskDetail newTaskDetail = new TaskDetail();
-        newTaskDetail.setAssignedDate(LocalDateTime.now());
-        newTaskDetail.setActive(true);
-        newTaskDetail.setPersianDate(utilityService.getPersianFormattedDateTime(newTaskDetail.getAssignedDate()));
-        newTaskDetail.setPerson(person);
-        newTaskDetail.setTask(thisTask);
-        thisTask.getTaskDetailList().add(newTaskDetail);
-        taskRepository.save(thisTask);
-
-        notificationService.sendActiveTaskAssignedMessage(person.getAddress().getValue(), thisTask.getPm().getTitle(), thisTask.getDelay(), newTaskDetail.getAssignedDate());
-        return thisTask.getTaskDetailList();
-    }
-
     @Override
     public void updateTaskDetail(AssignForm assignForm, Long id) {
         TaskDetail taskDetail = taskDetailRepository.findById(id).get();
@@ -230,7 +213,7 @@ public class TaskServiceImpl implements TaskService {
         } else { // Updates current taskDetail ,creates a new taskDetail and assigns it to specified person
             taskDetail.setDescription(assignForm.getDescription());
             taskDetail.setActive(false);
-            assignNewTaskDetail(taskDetail, assignForm.getActionType());
+            taskDetailSetup(taskDetail.getTask(), personService.getPerson(assignForm.getId()));
         }
     }
 
@@ -387,20 +370,19 @@ public class TaskServiceImpl implements TaskService {
         var task = taskRepository.findById(taskId).get();
         var active = task.isActive();
         var delay = taskDetailList.get(0).getTask().getDelay();
-        var duedate = utilityService.getPersianFormattedDate(taskDetailList.get(0).getTask().getDueDate());
+        var dueDate = utilityService.getPersianFormattedDate(taskDetailList.get(0).getTask().getDueDate());
         var taskStatusName = taskDetailList.get(0).getTask().getPm().getTitle();
-        var currentDetailId = taskDetailList.get(0).getId();
         var personId = personService.getAuthenticatedPersonId();
         var permission = checkPermission(personId, taskDetailList.stream().findAny().filter(TaskDetail::isActive));
-        model.addAttribute("currentDetailId", currentDetailId);
         model.addAttribute("permission", permission);
         model.addAttribute("taskDetailList", taskDetailList);
         model.addAttribute("name", taskStatusName);
         model.addAttribute("taskId", taskId);
         model.addAttribute("delay", delay);
-        model.addAttribute("duedate", duedate);
+        model.addAttribute("duedate", dueDate);
         model.addAttribute("active", active);
         model.addAttribute("task", task);
+        model.addAttribute("pmId", task.getPm().getId());
 
         return model;
     }
@@ -415,8 +397,8 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
-    public TaskDetail modelForActionForm(Model model, Long taskDetailId) {
+    @PreAuthorize("authenticatedPersonId == taskDetailPersonId")
+    public TaskDetail modelForActionForm(Model model, long taskDetailId, long authenticatedPersonId, long taskDetailPersonId) {
         List<Person> personList = personService.getPersonListNotIn(personService.getAuthenticatedPersonId());
         var taskDetail = taskDetailRepository.findById(taskDetailId);
         if (taskDetail.isPresent()) {

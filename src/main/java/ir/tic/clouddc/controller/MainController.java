@@ -4,7 +4,6 @@ import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilityService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +21,7 @@ public class MainController {
 
     @GetMapping
     public String index(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
+        Person person = personService.getPerson(personService.getAuthenticatedPersonId());
         model.addAttribute("person", person);
         model.addAttribute("date", UtilityService.getCurrentPersianDate());
         return "mainDashboard";

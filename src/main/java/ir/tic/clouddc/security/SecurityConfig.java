@@ -1,6 +1,7 @@
 package ir.tic.clouddc.security;
 
 import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.person.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -14,15 +15,17 @@ import java.time.LocalDateTime;
 @Configuration
 @EnableMethodSecurity
 @Slf4j
-public class SecurityConfig {
+class SecurityConfig {
 
     private final NotificationService notificationService;
     private final OtpFailureHandler otpFailureHandler;
+    private final PersonService personService;
 
     @Autowired
-    public SecurityConfig(NotificationService notificationService, OtpFailureHandler otpFailureHandler) {
+    public SecurityConfig(NotificationService notificationService, OtpFailureHandler otpFailureHandler, PersonService personService) {
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
+        this.personService = personService;
     }
 
     @Bean
@@ -35,7 +38,7 @@ public class SecurityConfig {
                         .successHandler((request, response, authentication) -> {
                             response.sendRedirect("/");
                             notificationService.sendSuccessLoginMessage(
-                                    authentication.getName()
+                                    personService.getAuthenticatedPersonId()
                                     , request.getRemoteAddr()
                                     , LocalDateTime.now());
                         })

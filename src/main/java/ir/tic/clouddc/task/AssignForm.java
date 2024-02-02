@@ -1,33 +1,31 @@
 package ir.tic.clouddc.task;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class AssignForm {
 
-    @NotNull
-    private Long id;
+    private long id;
 
     @NotBlank(message = "Description is obligatory")
     @Size(min = 5, max = 1000)
     private String description;
 
     @NotBlank
-    private int actionType;
+    private long actionType;
 
     public AssignForm(String description, int actionType) {
         this.description = description;
         this.actionType = actionType;
     }
 
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
     }
 
@@ -43,7 +41,7 @@ public class AssignForm {
         return description;
     }
 
-    public int getActionType() {
+    public long getActionType() {
         return actionType;
     }
 

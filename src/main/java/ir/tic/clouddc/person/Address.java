@@ -11,13 +11,12 @@ public class Address {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private long id;
 
     @Column
     private String value;
 
-
-    public int getId() {
+    public long getId() {
         return id;
     }
 

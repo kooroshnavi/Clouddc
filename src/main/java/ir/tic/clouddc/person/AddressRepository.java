@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface AddressRepository extends CrudRepository<Address, Integer> {
+public interface AddressRepository extends CrudRepository<Address, Long> {
 
 
     Optional<Address> findByValue(String value);

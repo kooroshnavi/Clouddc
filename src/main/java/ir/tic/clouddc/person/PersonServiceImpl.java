@@ -7,16 +7,19 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
 final class PersonServiceImpl implements PersonService {
 
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
+    private final AddressRepository addressRepository;
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository) {
+    public PersonServiceImpl(PersonRepository personRepository, AddressRepository addressRepository) {
         this.personRepository = personRepository;
+        this.addressRepository = addressRepository;
     }
 
     @Override
@@ -48,13 +51,19 @@ final class PersonServiceImpl implements PersonService {
                 .parseLong(SecurityContextHolder
                         .getContext()
                         .getAuthentication()
-                        .getPrincipal().toString());
+                        .getPrincipal()
+                        .toString());
     }
 
     @Override
     public Person updatePerson(Person person) {
         personRepository.save(person);
         return null;
+    }
+
+    @Override
+    public Optional<Address> getPersonAddress(long personId) {
+        return addressRepository.findById(personId);
     }
 
 }
