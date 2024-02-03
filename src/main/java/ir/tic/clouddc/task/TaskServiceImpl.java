@@ -122,9 +122,29 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Pm getPm(int id) {
-        var status = pmRepository.findById(id).get();
-        return status;
+    public Pm getPm(int pmId) {
+        var pm = pmRepository.findById(pmId);
+        if (pm.isPresent()) {
+            if (pm.get().getLastSuccessful() != null) {
+                pm.get().setLastSuccessfulPersian(utilityService.getPersianFormattedDateTime(pm.get().getLastSuccessful()));
+            }
+            return pm.get();
+        } else {
+            throw new NoSuchElementException("No such Pm: " + pmId);
+        }
+    }
+
+    private Task getTask(Long taskId) {
+        var task = taskRepository.findById(taskId);
+        if (task.isPresent()) {
+            task.get().setDueDatePersian(utilityService.getPersianFormattedDate(task.get().getDueDate()));
+            if (!task.get().isActive()) {
+                task.get().setSuccessDatePersian(utilityService.getPersianFormattedDateTime(task.get().getSuccessDate()));
+            }
+            return task.get();
+        } else {
+            throw new NoSuchElementException("No such task: " + taskId);
+        }
     }
 
     private List<Pm> getPmList() {
@@ -139,7 +159,7 @@ public class TaskServiceImpl implements TaskService {
         return pmList;
     }
 
-    private Pm updateTask(Task task) {
+    private void updateTask(Task task) {
         var successDateTime = LocalDateTime.now();
         CurrentDate = successDateTime.toLocalDate();
         Pm pm = task.getPm();
@@ -172,13 +192,12 @@ public class TaskServiceImpl implements TaskService {
         if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
             pm.setActive(false);    // pm is inactive til next due
         }
-        return pmRepository.saveAndFlush(pm);
+        pmRepository.saveAndFlush(pm);
     }
 
 
     @Override
-    public List<Task> getTaskListById(int pmId) {
-        Pm pm = pmRepository.findById(pmId).get();
+    public List<Task> getTaskList(Pm pm) {
         for (Task task : pm.getTaskList()
         ) {
             task.setDueDatePersian(utilityService.getPersianFormattedDate(task.getDueDate()));
@@ -189,8 +208,7 @@ public class TaskServiceImpl implements TaskService {
         return pm.getTaskList();
     }
 
-    private List<TaskDetail> getDetailList(Long taskId) {
-        Task task = taskRepository.findById(taskId).get();
+    private List<TaskDetail> getDetailList(Task task) {
         for (TaskDetail taskDetail : task.getTaskDetailList()
         ) {
             taskDetail.setPersianDate(utilityService.getPersianFormattedDateTime(taskDetail.getAssignedDate()));
@@ -201,6 +219,7 @@ public class TaskServiceImpl implements TaskService {
                 .sorted(Comparator.comparing(TaskDetail::getId).reversed())
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public void updateTaskDetail(AssignForm assignForm, Long id) {
@@ -216,11 +235,6 @@ public class TaskServiceImpl implements TaskService {
             taskDetailSetup(taskDetail.getTask(), personService.getPerson(assignForm.getId()));
         }
     }
-
-    public Task getTask(Long taskDetailId) {
-        return taskDetailRepository.findById(taskDetailId).get().getTask();
-    }
-
 
     @Override
     public void taskRegister(PmRegisterForm pmRegisterForm) {
@@ -270,12 +284,8 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
-    private boolean checkPermission(long authenticatedId, Optional<TaskDetail> taskDetail) {
-        return taskDetail.filter(detail -> Objects.equals(authenticatedId, detail.getPerson().getId())).isPresent();
-    }
-
     @Override
-    public List<Task> getPersonTask() {
+    public List<Task> getPersonTaskList() {
         Person person = personService.getPerson(personService.getAuthenticatedPersonId());
         List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(person.getId(), true);
         List<Task> personTaskList = new ArrayList<>();
@@ -292,52 +302,14 @@ public class TaskServiceImpl implements TaskService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public List<Task> getActiveTaskList(int pmId) {
-        var pm = pmRepository.findById(pmId);
-        if (pm.isPresent()) {
-            var activeTaskList = pm
-                    .get()
-                    .getTaskList()
-                    .stream()
-                    .filter(Task::isActive)
-                    .toList();
-            for (Task task : activeTaskList
-            ) {
-                task.setDueDatePersian(utilityService.getPersianFormattedDate(task.getDueDate()));
-            }
-            return activeTaskList;
-        } else {
-            return null;
-        }
-    }
 
     @Override
-    public void modifyPm(PmRegisterForm editForm, int id) {
-        var pm = pmRepository.findById(id).get();
+    public void modifyPm(PmRegisterForm editForm, int pmId) {
+        var pm = this.getPm(pmId);
         pm.setTitle(editForm.getName());
         pm.setPeriod(editForm.getPeriod());
         pm.setDescription(editForm.getDescription());
         pmRepository.saveAndFlush(pm);
-    }
-
-    @Override
-    public Optional<TaskDetail> activeTaskDetail(long taskId) {
-        var task = taskRepository.findById(taskId);
-        if (task.isPresent()) {
-            var dueDate = task
-                    .get()
-                    .getDueDate();
-            task.get().setDueDatePersian(utilityService.getPersianFormattedDate(dueDate));
-            return task
-                    .get()
-                    .getTaskDetailList()
-                    .stream()
-                    .filter(TaskDetail::isActive)
-                    .findFirst();
-        }
-
-        return Optional.empty();
     }
 
     @Override
@@ -351,18 +323,26 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model pmListService(Model model) {
-        model.addAttribute("pmList", getPmList());
+        model.addAttribute("pmList", this.getPmList());
+        return model;
+    }
+
+    @Override
+    public Model pmTaskListService(Model model, int pmId) {
+        var pm = this.getPm(pmId);
+        model.addAttribute("taskList", this.getTaskList(pm));
+        model.addAttribute("pm", pm);
         return model;
     }
 
     @Override
     public Model pmEditFormService(Model model, int pmId) {
-        var pm = getPm(pmId);
-        PmRegisterForm pmEdit = new PmRegisterForm();
-        pmEdit.setName(pm.getTitle());
-        pmEdit.setDescription(pm.getDescription());
-        pmEdit.setPeriod(pm.getPeriod());
-        model.addAttribute("pmEdit", pmEdit);
+        var pm = this.getPm(pmId);
+        PmRegisterForm pmEditForm = new PmRegisterForm();
+        pmEditForm.setName(pm.getTitle());
+        pmEditForm.setDescription(pm.getDescription());
+        pmEditForm.setPeriod(pm.getPeriod());
+        model.addAttribute("pmEdit", pmEditForm);
         model.addAttribute("taskSize", pm.getTaskList().size());
         model.addAttribute("pmId", pm.getId());
         model.addAttribute("personList", personService.getPersonList());
@@ -380,18 +360,19 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Model modelForTaskDetail(Model model, Long taskId) {
-        List<TaskDetail> taskDetailList = getDetailList(taskId);
-        var task = taskRepository.findById(taskId).get();
+    public Model taskDetailListService(Model model, Long taskId) {
+        var task = this.getTask(taskId);
+        List<TaskDetail> taskDetailList = this.getDetailList(task);
+        var activeDetail = taskDetailList.stream().filter(TaskDetail::isActive).findFirst();
         var active = task.isActive();
-        var delay = taskDetailList.get(0).getTask().getDelay();
-        var dueDate = utilityService.getPersianFormattedDate(taskDetailList.get(0).getTask().getDueDate());
-        var taskStatusName = taskDetailList.get(0).getTask().getPm().getTitle();
+        var delay = task.getDelay();
+        var dueDate = task.getDueDatePersian();
+        var pmName = task.getPm().getTitle();
         var personId = personService.getAuthenticatedPersonId();
-        var permission = checkPermission(personId, taskDetailList.stream().findAny().filter(TaskDetail::isActive));
+        var permission = activeDetail.filter(taskDetail -> (personId == taskDetail.getPerson().getId())).isPresent();
         model.addAttribute("permission", permission);
         model.addAttribute("taskDetailList", taskDetailList);
-        model.addAttribute("name", taskStatusName);
+        model.addAttribute("name", pmName);
         model.addAttribute("taskId", taskId);
         model.addAttribute("delay", delay);
         model.addAttribute("duedate", dueDate);
@@ -404,9 +385,9 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model personTaskListService(Model model) {
-        List<Task> userTaskList = getPersonTask();
-        if (!userTaskList.isEmpty()) {
-            model.addAttribute("userTaskList", userTaskList);
+        List<Task> personTaskList = getPersonTaskList();
+        if (!personTaskList.isEmpty()) {
+            model.addAttribute("userTaskList", personTaskList);
         }
         return model;
     }

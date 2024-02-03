@@ -26,23 +26,19 @@ public class TaskController {
     }
 
     @GetMapping("/pmList")
-    public String getPmList(Model model) {
+    public String getPmListRequest(Model model) {
         taskService.pmListService(model);
         return "pmList";
     }
 
     @GetMapping("/list")
-    public String getPmTaskList(@RequestParam int id, Model model) {
-        var pm = taskService.getPm(id);
-        model.addAttribute("pm", pm);
-        if (!pm.getTaskList().isEmpty()) {
-            model.addAttribute("taskList", taskService.getTaskListById(id));
-        }
+    public String getPmTaskListRequest(@RequestParam int id, Model model) {
+        taskService.pmTaskListService(model, id);
         return "taskList";
     }
 
     @GetMapping("/pm/edit")
-    public String getPmEditForm(@RequestParam int id, Model model) {
+    public String getPmEditFormRequest(@RequestParam int id, Model model) {
         taskService.pmEditFormService(model, id);
         return "pmModifyForm";
     }
@@ -66,15 +62,14 @@ public class TaskController {
     public String getActivePmList(@RequestParam int id, Model model) {
         var pm = taskService.getPm(id);
         model.addAttribute("status", pm);
-        //model.addAttribute("taskList", activeTaskList);
 
         return "taskList";
     }
 
     @GetMapping("/detail")
-    public String getTaskDetail(@RequestParam Long id, Model model) {
+    public String getTaskDetailList(@RequestParam Long id, Model model) {
 
-        taskService.modelForTaskDetail(model, id);
+        taskService.taskDetailListService(model, id);
 
         return "taskDetail";
     }

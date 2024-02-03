@@ -54,9 +54,8 @@ public class OtpServiceImpl implements OtpService {
     }
 
     private String getRandomOTP(String otpUid) {
-        String otp = new DecimalFormat("000000")
+        return new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));
-        return otp;
     }
 
     public String getOtpUid(String address) throws ExecutionException {
