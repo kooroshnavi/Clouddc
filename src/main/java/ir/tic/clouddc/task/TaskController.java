@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -27,15 +26,15 @@ public class TaskController {
     }
 
     @GetMapping("/pmList")
-    public String pmList(Model model) {
-        taskService.modelForMainPage(model);
+    public String getPmList(Model model) {
+        taskService.pmListService(model);
         return "pmList";
     }
 
-    @GetMapping("/pm")
-    public String pmTask(@RequestParam int id, Model model) {
+    @GetMapping("/list")
+    public String getPmTaskList(@RequestParam int id, Model model) {
         var pm = taskService.getPm(id);
-        model.addAttribute("status", pm);
+        model.addAttribute("pm", pm);
         if (!pm.getTaskList().isEmpty()) {
             model.addAttribute("taskList", taskService.getTaskListById(id));
         }
@@ -43,51 +42,75 @@ public class TaskController {
     }
 
     @GetMapping("/pm/edit")
-    public String pmEditForm(@RequestParam int id, Model model) {
-        var status = taskService.getPm(id);
-        PmRegisterForm pmEdit = new PmRegisterForm();
-        pmEdit.setName(status.getTitle());
-        pmEdit.setDescription(status.getDescription());
-        pmEdit.setPeriod(status.getPeriod());
-        model.addAttribute("pmEdit", pmEdit);
-        model.addAttribute("taskSize", status.getTaskList().size());
-        model.addAttribute("statusId", status.getId());
-        taskService.modelForRegisterTask(model);
-        return "pmUpdate";
+    public String getPmEditForm(@RequestParam int id, Model model) {
+        taskService.pmEditFormService(model, id);
+        return "pmModifyForm";
     }
 
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
     @PostMapping("/pm/edit")
-    public String pmEdit(Model model,
-                         @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
-                         @RequestParam int id,
-                         Errors errors) {
+    public String postPmModifyForm(Model model,
+                                   @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
+                                   @RequestParam int id,
+                                   Errors errors) {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
-            return pmForm(model);
+            return getPmRegisterForm(model);
         }
         taskService.modifyPm(editForm, id);
-        taskService.modelForMainPage(model);
+        taskService.pmListService(model);
         return "pmList";
     }
 
-    @GetMapping("/pm/active")
+    @GetMapping("/list/active")
     public String getActivePmList(@RequestParam int id, Model model) {
-        List<Task> activeTaskList = taskService.getActiveTaskList(id);
         var pm = taskService.getPm(id);
         model.addAttribute("status", pm);
-        model.addAttribute("taskList", activeTaskList);
+        //model.addAttribute("taskList", activeTaskList);
 
         return "taskList";
     }
 
-    @GetMapping("/pm/task")
+    @GetMapping("/detail")
     public String getTaskDetail(@RequestParam Long id, Model model) {
 
         taskService.modelForTaskDetail(model, id);
 
         return "taskDetail";
+    }
+
+    @GetMapping("/update")
+    public String getTaskActionForm(@RequestParam("id") int pmId,
+                                    Model model) {
+
+        Pm pm = taskService.getPm(pmId);
+        Optional<Task> activeTask = pm.getTaskList().stream().filter(Task::isActive).findFirst();
+        if (activeTask.isPresent()) {
+            Optional<TaskDetail> activeDetail = activeTask.get().getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst();
+            if (activeDetail.isPresent()) {
+                long activeDetailId = activeDetail.get().getId();
+                long activeDetailPersonId = activeDetail.get().getPerson().getId();
+                long authenticatedPersonId = personService.getAuthenticatedPersonId();
+                taskService.taskActionFormService(model, activeDetailId, authenticatedPersonId, activeDetailPersonId);
+                return "pmUpdateForm";
+            } else {
+                return "404";
+            }
+        } else {
+            return "404";
+        }
+    }
+
+    @PostMapping("/update")
+    public String assignTaskDetail(Model model,
+                                   @RequestParam("id") Long id,
+                                   @ModelAttribute("assignForm") AssignForm assignForm) {
+        System.out.println("Captured: " + model.getAttribute("assignForm").toString());
+
+        taskService.updateTaskDetail(assignForm, id);
+        taskService.personTaskListService(model);
+
+        return "personTask";
     }
 /*
     @GetMapping("/pm/task/edit")
@@ -106,22 +129,13 @@ public class TaskController {
         return "404";
     }*/
 
-   /* @GetMapping("/update")
-    public String updateTask(Model model) {
-        taskService.updateTodayTaskList();
-        taskService.modelForMainPage(model);
-        return "index2";
-    }*/
-
     @GetMapping("/pm/register")
-    public String pmForm(Model model) {
-        taskService.modelForRegisterTask(model);
-        model.addAttribute("pmRegister", new PmRegisterForm());
-        return "pmRegister";
+    public String getPmRegisterForm(Model model) {
+        taskService.pmRegisterFormService(model);
+        return "pmRegisterForm";
     }
 
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
-    @PostMapping("/pm/register/form/submit")
+    @PostMapping("/pm/register")
     public String pmPost(
             Model model,
             @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
@@ -129,57 +143,23 @@ public class TaskController {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
-            return pmForm(model);
+            return getPmRegisterForm(model);
         }
 
         taskService.taskRegister(pmRegisterForm);
-        taskService.modelForMainPage(model);
+        taskService.pmListService(model);
         return "pmList";
     }
 
 
-    @GetMapping("/pm/myTask")
-    private String getUserTask(Model model) {
+    @GetMapping("/workspace")
+    private String getPersonTaskList(Model model) {
 
-        taskService.modelForPersonTaskList(model);
+        taskService.personTaskListService(model);
 
-        return "userTask";
+        return "personTask";
     }
 
-
-    @GetMapping("/task/form")
-    public String showAssignForm(@RequestParam("id") int pmId,
-                                 Model model) {
-
-        Pm pm = taskService.getPm(pmId);
-        Optional<Task> activeTask = pm.getTaskList().stream().filter(Task::isActive).findFirst();
-        if (activeTask.isPresent()) {
-            Optional<TaskDetail> activeDetail = activeTask.get().getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst();
-            if (activeDetail.isPresent()) {
-                long activeDetailId = activeDetail.get().getId();
-                long activeDetailPersonId = activeDetail.get().getPerson().getId();
-                long authenticatedPersonId = personService.getAuthenticatedPersonId();
-                taskService.modelForActionForm(model, activeDetailId, authenticatedPersonId, activeDetailPersonId);
-                return "pmUpdateForm";
-            } else {
-                return "404";
-            }
-        } else {
-            return "404";
-        }
-    }
-
-    @PostMapping("/task/form/update")
-    public String assignTaskDetail(Model model,
-                                   @RequestParam("id") Long id,
-                                   @ModelAttribute("assignForm") AssignForm assignForm) {
-        System.out.println("Captured: " + model.getAttribute("assignForm").toString());
-
-        taskService.updateTaskDetail(assignForm, id);
-        taskService.modelForPersonTaskList(model);
-
-        return "userTask";
-    }
 
     @ModelAttribute
     public void addAttributes(Model model) {

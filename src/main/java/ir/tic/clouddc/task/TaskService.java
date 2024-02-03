@@ -13,12 +13,14 @@ public interface TaskService {
     void modifyPm(PmRegisterForm editForm, int id);
     Optional<TaskDetail> activeTaskDetail(long taskId);
     Pm getPm(int id);
-    Model modelForMainPage(Model model);
-    Model modelForRegisterTask(Model model);
+    Model pmListService(Model model);
+    Model pmEditFormService(Model model, int pmId);
+    Model pmRegisterFormService(Model model);
+
     Model modelForTaskController(Model model);
     Model modelForTaskDetail(Model model, Long taskId);
-    Model modelForPersonTaskList(Model model);
-    TaskDetail modelForActionForm(Model model, long taskDetailId, long authenticatedPersonId, long taskDetailPersonId);
+    Model personTaskListService(Model model);
+    TaskDetail taskActionFormService(Model model, long taskDetailId, long authenticatedPersonId, long taskDetailPersonId);
     void taskRegister(PmRegisterForm pmRegisterForm);
     void updateTaskDetail(AssignForm assignForm, Long id);
 }

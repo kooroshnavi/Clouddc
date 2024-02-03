@@ -278,15 +278,15 @@ public class TaskServiceImpl implements TaskService {
     public List<Task> getPersonTask() {
         Person person = personService.getPerson(personService.getAuthenticatedPersonId());
         List<TaskDetail> taskDetailList = taskDetailRepository.findAllByPerson_IdAndActive(person.getId(), true);
-        List<Task> userTasks = new ArrayList<>();
+        List<Task> personTaskList = new ArrayList<>();
         for (TaskDetail taskDetail : taskDetailList
 
         ) {
             var dueDate = taskDetail.getTask().getDueDate();
             taskDetail.getTask().setDueDatePersian(utilityService.getPersianFormattedDate(dueDate));
-            userTasks.add(taskDetail.getTask());
+            personTaskList.add(taskDetail.getTask());
         }
-        return userTasks
+        return personTaskList
                 .stream()
                 .sorted(Comparator.comparing(Task::getDelay).reversed())
                 .collect(Collectors.toList());
@@ -350,17 +350,32 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Model modelForMainPage(Model model) {
+    public Model pmListService(Model model) {
         model.addAttribute("pmList", getPmList());
+        return model;
+    }
+
+    @Override
+    public Model pmEditFormService(Model model, int pmId) {
+        var pm = getPm(pmId);
+        PmRegisterForm pmEdit = new PmRegisterForm();
+        pmEdit.setName(pm.getTitle());
+        pmEdit.setDescription(pm.getDescription());
+        pmEdit.setPeriod(pm.getPeriod());
+        model.addAttribute("pmEdit", pmEdit);
+        model.addAttribute("taskSize", pm.getTaskList().size());
+        model.addAttribute("pmId", pm.getId());
+        model.addAttribute("personList", personService.getPersonList());
+        model.addAttribute("centerList", centerService.getSalonList());
 
         return model;
     }
 
     @Override
-    public Model modelForRegisterTask(Model model) {
+    public Model pmRegisterFormService(Model model) {
+        model.addAttribute("pmRegister", new PmRegisterForm());
         model.addAttribute("personList", personService.getPersonList());
         model.addAttribute("centerList", centerService.getSalonList());
-
         return model;
     }
 
@@ -388,7 +403,7 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public Model modelForPersonTaskList(Model model) {
+    public Model personTaskListService(Model model) {
         List<Task> userTaskList = getPersonTask();
         if (!userTaskList.isEmpty()) {
             model.addAttribute("userTaskList", userTaskList);
@@ -398,7 +413,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     @PreAuthorize("authenticatedPersonId == taskDetailPersonId")
-    public TaskDetail modelForActionForm(Model model, long taskDetailId, long authenticatedPersonId, long taskDetailPersonId) {
+    public TaskDetail taskActionFormService(Model model, long taskDetailId, long authenticatedPersonId, long taskDetailPersonId) {
         List<Person> personList = personService.getPersonListNotIn(personService.getAuthenticatedPersonId());
         var taskDetail = taskDetailRepository.findById(taskDetailId);
         if (taskDetail.isPresent()) {
