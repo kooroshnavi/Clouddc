@@ -28,19 +28,19 @@ public class TaskController {
     @GetMapping("/pmList")
     public String getPmListRequest(Model model) {
         taskService.pmListService(model);
-        return "pmList";
+        return "/task/pmList";
     }
 
     @GetMapping("/list")
     public String getPmTaskListRequest(@RequestParam int id, Model model) {
         taskService.pmTaskListService(model, id);
-        return "taskList";
+        return "/task/taskList";
     }
 
     @GetMapping("/pm/edit")
     public String getPmEditFormRequest(@RequestParam int id, Model model) {
         taskService.pmEditFormService(model, id);
-        return "pmModifyForm";
+        return "/task/pmModifyForm";
     }
 
     @PostMapping("/pm/edit")
@@ -55,7 +55,7 @@ public class TaskController {
         }
         taskService.modifyPm(editForm, id);
         taskService.pmListService(model);
-        return "pmList";
+        return "/task/pmList";
     }
 
     @GetMapping("/list/active")
@@ -63,7 +63,7 @@ public class TaskController {
         var pm = taskService.getPm(id);
         model.addAttribute("status", pm);
 
-        return "taskList";
+        return "/task/taskList";
     }
 
     @GetMapping("/detail")
@@ -71,7 +71,7 @@ public class TaskController {
 
         taskService.taskDetailListService(model, id);
 
-        return "taskDetail";
+        return "/task/taskDetail";
     }
 
     @GetMapping("/update")
@@ -87,7 +87,7 @@ public class TaskController {
                 long activeDetailPersonId = activeDetail.get().getPerson().getId();
                 long authenticatedPersonId = personService.getAuthenticatedPersonId();
                 taskService.taskActionFormService(model, activeDetailId, authenticatedPersonId, activeDetailPersonId);
-                return "pmUpdateForm";
+                return "/task/pmUpdateForm";
             } else {
                 return "404";
             }
@@ -105,7 +105,7 @@ public class TaskController {
         taskService.updateTaskDetail(assignForm, id);
         taskService.personTaskListService(model);
 
-        return "personTask";
+        return "/task/personTask";
     }
 /*
     @GetMapping("/pm/task/edit")
@@ -127,7 +127,7 @@ public class TaskController {
     @GetMapping("/pm/register")
     public String getPmRegisterForm(Model model) {
         taskService.pmRegisterFormService(model);
-        return "pmRegisterForm";
+        return "/task/pmRegisterForm";
     }
 
     @PostMapping("/pm/register")
@@ -143,7 +143,7 @@ public class TaskController {
 
         taskService.taskRegister(pmRegisterForm);
         taskService.pmListService(model);
-        return "pmList";
+        return "/task/pmList";
     }
 
 
@@ -152,7 +152,7 @@ public class TaskController {
 
         taskService.personTaskListService(model);
 
-        return "personTask";
+        return "/task/personTask";
     }
 
 

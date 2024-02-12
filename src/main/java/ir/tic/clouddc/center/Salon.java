@@ -1,12 +1,15 @@
 package ir.tic.clouddc.center;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ir.tic.clouddc.task.Pm;
 import ir.tic.clouddc.task.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(schema = "Center")
@@ -26,10 +29,13 @@ public class Salon {
     private DataCenter dataCenter;
 
     @OneToMany(mappedBy = "salon")
-    private List<SalonPmDue> salonPmDueList;
+    private List<Task> taskList;
 
     @OneToMany(mappedBy = "salon")
-    private List<Task> taskList;
+    private Map<Pm, LocalDate> pmLocalDateMap;
+
+    @OneToMany(mappedBy = "salon")
+    private Map<Character, List<Rack>> rackMap;
 
     public List<Task> getTaskList() {
         return taskList;
@@ -50,14 +56,6 @@ public class Salon {
         this.dataCenter = dataCenter;
     }
 
-    public List<SalonPmDue> getSalonPmDueList() {
-        return salonPmDueList;
-    }
-
-    public void setSalonPmDueList(List<SalonPmDue> salonPmDueList) {
-        this.salonPmDueList = salonPmDueList;
-    }
-
     @JsonIgnore
     public int getId() {
         return id;
@@ -76,4 +74,23 @@ public class Salon {
         this.name = name;
     }
 
+    public void setTaskList(List<Task> taskList) {
+        this.taskList = taskList;
+    }
+
+    public Map<Pm, LocalDate> getPmLocalDateMap() {
+        return pmLocalDateMap;
+    }
+
+    public void setPmLocalDateMap(Map<Pm, LocalDate> pmLocalDateMap) {
+        this.pmLocalDateMap = pmLocalDateMap;
+    }
+
+    public Map<Character, List<Rack>> getRackMap() {
+        return rackMap;
+    }
+
+    public void setRackMap(Map<Character, List<Rack>> rackMap) {
+        this.rackMap = rackMap;
+    }
 }
