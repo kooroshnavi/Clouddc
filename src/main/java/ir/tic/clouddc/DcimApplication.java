@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @EnableEncryptableProperties
 public class DcimApplication {
 
+
 	public static void main(String[] args) {
 		SpringApplication.run(DcimApplication.class, args);
 	}

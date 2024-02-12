@@ -1,6 +1,7 @@
 package ir.tic.clouddc.etisalat;
 
 import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Port;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,14 @@ public class DeviceLink extends Link {
     @ManyToOne
     @JoinColumn(name = "source_device_id")
     private Device source;   // Device
+
+    @OneToOne
+    @JoinColumn(name = "Source_Port_id")
+    private Port sourcePort;
+
+    @OneToOne
+    @JoinColumn(name = "Source_Port_id")
+    private Port destinationPort;
 
     @ManyToOne
     @JoinColumn(name = "destination_device_id")

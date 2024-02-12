@@ -10,4 +10,8 @@ public class PatchPanelLink extends Link {
 
     private Rack destination;
 
+    private String sourcePatchPanel;
+
+    private String destinationPatchPanel;
+
 }

@@ -1,7 +1,9 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.etisalat.Link;
+import jakarta.persistence.MappedSuperclass;
 
+@MappedSuperclass
 public abstract class Port {
 
     private boolean up;

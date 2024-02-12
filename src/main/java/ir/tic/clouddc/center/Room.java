@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Room {
+public class Room extends ResourceLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

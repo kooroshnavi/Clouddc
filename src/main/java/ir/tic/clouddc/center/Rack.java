@@ -11,7 +11,7 @@ import java.util.Optional;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Rack {
+public class Rack extends ResourceLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
