@@ -4,15 +4,14 @@ import ir.tic.clouddc.etisalat.Route;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-public class Server extends Device{
+public class Server extends Device {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
+    private static final String TYPE = "Device-Server";
 
     @OneToOne
     @JoinColumn(name = "iLo_Route_id")
@@ -21,6 +20,9 @@ public class Server extends Device{
     @Column
     private String iLoAddress;
 
+    @OneToMany(mappedBy = "device_id")
+    private List<Port> portList;
 
+    private List<Route> routeList;
 
 }

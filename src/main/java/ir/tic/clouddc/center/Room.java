@@ -1,12 +1,15 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.resource.Device;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+
+import java.util.List;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Room extends ResourceLocation {
+class Room extends ResourceLocation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +24,7 @@ public class Room extends ResourceLocation {
     private DataCenter dataCenter;
 
     @Column
-    private boolean hasArchive;
+    private List<Device> deviceList;
 
     public int getId() {
         return id;
@@ -47,21 +50,4 @@ public class Room extends ResourceLocation {
         this.dataCenter = dataCenter;
     }
 
-    public boolean isHasArchive() {
-        return hasArchive;
-    }
-
-    public void setHasArchive(boolean hasArchive) {
-        this.hasArchive = hasArchive;
-    }
-
-    @Override
-    public String toString() {
-        return "Room{" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", center=" + dataCenter +
-                ", hasArchive=" + hasArchive +
-                '}';
-    }
 }

@@ -35,7 +35,7 @@ public class Salon {
     private Map<Pm, LocalDate> pmLocalDateMap;
 
     @OneToMany(mappedBy = "salon")
-    private Map<Character, List<Rack>> rackMap;
+    private Map<Character, List<Rack>> rackMap; //row List<Rack>
 
     public List<Task> getTaskList() {
         return taskList;

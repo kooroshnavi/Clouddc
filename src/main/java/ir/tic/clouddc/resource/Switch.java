@@ -9,11 +9,9 @@ import java.util.Map;
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-public class Switch extends Device{
+public class Switch extends Device {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
+    private static final String TYPE = "Device-Switch";
 
     @OneToOne
     @JoinColumn(name = "management_route_id")
@@ -21,6 +19,5 @@ public class Switch extends Device{
 
     @OneToMany
     private Map<Port, String> vlanMap;
-
 
 }

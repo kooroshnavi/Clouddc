@@ -1,12 +1,17 @@
 package ir.tic.clouddc.etisalat;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.*;
 
-@MappedSuperclass
+@Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Table(schema = "Etisalat")
 public abstract class Link {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private long id;
+
+
     @Column
     private String core;
 
@@ -63,3 +68,6 @@ public abstract class Link {
         this.route = route;
     }
 }
+
+
+
