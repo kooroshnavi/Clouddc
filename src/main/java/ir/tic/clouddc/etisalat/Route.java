@@ -17,12 +17,12 @@ public class Route {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "source_device_id")
-    private Device source;
+    @JoinColumn(name = "device_A_id")
+    private Device deviceA;
 
     @ManyToOne
-    @JoinColumn(name = "destination_device_id")
-    private Device destination;
+    @JoinColumn(name = "device_B_id")
+    private Device deviceB;
 
     @OneToMany(mappedBy = "route")
     private List<Link> linkList;
@@ -41,20 +41,20 @@ public class Route {
         this.id = id;
     }
 
-    public Device getSource() {
-        return source;
+    public Device getDeviceA() {
+        return deviceA;
     }
 
-    public void setSource(Device source) {
-        this.source = source;
+    public void setDeviceA(Device source) {
+        this.deviceA = source;
     }
 
-    public Device getDestination() {
-        return destination;
+    public Device getDeviceB() {
+        return deviceB;
     }
 
-    public void setDestination(Device destination) {
-        this.destination = destination;
+    public void setDeviceB(Device deviceB) {
+        this.deviceB = deviceB;
     }
 
     public List<Link> getLinkList() {
@@ -79,5 +79,17 @@ public class Route {
 
     public void setUp(boolean up) {
         this.up = up;
+    }
+
+    @Override
+    public String toString() {
+        return "Route{" +
+                "id=" + id +
+                ", deviceA=" + deviceA +
+                ", deviceB=" + deviceB +
+                ", linkList=" + linkList +
+                ", bandwidth=" + bandwidth +
+                ", up=" + up +
+                '}';
     }
 }

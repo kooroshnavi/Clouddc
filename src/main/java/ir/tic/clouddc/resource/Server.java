@@ -4,8 +4,6 @@ import ir.tic.clouddc.etisalat.Route;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
@@ -20,9 +18,27 @@ public class Server extends Device {
     @Column
     private String iLoAddress;
 
-    @OneToMany(mappedBy = "device_id")
-    private List<Port> portList;
+    public Route getiLoRoute() {
+        return iLoRoute;
+    }
 
-    private List<Route> routeList;
+    public void setiLoRoute(Route iLoRoute) {
+        this.iLoRoute = iLoRoute;
+    }
 
+    public String getiLoAddress() {
+        return iLoAddress;
+    }
+
+    public void setiLoAddress(String iLoAddress) {
+        this.iLoAddress = iLoAddress;
+    }
+
+    @Override
+    public String toString() {
+        return "Server{" +
+                "iLoRoute=" + iLoRoute +
+                ", iLoAddress='" + iLoAddress + '\'' +
+                '}';
+    }
 }

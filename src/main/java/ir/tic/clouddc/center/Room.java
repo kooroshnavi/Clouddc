@@ -11,36 +11,14 @@ import java.util.List;
 @NoArgsConstructor
 class Room extends ResourceLocation {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-
-    @Column
-    private String name;
+    private static final String TYPE = "Location-Room";
 
     @ManyToOne
     @JoinColumn(name = "datacenter")
     private DataCenter dataCenter;
 
-    @Column
+    @OneToMany(mappedBy = "room")
     private List<Device> deviceList;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
 
     public DataCenter getDataCenter() {
         return dataCenter;

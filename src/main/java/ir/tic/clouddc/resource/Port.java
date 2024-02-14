@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Table(name="Port")
+@Table(schema = "Resource")
 public abstract class Port {
 
     @Id
@@ -17,22 +17,34 @@ public abstract class Port {
     private String visiblePortNumber;   // 1-10G or 10 or B7-11
 
     @Column
-    private boolean up;
+    private boolean connected;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "link_id")
     private Link link;
 
-    @ManyToOne
-    @JoinColumn(name = "device_id")
-    private Device device;
-
-    public boolean isUp() {
-        return up;
+    public long getId() {
+        return id;
     }
 
-    public void setUp(boolean up) {
-        this.up = up;
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public String getVisiblePortNumber() {
+        return visiblePortNumber;
+    }
+
+    public void setVisiblePortNumber(String visiblePortNumber) {
+        this.visiblePortNumber = visiblePortNumber;
+    }
+
+    public boolean isConnected() {
+        return connected;
+    }
+
+    public void setConnected(boolean connected) {
+        this.connected = connected;
     }
 
     public Link getLink() {
