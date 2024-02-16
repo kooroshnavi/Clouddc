@@ -15,7 +15,6 @@ import java.util.Optional;
 public class Rack extends ResourceLocation {
 
     private static final String TYPE = "Location-Rack";
-
     @ManyToOne
     @JoinColumn(name = "salon_id")
     private Salon salon;
@@ -26,6 +25,7 @@ public class Rack extends ResourceLocation {
     @OneToMany(mappedBy = "rack")
     private List<PatchPanelPort> patchPanelPortList;
 
+    @OneToMany
     private Map<Integer, Optional<Device>> deviceMap; // <UnitOffset, device> inside rack
 
 
