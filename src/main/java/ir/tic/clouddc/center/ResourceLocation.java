@@ -13,6 +13,6 @@ public abstract class ResourceLocation {
     private int id;
 
     @Column
-    private String name; // e.g.  B7 or 2
+    private String name; // B7 or 2
 
 }

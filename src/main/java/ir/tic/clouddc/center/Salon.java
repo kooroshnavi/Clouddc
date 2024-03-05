@@ -7,6 +7,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -33,6 +34,9 @@ public class Salon {
 
     @OneToMany(mappedBy = "salon")
     private Map<Pm, LocalDate> pmLocalDateMap;
+
+    @OneToMany(mappedBy = "salon")
+    private Map<LocalDateTime, Float> tempratureMap;
 
     @OneToMany(mappedBy = "salon")
     private Map<Character, List<Rack>> rackMap; //row List<Rack>

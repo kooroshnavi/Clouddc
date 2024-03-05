@@ -20,16 +20,16 @@ public abstract class Device {
     private String serialNumber;
 
     @Column
-    private String name;
+    private String name;  // SW-EDGE-P1-01
 
     @Column
-    private String model;
+    private String model; // DL380-G10 - 2348UPQ
 
     @Column
-    private String utilizer;
+    private String utilizer; // Gap
 
     @Column
-    private String vendor;
+    private String vendor; // HPE
 
     @Column
     private boolean dualPower;
@@ -37,118 +37,20 @@ public abstract class Device {
     @Column
     private boolean active;
 
+    @Column
+    private boolean ok; // for problematic device
+
     @OneToMany(mappedBy = "device")
-    private List<DevicePort> portList;
+    private List<DevicePort> devicePortList;
 
     @OneToMany(mappedBy = "device")
     private List<Route> routeList;
+
+    @OneToMany(mappedBy = "device")
+    private List<Module> moduleList;
 
     @ManyToOne
     @JoinColumn(name = "location_id")
     private ResourceLocation location;
 
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getSerialNumber() {
-        return serialNumber;
-    }
-
-    public void setSerialNumber(String serialNumber) {
-        this.serialNumber = serialNumber;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public String getUtilizer() {
-        return utilizer;
-    }
-
-    public void setUtilizer(String utilizer) {
-        this.utilizer = utilizer;
-    }
-
-    public String getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
-
-    public boolean isDualPower() {
-        return dualPower;
-    }
-
-    public void setDualPower(boolean dualPower) {
-        this.dualPower = dualPower;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public List<Route> getRouteList() {
-        return routeList;
-    }
-
-    public void setRouteList(List<Route> routeList) {
-        this.routeList = routeList;
-    }
-
-    public ResourceLocation getLocation() {
-        return location;
-    }
-
-    public void setLocation(ResourceLocation location) {
-        this.location = location;
-    }
-
-    public List<DevicePort> getPortList() {
-        return portList;
-    }
-
-    public void setPortList(List<DevicePort> portList) {
-        this.portList = portList;
-    }
-
-    @Override
-    public String toString() {
-        return "Device{" +
-                "id=" + id +
-                ", serialNumber='" + serialNumber + '\'' +
-                ", name='" + name + '\'' +
-                ", model='" + model + '\'' +
-                ", utilizer='" + utilizer + '\'' +
-                ", vendor='" + vendor + '\'' +
-                ", dualPower=" + dualPower +
-                ", active=" + active +
-                ", portList=" + portList +
-                ", routeList=" + routeList +
-                ", location=" + location +
-                '}';
-    }
 }

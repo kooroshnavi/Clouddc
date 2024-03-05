@@ -2,7 +2,6 @@ package ir.tic.clouddc.task;
 
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Salon;
-import ir.tic.clouddc.center.SalonPmDue;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;

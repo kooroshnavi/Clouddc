@@ -20,12 +20,4 @@ class Room extends ResourceLocation {
     @OneToMany(mappedBy = "room")
     private List<Device> deviceList;
 
-    public DataCenter getDataCenter() {
-        return dataCenter;
-    }
-
-    public void setDataCenter(DataCenter dataCenter) {
-        this.dataCenter = dataCenter;
-    }
-
 }

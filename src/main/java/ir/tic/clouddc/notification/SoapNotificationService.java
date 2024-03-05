@@ -68,41 +68,34 @@ public class SoapNotificationService implements NotificationService {
     public void sendActiveTaskAssignedMessage(String address, String taskTitle, int delay, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
-        switch (delay) {
-            case 0: {
-                final String message =
-                        "وظیفه فعال با عنوان: " +
-                                taskTitle +
-                                System.lineSeparator() +
-                                "در تاریخ و ساعت: " +
-                                persianDateTime +
-                                System.lineSeparator() +
-                                "با انتساب دیگر همکاران در کارتابل شما قرار گرفت." +
-                                System.lineSeparator();
+        final String message;
+        if (delay == 0) {
+            message = "وظیفه فعال با عنوان: " +
+                    taskTitle +
+                    System.lineSeparator() +
+                    "در تاریخ و ساعت: " +
+                    persianDateTime +
+                    System.lineSeparator() +
+                    "با انتساب دیگر همکاران در کارتابل شما قرار گرفت." +
+                    System.lineSeparator();
 
-                soapClientService.sendMessage(address, message);
-                log.info(soapClientService.getResponse());
-                break;
-            }
-            default:
-                final String message =
-                        "وظیفه فعال با عنوان: " +
-                                taskTitle +
-                                System.lineSeparator() +
-                                "در تاریخ و ساعت: " +
-                                persianDateTime +
-                                System.lineSeparator() +
-                                "با انتساب دیگر همکاران در کارتابل شما قرار گرفت. " +
-                                System.lineSeparator() +
-                                "تاخیر در اتمام انجام این وظیفه برابر با " +
-                                delay +
-                                " روز می باشد." +
-                                System.lineSeparator();
+        } else {
+            message = "وظیفه فعال با عنوان: " +
+                    taskTitle +
+                    System.lineSeparator() +
+                    "در تاریخ و ساعت: " +
+                    persianDateTime +
+                    System.lineSeparator() +
+                    "با انتساب دیگر همکاران در کارتابل شما قرار گرفت. " +
+                    System.lineSeparator() +
+                    "تاخیر در اتمام انجام این وظیفه برابر با " +
+                    delay +
+                    " روز می باشد." +
+                    System.lineSeparator();
 
-                soapClientService.sendMessage(address, message);
-                log.info(soapClientService.getResponse());
-                break;
         }
+        soapClientService.sendMessage(address, message);
+        log.info(soapClientService.getResponse());
 
     }
 

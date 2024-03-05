@@ -13,10 +13,16 @@ public class Server extends Device {
 
     @OneToOne
     @JoinColumn(name = "iLo_Route_id")
-    private Route iLoRoute;
+    private Route iLoRoute;   // could be any name for non HPE Servers
 
     @Column
-    private String iLoAddress;
+    private String iLoAddress; // // could be any name for non HPE Servers
+
+    @Column
+    private int size; //  storage size. 8 - 12 - 32
+
+    @Column
+    private String formFactor;  // LFF
 
     public Route getiLoRoute() {
         return iLoRoute;

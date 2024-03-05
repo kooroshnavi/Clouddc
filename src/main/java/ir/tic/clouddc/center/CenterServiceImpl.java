@@ -1,5 +1,7 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Server;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 

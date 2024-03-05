@@ -45,7 +45,7 @@ public class OtpServiceImpl implements OtpService {
     public void generateOtp(String address, String otpUid, String expiryTimeUUID, String machine, LocalDateTime requestDateTime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(requestDateTime));
-        String otp = getRandomOTP(otpUid);
+        String otp = getRandomOTP();
         otpCache.put(address, otpUid);
         otpCache.put(otpUid, otp);
         otpCache.put(otp, address);
@@ -53,7 +53,7 @@ public class OtpServiceImpl implements OtpService {
         notificationService.sendOTPMessage(address, otp, machine, persianDateTime);
     }
 
-    private String getRandomOTP(String otpUid) {
+    private String getRandomOTP() {
         return new DecimalFormat("000000")
                 .format(new Random().nextInt(999999));
     }
@@ -83,7 +83,7 @@ public class OtpServiceImpl implements OtpService {
         /* otpCache.invalidate(otpUid);
         otpCache.invalidate(address);
         otpCache.invalidate(UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8)).toString());
-        otpCache.invalidate(realOtp);*/
+        otpCa che.invalidate(realOtp);*/
 
         return otpCache.get(realOtp);
     }

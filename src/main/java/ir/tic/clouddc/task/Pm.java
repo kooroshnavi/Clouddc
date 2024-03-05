@@ -1,7 +1,6 @@
 package ir.tic.clouddc.task;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ir.tic.clouddc.center.SalonPmDue;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

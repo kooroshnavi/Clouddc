@@ -18,6 +18,6 @@ public class Switch extends Device {
     private Route managementRoute;
 
     @OneToMany
-    private Map<Port, String> vlanMap;
+    private Map<DevicePort, String> vlanMap;
 
 }

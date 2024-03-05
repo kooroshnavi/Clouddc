@@ -7,20 +7,20 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Etisalat")
 @NoArgsConstructor
-public class Link {
+public class Link { //  Physical Connection either fiber or cat
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long id;
 
     @Column
-    private String core;
+    private String core;     // Single mode - Multi Mode
 
     @Column
-    private String connector;
+    private String connector; // SC-LC
 
     @Column
-    private float length;
+    private float length; //  1.5
 
     @Column
     private boolean connected;

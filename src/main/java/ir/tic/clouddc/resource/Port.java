@@ -11,16 +11,16 @@ public abstract class Port {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private long id; // unique identifier
+    private long id; // unique db identifier
 
     @Column
-    private String visiblePortNumber;   // 1-10G or 10 or B7-11
+    private String visiblePortNumber;   // 10G 1 or 7 for devices // B7-41 patch panel port offset 41 inside rack B7
 
     @Column
     private boolean connected;
 
     @ManyToOne
-    @JoinColumn(name = "link_id")
+    @JoinColumn(name = "current_link_id")
     private Link link;
 
     public long getId() {
