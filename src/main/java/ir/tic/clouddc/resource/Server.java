@@ -4,6 +4,8 @@ import ir.tic.clouddc.etisalat.Route;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
@@ -22,7 +24,10 @@ public class Server extends Device {
     private int size; //  storage size. 8 - 12 - 32
 
     @Column
-    private String formFactor;  // LFF
+    private String formFactor;  // LFF - SFF
+
+    @OneToMany(mappedBy = "device_hotPlug_id")
+    private List<Storage> hotplugList;
 
     public Route getiLoRoute() {
         return iLoRoute;

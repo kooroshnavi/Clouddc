@@ -9,7 +9,6 @@ import java.util.Map;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(schema = "Resource")
 public abstract class Module {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -22,6 +21,19 @@ public abstract class Module {
     private String serialNumber;
 
     @OneToMany
-    private Map<LocalDate, Device> moduleDeviceHistoryMap;
+    private Map<LocalDate, Device> moduleDeviceHistoryMap; // key is unique so device could not be the key
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Etisalat")
 @NoArgsConstructor
-public class Link { //  Physical Connection either fiber or cat
+public class Link { //  Physical Connection
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -27,11 +27,11 @@ public class Link { //  Physical Connection either fiber or cat
 
     @OneToMany
     @JoinColumn(name = "port_A_id")
-    private Port portA; // devicePort or patchPanelPort
+    private Port portA; // either devicePort or patchPanelPort
 
     @OneToMany
     @JoinColumn(name = "port_B_id")
-    private Port portB; // devicePort or patchPanelPort
+    private Port portB; // either devicePort or patchPanelPort
 
     @ManyToOne
     @JoinColumn(name = "route_id")
@@ -115,6 +115,5 @@ public class Link { //  Physical Connection either fiber or cat
                 '}';
     }
 }
-
 
 

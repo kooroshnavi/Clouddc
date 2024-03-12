@@ -10,17 +10,16 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(schema = "Resource")
 public abstract class Device {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private long id;
+    private long id; // persistence identifier for each device
 
     @Column
     private String serialNumber;
 
     @Column
-    private String name;  // SW-EDGE-P1-01
+    private String name;  // SW-EDGE-P1-01 - utilizer convention
 
     @Column
     private String model; // DL380-G10 - 2348UPQ
@@ -38,16 +37,13 @@ public abstract class Device {
     private boolean active;
 
     @Column
-    private boolean ok; // for problematic device
+    private boolean ok; // for problematic devices
 
     @OneToMany(mappedBy = "device")
     private List<DevicePort> devicePortList;
 
     @OneToMany(mappedBy = "device")
     private List<Route> routeList;
-
-    @OneToMany(mappedBy = "device")
-    private List<Module> moduleList;
 
     @ManyToOne
     @JoinColumn(name = "location_id")

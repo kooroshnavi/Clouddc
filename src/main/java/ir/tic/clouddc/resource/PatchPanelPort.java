@@ -15,10 +15,4 @@ public class PatchPanelPort extends Port {
     @JoinColumn(name = "rack_id")
     private Rack rack;
 
-    public Rack getRack() {
-        return rack;
-    }
-    public void setRack(Rack rack) {
-        this.rack = rack;
-    }
 }

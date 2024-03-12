@@ -9,12 +9,17 @@ import java.util.List;
 @Entity
 @Table(schema = "Etisalat")
 @NoArgsConstructor
-public class Route {
+public class Route {   // A connection between two devices
+
+    private static final long SerializationID = 10L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long id;
+
+    @Column
+    private String bame;
 
     @ManyToOne
     @JoinColumn(name = "device_A_id")
