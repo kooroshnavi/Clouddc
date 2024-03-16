@@ -33,7 +33,7 @@ public class Salon {
     private List<Task> taskList;
 
     @OneToMany(mappedBy = "salon")
-    private Map<Pm, LocalDate> pmLocalDateMap;
+    private Map<Pm, LocalDate> pmLocalDateMap; // periodic maintenance due date
 
     @OneToMany(mappedBy = "salon")
     private Map<LocalDateTime, Float> tempratureMap;
