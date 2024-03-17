@@ -98,7 +98,6 @@
                           <label class="form-label">مرکز</label>
                           <select class="form-select" name="subject" th:field="*{centerId}" >
                             <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                            <option th:value="0">تمام سالن ها</option>
                             <option th:each="center : ${centerList}" th:value="${center.getId}" th:text="${center.getNamePersian}"></option>
                           </select>
                         </div>
