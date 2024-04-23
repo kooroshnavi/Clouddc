@@ -15,4 +15,6 @@ public interface NotificationService {
     void sendOTPMessage(String address, String otp, String machine, String date);
 
     void sendExceptionMessage(String message, LocalDateTime dateTime);
+
+    void sendTemperatureReminderMessage(LocalDateTime dateTime);
 }

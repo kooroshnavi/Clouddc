@@ -103,8 +103,6 @@ public class EventServiceImpl implements EventService {
         Person person = personService.getPerson(personName);
         model.addAttribute("person", person);
         model.addAttribute("role", authenticated.getAuthorities());
-        model.addAttribute("pending", taskService.getPersonTask().size());
-        model.addAttribute("pendingEvents", getPendingEventList().size());
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
     }
@@ -113,7 +111,7 @@ public class EventServiceImpl implements EventService {
     public Model modelForEventRegisterForm(Model model) {
         model.addAttribute("centerList", centerService.getCenterList());
         model.addAttribute("eventTypeList", eventTypeRepository.findAll());
-        model.addAttribute("eventRegister", new EventForm());
+        model.addAttribute("eventForm", new EventForm());
         return model;
     }
 

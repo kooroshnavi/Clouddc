@@ -3,171 +3,173 @@
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="links">
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png" />
-  <!--plugins-->
-  <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
-  <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
-  <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
-  <!-- Bootstrap CSS -->
-  <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet" />
-  <link href="/panel/assets/css/style.css" rel="stylesheet" />
-  <link href="/panel/assets/css/icons.css" rel="stylesheet">
-  <link href="/panel/assets/css/roboto.css" rel="stylesheet">
-  <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
 
-  <!-- loader-->
-	<link href="/panel/assets/css/pace.min.css" rel="stylesheet" />
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
 
 
-  <!--Theme Styles-->
-  <link href="/panel/assets/css/dark-theme.css" rel="stylesheet" />
-  <link href="/panel/assets/css/light-theme.css" rel="stylesheet" />
-  <link href="/panel/assets/css/semi-dark.css" rel="stylesheet" />
-  <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
 
-  <title>سامانه نگهداری و پایش زیرساخت ابر</title>
+    <title>سامانه نگهداری و پایش زیرساخت ابر</title>
 
 </head>
 
 <body>
 
 
-
-  <!--start wrapper-->
-  <div class="wrapper">
+<!--start wrapper-->
+<div class="wrapper">
     <!--start top header-->
     <header class="top-header" th:fragment="header">
-      <nav class="navbar navbar-expand gap-3">
-        <div class="mobile-toggle-icon fs-3">
-            <i class="bi bi-list"></i>
-          </div>
-
-
-          <div class="top-navbar-right ms-auto">
-            <ul class="navbar-nav align-items-center">
-              <li class="nav-item search-toggle-icon">
-                <a class="nav-link" href="#">
-                  <div class="">
-                    <i class="bi bi-search"></i>
-                  </div>
-                </a>
-            </li>
-                <li>
-                    <div id="clock" data-bs-toggle="tooltip" data-bs-placement="top" title="این نیز بگذرد"></div>
-                    <div th:text="${date}"/>
-                </li>
-
-            <li class="nav-item dropdown dropdown-large">
-              <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
-                <div class="projects">
-                  <i class="bi bi-grid-3x3-gap-fill"></i>
-                </div>
-              </a>
-              <div class="dropdown-menu dropdown-menu-end">
-                 <div class="row row-cols-3 gx-2">
-                    <div class="col">
-                      <p href="ecommerce-orders.html">
-                       <div class="apps p-2 radius-10 text-center">
-                          <div class="apps-icon-box mb-1 text-white bg-gradient-purple">
-                            <i class="bi bi-basket2-fill"></i>
-                          </div>
-                          <p class="mb-0 apps-name">ثبت رخداد</p>
-                       </div>
-                      </p>
-                    </div>
-
-
-                  <div class="col">
-                    <p href="component-media-object.html">
-                    <div class="apps p-2 radius-10 text-center">
-                       <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
-                        <i class="bi bi-collection-play-fill"></i>
-                       </div>
-                       <p class="mb-0 apps-name">جزییات دمای سالن</p>
-                    </div>
-                    </p>
-                  </div>
-
-
-                     <div class="col">
-                         <p href="javascript:;">
-                             <div class="apps p-2 radius-10 text-center">
-                                 <div class="apps-icon-box mb-1 text-white bg-gradient-desert">
-                                     <i class="bi bi-calendar-check-fill"></i>
-                                 </div>
-                                 <p class="mb-0 apps-name">تاریخچه عملکرد</p>
-                             </div>
-                         </p>
-                     </div>
-
-                  <div class="col">
-                    <p href="javascript:;">
-                    <div class="apps p-2 radius-10 text-center">
-                       <div class="apps-icon-box mb-1 text-white bg-gradient-voilet">
-                        <i class="bi bi-file-earmark-text-fill"></i>
-                       </div>
-                       <p class="mb-0 apps-name">اسناد</p>
-                    </div>
-                    </p>
-                  </div>
-
-                 </div><!--end row-->
-              </div>
-
-
-
-
-            <li class="nav-item dropdown dropdown-user-setting">
-              <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
-                <div class="user-setting d-flex align-items-center">
-                  <img src='/panel/assets/images/avatars/tic.png' class="user-img" alt="">
-                </div>
-              </a>
-              <ul class="dropdown-menu dropdown-menu-end">
-                <li>
-                   <p class="dropdown-item" href="#">
-                     <div class="d-flex align-items-center">
-                        <img src='/panel/assets/images/avatars/tic.png' alt="" class="rounded-circle" width="54" height="54">
-                        <div class="ms-3">
-                          <h6 class="mb-0 dropdown-user-name" th:text="${person.name}"></h6>
-
-                        </div>
-                     </div>
-                   </p>
-                 </li>
-                 <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <p class="dropdown-item" href="#">
-                       <div class="d-flex align-items-center">
-                         <div class=""><i class="bi bi-gear-fill"></i></div>
-                         <div class="ms-3"><span>سوابق ورود</span></div>
-                       </div>
-                     </p>
-                  </li>
-
-                  <li><hr class="dropdown-divider"></li>
-                  <li>
-                    <a class="dropdown-item">
-                       <div class="d-flex align-items-center">
-                         <div class=""><i class="bi bi-lock-fill"></i></div>
-                         <div class="ms-3"><span></span>
-                             <form th:action="@{/logout}" method="post">
-                                 <input type="submit" value="خروج"/>
-                             </form>
-                         </div>
-                       </div>
-                     </a>
-                  </li>
-              </ul>
-            </li>
-            </ul>
+        <nav class="navbar navbar-expand gap-3">
+            <div class="mobile-toggle-icon fs-3">
+                <i class="bi bi-list"></i>
             </div>
-      </nav>
+
+
+            <div class="top-navbar-right ms-auto">
+                <ul class="navbar-nav align-items-center">
+                    <li class="nav-item search-toggle-icon">
+                        <a class="nav-link" href="#">
+                            <div class="">
+                                <i class="bi bi-search"></i>
+                            </div>
+                        </a>
+                    </li>
+                    <li>
+                        <div id="clock" data-bs-toggle="tooltip" data-bs-placement="top" title="این نیز بگذرد"></div>
+                        <div th:text="${date}"/>
+                    </li>
+
+                    <li class="nav-item dropdown dropdown-large">
+                        <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+                            <div class="projects">
+                                <i class="bi bi-grid-3x3-gap-fill"></i>
+                            </div>
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-end">
+                            <div class="row row-cols-3 gx-2">
+                                <div class="col">
+                                    <p href="ecommerce-orders.html">
+                                    <div class="apps p-2 radius-10 text-center">
+                                        <div class="apps-icon-box mb-1 text-white bg-gradient-purple">
+                                            <i class="bi bi-basket2-fill"></i>
+                                        </div>
+                                        <p class="mb-0 apps-name">ثبت رخداد</p>
+                                    </div>
+                                    </p>
+                                </div>
+
+
+                                <div class="col">
+                                    <p href="component-media-object.html">
+                                    <div class="apps p-2 radius-10 text-center">
+                                        <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
+                                            <i class="bi bi-collection-play-fill"></i>
+                                        </div>
+                                        <p class="mb-0 apps-name">جزییات دمای سالن</p>
+                                    </div>
+                                    </p>
+                                </div>
+
+
+                                <div class="col">
+                                    <p href="javascript:;">
+                                    <div class="apps p-2 radius-10 text-center">
+                                        <div class="apps-icon-box mb-1 text-white bg-gradient-desert">
+                                            <i class="bi bi-calendar-check-fill"></i>
+                                        </div>
+                                        <p class="mb-0 apps-name">تاریخچه عملکرد</p>
+                                    </div>
+                                    </p>
+                                </div>
+
+                                <div class="col">
+                                    <p href="javascript:;">
+                                    <div class="apps p-2 radius-10 text-center">
+                                        <div class="apps-icon-box mb-1 text-white bg-gradient-voilet">
+                                            <i class="bi bi-file-earmark-text-fill"></i>
+                                        </div>
+                                        <p class="mb-0 apps-name">اسناد</p>
+                                    </div>
+                                    </p>
+                                </div>
+
+                            </div><!--end row-->
+                        </div>
+
+
+                    <li class="nav-item dropdown dropdown-user-setting">
+                        <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
+                            <div class="user-setting d-flex align-items-center">
+                                <img src='/panel/assets/images/avatars/tic.png' class="user-img" alt="">
+                            </div>
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-end">
+                            <li>
+                                <p class="dropdown-item" href="#">
+                                <div class="d-flex align-items-center">
+                                    <img src='/panel/assets/images/avatars/tic.png' alt="" class="rounded-circle"
+                                         width="54" height="54">
+                                    <div class="ms-3">
+                                        <h6 class="mb-0 dropdown-user-name" th:text="${person.name}"></h6>
+
+                                    </div>
+                                </div>
+                                </p>
+                            </li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <p class="dropdown-item" href="#">
+                                <div class="d-flex align-items-center">
+                                    <div class=""><i class="bi bi-gear-fill"></i></div>
+                                    <div class="ms-3"><span>سوابق ورود</span></div>
+                                </div>
+                                </p>
+                            </li>
+
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <a class="dropdown-item">
+                                    <div class="d-flex align-items-center">
+                                        <div class=""><i class="bi bi-lock-fill"></i></div>
+                                        <div class="ms-3"><span></span>
+                                            <form th:action="@{/logout}" method="post">
+                                                <input type="submit" value="خروج"/>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </nav>
         <script>
         setInterval(showTime, 1000);
         function showTime() {
@@ -206,218 +208,227 @@
         }
 
         showTime();
-    </script>
-    </header>
-     <!--end top header-->
 
-       <!--start sidebar -->
-       <aside class="sidebar-wrapper" data-simplebar="true" th:fragment="sidebar">
-          <div class="sidebar-header">
+        </script>
+    </header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:fragment="sidebar">
+        <div class="sidebar-header">
             <div>
-              <img src="/panel/assets/images/tic.png" class="logo-icon" alt="logo icon">
+                <img src="/panel/assets/images/tic.png" class="logo-icon" alt="logo icon">
             </div>
             <div>
-              <h class="logo-text" dir="rtl"></h>
+                <h class="logo-text" dir="rtl"></h>
             </div>
-            <div class="toggle-icon ms-auto"> <i class="bi bi-list"></i>
+            <div class="toggle-icon ms-auto"><i class="bi bi-list"></i>
             </div>
-          </div>
-          <!--navigation-->
-          <ul class="metismenu" id="menu">
+        </div>
+        <!--navigation-->
+        <ul class="metismenu" id="menu">
             <li>
-              <a href="javascript:;" class="has-arrow">
-                  <div class="parent-icon"><i class="bi bi-award-fill"></i>
-                  </div>
-                <div class="menu-title">داشبورد</div>
-              </a>
-              <ul>
-                <li> <a href="/"><i class="bi bi-circle"></i>آخرین وضعیت سالن ها</a>
-                </li>
-              </ul>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="bi bi-award-fill"></i>
+                    </div>
+                    <div class="menu-title">داشبورد</div>
+                </a>
+                <ul>
+                    <li><a href="/"><i class="bi bi-circle"></i>آخرین وضعیت سالن ها</a>
+                    </li>
+                </ul>
             </li>
 
             <li class="menu-label">وظایف سالن ها</li>
             <li>
             </li>
             <li>
-              <a href="javascript:;" class="has-arrow">
-                  <div class="parent-icon"><i class="bi bi-exclamation-triangle-fill"></i>
-                  </div>
-                <div class="menu-title">وظایف و رخدادها</div>
-              </a>
-              <ul>
-                <li> <a href="/pm/myTask"><i class="bi bi-circle"></i>کارتابل من</a>
-                </li>
-                  <li> <a href="/pmList"><i class="bi bi-circle"></i>لیست وظایف</a>
-                  </li>
-                  <li> <a href="/event/list"><i class="bi bi-circle"></i>رخدادها</a>
-                  </li>
-                  <li> <p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>گزارشات روزانه</p>
-                  </li>
-              </ul>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="bi bi-exclamation-triangle-fill"></i>
+                    </div>
+                    <div class="menu-title">وظایف و رخدادها</div>
+                </a>
+                <ul>
+                    <li><a href="/pm/myTask"><i class="bi bi-circle"></i>کارتابل من</a>
+                    </li>
+                    <li><a href="/pmList"><i class="bi bi-circle"></i>لیست وظایف</a>
+                    </li>
+                    <li><a href="/event/list"><i class="bi bi-circle"></i>رخدادها</a>
+                    </li>
+                    <li><p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>گزارشات روزانه</p>
+                    </li>
+                </ul>
             </li>
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-file-code-fill"></i>
                     </div>
-                <div class="menu-title">داده های محیطی</div>
-              </a>
-              <ul>
-                <li> <p href="component-alerts.html"><i class="bi bi-circle"></i>دما و رطوبت</p>
-                </li>
-                <li> <p href="component-accordions.html"><i class="bi bi-circle"></i>هشدارها</p>
-                </li>
-                <li> <p href="component-badges.html"><i class="bi bi-circle"></i>تاریخچه داده ها</p>
-                </li>
-              </ul>
+                    <div class="menu-title">داده های محیطی</div>
+                </a>
+                        <ul>
+                            <li><a href="/center/temperature/history"><i class="bi bi-circle"></i>دما</p>
+                    </li>
+                </ul>
             </li>
             <li>
 
             <li class="menu-label">مستندات دارایی</li>
             <li>
-              <a class="has-arrow" href="javascript:;">
-                <div class="parent-icon"><i class="bi bi-file-earmark-break-fill"></i>
-                </div>
-                <div class="menu-title">منابع سخت افزاری</div>
-              </a>
-              <ul>
-                <li> <p href="form-elements.html"><i class="bi bi-circle"></i>مدیریت تجهیزات</p>
-                </li>
-                <li> <p href="form-input-group.html"><i class="bi bi-circle"></i>مدیریت ماژول ها</p>
-                </li>
-              </ul>
+                <a class="has-arrow" href="javascript:;">
+                    <div class="parent-icon"><i class="bi bi-file-earmark-break-fill"></i>
+                    </div>
+                    <div class="menu-title">منابع سخت افزاری</div>
+                </a>
+                <ul>
+                    <li><p href="form-elements.html"><i class="bi bi-circle"></i>مدیریت تجهیزات</p>
+                    </li>
+                    <li><p href="form-input-group.html"><i class="bi bi-circle"></i>مدیریت ماژول ها</p>
+                    </li>
+                </ul>
             </li>
             <li>
-              <a class="has-arrow" href="javascript:;">
-                <div class="parent-icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i>
-                </div>
-                <div class="menu-title">فضای سالن</div>
-              </a>
-              <ul>
-                <li> <p href="table-basic-table.html"><i class="bi bi-circle"></i>مدیریت رک ها</p>
-                </li>
-                <li> <p href="table-advance-tables.html"><i class="bi bi-circle"></i>مدیریت بهره برداران</p>
-                </li>
-              </ul>
+                <a class="has-arrow" href="javascript:;">
+                    <div class="parent-icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i>
+                    </div>
+                    <div class="menu-title">فضای سالن</div>
+                </a>
+                <ul>
+                    <li><p href="table-basic-table.html"><i class="bi bi-circle"></i>مدیریت رک ها</p>
+                    </li>
+                    <li><p href="table-advance-tables.html"><i class="bi bi-circle"></i>مدیریت بهره برداران</p>
+                    </li>
+                </ul>
             </li>
             <li sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-label">مدیریت</li>
             <li>
-              <a  sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="has-arrow" href="javascript:;">
-                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i class="bi bi-lock-fill"></i>
-                </div>
-                <div   class="menu-title">گزارشات</div>
-              </a>
-              <ul>
-                <li> <p href="authentication-signin.html" target="_blank"><i class="bi bi-circle"></i>عملکرد وظایف</p>
-                </li>
-                <li> <p href="authentication-signup.html" target="_blank"><i class="bi bi-circle"></i>آمار رخدادها</p>
-                </li>
-                  <li> <p href="authentication-signup.html" target="_blank"><i class="bi bi-circle"></i>آمار تجهیزات</p>
-                  </li>
-                <li> <p href="authentication-forgot-password.html" target="_blank"><i class="bi bi-circle"></i>وضعیت بهره برداران</p>
-                </li>
-              </ul>
+                <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="has-arrow" href="javascript:;">
+                    <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i
+                            class="bi bi-lock-fill"></i>
+                    </div>
+                    <div class="menu-title">گزارشات</div>
+                </a>
+                <ul>
+                    <li><p href="authentication-signin.html" target="_blank"><i class="bi bi-circle"></i>عملکرد وظایف
+                    </p>
+                    </li>
+                    <li><p href="authentication-signup.html" target="_blank"><i class="bi bi-circle"></i>آمار رخدادها
+                    </p>
+                    </li>
+                    <li><p href="authentication-signup.html" target="_blank"><i class="bi bi-circle"></i>آمار تجهیزات
+                    </p>
+                    </li>
+                    <li><p href="authentication-forgot-password.html" target="_blank"><i class="bi bi-circle"></i>وضعیت
+                        بهره برداران</p>
+                    </li>
+                </ul>
             </li>
             <li>
-              <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')"  href="">
-                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i class="bi bi-person-lines-fill"></i>
-                </div>
-                <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-title">نظارت تصویری</div>
-              </a>
+                <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" href="">
+                    <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i
+                            class="bi bi-person-lines-fill"></i>
+                    </div>
+                    <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-title">نظارت تصویری
+                    </div>
+                </a>
             </li>
-          </ul>
-          <!--end navigation-->
-       </aside>
-       <!--end sidebar -->
+        </ul>
+        <!--end navigation-->
+    </aside>
+    <!--end sidebar -->
 
-       <!--start content-->
+    <!--start content-->
 
-            <!--breadcrumb-->
+    <!--breadcrumb-->
 
-            <!--end breadcrumb-->
-
-
-       <!--end page main-->
+    <!--end breadcrumb-->
 
 
-       <!--start overlay-->
-        <div class="overlay nav-toggle-icon"></div>
-       <!--end overlay-->
+    <!--end page main-->
 
-        <!--Start Back To Top Button-->
-        <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
-        <!--End Back To Top Button-->
 
-        <!--start switcher-->
-       <div class="switcher-body" th:fragment="switcher">
-        <button class="btn btn-primary btn-switcher shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i class="bi bi-paint-bucket me-0"></i></button>
-        <div class="offcanvas offcanvas-end shadow border-start-0 p-2" data-bs-scroll="true" data-bs-backdrop="false" tabindex="-1" id="offcanvasScrolling">
-          <div class="offcanvas-header border-bottom">
-            <h5 class="offcanvas-title" id="offcanvasScrollingLabel">سفارشی ساز تم</h5>
-            <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
-          </div>
-          <div class="offcanvas-body">
-            <h6 class="mb-0">تنوع تم</h6>
-            <hr>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="LightTheme" value="option1">
-              <label class="form-check-label" for="LightTheme">سبک</label>
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:fragment="switcher">
+        <button class="btn btn-primary btn-switcher shadow-sm" type="button" data-bs-toggle="offcanvas"
+                data-bs-target="#offcanvasScrolling" aria-controls="offcanvasScrolling"><i
+                class="bi bi-paint-bucket me-0"></i></button>
+        <div class="offcanvas offcanvas-end shadow border-start-0 p-2" data-bs-scroll="true" data-bs-backdrop="false"
+             tabindex="-1" id="offcanvasScrolling">
+            <div class="offcanvas-header border-bottom">
+                <h5 class="offcanvas-title" id="offcanvasScrollingLabel">سفارشی ساز تم</h5>
+                <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
             </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="DarkTheme" value="option2">
-              <label class="form-check-label" for="DarkTheme">تاریک</label>
+            <div class="offcanvas-body">
+                <h6 class="mb-0">تنوع تم</h6>
+                <hr>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="LightTheme"
+                           value="option1">
+                    <label class="form-check-label" for="LightTheme">سبک</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="DarkTheme"
+                           value="option2">
+                    <label class="form-check-label" for="DarkTheme">تاریک</label>
+                </div>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="SemiDarkTheme"
+                           value="option3" checked>
+                    <label class="form-check-label" for="SemiDarkTheme">نیمه تاریک</label>
+                </div>
+                <hr>
+                <div class="form-check form-check-inline">
+                    <input class="form-check-input" type="radio" name="inlineRadioOptions" id="MinimalTheme"
+                           value="option3">
+                    <label class="form-check-label" for="MinimalTheme">تم مینیمال</label>
+                </div>
+                <hr/>
+                <h6 class="mb-0">رنگ های سرصفحه</h6>
+                <hr/>
+                <div class="header-colors-indigators">
+                    <div class="row row-cols-auto g-3">
+                        <div class="col">
+                            <div class="indigator headercolor1" id="headercolor1"></div>
+                        </div>
+                        <div class="col">
+                            <div class="indigator headercolor2" id="headercolor2"></div>
+                        </div>
+                        <div class="col">
+                            <div class="indigator headercolor3" id="headercolor3"></div>
+                        </div>
+                        <div class="col">
+                            <div class="indigator headercolor4" id="headercolor4"></div>
+                        </div>
+                        <div class="col">
+                            <div class="indigator headercolor5" id="headercolor5"></div>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="SemiDarkTheme" value="option3" checked>
-              <label class="form-check-label" for="SemiDarkTheme">نیمه تاریک</label>
-            </div>
-            <hr>
-            <div class="form-check form-check-inline">
-              <input class="form-check-input" type="radio" name="inlineRadioOptions" id="MinimalTheme" value="option3">
-              <label class="form-check-label" for="MinimalTheme">تم مینیمال</label>
-            </div>
-            <hr/>
-            <h6 class="mb-0">رنگ های سرصفحه</h6>
-            <hr/>
-            <div class="header-colors-indigators">
-              <div class="row row-cols-auto g-3">
-                <div class="col">
-                  <div class="indigator headercolor1" id="headercolor1"></div>
-                </div>
-                <div class="col">
-                  <div class="indigator headercolor2" id="headercolor2"></div>
-                </div>
-                <div class="col">
-                  <div class="indigator headercolor3" id="headercolor3"></div>
-                </div>
-                <div class="col">
-                  <div class="indigator headercolor4" id="headercolor4"></div>
-                </div>
-                <div class="col">
-                  <div class="indigator headercolor5" id="headercolor5"></div>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
-       </div>
-       <!--end switcher-->
+    </div>
+    <!--end switcher-->
 
-  </div>
-  <!--end wrapper-->
+</div>
+<!--end wrapper-->
 
-  <!-- Bootstrap bundle JS -->
-  <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
-  <!--plugins-->
-  <script src="/panel/assets/js/jquery.min.js"></script>
-  <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
-  <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
-  <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-  <script src="/panel/assets/js/pace.min.js"></script>
-  <!--app-->
-  <script src="/panel/assets/js/app.js"></script>
-
-
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
 
 
 </body>

@@ -22,8 +22,6 @@ public interface TaskService {
 
     TaskDetail modelForActionForm(Model model, Long taskDetailId);
 
-    void updateTodayTasks();
-
     void taskRegister(PmRegisterForm pmRegisterForm);
 
     void updateTaskDetail(AssignForm assignForm, Long id);

@@ -116,7 +116,7 @@ public class SoapNotificationService implements NotificationService {
 
     @Override
     public void sendOTPMessage(String address, String otp, String machine, String date) {
-        final String otpMessage = "همکار گرامی، کد ورود شما:" +
+        final String otpMessage = "کد ورود:" +
                 System.lineSeparator() +
                 otp +
                 System.lineSeparator() +
@@ -126,7 +126,8 @@ public class SoapNotificationService implements NotificationService {
                 "تاریخ و ساعت درخواست: " +
                 date +
                 System.lineSeparator() +
-                "این کد تا 12 ساعت آینده به دفعات قابل استفاده می باشد." +
+                System.lineSeparator()+
+                "اعتبار 12 ساعت" +
                 System.lineSeparator();
         soapClientService.sendMessage(address, otpMessage);
         log.info(soapClientService.getResponse());
@@ -134,9 +135,28 @@ public class SoapNotificationService implements NotificationService {
 
     @Override
     public void sendExceptionMessage(String message, LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String persianDateTime = formatter.format(PersianDateTime.fromGregorian(dateTime));
         final String otpMessage = message +
+                System.lineSeparator() +
+                "@: " +
+                persianDateTime +
                 System.lineSeparator();
         soapClientService.sendMessage("09127016653", otpMessage);
         log.info(soapClientService.getResponse());
+    }
+
+    @Override
+    public void sendTemperatureReminderMessage(LocalDateTime dateTime) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        String persianDateTime = formatter.format(PersianDateTime.fromGregorian(dateTime));
+        final String otpMessage =
+                "یادآوری ثبت دمای روزانه" +
+                        System.lineSeparator() +
+                        System.lineSeparator() +
+                        persianDateTime;
+        soapClientService.sendMessage("09124857350", otpMessage);
+        soapClientService.sendMessage("09119482536", otpMessage);
+        soapClientService.sendMessage("09376553330", otpMessage);
     }
 }

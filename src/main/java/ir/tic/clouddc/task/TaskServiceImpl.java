@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class TaskServiceImpl implements TaskService {
 
+
     private final TaskStatusRepository taskStatusRepository;
     private final TaskRepository taskRepository;
     private final TaskDetailRepository taskDetailRepository;
@@ -65,7 +66,7 @@ public class TaskServiceImpl implements TaskService {
         this.notificationService = notificationService;
     }
 
-    @Scheduled(cron = "@midnight")
+    @Scheduled(cron = "0 5 0 * * SAT,SUN,MON,TUE,WED")
     public void updateTodayTasks() {
         CurrentDate = LocalDate.now();
         final List<Center> defaultCenterList = centerService.getDefaultCenterList();
@@ -193,18 +194,21 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public List<Task> getTaskListById(int taskStatusId) {
-        TaskStatus taskStatus = taskStatusRepository.findById(taskStatusId).get();
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        Optional<TaskStatus> taskStatus2 = taskStatusRepository.findById(taskStatusId);
+        if (taskStatus2.isPresent()) {
+            DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+            DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
 
-        for (Task task : taskStatus.getTasks()
-        ) {
-            task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
-            if (!task.isActive()) {
-                task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+            for (Task task : taskStatus2.get().getTasks()
+            ) {
+                task.setDueDatePersian(date.format(PersianDate.fromGregorian(task.getDueDate())));
+                if (!task.isActive()) {
+                    task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
+                }
             }
+            return taskStatus2.get().getTasks();
         }
-        return taskStatus.getTasks();
+        return null;
     }
 
 
@@ -269,7 +273,6 @@ public class TaskServiceImpl implements TaskService {
     public Task getTask(Long taskDetailId) {
         return taskDetailRepository.findById(taskDetailId).get().getTask();
     }
-
 
     @Override
     public void taskRegister(PmRegisterForm pmRegisterForm) {

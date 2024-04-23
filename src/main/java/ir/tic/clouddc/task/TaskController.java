@@ -111,13 +111,6 @@ public class TaskController {
         return "404";
     }*/
 
-    @GetMapping("/update")
-    public String updateTask(Model model) {
-        taskService.updateTodayTasks();
-        taskService.modelForMainPage(model);
-        return "index2";
-    }
-
     @GetMapping("/pm/register")
     public String pmForm(Model model) {
         taskService.modelForRegisterTask(model);

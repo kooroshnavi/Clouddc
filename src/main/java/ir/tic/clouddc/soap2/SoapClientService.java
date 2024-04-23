@@ -30,7 +30,7 @@ public class SoapClientService {
 
     private static final String WEBSERVICE_URL = "http://emas.tic.ir/sendingsmsto.asmx";
 
-    private static final String HEADER  = "     'سامانه نگه داری و پایش زیرساخت ابر'    ";
+    private static final String HEADER = "     'سامانه نگه داری و پایش زیرساخت ابر'    ";
 
     private String message;
 

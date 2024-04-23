@@ -59,29 +59,18 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
 
         var addressObject = addressRepository.findByValue(result);
         var personObject = personService.getPerson(addressObject.get().getId());
-
         var roleId = personObject.getRole();
         List<GrantedAuthority> personRoles = new ArrayList<>();
         switch (roleId) {
-            case '0':
-                personRoles.add(new SimpleGrantedAuthority(ROLES.get(0)));
-                break;
-            case '1':
-                personRoles.add(new SimpleGrantedAuthority(ROLES.get(1)));
-                break;
-            case '2':
-                personRoles.add(new SimpleGrantedAuthority(ROLES.get(2)));
-                break;
-            case '3':
-                personRoles.add(new SimpleGrantedAuthority(ROLES.get(3)));
-                break;
-            case '4':
-                personRoles.add(new SimpleGrantedAuthority(ROLES.get(4)));
-                break;
-            case '5':
+            case '0' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(0)));
+            case '1' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(1)));
+            case '2' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(2)));
+            case '3' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(3)));
+            case '4' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(4)));
+            case '5' -> {
                 personRoles.add(new SimpleGrantedAuthority(ROLES.get(1)));
                 personRoles.add(new SimpleGrantedAuthority(ROLES.get(3)));
-                break;
+            }
         }
         // map: 01234/5:13
 

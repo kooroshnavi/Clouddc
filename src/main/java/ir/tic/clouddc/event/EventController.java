@@ -25,7 +25,7 @@ public class EventController {
     @PostMapping("/register")
     public String eventPost(
             Model model,
-            @ModelAttribute("eventRegister") EventForm eventForm) {
+            @ModelAttribute("eventForm") EventForm eventForm) {
 
         eventService.eventRegister(eventForm);
         eventService.modelForEventList(model);

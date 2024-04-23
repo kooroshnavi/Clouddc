@@ -32,6 +32,17 @@ public class DailyReport {
     @JoinTable(name = "report_event", schema = "Report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
 
+    @Transient
+    private String persianDate;
+
+    public String getPersianDate() {
+        return persianDate;
+    }
+
+    public void setPersianDate(String persianDate) {
+        this.persianDate = persianDate;
+    }
+
     public LocalDate getDate() {
         return date;
     }

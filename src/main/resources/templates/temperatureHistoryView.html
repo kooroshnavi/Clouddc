@@ -50,7 +50,7 @@ events.html<!doctype html>
        <main class="page-content">
 				<!--breadcrumb-->
 				<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-					<div class="breadcrumb-title pe-3">رخدادها</div>
+					<div class="breadcrumb-title pe-3">داده های محیطی</div>
 					<div class="ps-3">
 						<nav aria-label="breadcrumb">
 							<ol class="breadcrumb mb-0 p-0">
@@ -64,45 +64,35 @@ events.html<!doctype html>
 				</div>
 				<!--end breadcrumb-->
 
-				<h6 class="mb-0 text-uppercase" align="center">رخدادهای گزارش شده</h6>
+				<h6 class="mb-0 text-uppercase" align="center">تاریخچه اطلاعات دما</h6>
 				<hr/>
 				<div class="card">
 					<div class="card-body">
 						<div class="col" dir="ltr">
-							<a type="button" href="/event/register"  class="btn btn-warning px-5" data-bs-toggle="tooltip" data-bs-placement="top" title="لطفا از ثبت وظیفه در فرم پیش رو خودداری نمایید." dir="auto">گزارش رخداد</a>
+							<a type="button" href="/center/temperature/form"  class="btn btn-warning px-5" data-bs-toggle="tooltip" data-bs-placement="top" title="آزمایشی" dir="auto">ثبت دمای روزانه</a>
 						</div>
 						<div class="table-responsive">
 							<table id="example2" class="table table-striped table-bordered">
 								<thead>
 								<tr>
 									<th>ردیف</th>
-									<th>دسته بندی رخداد</th>
-									<th>تاریخ ثبت</th>
-									<th>مرکز</th>
-									<th>وضعیت</th>
+									<th>تاریخ</th>
+									<th>ساعت</th>
+									<th>سالن</th>
+									<th>دمای ثبت شده</th>
+									<th>ثبت کننده</th>
 								</tr>
 								</thead>
 								<tbody>
 
-								<tr th:each="event, iter : ${eventList}">
+								<tr th:each="temperature, iter : ${temperatureHistoryList}">
 
 									<td th:text="${iter.count}"/>
-									<td th:text="${event.getEventType.getName}"/>
-									<td th:text="${event.getPersianDate}"/>
-									<td th:text="${event.getCenter.getNamePersian}"/>
-									<td>
-										<div class="col">
-											<a th:if="${event.isActive}" th:href="@{/event/view(eventId=${event.id})}"
-											   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-											   data-bs-placement="bottom" title="مشاهده تاریخچه و بروزرسانی">فعال</a>
-										</div>
-
-										<div class="col">
-											<a th:if="${not event.isActive}" th:href="@{/event/view(eventId=${event.id})}"
-											   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-											   data-bs-placement="bottom" title="مشاهده تاریخچه">خاتمه رخداد</a>
-										</div>
-									</td>
+									<td th:text="${temperature.getDailyReport.getPersianDate}"/>
+									<td th:text="${temperature.getTime}"/>
+									<td th:text="${temperature.getCenter.getNamePersian}"/>
+									<td th:text="${temperature.getValue}"/>
+									<td th:text="${temperature.getPerson.getName}"/>
 
 								</tr>
 								</tbody>
