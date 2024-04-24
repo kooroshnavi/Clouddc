@@ -2,7 +2,7 @@ $(function() {
     "use strict";
 	
     
-	// chart 2
+	// chart 1
 	
 	var options1 = {
     chart: {

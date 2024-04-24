@@ -18,7 +18,7 @@
        <!--start content-->
           <main class="page-content">
            
-            <div class="card rounded-4">
+            <div class="card rounded-4" id="1">
               <div class="card-body">
                <div class="d-flex align-items-center mb-3">
                  <h6 class="mb-0">فعالیت سالن (میانگین گردش کار در هر ماه - سال جاری)</h6>
@@ -37,7 +37,7 @@
             </div>
 
 
-            <div class="row row-cols-1 row-cols-lg-4">
+            <div class="row row-cols-1 row-cols-lg-4" id="2">
               <div class="col">
                 <div class="card rounded-4 overflow-hidden">
                   <div class="card-body">
@@ -182,14 +182,14 @@
                            </ul>
                        </div>
                      </div>
-                     <div class="social-leads">
+                     <div class="social-leads" id="Overall statistic">
                          <div class="d-flex align-items-center gap-3">
                           <div class="widget-icon bg-facebook text-white">
                             <i class="bi bi-facebook"></i>
                           </div>
-						  <div class="fs-5 flex-grow-1"><p class="mb-0">سرور</p></div>
+						  <div class="fs-5 flex-grow-1"><p class="mb-0">تعداد کل وظایف انجام شده</p></div>
                           <div class="leads-count">
-                             <p class="mb-0">11</p>
+                             <p class="mb-0"  th:text="${totalTaskCount}"></p>
                           </div>
                          </div>
                          <hr>
@@ -197,9 +197,9 @@
                           <div class="widget-icon bg-twitter text-white">
                             <i class="bi bi-twitter"></i>
                           </div>
-						  <div class="fs-5 flex-grow-1"><p class="mb-0">سوییچ</p></div>
+						  <div class="fs-5 flex-grow-1"><p class="mb-0">وظایف انجام شده سروقت (بدون تاخیر)</p></div>
                           <div class="leads-count">
-                             <p class="mb-0">5</p>
+                             <p class="mb-0" th:text="${onTimeTaskCount}"></p>
                           </div>
                          </div>
                          <hr>
@@ -207,9 +207,9 @@
                           <div class="widget-icon bg-linkedin text-white">
                             <i class="bi bi-linkedin"></i>
                           </div>
-						  <div class="fs-5 flex-grow-1"><p class="mb-0">فورتی نت</p></div>
+						  <div class="fs-5 flex-grow-1"><p class="mb-0">رخدادهای گزارش شده</p></div>
                           <div class="leads-count">
-                             <p class="mb-0">1</p>
+                             <p class="mb-0" th:text="${eventCount}"></p>
                           </div>
                          </div>
                          <hr>

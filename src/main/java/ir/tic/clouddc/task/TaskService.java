@@ -25,4 +25,8 @@ public interface TaskService {
     void taskRegister(PmRegisterForm pmRegisterForm);
 
     void updateTaskDetail(AssignForm assignForm, Long id);
+
+    long getFinishedTaskCount();
+
+    long getOnTimeTaskCount();
 }

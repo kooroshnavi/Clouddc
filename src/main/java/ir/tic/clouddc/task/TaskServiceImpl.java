@@ -270,6 +270,16 @@ public class TaskServiceImpl implements TaskService {
         }
     }
 
+    @Override
+    public long getFinishedTaskCount() {
+        return taskRepository.getNotActiveTaskCount(false);
+    }
+
+    @Override
+    public long getOnTimeTaskCount() {
+        return taskRepository.getNotActiveWithNoDelayTaskCount(0, false);
+    }
+
     public Task getTask(Long taskDetailId) {
         return taskDetailRepository.findById(taskDetailId).get().getTask();
     }

@@ -188,4 +188,9 @@ public class EventServiceImpl implements EventService {
     public List<Event> getPendingEventList() {
         return eventRepository.findAllByActive(true);
     }
+
+    @Override
+    public long getEventCount() {
+        return eventRepository.count();
+    }
 }

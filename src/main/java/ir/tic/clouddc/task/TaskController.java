@@ -13,7 +13,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping(value = {"", "/", "/app/main"})
+@RequestMapping(value = {"/pm"})
 public class TaskController {
 
 
@@ -24,19 +24,13 @@ public class TaskController {
         this.taskService = taskService;
     }
 
-    @RequestMapping(value = {"", "/",}, method = {RequestMethod.GET})
-    public String index(Model model) {
-        taskService.modelForMainPage(model);
-        return "index2";
-    }
-
-    @GetMapping("/pmList")
+    @GetMapping("/list")
     public String pmList(Model model) {
         taskService.modelForMainPage(model);
         return "pmList";
     }
 
-    @GetMapping("/pm")
+    @GetMapping("/list/id")
     public String pmTask(@RequestParam int id, Model model) {
         var pm = taskService.getStatus(id);
         model.addAttribute("status", pm);
@@ -46,7 +40,7 @@ public class TaskController {
         return "taskList";
     }
 
-    @GetMapping("/pm/edit")
+    @GetMapping("/edit")
     public String editForm(@RequestParam int id, Model model) {
         DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         var status = taskService.getStatus(id);
@@ -62,7 +56,7 @@ public class TaskController {
     }
 
     //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
-    @PostMapping("/pm/edit")
+    @PostMapping("/edit")
     public String pmEdit(Model model,
                          @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
                          @RequestParam int id,
@@ -77,7 +71,7 @@ public class TaskController {
         return "pmList";
     }
 
-    @GetMapping("/pm/active")
+    @GetMapping("/active")
     public String getActivePmList(@RequestParam int id, Model model) {
         List<Task> activeTaskList = taskService.getActiveTaskList(id);
         var pm = taskService.getStatus(id);
@@ -87,7 +81,7 @@ public class TaskController {
         return "taskList";
     }
 
-    @GetMapping("/pm/task")
+    @GetMapping("/task")
     public String getTaskDetail(@RequestParam Long id, Model model) {
 
         taskService.modelForTaskDetail(model, id);
@@ -111,7 +105,7 @@ public class TaskController {
         return "404";
     }*/
 
-    @GetMapping("/pm/register")
+    @GetMapping("/register")
     public String pmForm(Model model) {
         taskService.modelForRegisterTask(model);
         model.addAttribute("pmRegister", new PmRegisterForm());
@@ -119,7 +113,7 @@ public class TaskController {
     }
 
     //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
-    @PostMapping("/pm/register/form/submit")
+    @PostMapping("/register/form/submit")
     public String pmPost(
             Model model,
             @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
@@ -136,7 +130,7 @@ public class TaskController {
     }
 
 
-    @GetMapping("/pm/myTask")
+    @GetMapping("/myTask")
     private String getUserTask(Model model) {
 
         taskService.modelForPersonTaskList(model);

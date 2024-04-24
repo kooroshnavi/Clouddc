@@ -32,4 +32,6 @@ public interface EventService {
         return LocalDate.now();
     }
 
+    long getEventCount();
+
 }

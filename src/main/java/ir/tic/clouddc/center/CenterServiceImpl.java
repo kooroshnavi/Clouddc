@@ -49,8 +49,8 @@ public class CenterServiceImpl implements CenterService {
 
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
     public void dailyTemperatureCheck() {
-        var todayReport = reportService.findActive(true);
         var dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
+        var todayReport = reportService.findActive(true);
         var todayTemperatureSalon1 = temperatureRepository.existsBydailyReportAndCenter(todayReport.get(), getCenter(1));
 
         if (!todayTemperatureSalon1) {
