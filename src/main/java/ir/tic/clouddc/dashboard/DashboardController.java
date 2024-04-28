@@ -26,6 +26,7 @@ public class DashboardController {
     }
 
 
+
     @ModelAttribute
     public void defaultPageAttributes(Model model) {
         dashboardService.setDefaultAttributes(model);
