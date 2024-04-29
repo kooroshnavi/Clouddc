@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns="http://www.w3.org/1999/html">
 
 <head th:fragment="links">
     <!-- Required meta tags -->
@@ -63,9 +63,7 @@
 
                     <li class="nav-item dropdown dropdown-large">
                         <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
-                            <div class="projects">
-                                <i class="bi bi-grid-3x3-gap-fill"></i>
-                            </div>
+                            دسترسی سریع
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="row row-cols-3 gx-2">
@@ -87,7 +85,7 @@
                                         <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
                                             <i class="bi bi-collection-play-fill"></i>
                                         </div>
-                                        <p class="mb-0 apps-name">جزییات دمای سالن</p>
+                                        <p class="mb-0 apps-name">مدیریت فایل</p>
                                     </div>
                                     </p>
                                 </div>
@@ -104,17 +102,6 @@
                                     </p>
                                 </div>
 
-                                <div class="col">
-                                    <p href="javascript:;">
-                                    <div class="apps p-2 radius-10 text-center">
-                                        <div class="apps-icon-box mb-1 text-white bg-gradient-voilet">
-                                            <i class="bi bi-file-earmark-text-fill"></i>
-                                        </div>
-                                        <p class="mb-0 apps-name">اسناد</p>
-                                    </div>
-                                    </p>
-                                </div>
-
                             </div><!--end row-->
                         </div>
 
@@ -122,41 +109,26 @@
                     <li class="nav-item dropdown dropdown-user-setting">
                         <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
                             <div class="user-setting d-flex align-items-center">
-                                <img src='/panel/assets/images/avatars/tic.png' class="user-img" alt="">
+                                <div class="ms-3">
+                                    <h6 class="mb-0 dropdown-user-name" align="left" th:text="${person.name}"></h6>
+                                </div>
                             </div>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <p class="dropdown-item" href="#">
                                 <div class="d-flex align-items-center">
-                                    <img src='/panel/assets/images/avatars/tic.png' alt="" class="rounded-circle"
-                                         width="54" height="54">
-                                    <div class="ms-3">
-                                        <h6 class="mb-0 dropdown-user-name" th:text="${person.name}"></h6>
 
-                                    </div>
                                 </div>
                                 </p>
                             </li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li>
-                                <p class="dropdown-item" href="#">
-                                <div class="d-flex align-items-center">
-                                    <div class=""><i class="bi bi-gear-fill"></i></div>
-                                    <div class="ms-3"><span>سوابق ورود</span></div>
-                                </div>
-                                </p>
-                            </li>
 
-                            <li>
-                                <hr class="dropdown-divider">
-                            </li>
                             <li>
                                 <a class="dropdown-item">
                                     <div class="d-flex align-items-center">
-                                        <div class=""><i class="bi bi-lock-fill"></i></div>
                                         <div class="ms-3"><span></span>
                                             <form th:action="@{/logout}" method="post">
                                                 <input type="submit" value="خروج"/>
@@ -209,6 +181,7 @@
 
         showTime();
 
+
         </script>
     </header>
     <!--end top header-->
@@ -227,35 +200,21 @@
         </div>
         <!--navigation-->
         <ul class="metismenu" id="menu">
-            <li>
-                <a href="javascript:;" class="has-arrow">
-                    <div class="parent-icon"><i class="bi bi-award-fill"></i>
-                    </div>
-                    <div class="menu-title">داشبورد</div>
-                </a>
-                <ul>
-                    <li><a href="/"><i class="bi bi-circle"></i>آخرین وضعیت سالن ها</a>
-                    </li>
-                </ul>
-            </li>
 
-            <li class="menu-label">وظایف سالن ها</li>
-            <li>
-            </li>
             <li>
                 <a href="javascript:;" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-exclamation-triangle-fill"></i>
                     </div>
-                    <div class="menu-title">وظایف و رخدادها</div>
+                    <div class="menu-title">وظایف دوره ای و رخدادها</div>
                 </a>
                 <ul>
-                    <li><a href="/pm/myTask"><i class="bi bi-circle"></i>کارتابل من</a>
+                    <li><a href="/pm/myTask"><i class="bi bi-circle"></i>کارتابل</a>
                     </li>
-                    <li><a href="/pm/List"><i class="bi bi-circle"></i>لیست وظایف</a>
+                    <li><a href="/pm/List"><i class="bi bi-circle"></i>مدیریت وظایف</a>
                     </li>
                     <li><a href="/event/list"><i class="bi bi-circle"></i>رخدادها</a>
                     </li>
-                    <li><p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>گزارشات روزانه</p>
+                    <li><p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>مشاهده گزارش روزانه</p>
                     </li>
                 </ul>
             </li>
@@ -265,72 +224,70 @@
                     </div>
                     <div class="menu-title">داده های محیطی</div>
                 </a>
-                        <ul>
-                            <li><a href="/center/temperature/history"><i class="bi bi-circle"></i>دما</p>
-                    </li>
+                <ul>
+                    <li><a href="/center/temperature/history"><i class="bi bi-circle"></i>ثبت دما و رطوبت</a>
                 </ul>
             </li>
-            <li>
 
-            <li class="menu-label">مستندات دارایی</li>
             <li>
                 <a class="has-arrow" href="javascript:;">
                     <div class="parent-icon"><i class="bi bi-file-earmark-break-fill"></i>
                     </div>
-                    <div class="menu-title">منابع سخت افزاری</div>
+                    <div class="menu-title">مدیریت تجهیزات و بهره برداران</div>
                 </a>
                 <ul>
-                    <li><p href="form-elements.html"><i class="bi bi-circle"></i>مدیریت تجهیزات</p>
+                    <li><p href="form-elements.html"><i class="bi bi-circle"></i>تجهیزات و ارتباطات</p>
                     </li>
-                    <li><p href="form-input-group.html"><i class="bi bi-circle"></i>مدیریت ماژول ها</p>
+                    <li><p href="form-input-group.html"><i class="bi bi-circle"></i>ماژول و فیبر</p>
+                    </li>
+                    <li><p href="form-input-group.html"><i class="bi bi-circle"></i>رک و سالن</p>
+                    </li>
+                    <li><p href="form-input-group.html"><i class="bi bi-circle"></i>بهره برداران</p>
                     </li>
                 </ul>
             </li>
+
+
+
             <li>
                 <a class="has-arrow" href="javascript:;">
                     <div class="parent-icon"><i class="bi bi-file-earmark-spreadsheet-fill"></i>
                     </div>
-                    <div class="menu-title">فضای سالن</div>
+                    <div class="menu-title">سامانه</div>
                 </a>
                 <ul>
-                    <li><p href="table-basic-table.html"><i class="bi bi-circle"></i>مدیریت رک ها</p>
+                    <li><p href="table-basic-table.html"><i class="bi bi-circle"></i>اطلاعات کاربری</p>
                     </li>
-                    <li><p href="table-advance-tables.html"><i class="bi bi-circle"></i>مدیریت بهره برداران</p>
+                    <li><p href="table-advance-tables.html"><i class="bi bi-circle"></i>عملکرد پرسنل سالن</p>
+                    </li>
+                    <li><p href="table-advance-tables.html"><i class="bi bi-circle"></i>لیست ثبت نام</p>
                     </li>
                 </ul>
             </li>
-            <li sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-label">مدیریت</li>
+
+
+
+
+
             <li>
-                <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="has-arrow" href="javascript:;">
-                    <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i
-                            class="bi bi-lock-fill"></i>
+                <a href="javascript:;" class="has-arrow">
+                    <div class="parent-icon"><i class="bi bi-award-fill"></i>
                     </div>
-                    <div class="menu-title">گزارشات</div>
+                    <div class="menu-title">آمار و گزارشات</div>
                 </a>
                 <ul>
-                    <li><p href="authentication-signin.html" target="_blank"><i class="bi bi-circle"></i>عملکرد وظایف
-                    </p>
+                    <li><a href="/"><i class="bi bi-circle"></i>وضعیت سالن</a>
                     </li>
-                    <li><p href="authentication-signup.html" target="_blank"><i class="bi bi-circle"></i>آمار رخدادها
-                    </p>
+                    <li><p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>تجهیزات</p>
                     </li>
-                    <li><p href="authentication-signup.html" target="_blank"><i class="bi bi-circle"></i>آمار تجهیزات
-                    </p>
+                    <li><p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>رک ها</p>
                     </li>
-                    <li><p href="authentication-forgot-password.html" target="_blank"><i class="bi bi-circle"></i>وضعیت
-                        بهره برداران</p>
+                    <li><p href="ecommerce-products-categories.html"><i class="bi bi-circle"></i>بهره برداران</p>
                     </li>
                 </ul>
             </li>
-            <li>
-                <a sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" href="">
-                    <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="parent-icon"><i
-                            class="bi bi-person-lines-fill"></i>
-                    </div>
-                    <div sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER', 'VIEWER')" class="menu-title">نظارت تصویری
-                    </div>
-                </a>
             </li>
+
         </ul>
         <!--end navigation-->
     </aside>
