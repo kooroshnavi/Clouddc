@@ -116,7 +116,7 @@
                                         <h2 class="title" dir="rtl">فرم وظیفه</h2>
                                     </div>
                                     <div class="card-body">
-                                        <form  action="#" th:action="@{/app/main/task/detail/{id}/form(id=${id})}" th:object="${assignForm}" method="POST">
+                                        <form  action="#" th:action="@{/pm/task/detail/{id}/form(id=${id})}" th:object="${assignForm}" method="POST">
                                             <div class="form-row" dir="rtl">
                                                 <div class="name">عنوان وظیفه</div>
                                                 <div class="name" th:text="${taskName}">

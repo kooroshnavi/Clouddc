@@ -13,4 +13,5 @@ public interface CenterService {
     List<Temperature> getTemperatureHistoryList();
 
 
+
 }

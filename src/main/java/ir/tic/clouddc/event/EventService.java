@@ -34,4 +34,8 @@ public interface EventService {
 
     long getEventCount();
 
+    long getActiveEventCount();
+
+    List<Long> getEventTypeCount();
+
 }

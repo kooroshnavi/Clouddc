@@ -17,9 +17,7 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -192,5 +190,16 @@ public class EventServiceImpl implements EventService {
     @Override
     public long getEventCount() {
         return eventRepository.count();
+    }
+
+    @Override
+    public long getActiveEventCount() {
+        return eventRepository.getActiveEventCount(true);
+    }
+
+    @Override
+    public List<Long> getEventTypeCount() {
+        log.info(eventRepository.getEventTypeCount().toString());
+        return eventRepository.getEventTypeCount();
     }
 }

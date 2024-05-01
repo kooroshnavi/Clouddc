@@ -30,7 +30,7 @@ public class TaskController {
         return "pmList";
     }
 
-    @GetMapping("/list/id")
+    @GetMapping("/task/list")
     public String pmTask(@RequestParam int id, Model model) {
         var pm = taskService.getStatus(id);
         model.addAttribute("status", pm);

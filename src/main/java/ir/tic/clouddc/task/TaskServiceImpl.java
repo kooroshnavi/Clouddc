@@ -272,12 +272,17 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public long getFinishedTaskCount() {
-        return taskRepository.getNotActiveTaskCount(false);
+        return taskRepository.getTaskCountByActivation(false);
     }
 
     @Override
     public long getOnTimeTaskCount() {
-        return taskRepository.getNotActiveWithNoDelayTaskCount(0, false);
+        return taskRepository.getTaskCountByActivationAndDelay(0, false);
+    }
+
+    @Override
+    public long getActiveTaskCount() {
+        return taskRepository.getTaskCountByActivation(true);
     }
 
     public Task getTask(Long taskDetailId) {
@@ -392,9 +397,7 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public Model modelForMainPage(Model model) {
-        List<TaskStatus> taskStatusList = getTaskStatus();
         model.addAttribute("statusList", getTaskStatus());
-
         return model;
     }
 

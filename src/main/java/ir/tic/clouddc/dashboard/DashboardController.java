@@ -22,10 +22,8 @@ public class DashboardController {
     @RequestMapping(value = {"", "/",}, method = {RequestMethod.GET})
     public String mainDashboard(Model model) {
         dashboardService.prepareDashboardData(model);
-        return "index";
+           return "index3";
     }
-
-
 
     @ModelAttribute
     public void defaultPageAttributes(Model model) {

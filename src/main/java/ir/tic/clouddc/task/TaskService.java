@@ -29,4 +29,6 @@ public interface TaskService {
     long getFinishedTaskCount();
 
     long getOnTimeTaskCount();
+
+    long getActiveTaskCount();
 }

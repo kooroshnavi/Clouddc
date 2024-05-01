@@ -9,5 +9,6 @@ public interface ReportService {
     void setTodayReport();
     void saveAll(List<DailyReport> dailyReportList);
 
+    List<DailyReport> getWeeklyReportObjects();
 
 }

@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns="http://www.w3.org/1999/html">
+
+<head th:fragment="links">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+
+    <title>سامانه نگهداری و پایش زیرساخت ابر</title>
+
+</head>
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="base :: header"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="base :: sidebar"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">ابزارک ها</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">ابزارک های داده</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="row row-cols-1 row-cols-lg-2 row-cols-xl-4">
+            <div class="col">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="">
+                                <p class="mb-1">وظایف دوره ای انجام شده</p>
+                                <h4 class="mb-0" th:text="${totalTaskCount}"></h4>
+                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-down"></i><span>22.5 درصد نسبت به هفته گذشته</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto widget-icon bg-light-primary text-primary">
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="">
+                                <p class="mb-1">رخدادهای گزارش شده</p>
+                                <h4 class="mb-0" th:text="${eventCount}"></h4>
+                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-up"></i><span>13.2 درصد نسبت به هفته گذشته</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto widget-icon bg-light-success text-success">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="">
+                                <p class="mb-1">رخدادهای فعال (در حال پیگیری)</p>
+                                <h4 class="mb-0" th:text="${activeEventCount}"></h4>
+                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-up"></i><span>12.3 درصد نسبت به هفته گذشته</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto widget-icon bg-light-orange text-orange">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="">
+                                <p class="mb-1">وظایف فعال (جاری)</p>
+                                <h4 class="mb-0" th:text="${activeTaskCount}"></h4>
+                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-up"></i><span>32.7 درصد نسبت به هفته گذشته</span>
+                                </p>
+                            </div>
+                            <div class="ms-auto widget-icon bg-light-info text-info">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end row-->
+
+        <div class="col d-flex">
+            <div class="card rounded-4 w-100">
+                <div class="card-body">
+
+                        <h6 class="mb-0">رخدادها</h6>
+
+                    <div id="chart0"></div>
+                </div>
+            </div>
+        </div>
+
+        <!--end row-->
+
+
+        <!--end row-->
+
+        <div class="row row-cols-1 row-cols-lg-2 g-4">
+
+            <div class="col">
+                <div class="card rounded-4 overflow-hidden">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="">
+                                <h5 class="mb-0">سالن شماره یک</h5>
+                                <p class="mb-0">میانگین دمای ثبت شده اخیر</p>
+                            </div>
+                        </div>
+                        <div id="chart10"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col">
+                <div class="card rounded-4 overflow-hidden">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <div class="">
+                                <h5 class="mb-0">سالن شماره دو</h5>
+                                <p class="mb-0">میانگین دمای ثبت شده اخیر</p>
+                            </div>
+                        </div>
+                        <div id="chart11"></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!--end row-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="base :: switcher"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
+<script src="/panel/assets/js/widgets.js"></script>
+<script>
+    var eventTypeCount = [[${eventTypeCount}]];
+</script>
+<script src="/panel/assets/js/index2.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+
+</body>
+
+</html>

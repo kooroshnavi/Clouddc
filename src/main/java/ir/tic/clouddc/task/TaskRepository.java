@@ -15,10 +15,10 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findByActiveAndTaskStatusId(boolean active, int statusId);
 
     @Query("SELECT COUNT(t) FROM Task t WHERE t.active = :active")
-    long getNotActiveTaskCount(@Param("active") boolean active);
+    long getTaskCountByActivation(@Param("active") boolean active);
 
     @Query("SELECT COUNT(t) FROM Task t WHERE t.delay = :delay AND t.active = :active")
-    long getNotActiveWithNoDelayTaskCount(@Param("delay") int delay, @Param("active") boolean active);
+    long getTaskCountByActivationAndDelay(@Param("delay") int delay, @Param("active") boolean active);
 
 
 }

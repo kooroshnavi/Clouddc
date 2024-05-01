@@ -30,7 +30,6 @@ final class ReportServiceImpl implements ReportService {
         List<DailyReport> dailyReportList = new ArrayList<>();
         Optional<DailyReport> yesterday = findActive(true);
         if (yesterday.isPresent()) {
-            log.info("yesterday is present");
             yesterday.get().setActive(false);
             dailyReportList.add(yesterday.get());
         }
@@ -44,5 +43,11 @@ final class ReportServiceImpl implements ReportService {
     @Override
     public void saveAll(List<DailyReport> dailyReportList) {
         reportRepository.saveAll(dailyReportList);
+    }
+
+    @Override
+    public List<DailyReport> getWeeklyReportObjects() {
+
+        return reportRepository.getWeeklyReportObjects();
     }
 }

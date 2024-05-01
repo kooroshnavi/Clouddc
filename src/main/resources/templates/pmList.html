@@ -130,7 +130,7 @@
                             </td>
                             <td>
                                 <div class="table-actions d-flex align-items-center gap-3 fs-6">
-                                    <a th:href="@{/pm(id=${status.id})}" class="text-primary" data-bs-toggle="tooltip"
+                                    <a th:href="@{/pm/task/list(id=${status.id})}" class="text-primary" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="تاریخچه"><i class="bi bi-eye-fill"></i></a>
                                     <a sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" th:href="@{/pm/edit(id=${status.id})}" class="text-warning"
                                        data-bs-toggle="tooltip" data-bs-placement="bottom" title="ویرایش"><i

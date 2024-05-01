@@ -1,5 +1,6 @@
 package ir.tic.clouddc.report;
 
+import ir.tic.clouddc.center.Temperature;
 import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.task.Task;
 import jakarta.persistence.*;
@@ -31,6 +32,9 @@ public class DailyReport {
     @ManyToMany
     @JoinTable(name = "report_event", schema = "Report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
+
+    @OneToMany(mappedBy = "dailyReport")
+    private List<Temperature> temperatureList;
 
     @Transient
     private String persianDate;
