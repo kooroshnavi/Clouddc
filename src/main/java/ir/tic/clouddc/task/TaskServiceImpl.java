@@ -74,7 +74,7 @@ public class TaskServiceImpl implements TaskService {
         List<TaskStatus> todayPmList = taskStatusRepository.findBynextDue(CurrentDate);
         List<Task> activeTaskList = taskRepository.findByActive(true);
 
-        reportService.setTodayReport();
+        reportService.setCurrentReport();
 
         delayCalculation(activeTaskList);
 
@@ -441,6 +441,7 @@ public class TaskServiceImpl implements TaskService {
         if (!userTaskList.isEmpty()) {
             model.addAttribute("userTaskList", userTaskList);
         }
+        centerService.setDailyTemperatureReport(reportService.findActive(true).get());
         return model;
     }
 

@@ -13,6 +13,9 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.List;
+import java.util.Map;
+
 @Slf4j
 @Service
 public class DashboardService {
@@ -43,6 +46,18 @@ public class DashboardService {
         long onTimeTaskCount = taskService.getOnTimeTaskCount();   // Number of finished tasks with zero delay
         long eventCount = eventService.getEventCount(); // Number of Events
         long activeEventCount = eventService.getActiveEventCount();
+        Map<Integer, Float> salon1TemperatureMapping = centerService.getWeeklyTemperature(reportService.getWeeklyDate(), 1);
+        Map<Integer, Float> salon2TemperatureMapping = centerService.getWeeklyTemperature(reportService.getWeeklyDate(), 2);
+        List<Integer> salon1WeeklyDate = salon1TemperatureMapping.keySet().stream().toList();
+        List<Float> salon1WeeklyTemp = salon1TemperatureMapping.values().stream().toList();
+
+        List<Float> salon2WeeklyTemp = salon2TemperatureMapping.values().stream().toList();
+
+        log.info("day:" + salon1WeeklyDate);
+
+        model.addAttribute("salon1WeeklyDate", salon1WeeklyDate);
+        model.addAttribute("salon1WeeklyTemp", salon1WeeklyTemp);
+        model.addAttribute("salon2WeeklyTemp", salon2WeeklyTemp);
         model.addAttribute("totalTaskCount", finishedTaskCount);
         model.addAttribute("activeTaskCount", activeTaskCount);
         model.addAttribute("onTimeTaskCount", onTimeTaskCount);

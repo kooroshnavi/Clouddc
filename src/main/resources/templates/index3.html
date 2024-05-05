@@ -138,7 +138,7 @@
             <div class="card rounded-4 w-100">
                 <div class="card-body">
 
-                        <h6 class="mb-0">رخدادها</h6>
+                    <h6 class="mb-0">رخدادها</h6>
 
                     <div id="chart0"></div>
                 </div>
@@ -149,38 +149,14 @@
 
 
         <!--end row-->
-
-        <div class="row row-cols-1 row-cols-lg-2 g-4">
-
-            <div class="col">
-                <div class="card rounded-4 overflow-hidden">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="">
-                                <h5 class="mb-0">سالن شماره یک</h5>
-                                <p class="mb-0">میانگین دمای ثبت شده اخیر</p>
-                            </div>
-                        </div>
-                        <div id="chart10"></div>
-                    </div>
-                </div>
+        <h6 class="mb-0 text-uppercase" align="center">نمودار چند خطی</h6>
+        <hr/>
+        <div class="card">
+            <div class="card-body">
+                <div id="chart2"></div>
             </div>
-
-            <div class="col">
-                <div class="card rounded-4 overflow-hidden">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center justify-content-between mb-3">
-                            <div class="">
-                                <h5 class="mb-0">سالن شماره دو</h5>
-                                <p class="mb-0">میانگین دمای ثبت شده اخیر</p>
-                            </div>
-                        </div>
-                        <div id="chart11"></div>
-                    </div>
-                </div>
-            </div>
-
         </div>
+
         <!--end row-->
 
     </main>
@@ -212,9 +188,16 @@
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
-<script src="/panel/assets/js/widgets.js"></script>
+<script>
+    var salon1WeeklyDate = [[${salon1WeeklyDate}]];
+    var salon1WeeklyTemp = [[${salon1WeeklyTemp}]];
+    var salon2WeeklyTemp = [[${salon2WeeklyTemp}]];
+
+</script>
+<script src="/panel/assets/plugins/apexcharts-bundle/js/apex-custom.js"></script>
 <script>
     var eventTypeCount = [[${eventTypeCount}]];
+
 </script>
 <script src="/panel/assets/js/index2.js"></script>
 <!--app-->

@@ -9,7 +9,7 @@ import java.util.Map;
 import static java.util.Map.entry;
 
 public final class UtilService {
-    static Map<String, String> persianDay = Map.ofEntries(
+    public static Map<String, String> persianDay = Map.ofEntries(
             entry("Sat", "شنبه"),
             entry("Sun", "یکشنبه"),
             entry("Mon", "دوشنبه"),
@@ -21,7 +21,6 @@ public final class UtilService {
 
    public static String getCurrentDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
-        var year = date.getYear();
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());

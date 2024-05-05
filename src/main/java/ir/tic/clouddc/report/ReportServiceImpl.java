@@ -1,5 +1,6 @@
 package ir.tic.clouddc.report;
 
+import ir.tic.clouddc.center.CenterService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,13 +12,16 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-final class ReportServiceImpl implements ReportService {
+class ReportServiceImpl implements ReportService {
 
-    private ReportRepository reportRepository;
+    private final ReportRepository reportRepository;
+
+    private final CenterService centerService;
 
     @Autowired
-    ReportServiceImpl(ReportRepository reportRepository) {
+    ReportServiceImpl(ReportRepository reportRepository, CenterService centerService) {
         this.reportRepository = reportRepository;
+        this.centerService = centerService;
     }
 
     @Override
@@ -26,10 +30,11 @@ final class ReportServiceImpl implements ReportService {
     }
 
     @Override
-    public void setTodayReport() {
+    public void setCurrentReport() {
         List<DailyReport> dailyReportList = new ArrayList<>();
         Optional<DailyReport> yesterday = findActive(true);
         if (yesterday.isPresent()) {
+            centerService.setDailyTemperatureReport(yesterday.get());
             yesterday.get().setActive(false);
             dailyReportList.add(yesterday.get());
         }
@@ -45,9 +50,17 @@ final class ReportServiceImpl implements ReportService {
         reportRepository.saveAll(dailyReportList);
     }
 
-    @Override
-    public List<DailyReport> getWeeklyReportObjects() {
 
-        return reportRepository.getWeeklyReportObjects();
+
+    @Override
+    public List<LocalDate> getWeeklyDate() {
+        int activeReportId = reportRepository.getActiveReportId(true);
+        List<Integer> weeklyIdList = new ArrayList<>();
+        for (int i = activeReportId; i > activeReportId - 7; i--) {
+            weeklyIdList.add(i);
+        }
+
+        List<LocalDate> weeklyDateList = reportRepository.getWeeklyDateList(weeklyIdList);
+        return weeklyDateList;
     }
 }

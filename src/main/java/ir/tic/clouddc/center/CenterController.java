@@ -1,5 +1,6 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.report.ReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,9 +17,12 @@ public class CenterController {
 
     private final CenterService centerService;
 
+    private final ReportService reportService;
+
     @Autowired
-    public CenterController(CenterService centerService) {
+    public CenterController(CenterService centerService, ReportService reportService) {
         this.centerService = centerService;
+        this.reportService = reportService;
     }
 
     @GetMapping("/temperature/history")
@@ -38,7 +42,7 @@ public class CenterController {
             model.addAttribute("temperatureForm", new TemperatureForm());
             return "dailyTemperatureForm";
         }
-        model.addAttribute("temperatureHistoryList", centerService.saveDailyTemperature(temperatureForm));
+        model.addAttribute("temperatureHistoryList", centerService.saveDailyTemperature(temperatureForm, reportService.findActive(true).get()));
         return "temperatureHistoryView";
     }
 

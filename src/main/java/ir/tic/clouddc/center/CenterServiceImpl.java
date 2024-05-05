@@ -4,24 +4,21 @@ import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.ReportService;
+import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.time.LocalDateTime;
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -34,19 +31,16 @@ public class CenterServiceImpl implements CenterService {
 
     private final PersonService personService;
 
-    private final ReportService reportService;
-
     private final NotificationService notificationService;
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, ReportService reportService, NotificationService notificationService) {
+    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService) {
         this.centerRepository = centerRepository;
         this.temperatureRepository = temperatureRepository;
         this.personService = personService;
-        this.reportService = reportService;
         this.notificationService = notificationService;
     }
-
+/*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
     public void dailyTemperatureCheck() {
         var dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
@@ -63,7 +57,7 @@ public class CenterServiceImpl implements CenterService {
                 notificationService.sendTemperatureReminderMessage(dateTime);
             }
         }
-    }
+    }*/
 
     @Override
     public Center getCenter(int centerId) {
@@ -93,10 +87,9 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm) {
+    public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport) {
         var time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
         var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
-        var todayReport = reportService.findActive(true).get();
         var temp1 = temperatureForm.getSalon1Temp();
         var temp2 = temperatureForm.getSalon2Temp();
         List<Temperature> dailyTemps = new ArrayList<>();
@@ -107,7 +100,7 @@ public class CenterServiceImpl implements CenterService {
             salon1Temperature.setValue(Float.parseFloat(temperatureForm.getSalon1Temp()));
             salon1Temperature.setCenter(getCenter(1));
             salon1Temperature.setPerson(person);
-            salon1Temperature.setDailyReport(todayReport);
+            salon1Temperature.setDailyReport(dailyReport);
             dailyTemps.add(salon1Temperature);
         }
 
@@ -117,7 +110,7 @@ public class CenterServiceImpl implements CenterService {
             salon2Temperature.setValue(Float.parseFloat(temperatureForm.getSalon2Temp()));
             salon2Temperature.setCenter(getCenter(2));
             salon2Temperature.setPerson(person);
-            salon2Temperature.setDailyReport(todayReport);
+            salon2Temperature.setDailyReport(dailyReport);
             dailyTemps.add(salon2Temperature);
         }
 
@@ -126,6 +119,55 @@ public class CenterServiceImpl implements CenterService {
         }
 
         return getTemperatureHistoryList();
+    }
+
+    @Override
+    public void setDailyTemperatureReport(DailyReport currentReport) {
+        DecimalFormat df = new DecimalFormat("##.#");
+        var center1 = getCenter(1);
+        var center2 = getCenter(2);
+        List<Float> salon1DailyTemperatures = temperatureRepository.getDailytemperatureList(center1, currentReport);
+        List<Float> salon2DailyTemperatures = temperatureRepository.getDailytemperatureList(center2, currentReport);
+
+        float salonAverage = 0;
+        List<Center> centerList = new ArrayList<>();
+
+        if (!salon1DailyTemperatures.isEmpty()) {
+            for (float temp : salon1DailyTemperatures) {
+                salonAverage += temp;
+            }
+            salonAverage /= salon1DailyTemperatures.size();
+
+            if (center1.getAverageTemperature() == null) {
+                Map<LocalDate, Float> averageMap1 = new HashMap<>();
+                averageMap1.put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
+                center1.setAverageTemperature(averageMap1);
+            } else {
+                center1.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
+            }
+            centerList.add(center1);
+        }
+
+        if (!salon2DailyTemperatures.isEmpty()) {
+            salonAverage = 0;
+            for (float temp : salon2DailyTemperatures) {
+                salonAverage += temp;
+            }
+            salonAverage /= salon2DailyTemperatures.size();
+
+            if (center2.getAverageTemperature() == null) {
+                Map<LocalDate, Float> averageMap2 = new HashMap<>();
+                averageMap2.put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
+                center2.setAverageTemperature(averageMap2);
+            } else {
+                center2.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
+            }
+            centerList.add(center2);
+        }
+
+        if (!centerList.isEmpty()) {
+            centerRepository.saveAllAndFlush(centerList);
+        }
     }
 
     @Override
@@ -144,5 +186,14 @@ public class CenterServiceImpl implements CenterService {
         return temperatureList;
     }
 
+    @Override
+    public Map<Integer, Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
+        var center = getCenter(centerId);
+        Map<Integer, Float> resultSet = new HashMap<>();
+        for (LocalDate date : weeklyDateList) {
+            resultSet.put(PersianDate.fromGregorian(date).getDayOfMonth(), center.getAverageTemperature().get(date));
+        }
+        return resultSet;
+    }
 
 }
