@@ -11,4 +11,6 @@ public interface ReportService {
     void saveAll(List<DailyReport> dailyReportList);
     List<LocalDate> getWeeklyDate();
 
+    LocalDate getWeeklyOffsetDate();
+
 }

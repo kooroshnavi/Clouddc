@@ -1,5 +1,6 @@
 package ir.tic.clouddc.dashboard;
 
+import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.EventService;
 import ir.tic.clouddc.person.Person;
@@ -13,8 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -25,6 +29,7 @@ public class DashboardService {
     private final EventService eventService;
     private final CenterService centerService;
     private final ReportService reportService;
+
 
     @Autowired
     public DashboardService(PersonService personService, TaskService taskService, EventService eventService, CenterService centerService, ReportService reportService) {
@@ -41,30 +46,59 @@ public class DashboardService {
     }
 
     private Model overallStatistic(Model model) {
+
+        model = taskStatistics(model);
+        model = eventStatistics(model);
+        model = centerStatistics(model);
+
+        return model;
+    }
+
+    private Model centerStatistics(Model model) {
+
+        List<LocalDate> weeklyDate = reportService.getWeeklyDate();
+
+        List<Float> salon1TemperatureList = centerService.getWeeklyTemperature(weeklyDate, 1);
+        List<Float> salon2TemperatureList = centerService.getWeeklyTemperature(weeklyDate, 2);
+
+        List<String> persianWeeklyDateList = new ArrayList<>();
+
+        for (LocalDate date : weeklyDate) {
+            persianWeeklyDateList.add(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()))
+                    + " - "
+                    + PersianDate.fromGregorian(date).getDayOfMonth()
+                    + " "
+                    + PersianDate.fromGregorian(date).getMonth().getPersianName());
+        }
+
+        model.addAttribute("weeklyDate", persianWeeklyDateList);
+        model.addAttribute("salon1WeeklyTemp", salon1TemperatureList);
+        model.addAttribute("salon2WeeklyTemp", salon2TemperatureList);
+
+        return model;
+
+    }
+
+    private Model taskStatistics(Model model) {
         long finishedTaskCount = taskService.getFinishedTaskCount(); // Number of finished tasks
         long activeTaskCount = taskService.getActiveTaskCount();
         long onTimeTaskCount = taskService.getOnTimeTaskCount();   // Number of finished tasks with zero delay
-        long eventCount = eventService.getEventCount(); // Number of Events
-        long activeEventCount = eventService.getActiveEventCount();
-        Map<Integer, Float> salon1TemperatureMapping = centerService.getWeeklyTemperature(reportService.getWeeklyDate(), 1);
-        Map<Integer, Float> salon2TemperatureMapping = centerService.getWeeklyTemperature(reportService.getWeeklyDate(), 2);
-        List<Integer> salon1WeeklyDate = salon1TemperatureMapping.keySet().stream().toList();
-        List<Float> salon1WeeklyTemp = salon1TemperatureMapping.values().stream().toList();
-
-        List<Float> salon2WeeklyTemp = salon2TemperatureMapping.values().stream().toList();
-
-        log.info("day:" + salon1WeeklyDate);
-
-        model.addAttribute("salon1WeeklyDate", salon1WeeklyDate);
-        model.addAttribute("salon1WeeklyTemp", salon1WeeklyTemp);
-        model.addAttribute("salon2WeeklyTemp", salon2WeeklyTemp);
+        int weeklyFinishedTaskPercentage = taskService.getWeeklyFinishedPercentage();
         model.addAttribute("totalTaskCount", finishedTaskCount);
         model.addAttribute("activeTaskCount", activeTaskCount);
         model.addAttribute("onTimeTaskCount", onTimeTaskCount);
-        model.addAttribute("eventCount", eventCount);
-        model.addAttribute("activeEventCount", activeEventCount);
-        model.addAttribute("eventTypeCount", eventService.getEventTypeCount());
+        model.addAttribute("weeklyFinishedTaskPercentage", weeklyFinishedTaskPercentage);
+        model.addAttribute("activeDelayedPercentage", taskService.getActiveDelayedPercentage());
 
+        return model;
+    }
+
+    private Model eventStatistics(Model model) {
+        model.addAttribute("eventCount", eventService.getEventCount());
+        model.addAttribute("activeEventCount", eventService.getActiveEventCount());
+        model.addAttribute("eventTypeCount", eventService.getEventTypeCount());
+        model.addAttribute("weeklyRegisteredPercentage", eventService.getWeeklyRegisteredPercentage());
+        model.addAttribute("activeEventPercentage", eventService.getActiveEventPercentage());
         return model;
     }
 

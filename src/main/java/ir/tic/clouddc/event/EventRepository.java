@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Repository
@@ -21,4 +22,7 @@ public interface EventRepository extends JpaRepository<Event, Long> {
             on (t.id = event.event_type_id)
             group by t.id""", nativeQuery = true)
     List<Long> getEventTypeCount();
+
+    @Query("SELECT DISTINCT COUNT(e) FROM Event e WHERE e.eventDate > :date")
+    long getWeeklyFinishedTaskCount(@Param("date") LocalDateTime weeklyOffsetDateTime);
 }

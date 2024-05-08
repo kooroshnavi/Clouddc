@@ -45,7 +45,6 @@ public class Event {
     @Transient
     private String persianDate;
 
-
     public Event(LocalDateTime eventDate
             , boolean active
             , EventType eventType

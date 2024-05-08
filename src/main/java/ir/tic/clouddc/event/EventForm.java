@@ -1,20 +1,25 @@
 package ir.tic.clouddc.event;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 public class EventForm {
 
     @NotBlank
     private int eventType;
+
     @NotBlank
     private String description;
-    @NotNull
+
     private boolean active;
+
     @NotBlank
     private int centerId;
+
+    private MultipartFile attachment;
+
 
     public int getCenterId() {
         return centerId;
@@ -46,6 +51,14 @@ public class EventForm {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public MultipartFile getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(MultipartFile attachment) {
+        this.attachment = attachment;
     }
 
     @Override

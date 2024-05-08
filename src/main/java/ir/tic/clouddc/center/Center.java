@@ -24,6 +24,7 @@ public class Center {
 
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
+            schema = "Center",
             joinColumns = {@JoinColumn(name = "center_id", referencedColumnName = "id")})
     @MapKeyColumn(name = "date")
     @Column(name = "average_temperature")

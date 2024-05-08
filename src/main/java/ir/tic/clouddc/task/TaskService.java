@@ -31,4 +31,9 @@ public interface TaskService {
     long getOnTimeTaskCount();
 
     long getActiveTaskCount();
+
+    int getWeeklyFinishedPercentage();
+
+    int getActiveDelayedPercentage();
+
 }

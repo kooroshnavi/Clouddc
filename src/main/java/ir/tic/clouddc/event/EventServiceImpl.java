@@ -2,6 +2,7 @@ package ir.tic.clouddc.event;
 
 import com.github.mfathi91.time.PersianDateTime;
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.file.FileService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
@@ -15,9 +16,14 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -30,6 +36,8 @@ public class EventServiceImpl implements EventService {
     private final PersonService personService;
     private final TaskService taskService;
     private final EventTypeRepository eventTypeRepository;
+    private final FileService fileService;
+
 
     @Autowired
     public EventServiceImpl(
@@ -38,18 +46,18 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , TaskService taskService
-            , EventTypeRepository eventTypeRepository) {
+            , EventTypeRepository eventTypeRepository, FileService fileService) {
         this.eventRepository = eventRepository;
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
         this.taskService = taskService;
         this.eventTypeRepository = eventTypeRepository;
+        this.fileService = fileService;
     }
 
     @Override
-    public void eventRegister(EventForm eventForm) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    public void eventRegister(EventForm eventForm) throws IOException {
         Optional<DailyReport> report = reportService.findActive(true);
         var eventType = new EventType(eventForm.getEventType());
         var registerDate = LocalDateTime.now();
@@ -69,14 +77,18 @@ public class EventServiceImpl implements EventService {
 
     }
 
-    private void eventDetailRegister(EventForm eventForm, Event event, LocalDateTime eventDetailDate) {
+    private void eventDetailRegister(EventForm eventForm, Event event, LocalDateTime eventDetailDate) throws IOException {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         EventDetail eventDetail = new EventDetail();
-        eventDetail.setPerson(personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName()));
+        var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
+        eventDetail.setPerson(person);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setUpdated(eventDetailDate);
         eventDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(eventDetailDate)));
         eventDetail.setEvent(event);
+        if (eventForm.getAttachment().getSize() != 0) {
+            eventDetail.setAttachment(fileService.registerAttachment(eventForm.getAttachment(), eventDetailDate, person));
+        }
         event.setEventDetailList(eventDetail);
     }
 
@@ -165,7 +177,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void updateEvent(Long eventId, EventForm eventForm) {
+    public void updateEvent(Long eventId, EventForm eventForm) throws IOException {
         Optional<DailyReport> report = reportService.findActive(true);
         Event event = eventRepository.findById(eventId).get();
         eventDetailRegister(eventForm, event, LocalDateTime.now());
@@ -201,5 +213,24 @@ public class EventServiceImpl implements EventService {
     public List<Long> getEventTypeCount() {
         log.info(eventRepository.getEventTypeCount().toString());
         return eventRepository.getEventTypeCount();
+    }
+
+    @Override
+    public int getWeeklyRegisteredPercentage() {
+        DecimalFormat decimalFormat = new DecimalFormat("###");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        var percent = (float) eventRepository.getWeeklyFinishedTaskCount(reportService.getWeeklyOffsetDate().atStartOfDay()) / getEventCount() * 100;
+        log.info(String.valueOf(percent));
+        var formatted = decimalFormat.format(percent);
+        return Integer.parseInt(formatted);
+    }
+
+    @Override
+    public int getActiveEventPercentage() {
+        DecimalFormat decimalFormat = new DecimalFormat("###");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        float percent = ((float) getActiveEventCount() / getEventCount()) * 100;
+        var formatted = decimalFormat.format(percent);
+        return Integer.parseInt(formatted);
     }
 }

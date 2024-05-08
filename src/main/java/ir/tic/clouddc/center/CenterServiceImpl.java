@@ -187,13 +187,13 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Map<Integer, Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
+    public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
         var center = getCenter(centerId);
-        Map<Integer, Float> resultSet = new HashMap<>();
+        List<Float> weeklyTemperature = new ArrayList<>();
         for (LocalDate date : weeklyDateList) {
-            resultSet.put(PersianDate.fromGregorian(date).getDayOfMonth(), center.getAverageTemperature().get(date));
+            weeklyTemperature.add(center.getAverageTemperature().get(date));
         }
-        return resultSet;
+        return weeklyTemperature;
     }
 
 }

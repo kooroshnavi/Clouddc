@@ -1,5 +1,6 @@
 package ir.tic.clouddc.event;
 
+import ir.tic.clouddc.file.Attachment;
 import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,9 @@ public class EventDetail {
     @JoinColumn(name = "person_id")
     private Person person;
 
+    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
+    @JoinColumn(name = "attachment_id")
+    private Attachment attachment;
 
     public Long getId() {
         return id;
@@ -83,6 +87,14 @@ public class EventDetail {
 
     public void setPerson(Person person) {
         this.person = person;
+    }
+
+    public Attachment getAttachment() {
+        return attachment;
+    }
+
+    public void setAttachment(Attachment attachment) {
+        this.attachment = attachment;
     }
 
     @Override

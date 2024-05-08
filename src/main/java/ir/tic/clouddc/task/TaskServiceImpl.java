@@ -23,6 +23,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -277,12 +279,31 @@ public class TaskServiceImpl implements TaskService {
 
     @Override
     public long getOnTimeTaskCount() {
-        return taskRepository.getTaskCountByActivationAndDelay(0, false);
+        return taskRepository.getDelayedActiveTaskCount(0, false);
     }
 
     @Override
     public long getActiveTaskCount() {
         return taskRepository.getTaskCountByActivation(true);
+    }
+
+    @Override
+    public int getWeeklyFinishedPercentage() {
+        DecimalFormat decimalFormat = new DecimalFormat("##");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        var percent = (float) taskRepository.getWeeklyFinishedTaskCount(reportService.getWeeklyOffsetDate().atStartOfDay(), false) / getFinishedTaskCount() * 100;
+        var formatted = decimalFormat.format(percent);
+        return Integer.parseInt(formatted);
+    }
+
+    @Override
+    public int getActiveDelayedPercentage() {
+        DecimalFormat decimalFormat = new DecimalFormat("##");
+        decimalFormat.setRoundingMode(RoundingMode.CEILING);
+        var percent = (float) taskRepository.getDelayedActiveTaskCount(0, true) / taskRepository.getTaskCountByActivation(true) * 100;
+        log.info(String.valueOf(percent));
+        var formatted = decimalFormat.format(percent);
+        return Integer.parseInt(formatted);
     }
 
     public Task getTask(Long taskDetailId) {
@@ -441,7 +462,6 @@ public class TaskServiceImpl implements TaskService {
         if (!userTaskList.isEmpty()) {
             model.addAttribute("userTaskList", userTaskList);
         }
-        centerService.setDailyTemperatureReport(reportService.findActive(true).get());
         return model;
     }
 

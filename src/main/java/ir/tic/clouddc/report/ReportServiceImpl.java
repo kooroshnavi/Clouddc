@@ -51,16 +51,23 @@ class ReportServiceImpl implements ReportService {
     }
 
 
-
     @Override
     public List<LocalDate> getWeeklyDate() {
         int activeReportId = reportRepository.getActiveReportId(true);
         List<Integer> weeklyIdList = new ArrayList<>();
-        for (int i = activeReportId; i > activeReportId - 7; i--) {
+        for (int i = activeReportId - 1; i > activeReportId - 7; i--) {
             weeklyIdList.add(i);
         }
 
         List<LocalDate> weeklyDateList = reportRepository.getWeeklyDateList(weeklyIdList);
         return weeklyDateList;
     }
+
+    @Override
+    public LocalDate getWeeklyOffsetDate() {
+        int activeReportId = reportRepository.getActiveReportId(true);
+        int weeklyOffsetReportId = activeReportId - 5;
+        return reportRepository.findById(weeklyOffsetReportId).get().getDate();
+    }
+
 }

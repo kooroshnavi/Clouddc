@@ -5,7 +5,6 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 public interface CenterService {
     Center getCenter(int centerId);
@@ -16,7 +15,7 @@ public interface CenterService {
     void setDailyTemperatureReport(DailyReport currentReport);
     List<Temperature> getTemperatureHistoryList();
 
-    Map<Integer, Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
+    List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
 
 
 

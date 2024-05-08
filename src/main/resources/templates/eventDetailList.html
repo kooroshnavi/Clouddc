@@ -102,7 +102,7 @@
 
 		   <hr/>
 		   <h6 class="mb-0 text-uppercase" align="center">
-			   <strong>تاریخچه رخداد</strong>
+			   <strong>گردش رخداد</strong>
 		   </h6>
 
 				<div class="card">
@@ -141,7 +141,7 @@
 		   </h6>
 
 
-		   <div class="row" th:if="${event.active}">
+		   <div class="row" th:if="${event.active}" align="center"  dir="rtl">
 			   <div class="col-lg-12 mx-auto">
 				   <div class="card">
 
@@ -151,10 +151,10 @@
 								   <div class="card shadow-none bg-light border">
 									   <div class="card-body">
 
-										   <form class="row g-3" th:action="@{/event/update(eventId=${id})}" th:object="${eventForm}" method="POST">
+										   <form class="row g-3" th:action="@{/event/update(eventId=${id})}" enctype="multipart/form-data" th:object="${eventForm}" method="POST">
 											   <div class="col-12">
-												   <label class="form-label">بارگذاری سند (در حال توسعه)</label>
-												   <input class="form-control" type="file" disabled>
+												   <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+												   <input class="form-control" type="file" name="attachment">
 											   </div>
 											   <div class="col-12">
 												   <label class="form-label">اقدامات انجام شده</label>
@@ -189,20 +189,84 @@
 													   </div>
 												   </div>
 											   </div>
-
 										   </form>
+
 									   </div>
+
 								   </div>
+
 							   </div>
+
+
+						   </div>
+					   </div>
 
 
 
 						   </div><!--end row-->
 					   </div>
 				   </div>
+		   <div class="card" dir="rtl" align="center">
+			   <div class="card-body">
+				   <div class="d-flex align-items-center">
+					   <div>
+						   <h5 class="mb-0">لیست پیوست</h5>
+					   </div>
+					   <div class="ms-auto"><a href="javascript:;" class="btn btn-sm btn-outline-secondary">دانلود همه</a>
+					   </div>
+				   </div>
+				   <div class="table-responsive mt-3">
+					   <table class="table table-hover mb-0">
+						   <thead class="table-light">
+						   <tr>
+							   <th>نام فایل</th>
+							   <th>بارگذاری توسط</th>
+						   </tr>
+						   </thead>
+						   <tbody>
+						   <tr>
+							   <td>
+								   <div class="d-flex align-items-center" dir="rtl">
+									   <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i>
+									   </div>
+									   <div class="font-weight-bold text-danger">الگوی تحلیل رقبا</div>
+								   </div>
+							   </td>
+							   <td>3 عضو</td>
+						   </tr>
+						   <tr>
+							   <td>
+								   <div class="d-flex align-items-center">
+									   <div><i class='bx bxs-file me-2 font-24 text-primary'></i>
+									   </div>
+									   <div class="font-weight-bold text-primary">چگونه یک مطالعه موردی ایجاد کنیم</div>
+								   </div>
+							   </td>
+							   <td>3 عضو</td>
+						   </tr>
+						   <tr>
+							   <td>
+								   <div class="d-flex align-items-center">
+									   <div><i class='bx bxs-file me-2 font-24 text-primary'></i>
+									   </div>
+									   <div class="font-weight-bold text-primary">ساختار صفحه فرود</div>
+								   </div>
+							   </td>
+							   <td>10 عضو</td>
+						   </tr>
+
+						   </tbody>
+					   </table>
+				   </div>
 			   </div>
 		   </div>
-			</main>
+
+
+
+	   			</main>
+			   </div>
+
+
        <!--end page main-->
 
 

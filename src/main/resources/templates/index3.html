@@ -49,13 +49,13 @@
     <main class="page-content">
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">ابزارک ها</div>
+            <div class="breadcrumb-title pe-3">داشبورد</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">ابزارک های داده</li>
+                        <li class="breadcrumb-item active" aria-current="page">خلاصه وضعیت</li>
                     </ol>
                 </nav>
             </div>
@@ -68,13 +68,13 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="">
-                                <p class="mb-1">وظایف دوره ای انجام شده</p>
+                                <p class="mb-1">مجموع وظایف دوره ای انجام شده</p>
                                 <h4 class="mb-0" th:text="${totalTaskCount}"></h4>
-                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-down"></i><span>22.5 درصد نسبت به هفته گذشته</span>
+                                <p class="mb-0 mt-2 font-13" th:if="${weeklyFinishedTaskPercentage > 0}" th:text=" '%' + ${weeklyFinishedTaskPercentage} + ' مربوط به هفته گذشته تاکنون ' "><i class="bi bi-checkmark"></i><span></span>
+                                <p class="mb-0 mt-2 font-13" th:if="${weeklyFinishedTaskPercentage == 0}" th:text=" 'کمتر از یک درصد از هفته گذشته تاکنون' "><i class="bi bi-checkmark"></i><span></span>
                                 </p>
                             </div>
-                            <div class="ms-auto widget-icon bg-light-primary text-primary">
-                            </div>
+
                         </div>
 
                     </div>
@@ -86,13 +86,31 @@
                     <div class="card-body">
                         <div class="d-flex align-items-center">
                             <div class="">
-                                <p class="mb-1">رخدادهای گزارش شده</p>
-                                <h4 class="mb-0" th:text="${eventCount}"></h4>
-                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-up"></i><span>13.2 درصد نسبت به هفته گذشته</span>
+                                <p class="mb-1">وظایف فعال (در حال انجام)</p>
+                                <h4 class="mb-0" th:text="${activeTaskCount}"></h4>
+                                <p class="mb-0 mt-2 font-13" th:if="${activeDelayedPercentage > 0}" th:text=" '%' + ${activeDelayedPercentage} + ' مشمول تاخیر ' "><i class="bi bi-checkmark"></i><span></span>
+                                <p class="mb-0 mt-2 font-13" th:if="${activeDelayedPercentage == 0}" th:text=" 'بدون تاخیر' "><i class="bi bi-checkmark"></i><span></span>
                                 </p>
                             </div>
-                            <div class="ms-auto widget-icon bg-light-success text-success">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col">
+                <div class="card rounded-4">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center">
+                            <div class="">
+                                <p class="mb-1">مجموع رخدادهای گزارش شده</p>
+                                <h4 class="mb-0" th:text="${eventCount}"></h4>
+                                <p class="mb-0 mt-2 font-13" th:if="${weeklyRegisteredPercentage > 0}" th:text=" '%' + ${weeklyRegisteredPercentage} + ' گزارشات مربوط به هفته گذشته تاکنون ' "><i class="bi bi-checkmark"></i><span></span>
+                                <p class="mb-0 mt-2 font-13" th:if="${weeklyRegisteredPercentage == 0}" th:text=" 'حدود یک درصد از هفته گذشته تاکنون' "><i class="bi bi-checkmark"></i><span></span>
+                                </p>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -105,33 +123,17 @@
                             <div class="">
                                 <p class="mb-1">رخدادهای فعال (در حال پیگیری)</p>
                                 <h4 class="mb-0" th:text="${activeEventCount}"></h4>
-                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-up"></i><span>12.3 درصد نسبت به هفته گذشته</span>
+                                <p class="mb-0 mt-2 font-13" th:if="${activeEventPercentage > 0}" th:text=" ' معادل '  + ${activeEventPercentage} + '%' + ' کل رخدادها ' "><i class="bi bi-checkmark"></i><span></span>
+                                <p class="mb-0 mt-2 font-13" th:if="${activeEventPercentage == 0}" th:text=" 'کمتر از یک درصد کل رخدادها' "><i class="bi bi-checkmark"></i><span></span>
                                 </p>
                             </div>
-                            <div class="ms-auto widget-icon bg-light-orange text-orange">
-                            </div>
+
                         </div>
                     </div>
                 </div>
             </div>
 
-            <div class="col">
-                <div class="card rounded-4">
-                    <div class="card-body">
-                        <div class="d-flex align-items-center">
-                            <div class="">
-                                <p class="mb-1">وظایف فعال (جاری)</p>
-                                <h4 class="mb-0" th:text="${activeTaskCount}"></h4>
-                                <p class="mb-0 mt-2 font-13"><i class="bi bi-arrow-up"></i><span>32.7 درصد نسبت به هفته گذشته</span>
-                                </p>
-                            </div>
-                            <div class="ms-auto widget-icon bg-light-info text-info">
-                                <i class="bi bi-people-fill"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+
         </div><!--end row-->
 
         <div class="col d-flex">
@@ -149,7 +151,7 @@
 
 
         <!--end row-->
-        <h6 class="mb-0 text-uppercase" align="center">نمودار چند خطی</h6>
+        <h6 class="mb-0 text-uppercase" align="center">میانگین دمای سالن ها (شش روز اخیر)</h6>
         <hr/>
         <div class="card">
             <div class="card-body">
@@ -188,11 +190,10 @@
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/apexcharts-bundle/js/apexcharts.min.js"></script>
-<script>
-    var salon1WeeklyDate = [[${salon1WeeklyDate}]];
+<script type="text/javascript">
+    var weeklyDate = ["[[${weeklyDate[0]}]]", "[[${weeklyDate[1]}]]", "[[${weeklyDate[2]}]]", "[[${weeklyDate[3]}]]", "[[${weeklyDate[4]}]]", "[[${weeklyDate[5]}]]"];
     var salon1WeeklyTemp = [[${salon1WeeklyTemp}]];
     var salon2WeeklyTemp = [[${salon2WeeklyTemp}]];
-
 </script>
 <script src="/panel/assets/plugins/apexcharts-bundle/js/apex-custom.js"></script>
 <script>
