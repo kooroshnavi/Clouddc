@@ -1,11 +1,11 @@
 package ir.tic.clouddc.event;
 
-import com.github.mfathi91.time.PersianDateTime;
+import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.file.FileService;
+import ir.tic.clouddc.document.FileService;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.task.TaskService;
 import ir.tic.clouddc.utils.UtilService;
@@ -19,11 +19,11 @@ import org.springframework.ui.Model;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -58,38 +58,47 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void eventRegister(EventForm eventForm) throws IOException {
-        Optional<DailyReport> report = reportService.findActive(true);
         var eventType = new EventType(eventForm.getEventType());
-        var registerDate = LocalDateTime.now();
 
-        Event event = new Event(registerDate
-                , eventForm.isActive()
+        Event event = new Event(eventForm.isActive()
                 , new EventType(eventForm.getEventType())
                 , centerService.getCenter(eventForm.getCenterId()));
 
-        eventDetailRegister(eventForm, event, registerDate);
+        eventDetailRegister(eventForm, event);
 
-        event.setDailyReportList(report.get());
         event.setType(eventType);
         eventType.setEvent(event);
-        log.info("event added" + report.get().getEventList());
         eventRepository.save(event);
 
     }
 
-    private void eventDetailRegister(EventForm eventForm, Event event, LocalDateTime eventDetailDate) throws IOException {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private void eventDetailRegister(EventForm eventForm, Event event) throws IOException {
+        var registerTime = LocalTime.now();
         EventDetail eventDetail = new EventDetail();
-        var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
-        eventDetail.setPerson(person);
+        var persistence = persistenceSetup(registerTime, eventForm);
+        eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
-        eventDetail.setUpdated(eventDetailDate);
-        eventDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(eventDetailDate)));
         eventDetail.setEvent(event);
-        if (eventForm.getAttachment().getSize() != 0) {
-            eventDetail.setAttachment(fileService.registerAttachment(eventForm.getAttachment(), eventDetailDate, person));
+        if (event.getEventDetailList() == null) {
+            List<EventDetail> eventDetailList = new ArrayList<>();
+            eventDetailList.add(eventDetail);
+            event.setEventDetailList(eventDetailList);
+        } else {
+            event.getEventDetailList().add(eventDetail);
         }
-        event.setEventDetailList(eventDetail);
+    }
+
+    private Persistence persistenceSetup(LocalTime registerTime, EventForm eventForm) throws IOException {
+        Persistence persistence = new Persistence();
+        var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
+        var report = reportService.findActive(true).get();
+        persistence.setDailyReport(report);
+        persistence.setTime(registerTime);
+        persistence.setPerson(person);
+        if (eventForm.getAttachment().getSize() != 0) {
+            return fileService.registerAttachment(eventForm.getAttachment(), persistence);
+        }
+        return persistence;
     }
 
 
@@ -97,7 +106,7 @@ public class EventServiceImpl implements EventService {
     public Event getEvent(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         Event event = eventRepository.findById(eventId).get();
-        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
+        event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate())));
         return event;
     }
 
@@ -145,9 +154,9 @@ public class EventServiceImpl implements EventService {
         for (EventDetail eventDetail : event.getEventDetailList()
         ) {
             eventDetail.setPersianDate(dateTime.format
-                    (PersianDateTime
+                    (PersianDate
                             .fromGregorian
-                                    (eventDetail.getUpdated())));
+                                    (eventDetail.getPersistence().getDailyReport().getDate())));
         }
 
         return event.getEventDetailList()
@@ -170,7 +179,7 @@ public class EventServiceImpl implements EventService {
 
         List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
         for (Event event : eventList) {
-            event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
+            event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate())));
         }
 
         return eventList;
@@ -178,16 +187,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void updateEvent(Long eventId, EventForm eventForm) throws IOException {
-        Optional<DailyReport> report = reportService.findActive(true);
         Event event = eventRepository.findById(eventId).get();
-        eventDetailRegister(eventForm, event, LocalDateTime.now());
+        eventDetailRegister(eventForm, event);
 
         if (!eventForm.isActive()) {
             event.setActive(false);
-        }
-
-        if (report.get().getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
-            event.setDailyReportList(report.get());
         }
 
         eventRepository.save(event);
@@ -219,7 +223,7 @@ public class EventServiceImpl implements EventService {
     public int getWeeklyRegisteredPercentage() {
         DecimalFormat decimalFormat = new DecimalFormat("###");
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
-        var percent = (float) eventRepository.getWeeklyFinishedTaskCount(reportService.getWeeklyOffsetDate().atStartOfDay()) / getEventCount() * 100;
+        var percent = (float)25 * 100;
         log.info(String.valueOf(percent));
         var formatted = decimalFormat.format(percent);
         return Integer.parseInt(formatted);

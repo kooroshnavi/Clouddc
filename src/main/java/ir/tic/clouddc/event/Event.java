@@ -3,12 +3,9 @@ package ir.tic.clouddc.event;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ir.tic.clouddc.center.Center;
-import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -20,9 +17,6 @@ public class Event {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
-
-    @Column
-    private LocalDateTime eventDate;
 
     @Column
     private boolean active;
@@ -38,54 +32,25 @@ public class Event {
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
     private List<EventDetail> eventDetailList;
 
-    @ManyToMany(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinTable(name = "report_event", schema = "Report" ,joinColumns = @JoinColumn(name = "event_id"), inverseJoinColumns = @JoinColumn(name = "report_id"))
-    private List<DailyReport> dailyReportList;
-
     @Transient
     private String persianDate;
 
-    public Event(LocalDateTime eventDate
-            , boolean active
-            , EventType eventType
-            , Center center) {
-        this.eventDate = eventDate;
+    public Event(boolean active, EventType eventType, Center center) {
         this.active = active;
         this.eventType = eventType;
         this.center = center;
     }
 
-
     public List<EventDetail> getEventDetailList() {
         return eventDetailList;
     }
 
-    public void setEventDetailList(EventDetail eventDetail) {
-        this.eventDetailList = new ArrayList<>();
-        this.eventDetailList.add(eventDetail);
-    }
-
-    public void setDailyReportList(List<DailyReport> dailyReportList) {
-        this.dailyReportList = dailyReportList;
-    }
-
-    public List<DailyReport> getDailyReportList() {
-        return dailyReportList;
-    }
-
-    public void setDailyReportList(DailyReport report) {
-        if (this.dailyReportList == null) {
-            this.dailyReportList = new ArrayList<>();
-        }
-        this.dailyReportList.add(report);
+    public void setEventDetailList(List<EventDetail> eventDetailList) {
+        this.eventDetailList = eventDetailList;
     }
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public void setEventDate(LocalDateTime eventDate) {
-        this.eventDate = eventDate;
     }
 
     public void setActive(boolean active) {
@@ -117,10 +82,6 @@ public class Event {
         return eventType;
     }
 
-    public LocalDateTime getEventDate() {
-        return eventDate;
-    }
-
     @JsonIgnore
     public boolean isActive() {
         return active;
@@ -130,18 +91,6 @@ public class Event {
         return persianDate;
     }
 
-
-    @Override
-    public String toString() {
-        return "Event{" +
-                "id=" + id +
-                ", eventDate=" + eventDate +
-                ", active=" + active +
-                ", eventType=" + eventType +
-                ", center=" + center +
-                ", persianDate='" + persianDate + '\'' +
-                '}';
-    }
 
     public void setType(EventType eventType) {
         this.eventType = eventType;

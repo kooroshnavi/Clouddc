@@ -1,12 +1,9 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.file.Attachment;
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(schema = "Event")
@@ -16,10 +13,7 @@ public class EventDetail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Long id;
-
-    @Column
-    private LocalDateTime updated;
+    private long id;
 
     @Transient
     private String persianDate;
@@ -32,28 +26,16 @@ public class EventDetail {
     @JoinColumn(name = "event_id")
     private Event event;
 
-    @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "persistence_id")
+    private Persistence persistence;
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST})
-    @JoinColumn(name = "attachment_id")
-    private Attachment attachment;
-
-    public Long getId() {
+    public long getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(long id) {
         this.id = id;
-    }
-
-    public LocalDateTime getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
     }
 
     public String getPersianDate() {
@@ -72,7 +54,6 @@ public class EventDetail {
         this.description = description;
     }
 
-
     public Event getEvent() {
         return event;
     }
@@ -81,31 +62,11 @@ public class EventDetail {
         this.event = event;
     }
 
-    public Person getPerson() {
-        return person;
+    public Persistence getPersistence() {
+        return persistence;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    public Attachment getAttachment() {
-        return attachment;
-    }
-
-    public void setAttachment(Attachment attachment) {
-        this.attachment = attachment;
-    }
-
-    @Override
-    public String toString() {
-        return "EventDetail{" +
-                "id=" + id +
-                ", updated=" + updated +
-                ", persianDate='" + persianDate + '\'' +
-                ", description='" + description + '\'' +
-                ", event=" + event +
-                ", person=" + person +
-                '}';
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
     }
 }

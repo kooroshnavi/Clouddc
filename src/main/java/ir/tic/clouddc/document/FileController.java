@@ -1,4 +1,4 @@
-package ir.tic.clouddc.file;
+package ir.tic.clouddc.document;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

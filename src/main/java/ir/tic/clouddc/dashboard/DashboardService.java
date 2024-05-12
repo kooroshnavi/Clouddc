@@ -98,7 +98,7 @@ public class DashboardService {
         model.addAttribute("activeEventCount", eventService.getActiveEventCount());
         model.addAttribute("eventTypeCount", eventService.getEventTypeCount());
         model.addAttribute("weeklyRegisteredPercentage", eventService.getWeeklyRegisteredPercentage());
-        model.addAttribute("activeEventPercentage", eventService.getActiveEventPercentage());
+       model.addAttribute("activeEventPercentage", eventService.getActiveEventPercentage());
         return model;
     }
 
