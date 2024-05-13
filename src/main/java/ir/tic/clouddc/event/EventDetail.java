@@ -15,9 +15,6 @@ public class EventDetail {
     @Column
     private long id;
 
-    @Transient
-    private String persianDate;
-
     @Column
     @Nationalized
     private String description;
@@ -29,6 +26,31 @@ public class EventDetail {
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+    @Transient
+    private String persianDate;
+
+    @Transient
+    private String persianDay;
+
+    @Transient
+    private String time;
+
+    public String getPersianDay() {
+        return persianDay;
+    }
+
+    public void setPersianDay(String persianDay) {
+        this.persianDay = persianDay;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
 
     public long getId() {
         return id;

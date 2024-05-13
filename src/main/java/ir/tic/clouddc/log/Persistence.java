@@ -13,7 +13,7 @@ import java.time.LocalTime;
 public class Persistence {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.TABLE)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private long id;
 
@@ -24,7 +24,7 @@ public class Persistence {
     @JoinColumn(name = "report_id")
     private DailyReport dailyReport;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "person_id")
     private Person person;
 

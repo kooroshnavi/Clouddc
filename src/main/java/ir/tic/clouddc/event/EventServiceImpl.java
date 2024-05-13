@@ -3,6 +3,7 @@ package ir.tic.clouddc.event;
 import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.document.FileService;
+import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -21,9 +22,11 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -31,6 +34,7 @@ import java.util.stream.Collectors;
 public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final EventDetailRepository eventDetailRepository;
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
@@ -42,12 +46,13 @@ public class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , ReportService reportService
+            , EventDetailRepository eventDetailRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
             , TaskService taskService
             , EventTypeRepository eventTypeRepository, FileService fileService) {
         this.eventRepository = eventRepository;
+        this.eventDetailRepository = eventDetailRepository;
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
@@ -104,7 +109,7 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Event getEvent(Long eventId) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         Event event = eventRepository.findById(eventId).get();
         event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate())));
         return event;
@@ -136,10 +141,13 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public Model modelForEventDetail(Model model, Long eventId) {
-        List<EventDetail> eventDetailList = getEventDetailList(eventId);
-
+        List<EventDetail> eventDetailList = getEventDetailList(getEvent(eventId));
+        List<Long> persistenceIdList = eventDetailRepository.getPersistenceIdList(getEvent(eventId));
+        List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList);
+        if (metaDataList.size() > 0) {
+            model.addAttribute("metaDataList", metaDataList);
+        }
         var firstReport = eventDetailList.get(eventDetailList.size() - 1);
-
         model.addAttribute("eventDetailList", eventDetailList);
         model.addAttribute("event", this.getEvent(eventId));
         model.addAttribute("id", eventId);
@@ -148,15 +156,18 @@ public class EventServiceImpl implements EventService {
         return model;
     }
 
-    private List<EventDetail> getEventDetailList(Long eventId) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Event event = eventRepository.findById(eventId).get();
+    private List<EventDetail> getEventDetailList(Event event) {
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         for (EventDetail eventDetail : event.getEventDetailList()
         ) {
-            eventDetail.setPersianDate(dateTime.format
+            var date = eventDetail.getPersistence().getDailyReport().getDate();
+            eventDetail.setPersianDate(dateFormatter.format
                     (PersianDate
                             .fromGregorian
-                                    (eventDetail.getPersistence().getDailyReport().getDate())));
+                                    (date)));
+            eventDetail.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+            eventDetail.setTime(timeFormatter.format(eventDetail.getPersistence().getTime()));
         }
 
         return event.getEventDetailList()
@@ -175,11 +186,15 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public List<Event> getEventList() {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
         List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
         for (Event event : eventList) {
-            event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate())));
+            var date = event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate();
+            event.setPersianDate(dateFormatter.format(PersianDate.fromGregorian(date)));
+            event.setTime(timeFormatter.format(event.getEventDetailList().get(0).getPersistence().getTime()));
+            event.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
         }
 
         return eventList;
@@ -223,7 +238,7 @@ public class EventServiceImpl implements EventService {
     public int getWeeklyRegisteredPercentage() {
         DecimalFormat decimalFormat = new DecimalFormat("###");
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
-        var percent = (float)25 * 100;
+        var percent = (float) 25 * 100;
         log.info(String.valueOf(percent));
         var formatted = decimalFormat.format(percent);
         return Integer.parseInt(formatted);

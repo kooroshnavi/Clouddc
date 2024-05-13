@@ -75,7 +75,7 @@
 							   <p class="mb-1" th:text=" 'شماره رخداد: ' + ${id}"></p>
 							   <p class="mb-1" th:text=" 'مرکز: ' + ${event.getCenter.getNamePersian}"></p>
 							   <p class="mb-1" th:text=" 'تاریخ ثبت: ' + ${event.persianDate}"></p>
-							   <p class="mb-1" th:text=" 'گزارش کننده رخداد: ' + ${firstReport.person.name}"></p>
+							   <p class="mb-1" th:text=" 'گزارش کننده رخداد: ' + ${firstReport.persistence.person.name}"></p>
 						   </div>
 					   </div>
 				   </div>
@@ -98,22 +98,22 @@
 				   </div>
 			   </div>
 		   </div>
-
-
-		   <hr/>
 		   <h6 class="mb-0 text-uppercase" align="center">
 			   <strong>گردش رخداد</strong>
 		   </h6>
+		   <hr/>
 
-				<div class="card">
-					<div class="card-body">
-						<div class="table-responsive">
-							<table id="example2" class="table table-striped table-bordered">
+
+					<div class="card">
+						<div class="card-body">
+							<div class="table-responsive">
+								<table class="table mb-0 table-dark table-striped">
 								<thead>
 								<tr>
 									<th>ردیف</th>
-									<th>تاریخ بروزرسانی</th>
-									<th>همکار پیگیری کننده</th>
+									<th>تاریخ گردش کار</th>
+									<th>روز و ساعت بروزرسانی</th>
+									<th>اقدام کننده</th>
 									<th>توضیحات</th>
 								</tr>
 								</thead>
@@ -121,9 +121,12 @@
 
 								<tr th:each="detail, iter : ${eventDetailList}">
 
-									<td th:text="${iter.count}"/>
+									<td th:text="${iter.count}">
+
+									</td>
 									<td th:text="${detail.getPersianDate}"/>
-									<td th:text="${detail.getPerson.getName}"/>
+									<td th:text="${detail.persianDay} + ' - ' + ${detail.time} "/>
+									<td th:text="${detail.persistence.person.name}"/>
 									<td th:text="${detail.description}"/>
 
 								</tr>
@@ -206,54 +209,56 @@
 						   </div><!--end row-->
 					   </div>
 				   </div>
-		   <div class="card" dir="rtl" align="center">
+		   <div class="card"  align="center">
 			   <div class="card-body">
+				   <h6 class="mb-0 text-uppercase" align="center">
+					   <strong>پیوست ها</strong>
+				   </h6>
 				   <div class="d-flex align-items-center">
-					   <div>
-						   <h5 class="mb-0">لیست پیوست</h5>
-					   </div>
-					   <div class="ms-auto"><a href="javascript:;" class="btn btn-sm btn-outline-secondary">دانلود همه</a>
-					   </div>
+
 				   </div>
-				   <div class="table-responsive mt-3">
-					   <table class="table table-hover mb-0">
-						   <thead class="table-light">
+				   <div class="card-body">
+					   <table class="table mb-0">
+						   <thead class="table-dark">
 						   <tr>
-							   <th>نام فایل</th>
+							   <th>ردیف</th>
+							   <th>فایل</th>
 							   <th>بارگذاری توسط</th>
 						   </tr>
 						   </thead>
 						   <tbody>
-						   <tr>
-							   <td>
-								   <div class="d-flex align-items-center" dir="rtl">
-									   <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i>
-									   </div>
-									   <div class="font-weight-bold text-danger">الگوی تحلیل رقبا</div>
-								   </div>
-							   </td>
-							   <td>3 عضو</td>
+
+						   <tr th:each="metadata, iter : ${metaDataList}">
+							   <td th:text="${iter.count}"></td>
+                               <td>
+
+                                   <div  th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-center">
+                                       <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                                       <a th:href="@{/document/download(id=${metadata.id})}" class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                   </div>
+
+                                   <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}" class="d-flex align-items-center">
+                                       <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                       <a th:href="@{/document/download(id=${metadata.id})}" class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                   </div>
+
+                                   <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}" class="d-flex align-items-center">
+                                       <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
+                                       <a th:href="@{/document/download(id=${metadata.id})}" class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
+                                   </div>
+
+                                   <div class="d-flex align-items-center gap-2" th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
+									   <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                           <a th:href="@{/document/download(id=${metadata.id})}" th:text="${metadata.name}" class="font-weight-bold text-black"></a>
+                                   </div>
+
+
+                               </td>
+
+							   <td th:text="${metadata.persistence.person.name}"/>
 						   </tr>
-						   <tr>
-							   <td>
-								   <div class="d-flex align-items-center">
-									   <div><i class='bx bxs-file me-2 font-24 text-primary'></i>
-									   </div>
-									   <div class="font-weight-bold text-primary">چگونه یک مطالعه موردی ایجاد کنیم</div>
-								   </div>
-							   </td>
-							   <td>3 عضو</td>
-						   </tr>
-						   <tr>
-							   <td>
-								   <div class="d-flex align-items-center">
-									   <div><i class='bx bxs-file me-2 font-24 text-primary'></i>
-									   </div>
-									   <div class="font-weight-bold text-primary">ساختار صفحه فرود</div>
-								   </div>
-							   </td>
-							   <td>10 عضو</td>
-						   </tr>
+
+
 
 						   </tbody>
 					   </table>
@@ -277,7 +282,7 @@
         <!--Start Back To Top Button-->
         <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
         <!--End Back To Top Button-->
-        
+
         <!--start switcher-->
       <div class="switcher-body" th:replace="base :: switcher"></div>
        <!--end switcher-->
@@ -297,10 +302,10 @@
   <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
   <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
   <script src="/panel/assets/js/table-datatable.js"></script>
-	
+
   <!--app-->
   <script src="/panel/assets/js/app.js"></script>
-  
+
 </body>
 
 </html>

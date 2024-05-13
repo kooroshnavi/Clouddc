@@ -35,10 +35,32 @@ public class Event {
     @Transient
     private String persianDate;
 
+    @Transient
+    private String persianDay;
+
+    @Transient
+    private String time;
+
     public Event(boolean active, EventType eventType, Center center) {
         this.active = active;
         this.eventType = eventType;
         this.center = center;
+    }
+
+    public String getPersianDay() {
+        return persianDay;
+    }
+
+    public void setPersianDay(String persianDay) {
+        this.persianDay = persianDay;
+    }
+
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
     }
 
     public List<EventDetail> getEventDetailList() {
