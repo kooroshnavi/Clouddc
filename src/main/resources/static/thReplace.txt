@@ -1,16 +1,16 @@
-<head th:replace="base :: links"></head>
+<head th:replace="~{base :: links}"></head>
 
  <!--start top header-->
-     <header th:replace="base :: header"></header>
+     <header th:replace="~{base :: header}"></header>
       <!--end top header-->
 
          <!--start sidebar -->
-         <aside class="sidebar-wrapper" data-simplebar="true" th:replace="base :: sidebar"></aside>
+         <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
         <!--end sidebar -->
 
 
 
    <!--start switcher-->
-         <div class="switcher-body" th:replace="base :: switcher"></div>
+         <div class="switcher-body" th:replace="~{base :: switcher}"></div>
          <!--end switcher-->
 

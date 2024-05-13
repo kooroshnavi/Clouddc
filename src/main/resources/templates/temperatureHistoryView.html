@@ -39,11 +39,11 @@ events.html<!doctype html>
   <!--start wrapper-->
   <div class="wrapper">
     <!--start top header-->
-      <header th:replace="base :: header"></header>
+      <header th:replace="~{base :: header}"></header>
        <!--end top header-->
 
        <!--start sidebar -->
-      <aside class="sidebar-wrapper" data-simplebar="true" th:replace="base :: sidebar"></aside>
+      <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
        <!--end sidebar -->
 
        <!--start content-->
@@ -115,7 +115,7 @@ events.html<!doctype html>
         <!--End Back To Top Button-->
         
         <!--start switcher-->
-      <div class="switcher-body" th:replace="base :: switcher"></div>
+      <div class="switcher-body" th:replace="~{base :: switcher}"></div>
        <!--end switcher-->
 
   </div>
