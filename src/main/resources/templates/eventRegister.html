@@ -94,13 +94,13 @@
 
                                 <div class="col-12">
                                     <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
-                                    <input class="form-control" type="file" name="attachment">
+                                    <input class="form-control" type="file" name="attachment" id="attachment">
                                 </div>
 
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">مرکز</label>
                                     <select class="form-select" name="subject" th:field="*{centerId}">
-                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
+                                        <option th:value="100" selected="selected">انتخاب</option>
                                         <option th:each="center : ${centerList}" th:value="${center.getId}"
                                                 th:text="${center.getNamePersian}"></option>
                                     </select>
@@ -114,15 +114,6 @@
                                     </select>
                                 </div>
 
-
-                                <div class="col-12">
-                                    <div class="form-check form-switch">
-                                        <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked"
-                                               disabled="disabled">
-                                        <label class="form-check-label" for="flexSwitchCheckChecked">ارسال اعلان تیک
-                                            گرام به دیگر همکاران</label>
-                                    </div>
-                                </div>
 
                                 <div class="col">
                                     <!-- Button trigger modal -->
@@ -184,6 +175,7 @@
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
+<script src="/panel/assets/js/fileSizeValidation.js"></script>
 <script src="/panel/assets/js/jquery.min.js"></script>
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>

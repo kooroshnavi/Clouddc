@@ -1,310 +1,326 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
-	  xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
-  <!-- Required meta tags -->
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <!--plugins-->
-  <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet" />
-  <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet" />
-  <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet" />
-  <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet" />
-  <!-- Bootstrap CSS -->
-  <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet" />
-  <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet" />
-  <link href="/panel/assets/css/style.css" rel="stylesheet" />
-  <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
 
-  <!-- loader-->
-	<link href="/panel/assets/css/pace.min.css" rel="stylesheet" />
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
 
 
-  <!--Theme Styles-->
-  <link href="/panel/assets/css/dark-theme.css" rel="stylesheet" />
-  <link href="/panel/assets/css/light-theme.css" rel="stylesheet" />
-  <link href="/panel/assets/css/semi-dark.css" rel="stylesheet" />
-  <link href="/panel/assets/css/header-colors.css" rel="stylesheet" />
-	<link href="/panel/assets/css/clock.css" rel="stylesheet">
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-  <title>جزئیات رخداد</title>
+    <title>جزئیات رخداد</title>
 </head>
 
 <body>
 
 
-  <!--start wrapper-->
-  <div class="wrapper">
+<!--start wrapper-->
+<div class="wrapper">
     <!--start top header-->
-      <header th:replace="~{base :: header}"></header>
-       <!--end top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
 
-       <!--start sidebar -->
-      <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
-       <!--end sidebar -->
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
 
-       <!--start content-->
-       <main class="page-content">
-				<!--breadcrumb-->
-				<div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-					<div class="breadcrumb-title pe-3">رخدادها</div>
-					<div class="ps-3">
-						<nav aria-label="breadcrumb">
-							<ol class="breadcrumb mb-0 p-0">
-								<li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
-								</li>
-								<li class="breadcrumb-item active" aria-current="page">جزئیات</li>
-							</ol>
-						</nav>
-					</div>
-				</div>
-				<!--end breadcrumb-->
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">رخدادها</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">جزئیات</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
 
-		   <div class="col">
-			   <div class="card border shadow-none radius-10">
-				   <div class="card-body">
-					   <div class="d-flex align-items-center gap-3">
-						   <div class="icon-box bg-light-success border-0">
-							   <i class="lni lni-chevron-left"></i>
-						   </div>
-						   <div class="info">
-							   <h6 class="mb-2" ><strong th:text=" 'دسته بندی رخداد: ' + ${event.getEventType.getName}"></strong></h6>
-							   <p class="mb-1" th:text=" 'شماره رخداد: ' + ${id}"></p>
-							   <p class="mb-1" th:text=" 'مرکز: ' + ${event.getCenter.getNamePersian}"></p>
-							   <p class="mb-1" th:text=" 'تاریخ ثبت: ' + ${event.persianDate}"></p>
-							   <p class="mb-1" th:text=" 'گزارش کننده رخداد: ' + ${firstReport.persistence.person.name}"></p>
-						   </div>
-					   </div>
-				   </div>
-			   </div>
-		   </div>
-
-
-		   <div th:if="${not event.active}" class="col">
-			   <div class="card bg-success text-white">
-				   <div class="card-body">
-					   <p class="card-text">رخداد خاتمه یافته است.</p>
-				   </div>
-			   </div>
-		   </div>
-
-		   <div class="col" th:if="${event.active}">
-			   <div class="card bg-warning text-white">
-				   <div class="card-body">
-					   <p class="card-text">رخداد فعال است. کلیه همکاران در صورت آگاهی و پیگیری می توانند نسبت به بروزرسانی آن اقدام نمایند.</p>
-				   </div>
-			   </div>
-		   </div>
-		   <h6 class="mb-0 text-uppercase" align="center">
-			   <strong>گردش رخداد</strong>
-		   </h6>
-		   <hr/>
+        <div class="col">
+            <div class="card border shadow-none radius-10">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="icon-box bg-light-success border-0">
+                            <i class="lni lni-chevron-left"></i>
+                        </div>
+                        <div class="info">
+                            <h6 class="mb-2"><strong
+                                    th:text=" 'دسته بندی رخداد: ' + ${event.getEventType.getName}"></strong></h6>
+                            <p class="mb-1" th:text=" 'شماره رخداد: ' + ${id}"></p>
+                            <p class="mb-1" th:text=" 'مرکز: ' + ${event.getCenter.getNamePersian}"></p>
+                            <p class="mb-1" th:text=" 'تاریخ ثبت: ' + ${event.persianDate}"></p>
+                            <p class="mb-1"
+                               th:text=" 'گزارش کننده رخداد: ' + ${firstReport.persistence.person.name}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
 
-					<div class="card">
-						<div class="card-body">
-							<div class="table-responsive">
-								<table class="table mb-0 table-dark table-striped">
-								<thead>
-								<tr>
-									<th>ردیف</th>
-									<th>تاریخ گردش کار</th>
-									<th>روز و ساعت بروزرسانی</th>
-									<th>اقدام کننده</th>
-									<th>توضیحات</th>
-								</tr>
-								</thead>
-								<tbody>
+        <div th:if="${not event.active}" class="col">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <p class="card-text">رخداد خاتمه یافته است.</p>
+                </div>
+            </div>
+        </div>
 
-								<tr th:each="detail, iter : ${eventDetailList}">
-
-									<td th:text="${iter.count}">
-
-									</td>
-									<td th:text="${detail.getPersianDate}"/>
-									<td th:text="${detail.persianDay} + ' - ' + ${detail.time} "/>
-									<td th:text="${detail.persistence.person.name}"/>
-									<td th:text="${detail.description}"/>
-
-								</tr>
-								</tbody>
-								<tfoot>
-								</tfoot>
-							</table>
-						</div>
-					</div>
-				</div>
-
-		   <hr/>
-		   <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="center">
-			   <strong>فرم بروزرسانی وضعیت رخداد</strong>
-		   </h6>
+        <div class="col" th:if="${event.active}">
+            <div class="card bg-warning text-white">
+                <div class="card-body">
+                    <p class="card-text">رخداد فعال است. کلیه همکاران در صورت آگاهی و پیگیری می توانند نسبت به بروزرسانی
+                        آن اقدام نمایند.</p>
+                </div>
+            </div>
+        </div>
+        <h6 class="mb-0 text-uppercase" align="center">
+            <strong>گردش رخداد</strong>
+        </h6>
+        <hr/>
 
 
-		   <div class="row" th:if="${event.active}" align="center"  dir="rtl">
-			   <div class="col-lg-12 mx-auto">
-				   <div class="card">
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table mb-0 table-dark table-striped">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>تاریخ گردش کار</th>
+                            <th>روز و ساعت بروزرسانی</th>
+                            <th>اقدام کننده</th>
+                            <th>توضیحات</th>
+                        </tr>
+                        </thead>
+                        <tbody>
 
-					   <div class="card-body">
-						   <div class="row g-3">
-							   <div class="col-12 col-lg-8">
-								   <div class="card shadow-none bg-light border">
-									   <div class="card-body">
+                        <tr th:each="detail, iter : ${eventDetailList}">
 
-										   <form class="row g-3" th:action="@{/event/update(eventId=${id})}" enctype="multipart/form-data" th:object="${eventForm}" method="POST">
-											   <div class="col-12">
-												   <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
-												   <input class="form-control" type="file" name="attachment">
-											   </div>
-											   <div class="col-12">
-												   <label class="form-label">اقدامات انجام شده</label>
-												   <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4" th:field="*{description}" required="required" dir="rtl" maxlength="1000"></textarea>
-											   </div>
+                            <td th:text="${iter.count}">
 
-											   <div class="col-12">
-												   <label class="form-label">وضعیت فعلی</label>
-												   <select class="form-select" th:field="*{active}">
-													   <option th:value="1" selected="selected">فعال - در حال پیگیری</option>
-													   <option th:value="0">خاتمه رخداد</option>
-												   </select>
-											   </div>
+                            </td>
+                            <td th:text="${detail.getPersianDate}"/>
+                            <td th:text="${detail.persianDay} + ' - ' + ${detail.time} "/>
+                            <td th:text="${detail.persistence.person.name}"/>
+                            <td th:text="${detail.description}"/>
 
-											   <div class="col">
-												   <!-- Button trigger modal -->
-												   <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleLargeModal">ثبت</button>
-												   <!-- Modal -->
-												   <div class="modal fade" id="exampleLargeModal" tabindex="-1" aria-hidden="true">
-													   <div class="modal-dialog modal-lg">
-														   <div class="modal-content bg-warning">
-															   <div class="modal-header">
-																   <h5 class="modal-title">همکار گرامی</h5>
-																   <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-															   </div>
-															   <div class="modal-body">لطفا قبل از تایید، از صحت اطلاعات ورودی مطمئن شوید. داده ها در آینده ممکن است مورد رجوع و استناد قرار گیرند.</div>
-															   <div class="modal-footer">
-																   <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
-																   <button type="submit" class="btn btn-primary">بروزرسانی رخداد</button>
-															   </div>
-														   </div>
-													   </div>
-												   </div>
-											   </div>
-										   </form>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
 
-									   </div>
-
-								   </div>
-
-							   </div>
+        <hr/>
+        <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="center">
+            <strong>فرم بروزرسانی وضعیت رخداد</strong>
+        </h6>
 
 
-						   </div>
-					   </div>
+        <div class="row" th:if="${event.active}" align="center" dir="rtl">
+            <div class="col-lg-12 mx-auto">
+                <div class="card">
+
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12 col-lg-8">
+                                <div class="card shadow-none bg-light border">
+                                    <div class="card-body">
+
+                                        <form class="row g-3" th:action="@{/event/update(eventId=${id})}"
+                                              enctype="multipart/form-data" th:object="${eventForm}" method="POST">
+                                            <div class="col-12">
+                                                <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+                                                <input class="form-control" type="file" name="attachment" id="attachment">
+                                            </div>
+                                            <div class="col-12">
+                                                <label class="form-label">اقدامات انجام شده</label>
+                                                <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4"
+                                                          th:field="*{description}" required="required" dir="rtl"
+                                                          maxlength="1000"></textarea>
+                                            </div>
+
+                                            <div class="col-12">
+                                                <label class="form-label">وضعیت فعلی</label>
+                                                <select class="form-select" th:field="*{active}">
+                                                    <option th:value="1" selected="selected">فعال - در حال پیگیری
+                                                    </option>
+                                                    <option th:value="0">خاتمه رخداد</option>
+                                                </select>
+                                            </div>
+
+                                            <div class="col">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                        data-bs-target="#exampleLargeModal">ثبت
+                                                </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="exampleLargeModal" tabindex="-1"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                        <div class="modal-content bg-warning">
+                                                            <div class="modal-header">
+                                                                <h5 class="modal-title">همکار گرامی</h5>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body">لطفا قبل از تایید، از صحت اطلاعات
+                                                                ورودی مطمئن شوید. داده ها در آینده ممکن است مورد رجوع و
+                                                                استناد قرار گیرند.
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary"
+                                                                        data-bs-dismiss="modal">لغو
+                                                                </button>
+                                                                <button type="submit" class="btn btn-primary">بروزرسانی
+                                                                    رخداد
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
 
 
-
-						   </div><!--end row-->
-					   </div>
-				   </div>
-		   <div class="card"  align="center">
-			   <div class="card-body">
-				   <h6 class="mb-0 text-uppercase" align="center">
-					   <strong>پیوست ها</strong>
-				   </h6>
-				   <div class="d-flex align-items-center">
-
-				   </div>
-				   <div class="card-body">
-					   <table class="table mb-0">
-						   <thead class="table-dark">
-						   <tr>
-							   <th>ردیف</th>
-							   <th>فایل</th>
-							   <th>بارگذاری توسط</th>
-						   </tr>
-						   </thead>
-						   <tbody>
-
-						   <tr th:each="metadata, iter : ${metaDataList}">
-							   <td th:text="${iter.count}"></td>
-                               <td>
-
-                                   <div  th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-center">
-                                       <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
-                                       <a th:href="@{/document/download(id=${metadata.id})}" class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
-                                   </div>
-
-                                   <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}" class="d-flex align-items-center">
-                                       <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
-                                       <a th:href="@{/document/download(id=${metadata.id})}" class="font-weight-bold text-success" th:text="${metadata.name}"></a>
-                                   </div>
-
-                                   <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}" class="d-flex align-items-center">
-                                       <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
-                                       <a th:href="@{/document/download(id=${metadata.id})}" class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
-                                   </div>
-
-                                   <div class="d-flex align-items-center gap-2" th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
-									   <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
-                                           <a th:href="@{/document/download(id=${metadata.id})}" th:text="${metadata.name}" class="font-weight-bold text-black"></a>
-                                   </div>
+                        </div>
+                    </div>
 
 
-                               </td>
+                </div><!--end row-->
+            </div>
+        </div>
+        <div class="card" align="center">
+            <div class="card-body">
+                <h6 class="mb-0 text-uppercase" align="center">
+                    <strong>پیوست ها</strong>
+                </h6>
+                <div class="d-flex align-items-center">
 
-							   <td th:text="${metadata.persistence.person.name}"/>
-						   </tr>
+                </div>
+                <div class="card-body">
+                    <table class="table mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>فایل</th>
+                            <th>بارگذاری توسط</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="metadata, iter : ${metaDataList}">
+                            <td th:text="${iter.count}"></td>
+                            <td>
+
+                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                                    <a th:href="@{/document/download(id=${metadata.id})}"
+                                       class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                    <a th:href="@{/document/download(id=${metadata.id})}"
+                                       class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
+                                    <a th:href="@{/document/download(id=${metadata.id})}"
+                                       class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div class="d-flex align-items-center gap-2"
+                                     th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
+                                    <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/download(id=${metadata.id})}" th:text="${metadata.name}"
+                                       class="font-weight-bold text-black"></a>
+                                </div>
 
 
+                            </td>
 
-						   </tbody>
-					   </table>
-				   </div>
-			   </div>
-		   </div>
+                            <td th:text="${metadata.persistence.person.name}"/>
+                        </tr>
 
 
-
-	   			</main>
-			   </div>
-
-
-       <!--end page main-->
-
-
-       <!--start overlay-->
-        <div class="overlay nav-toggle-icon"></div>
-       <!--end overlay-->
-
-        <!--Start Back To Top Button-->
-        <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
-        <!--End Back To Top Button-->
-
-        <!--start switcher-->
-      <div class="switcher-body" th:replace="~{base :: switcher}"></div>
-       <!--end switcher-->
-
-  </div>
-  <!--end wrapper-->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
 
 
-  <!-- Bootstrap bundle JS -->
-  <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
-  <!--plugins-->
-  <script src="/panel/assets/js/jquery.min.js"></script>
-  <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
-  <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
-  <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-  <script src="/panel/assets/js/pace.min.js"></script>
-  <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
-  <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
-  <script src="/panel/assets/js/table-datatable.js"></script>
+    </main>
+</div>
 
-  <!--app-->
-  <script src="/panel/assets/js/app.js"></script>
+
+<!--end page main-->
+
+
+<!--start overlay-->
+<div class="overlay nav-toggle-icon"></div>
+<!--end overlay-->
+
+<!--Start Back To Top Button-->
+<a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+<!--End Back To Top Button-->
+
+<!--start switcher-->
+<div class="switcher-body" th:replace="~{base :: switcher}"></div>
+<!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+<script src="/panel/assets/js/fileSizeValidation.js"></script>
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/js/app.js"></script>
 
 </body>
 
