@@ -8,7 +8,7 @@ import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.task.TaskService;
+import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +38,7 @@ public class EventServiceImpl implements EventService {
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
-    private final TaskService taskService;
+    private final PmService pmService;
     private final EventTypeRepository eventTypeRepository;
     private final FileService fileService;
 
@@ -49,14 +49,14 @@ public class EventServiceImpl implements EventService {
             , EventDetailRepository eventDetailRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
-            , TaskService taskService
+            , PmService pmService
             , EventTypeRepository eventTypeRepository, FileService fileService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
-        this.taskService = taskService;
+        this.pmService = pmService;
         this.eventTypeRepository = eventTypeRepository;
         this.fileService = fileService;
     }
@@ -100,8 +100,8 @@ public class EventServiceImpl implements EventService {
         persistence.setDailyReport(report);
         persistence.setTime(registerTime);
         persistence.setPerson(person);
-        if (eventForm.getAttachment().getSize() != 0) {
-            return fileService.registerAttachment(eventForm.getAttachment(), persistence);
+        if (eventForm.getFile().getSize() != 0) {
+            return fileService.registerAttachment(eventForm.getFile(), persistence);
         }
         return persistence;
     }

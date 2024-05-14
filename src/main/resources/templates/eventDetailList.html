@@ -49,7 +49,7 @@
     <!--start content-->
     <main class="page-content">
         <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
             <div class="breadcrumb-title pe-3">رخدادها</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
@@ -66,7 +66,7 @@
         <div class="col">
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
-                    <div class="d-flex align-items-center gap-3">
+                    <div class="d-flex align-items-salon gap-3">
                         <div class="icon-box bg-light-success border-0">
                             <i class="lni lni-chevron-left"></i>
                         </div>
@@ -101,7 +101,7 @@
                 </div>
             </div>
         </div>
-        <h6 class="mb-0 text-uppercase" align="center">
+        <h6 class="mb-0 text-uppercase" align="salon">
             <strong>گردش رخداد</strong>
         </h6>
         <hr/>
@@ -142,12 +142,12 @@
         </div>
 
         <hr/>
-        <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="center">
+        <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="salon">
             <strong>فرم بروزرسانی وضعیت رخداد</strong>
         </h6>
 
 
-        <div class="row" th:if="${event.active}" align="center" dir="rtl">
+        <div class="row" th:if="${event.active}" align="salon" dir="rtl">
             <div class="col-lg-12 mx-auto">
                 <div class="card">
 
@@ -227,12 +227,12 @@
                 </div><!--end row-->
             </div>
         </div>
-        <div class="card" align="center">
+        <div class="card" align="salon">
             <div class="card-body">
-                <h6 class="mb-0 text-uppercase" align="center">
+                <h6 class="mb-0 text-uppercase" align="salon">
                     <strong>پیوست ها</strong>
                 </h6>
-                <div class="d-flex align-items-center">
+                <div class="d-flex align-items-salon">
 
                 </div>
                 <div class="card-body">
@@ -250,27 +250,27 @@
                             <td th:text="${iter.count}"></td>
                             <td>
 
-                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-center">
+                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-salon">
                                     <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
                                     <a th:href="@{/document/download(id=${metadata.id})}"
                                        class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
                                 </div>
 
                                 <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
-                                     class="d-flex align-items-center">
+                                     class="d-flex align-items-salon">
                                     <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
                                     <a th:href="@{/document/download(id=${metadata.id})}"
                                        class="font-weight-bold text-success" th:text="${metadata.name}"></a>
                                 </div>
 
                                 <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
-                                     class="d-flex align-items-center">
+                                     class="d-flex align-items-salon">
                                     <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                     <a th:href="@{/document/download(id=${metadata.id})}"
                                        class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div class="d-flex align-items-center gap-2"
+                                <div class="d-flex align-items-salon gap-2"
                                      th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
                                     <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/download(id=${metadata.id})}" th:text="${metadata.name}"

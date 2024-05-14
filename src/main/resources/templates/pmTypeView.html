@@ -30,10 +30,11 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>رخدادها</title>
+    <title>لیست مشخصات PM</title>
 </head>
 
 <body>
+
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -47,15 +48,19 @@
 
     <!--start content-->
     <main class="page-content">
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <a type="button" href="/pm/register" class="btn btn-warning px-5" data-bs-toggle="tooltip"
+               data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">ثبت وظیفه جدید</a>
+        </div>
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
-            <div class="breadcrumb-title pe-3">رخدادها</div>
+            <div class="breadcrumb-title pe-3">وظایف</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">تاریخچه</li>
+                        <li class="breadcrumb-item active" aria-current="page">لیست PM</li>
                     </ol>
                 </nav>
             </div>
@@ -63,46 +68,73 @@
         </div>
         <!--end breadcrumb-->
 
-        <h6 class="mb-0 text-uppercase" align="salon">رخدادهای گزارش شده</h6>
-        <hr/>
         <div class="card">
+
             <div class="card-body">
-                <div class="col" dir="ltr">
-                    <a type="button" href="/event/register" class="btn btn-warning px-5" data-bs-toggle="tooltip"
-                       data-bs-placement="top" title="لطفا از ثبت وظیفه در فرم پیش رو خودداری نمایید." dir="auto">گزارش
-                        رخداد</a>
-                </div>
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>دسته بندی رخداد</th>
-                            <th>تاریخ گزارش</th>
-                            <th>مرکز</th>
+                            <th>عنوان</th>
                             <th>وضعیت</th>
+                            <th>تاریخ آخرین اقدام</th>
+                            <th>دوره تکرار(روز)</th>
+                            <th>سررسید بعدی</th>
+                            <th>عملیات</th>
+
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="event, iter : ${eventList}">
+                        <tr th:each="status, iter : ${statusList}">
 
-                            <td th:text="${iter.count}" dir="rtl"/>
-                            <td th:text="${event.getEventType.getName}" dir="rtl"/>
-                            <td th:text="${event.getPersianDate}" data-bs-toggle="tooltip" data-bs-placement="top"
-                                th:title="${event.getPersianDay} + ' - ' + ${event.time}" dir="rtl"/>
-                            <td th:text="${event.getCenter.getNamePersian}" dir="rtl"/>
-                            <td dir="rtl">
+                            <td th:text="${iter.count}"/>
+                            <td>
+                                <strong th:text="${status.name}"></strong>
+                            </td>
+                            <td>
                                 <div class="col">
-                                    <a th:if="${event.isActive}" th:href="@{/event/view(eventId=${event.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده تاریخچه و بروزرسانی">فعال</a>
-                                </div>
-
-                                <div class="col">
-                                    <a th:if="${not event.isActive}" th:href="@{/event/view(eventId=${event.id})}"
+                                    <a th:if="${status.isActive}" th:href="@{/pm/active(id=${status.id})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده تاریخچه">خاتمه رخداد</a>
+                                       data-bs-placement="bottom" title="مشاهده وظایف فعال این PM">فعال</a>
+                                </div>
+                                <div th:if="${not status.isActive} and ${status.period == 0}">آرشیو</div>
+                                <div th:if="${not status.isActive} and ${status.period > 0}">منتظر سررسید</div>
+                            </td>
+                            <td>
+                                <div class="col">
+                                    <button th:if="${status.lastSuccessfulPersian == null}"
+                                            class="btn btn-outline-warning px-10 radius-30" disabled="disabled">اقدام
+                                        نشده
+                                    </button>
+                                </div>
+                                <div class="col">
+                                    <button th:if="${status.lastSuccessfulPersian != null}" href="/pm"
+                                       th:text="${status.lastSuccessfulPersian}"
+                                       class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="جزئیات آخرین اقدام" disabled="disabled"></button>
+                                </div>
+                            </td>
+                            <td>
+                                <div th:if="${status.period == 0}">
+                                    بدون تکرار
+                                </div>
+                                <div
+                                        th:if="${status.period > 0}" th:text="${status.period}">
+                                </div>
+                            </td>
+                            <td>
+                                <div th:if="${status.period > 0}" th:text="${status.getNextDuePersian}"/>
+                                <div th:if="${status.period == 0}">بایگانی شد.</div>
+                            </td>
+                            <td>
+                                <div class="table-actions d-flex align-items-salon gap-3 fs-6">
+                                    <a th:href="@{/pm/task/list(id=${status.id})}" class="text-primary" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="تاریخچه"><i class="bi bi-eye-fill"></i></a>
+                                    <a sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" th:href="@{/pm/edit(id=${status.id})}" class="text-warning"
+                                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="ویرایش"><i
+                                            class="bi bi-pencil-fill"></i></a>
                                 </div>
                             </td>
 

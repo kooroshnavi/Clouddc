@@ -1,4 +1,4 @@
-package ir.tic.clouddc.task;
+package ir.tic.clouddc.pm;
 
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -7,52 +7,49 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping(value = {"/pm"})
-public class TaskController {
+public class PmController {
 
 
-    private final TaskService taskService;
+    private final PmService pmService;
 
     @Autowired
-    public TaskController(TaskServiceImpl taskService) {
-        this.taskService = taskService;
+    public PmController(PmServiceImpl taskService) {
+        this.pmService = taskService;
     }
 
-    @GetMapping("/list")
-    public String pmList(Model model) {
-        taskService.modelForMainPage(model);
-        return "pmList";
+    @GetMapping("/type")
+    public String showPmTypeList(Model model) {
+        pmService.PmTypeOverview(model);
+        return "pmTypeView";
     }
 
-    @GetMapping("/task/list")
-    public String pmTask(@RequestParam int id, Model model) {
-        var pm = taskService.getStatus(id);
-        model.addAttribute("status", pm);
-        if (!pm.getTasks().isEmpty()) {
-            model.addAttribute("taskList", taskService.getTaskListById(id));
-        }
-        return "taskList";
+    @GetMapping("/type/list")
+    public String showPmList(@RequestParam int pmTypeId, Model model) {
+        List<Pm> pmList = pmService.getPmList(pmTypeId);
+        model.addAttribute("pmTypeName", pmList.get(0).getType().getName());
+        model.addAttribute("pmList", pmList);
+        return "pmListView";
     }
 
-    @GetMapping("/edit")
-    public String editForm(@RequestParam int id, Model model) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        var status = taskService.getStatus(id);
+    @GetMapping("/edit")   // 1
+    public String showEditForm(@RequestParam int pmId, Model model) {
+        Pm selectedPm = pmService.getPm(pmId);
         PmRegisterForm pmEdit = new PmRegisterForm();
-        pmEdit.setName(status.getName());
-        pmEdit.setDescription(status.getDescription());
-        pmEdit.setPeriod(status.getPeriod());
+        pmEdit.setName(selectedPm.getName());
+        pmEdit.setDescription(selectedPm.getDescription());
+        pmEdit.setPeriod(selectedPm.getPeriod());
         model.addAttribute("pmEdit", pmEdit);
-        model.addAttribute("taskSize", status.getTasks().size());
-        model.addAttribute("statusId", status.getId());
-        taskService.modelForRegisterTask(model);
-        return "pmUpdate";
+        model.addAttribute("taskSize", selectedPm.getTaskList().size());
+        model.addAttribute("pmId", selectedPm.getId());
+        pmService.modelForRegisterTask(model);
+        return "pmEditView";
     }
 
     //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
@@ -60,21 +57,29 @@ public class TaskController {
     public String pmEdit(Model model,
                          @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
                          @RequestParam int id,
+                         @RequestParam("attachment") MultipartFile file,
                          Errors errors) {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
             return pmForm(model);
         }
-        taskService.updateStatus(editForm, id);
-        taskService.modelForMainPage(model);
-        return "pmList";
+        pmService.editPm(editForm, id);
+        pmService.PmTypeOverview(model);
+        return "pmEditView";
     }
 
-    @GetMapping("/active")
-    public String getActivePmList(@RequestParam int id, Model model) {
-        List<Task> activeTaskList = taskService.getActiveTaskList(id);
-        var pm = taskService.getStatus(id);
+    @GetMapping("/")
+    public String showTaskList(@RequestParam int pmId, Model model) {
+        List<Task> taskList = pmService.getTaskListByPmId(pmId);
+        model.addAttribute("taskList", taskList);
+        return null;
+    }
+
+    @GetMapping("/")
+    public String showActiveTaskList(@RequestParam int pmId, Model model) {
+        List<Task> activeTaskList = pmService.getActiveTaskList(pmId);
+        var pm = pmService.getPmList(pmId);
         model.addAttribute("status", pm);
         model.addAttribute("taskList", activeTaskList);
 
@@ -84,7 +89,7 @@ public class TaskController {
     @GetMapping("/task")
     public String getTaskDetail(@RequestParam Long id, Model model) {
 
-        taskService.modelForTaskDetail(model, id);
+        pmService.modelForTaskDetail(model, id);
 
         return "taskDetail";
     }
@@ -107,7 +112,7 @@ public class TaskController {
 
     @GetMapping("/register")
     public String pmForm(Model model) {
-        taskService.modelForRegisterTask(model);
+        pmService.modelForRegisterTask(model);
         model.addAttribute("pmRegister", new PmRegisterForm());
         return "pmRegister";
     }
@@ -124,8 +129,8 @@ public class TaskController {
             return pmForm(model);
         }
 
-        taskService.taskRegister(pmRegisterForm);
-        taskService.modelForMainPage(model);
+        pmService.taskRegister(pmRegisterForm);
+        pmService.PmTypeOverview(model);
         return "pmList";
     }
 
@@ -133,7 +138,7 @@ public class TaskController {
     @GetMapping("/myTask")
     private String getUserTask(Model model) {
 
-        taskService.modelForPersonTaskList(model);
+        pmService.modelForPersonTaskList(model);
 
         return "userTask";
     }
@@ -143,7 +148,7 @@ public class TaskController {
     public String showAssignForm(@RequestParam("id") Long id,
                                  Model model) {
 
-        taskService.modelForActionForm(model, id);
+        pmService.modelForActionForm(model, id);
 
         return "pmUpdateForm";
     }
@@ -156,15 +161,15 @@ public class TaskController {
                                    @ModelAttribute("assignForm") AssignForm assignForm) {
         System.out.println("Captured: " + model.getAttribute("assignForm").toString());
 
-        taskService.updateTaskDetail(assignForm, id);
-        taskService.modelForPersonTaskList(model);
+        pmService.updateTaskDetail(assignForm, id);
+        pmService.modelForPersonTaskList(model);
 
         return "userTask";
     }
 
     @ModelAttribute
     public void addAttributes(Model model) {
-        taskService.modelForTaskController(model);
+        pmService.modelForTaskController(model);
     }
 
 }

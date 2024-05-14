@@ -29,7 +29,7 @@ public class Temperature {
 
     @ManyToOne
     @JoinColumn(name = "center_id")
-    private Center center;
+    private Salon salon;
 
     @ManyToOne
     @JoinColumn(name = "person_id")
@@ -67,12 +67,12 @@ public class Temperature {
         this.dailyReport = dailyReport;
     }
 
-    public Center getCenter() {
-        return center;
+    public Salon getSalon() {
+        return salon;
     }
 
-    public void setCenter(Center center) {
-        this.center = center;
+    public void setSalon(Salon salon) {
+        this.salon = salon;
     }
 
     public Person getPerson() {

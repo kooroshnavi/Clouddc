@@ -24,7 +24,7 @@ public class MetaData {
     @Column
     private float size;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 

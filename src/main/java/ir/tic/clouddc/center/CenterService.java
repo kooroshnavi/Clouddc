@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CenterService {
-    Center getCenter(int centerId);
-    List<Center> getDefaultCenterList();
-    List<Center> getCenterList();
+    Salon getCenter(int centerId);
+    List<Salon> getDefaultCenterList();
+    List<Salon> getCenterList();
     Model modelForCenterController(Model model);
     List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport);
     void setDailyTemperatureReport(DailyReport currentReport);

@@ -6,7 +6,7 @@ import ir.tic.clouddc.event.EventService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.task.TaskService;
+import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,16 +25,16 @@ import java.util.Locale;
 public class DashboardService {
 
     private final PersonService personService;
-    private final TaskService taskService;
+    private final PmService pmService;
     private final EventService eventService;
     private final CenterService centerService;
     private final ReportService reportService;
 
 
     @Autowired
-    public DashboardService(PersonService personService, TaskService taskService, EventService eventService, CenterService centerService, ReportService reportService) {
+    public DashboardService(PersonService personService, PmService pmService, EventService eventService, CenterService centerService, ReportService reportService) {
         this.personService = personService;
-        this.taskService = taskService;
+        this.pmService = pmService;
         this.eventService = eventService;
         this.centerService = centerService;
         this.reportService = reportService;
@@ -80,15 +80,15 @@ public class DashboardService {
     }
 
     private Model taskStatistics(Model model) {
-        long finishedTaskCount = taskService.getFinishedTaskCount(); // Number of finished tasks
-        long activeTaskCount = taskService.getActiveTaskCount();
-        long onTimeTaskCount = taskService.getOnTimeTaskCount();   // Number of finished tasks with zero delay
-        int weeklyFinishedTaskPercentage = taskService.getWeeklyFinishedPercentage();
+        long finishedTaskCount = pmService.getFinishedTaskCount(); // Number of finished tasks
+        long activeTaskCount = pmService.getActiveTaskCount();
+        long onTimeTaskCount = pmService.getOnTimeTaskCount();   // Number of finished tasks with zero delay
+        int weeklyFinishedTaskPercentage = pmService.getWeeklyFinishedPercentage();
         model.addAttribute("totalTaskCount", finishedTaskCount);
         model.addAttribute("activeTaskCount", activeTaskCount);
         model.addAttribute("onTimeTaskCount", onTimeTaskCount);
         model.addAttribute("weeklyFinishedTaskPercentage", weeklyFinishedTaskPercentage);
-        model.addAttribute("activeDelayedPercentage", taskService.getActiveDelayedPercentage());
+        model.addAttribute("activeDelayedPercentage", pmService.getActiveDelayedPercentage());
 
         return model;
     }

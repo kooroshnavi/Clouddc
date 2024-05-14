@@ -51,7 +51,7 @@
           <main class="page-content">
 
             <!--breadcrumb-->
-            <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
               <div class="breadcrumb-title pe-3">مدیریت وظایف</div>
               <div class="ps-3">
                 <nav aria-label="breadcrumb">
@@ -69,7 +69,7 @@
               <div class="col">
                   <div class="card border shadow-none radius-10">
                       <div class="card-body">
-                          <div class="d-flex align-items-center gap-3">
+                          <div class="d-flex align-items-salon gap-3">
                               <div  th:if="${delay} == 0" class="icon-box bg-light-success border-0">
                                   <i class="lni lni-chevron-left"></i>
                               </div>
@@ -78,7 +78,7 @@
                               </div>
                               <div class="info">
                                   <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${taskName}"></strong></h6>
-                                  <p class="mb-1" th:text=" 'مرکز: ' + ${center}"></p>
+                                  <p class="mb-1" th:text=" 'مرکز: ' + ${salon}"></p>
                                   <p class="mb-1" th:text=" 'سررسید: ' + ${dueDate}"></p>
                                   <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${delay}"></p>
                                   <p class="mb-1" th:if="${description != null}" th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${description}"></p>
@@ -89,7 +89,7 @@
               </div>
 
               <hr/>
-              <h6 class="mb-0 text-uppercase" align="center">فرم بروزرسانی وظیفه</h6>
+              <h6 class="mb-0 text-uppercase" align="salon">فرم بروزرسانی وظیفه</h6>
               <hr/>
 
               <div class="row">

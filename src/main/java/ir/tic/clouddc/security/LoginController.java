@@ -6,7 +6,7 @@ import ir.tic.clouddc.otp.OtpService;
 import ir.tic.clouddc.person.Address;
 import ir.tic.clouddc.person.AddressRepository;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.task.TaskService;
+import ir.tic.clouddc.pm.PmService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -33,14 +33,14 @@ public class LoginController {
     private final PersonService personService;
     private final OtpService otpService;
     private final AddressRepository addressRepository;
-    private final TaskService taskService;
+    private final PmService pmService;
 
     @Autowired
-    public LoginController(PersonService personService, OtpService otpService, AddressRepository addressRepository, TaskService taskService) {
+    public LoginController(PersonService personService, OtpService otpService, AddressRepository addressRepository, PmService pmService) {
         this.personService = personService;
         this.otpService = otpService;
         this.addressRepository = addressRepository;
-        this.taskService = taskService;
+        this.pmService = pmService;
     }
 
     @GetMapping("/login")

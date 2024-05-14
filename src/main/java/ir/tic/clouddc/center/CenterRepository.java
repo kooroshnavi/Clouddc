@@ -6,8 +6,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface CenterRepository extends JpaRepository<Center, Integer> {
-    List<Center> findAllByIdIn(List<Integer> ids);
+public interface CenterRepository extends JpaRepository<Salon, Integer> {
+    List<Salon> findAllByIdIn(List<Integer> ids);
 
 }
 

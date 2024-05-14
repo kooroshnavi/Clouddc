@@ -1,4 +1,4 @@
-package ir.tic.clouddc.task;
+package ir.tic.clouddc.pm;
 
 import lombok.NoArgsConstructor;
 

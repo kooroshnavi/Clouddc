@@ -48,7 +48,7 @@
 
 
             <div class="top-navbar-right ms-auto">
-                <ul class="navbar-nav align-items-center">
+                <ul class="navbar-nav align-items-salon">
                     <li class="nav-item search-toggle-icon">
                         <a class="nav-link" href="#">
                             <div class="">
@@ -69,7 +69,7 @@
                             <div class="row row-cols-3 gx-2">
                                 <div class="col">
                                     <p href="ecommerce-orders.html">
-                                    <div class="apps p-2 radius-10 text-center">
+                                    <div class="apps p-2 radius-10 text-salon">
                                         <div class="apps-icon-box mb-1 text-white bg-gradient-purple">
                                             <i class="bi bi-basket2-fill"></i>
                                         </div>
@@ -81,7 +81,7 @@
 
                                 <div class="col">
                                     <p href="component-media-object.html">
-                                    <div class="apps p-2 radius-10 text-center">
+                                    <div class="apps p-2 radius-10 text-salon">
                                         <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
                                             <i class="bi bi-collection-play-fill"></i>
                                         </div>
@@ -93,7 +93,7 @@
 
                                 <div class="col">
                                     <p href="javascript:;">
-                                    <div class="apps p-2 radius-10 text-center">
+                                    <div class="apps p-2 radius-10 text-salon">
                                         <div class="apps-icon-box mb-1 text-white bg-gradient-desert">
                                             <i class="bi bi-calendar-check-fill"></i>
                                         </div>
@@ -108,7 +108,7 @@
 
                     <li class="nav-item dropdown dropdown-user-setting">
                         <a class="nav-link dropdown-toggle dropdown-toggle-nocaret" href="#" data-bs-toggle="dropdown">
-                            <div class="user-setting d-flex align-items-center">
+                            <div class="user-setting d-flex align-items-salon">
                                 <div class="ms-3">
                                     <h6 class="mb-0 dropdown-user-name" align="left" th:text="${person.name}"></h6>
                                 </div>
@@ -117,7 +117,7 @@
                         <ul class="dropdown-menu dropdown-menu-end">
                             <li>
                                 <p class="dropdown-item" href="#">
-                                <div class="d-flex align-items-center">
+                                <div class="d-flex align-items-salon">
 
                                 </div>
                                 </p>
@@ -128,7 +128,7 @@
 
                             <li>
                                 <a class="dropdown-item">
-                                    <div class="d-flex align-items-center">
+                                    <div class="d-flex align-items-salon">
                                         <div class="ms-3"><span></span>
                                             <form th:action="@{/logout}" method="post">
                                                 <input type="submit" value="خروج"/>
@@ -226,7 +226,7 @@
                     <div class="menu-title">داده های محیطی</div>
                 </a>
                 <ul>
-                    <li><a href="/center/temperature/history"><i class="bi bi-circle"></i>ثبت دما</a>
+                    <li><a href="/salon/temperature/history"><i class="bi bi-circle"></i>ثبت دما</a>
                 </ul>
             </li>
 

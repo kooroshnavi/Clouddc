@@ -2,7 +2,7 @@ package ir.tic.clouddc.event;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ir.tic.clouddc.center.Center;
+import ir.tic.clouddc.center.Salon;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -27,7 +27,7 @@ public class Event {
 
     @ManyToOne
     @JoinColumn(name = "center_id")
-    private Center center;
+    private Salon salon;
 
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
     private List<EventDetail> eventDetailList;
@@ -41,10 +41,10 @@ public class Event {
     @Transient
     private String time;
 
-    public Event(boolean active, EventType eventType, Center center) {
+    public Event(boolean active, EventType eventType, Salon salon) {
         this.active = active;
         this.eventType = eventType;
-        this.center = center;
+        this.salon = salon;
     }
 
     public String getPersianDay() {
@@ -83,16 +83,16 @@ public class Event {
         this.eventType = eventType;
     }
 
-    public void setCenter(Center center) {
-        this.center = center;
+    public void setSalon(Salon salon) {
+        this.salon = salon;
     }
 
     public void setPersianDate(String persianDate) {
         this.persianDate = persianDate;
     }
 
-    public Center getCenter() {
-        return center;
+    public Salon getSalon() {
+        return salon;
     }
 
     @JsonIgnore

@@ -30,7 +30,8 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>لیست مشخصات PM</title>
+    <title>لیست PM</title>
+
 </head>
 
 <body>
@@ -50,17 +51,17 @@
     <main class="page-content">
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
             <a type="button" href="/pm/register" class="btn btn-warning px-5" data-bs-toggle="tooltip"
-               data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">ثبت وظیفه جدید</a>
+               data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">تعریف PM جدید</a>
         </div>
         <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+        <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
             <div class="breadcrumb-title pe-3">وظایف</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">لیست PM</li>
+                        <li class="breadcrumb-item active" aria-current="page" th:text="${pmTypeName}"></li>
                     </ol>
                 </nav>
             </div>
@@ -76,69 +77,27 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>عنوان</th>
-                            <th>وضعیت</th>
-                            <th>تاریخ آخرین اقدام</th>
-                            <th>دوره تکرار(روز)</th>
-                            <th>سررسید بعدی</th>
-                            <th>عملیات</th>
-
+                            <th>PM عنوان</th>
+                            <th>دوره تکرار</th>
+                            <th>تعداد وظایف ایجاد شده</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="status, iter : ${statusList}">
+                        <tr th:each="pm, iter : ${pmList}">
 
                             <td th:text="${iter.count}"/>
+
                             <td>
-                                <strong th:text="${status.name}"></strong>
-                            </td>
-                            <td>
-                                <div class="col">
-                                    <a th:if="${status.isActive}" th:href="@{/pm/active(id=${status.id})}"
-                                       class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده وظایف فعال این PM">فعال</a>
-                                </div>
-                                <div th:if="${not status.isActive} and ${status.period == 0}">آرشیو</div>
-                                <div th:if="${not status.isActive} and ${status.period > 0}">منتظر سررسید</div>
-                            </td>
-                            <td>
-                                <div class="col">
-                                    <button th:if="${status.lastSuccessfulPersian == null}"
-                                            class="btn btn-outline-warning px-10 radius-30" disabled="disabled">اقدام
-                                        نشده
-                                    </button>
-                                </div>
-                                <div class="col">
-                                    <button th:if="${status.lastSuccessfulPersian != null}" href="/pm"
-                                       th:text="${status.lastSuccessfulPersian}"
-                                       class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="جزئیات آخرین اقدام" disabled="disabled"></button>
-                                </div>
-                            </td>
-                            <td>
-                                <div th:if="${status.period == 0}">
-                                    بدون تکرار
-                                </div>
-                                <div
-                                        th:if="${status.period > 0}" th:text="${status.period}">
-                                </div>
-                            </td>
-                            <td>
-                                <div th:if="${status.period > 0}" th:text="${status.getNextDuePersian}"/>
-                                <div th:if="${status.period == 0}">بایگانی شد.</div>
-                            </td>
-                            <td>
-                                <div class="table-actions d-flex align-items-center gap-3 fs-6">
-                                    <a th:href="@{/pm/task/list(id=${status.id})}" class="text-primary" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="تاریخچه"><i class="bi bi-eye-fill"></i></a>
-                                    <a sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" th:href="@{/pm/edit(id=${status.id})}" class="text-warning"
-                                       data-bs-toggle="tooltip" data-bs-placement="bottom" title="ویرایش"><i
-                                            class="bi bi-pencil-fill"></i></a>
-                                </div>
+                                <strong th:text="${pm.name}"></strong>
                             </td>
 
+                            <td th:text="${pm.period}"></td>
+
+                            <td th:text="${pm.taskList.size}"></td>
+
                         </tr>
+
                         </tbody>
                         <tfoot>
                         </tfoot>

@@ -18,8 +18,7 @@ public class EventForm {
     @NotBlank
     private int centerId;
 
-    private MultipartFile attachment;
-
+    private MultipartFile file;
 
     public int getCenterId() {
         return centerId;
@@ -53,12 +52,12 @@ public class EventForm {
         this.active = active;
     }
 
-    public MultipartFile getAttachment() {
-        return attachment;
+    public MultipartFile getFile() {
+        return file;
     }
 
-    public void setAttachment(MultipartFile attachment) {
-        this.attachment = attachment;
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 
     @Override

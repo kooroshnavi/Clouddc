@@ -32,7 +32,7 @@ public class EventController {
             , @ModelAttribute("eventForm") EventForm eventForm
             , @RequestParam("attachment") MultipartFile file) throws IOException {
 
-        eventForm.setAttachment(file);
+        eventForm.setFile(file);
         eventService.eventRegister(eventForm);
         eventService.modelForEventList(model);
         return "events";
@@ -65,7 +65,7 @@ public class EventController {
             , @RequestParam("attachment") MultipartFile file)
             throws IOException {
 
-        eventForm.setAttachment(file);
+        eventForm.setFile(file);
         eventService.updateEvent(eventId, eventForm);
         eventService.modelForEventList(model);
         return "events";

@@ -1,4 +1,4 @@
-package ir.tic.clouddc.task;
+package ir.tic.clouddc.pm;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,6 +12,8 @@ import java.util.List;
 public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByActive(boolean active);
+
+    List<Task> findByPmId(int pmId);
 
     List<Task> findByActiveAndTaskStatusId(boolean active, int statusId);
 

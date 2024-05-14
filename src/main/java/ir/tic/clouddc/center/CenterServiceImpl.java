@@ -60,18 +60,18 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public Center getCenter(int centerId) {
+    public Salon getCenter(int centerId) {
         return centerRepository.findById(centerId).get();
     }
 
     @Override
-    public List<Center> getDefaultCenterList() {
+    public List<Salon> getDefaultCenterList() {
         List<Integer> centerIds = Arrays.asList(1, 2, 3);
         return centerRepository.findAllByIdIn(centerIds);
     }
 
     @Override
-    public List<Center> getCenterList() {
+    public List<Salon> getCenterList() {
         return centerRepository.findAll();
     }
 
@@ -98,7 +98,7 @@ public class CenterServiceImpl implements CenterService {
             Temperature salon1Temperature = new Temperature();
             salon1Temperature.setTime(time);
             salon1Temperature.setValue(Float.parseFloat(temperatureForm.getSalon1Temp()));
-            salon1Temperature.setCenter(getCenter(1));
+            salon1Temperature.setSalon(getCenter(1));
             salon1Temperature.setPerson(person);
             salon1Temperature.setDailyReport(dailyReport);
             dailyTemps.add(salon1Temperature);
@@ -108,7 +108,7 @@ public class CenterServiceImpl implements CenterService {
             Temperature salon2Temperature = new Temperature();
             salon2Temperature.setTime(time);
             salon2Temperature.setValue(Float.parseFloat(temperatureForm.getSalon2Temp()));
-            salon2Temperature.setCenter(getCenter(2));
+            salon2Temperature.setSalon(getCenter(2));
             salon2Temperature.setPerson(person);
             salon2Temperature.setDailyReport(dailyReport);
             dailyTemps.add(salon2Temperature);
@@ -130,7 +130,7 @@ public class CenterServiceImpl implements CenterService {
         List<Float> salon2DailyTemperatures = temperatureRepository.getDailytemperatureList(center2, currentReport);
 
         float salonAverage = 0;
-        List<Center> centerList = new ArrayList<>();
+        List<Salon> salonList = new ArrayList<>();
 
         if (!salon1DailyTemperatures.isEmpty()) {
             for (float temp : salon1DailyTemperatures) {
@@ -145,7 +145,7 @@ public class CenterServiceImpl implements CenterService {
             } else {
                 center1.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
             }
-            centerList.add(center1);
+            salonList.add(center1);
         }
 
         if (!salon2DailyTemperatures.isEmpty()) {
@@ -162,11 +162,11 @@ public class CenterServiceImpl implements CenterService {
             } else {
                 center2.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
             }
-            centerList.add(center2);
+            salonList.add(center2);
         }
 
-        if (!centerList.isEmpty()) {
-            centerRepository.saveAllAndFlush(centerList);
+        if (!salonList.isEmpty()) {
+            centerRepository.saveAllAndFlush(salonList);
         }
     }
 

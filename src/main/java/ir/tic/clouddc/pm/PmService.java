@@ -1,20 +1,21 @@
-package ir.tic.clouddc.task;
+package ir.tic.clouddc.pm;
 
 import org.springframework.ui.Model;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface TaskService {
+public interface PmService {
 
     Task getTask(Long taskId);
-    List<Task> getTaskListById(int taskStatusId);
+    List<Task> getTaskListByPmId(int pmId);
+    Pm getPm(int pmId);
     List<Task> getPersonTask();
     List<Task> getActiveTaskList(int statusId);
-    void updateStatus(PmRegisterForm editForm, int id);
+    void editPm(PmRegisterForm editForm, int id);
     Optional<TaskDetail> activeTaskDetail(long taskId, boolean active);
-    TaskStatus getStatus(int id);
-    Model modelForMainPage(Model model);
+    List<Pm> getPmList(int pmTypeId);
+    Model PmTypeOverview(Model model);
     Model modelForRegisterTask(Model model);
     Model modelForTaskController(Model model);
     Model modelForTaskDetail(Model model, Long taskId);
