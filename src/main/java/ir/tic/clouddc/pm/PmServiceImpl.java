@@ -6,6 +6,7 @@ import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.EventService;
 import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -16,7 +17,6 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
-import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
@@ -50,6 +50,7 @@ public class PmServiceImpl implements PmService {
     private final ReportService reportService;
     private final EventService eventService;
     private final NotificationService notificationService;
+    private final PersistenceService persistenceService;
     private static LocalDate CurrentDate;
     private static final int DEFAULT_ASSIGNEE_ID = 7;
 
@@ -60,7 +61,7 @@ public class PmServiceImpl implements PmService {
                   PmTypeRepository pmTypeRepository, CenterService centerService,
                   PersonService personService,
                   ReportService reportService,
-                  @Lazy EventService eventService, NotificationService notificationService) {
+                  @Lazy EventService eventService, NotificationService notificationService, PersistenceService persistenceService) {
         this.pmRepository = pmRepository;
         this.taskRepository = taskRepository;
         this.taskDetailRepository = taskDetailRepository;
@@ -70,19 +71,17 @@ public class PmServiceImpl implements PmService {
         this.reportService = reportService;
         this.eventService = eventService;
         this.notificationService = notificationService;
+        this.persistenceService = persistenceService;
     }
 
-    @Scheduled(cron = "0 5 0 * * SAT,SUN,MON,TUE,WED")
     public void updateTodayTasks() {
-        CurrentDate = LocalDate.now();
+        CurrentDate = reportService.getTODAY();
         final List<Salon> defaultSalonList = centerService.getDefaultCenterList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<Pm> todayPmList = pmRepository.findBynextDue(CurrentDate);
         List<Task> activeTaskList = taskRepository.findByActive(true);
 
-        var dailyReport = reportService.setCurrentReport();
-
-        var persistence = persistenceSetup(LocalTime.now(), defaultPerson, dailyReport);
+        var persistence = persistenceService.setupNewPersistence('3', null);
 
         delayCalculation(activeTaskList);
 
@@ -110,13 +109,7 @@ public class PmServiceImpl implements PmService {
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
-    private Persistence persistenceSetup(LocalTime now, Person defaultPerson, DailyReport dailyReport) {
-        Persistence persistence = new Persistence();
-        persistence.setDailyReport(dailyReport);
-        persistence.setTime(now);
-        persistence.setPerson(defaultPerson);
-        return persistence;
-    }
+
 
     private TaskDetail taskDetailSetup(Task todayTask, Persistence persistence) {
         TaskDetail taskDetail = new TaskDetail();
@@ -225,7 +218,7 @@ public class PmServiceImpl implements PmService {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         for (TaskDetail taskDetail : task.getTaskDetailList()
         ) {
-            taskDetail.setPersianDate(dateTime.format
+            taskDetail.setPersianRegisterDate(dateTime.format
                     (PersianDateTime
                             .fromGregorian
                                     (taskDetail.getAssignedDate())));
@@ -245,7 +238,7 @@ public class PmServiceImpl implements PmService {
         TaskDetail newTaskDetail = new TaskDetail();
         newTaskDetail.setAssignedDate(LocalDateTime.now());
         newTaskDetail.setActive(true);
-        newTaskDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
+        newTaskDetail.setPersianRegisterDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
         newTaskDetail.setPerson(person);
         newTaskDetail.setTask(thisTask);
         thisTask.getTaskDetailList().add(newTaskDetail);

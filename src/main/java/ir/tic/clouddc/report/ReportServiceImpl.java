@@ -1,8 +1,12 @@
 package ir.tic.clouddc.report;
 
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.pm.PmService;
+import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.EnableScheduling;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -12,16 +16,31 @@ import java.util.Optional;
 
 @Slf4j
 @Service
+@EnableScheduling
 class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
 
     private final CenterService centerService;
 
+    private final PmService pmService;
+
+    private static LocalDate TODAY;
+
     @Autowired
-    ReportServiceImpl(ReportRepository reportRepository, CenterService centerService) {
+    ReportServiceImpl(ReportRepository reportRepository, CenterService centerService, PmService pmService) {
         this.reportRepository = reportRepository;
         this.centerService = centerService;
+        this.pmService = pmService;
+    }
+
+    @Scheduled(cron = "0 5 0 * * SAT,SUN,MON,TUE,WED")
+    public void startMidnightScheduling() {
+        UtilService.setDate();
+        setCurrentReport();
+        pmService.updateTodayTasks();
+        centerService.setDailyTemperatureReport(findActive(true).get());
+
     }
 
     @Override
@@ -34,12 +53,12 @@ class ReportServiceImpl implements ReportService {
         List<DailyReport> dailyReportList = new ArrayList<>();
         Optional<DailyReport> yesterday = findActive(true);
         if (yesterday.isPresent()) {
-            centerService.setDailyTemperatureReport(yesterday.get());
+
             yesterday.get().setActive(false);
             dailyReportList.add(yesterday.get());
         }
         DailyReport today = new DailyReport();
-        today.setDate(LocalDate.now());
+        today.setDate(getTODAY());
         today.setActive(true);
         dailyReportList.add(today);
         reportRepository.saveAll(dailyReportList);
@@ -71,4 +90,7 @@ class ReportServiceImpl implements ReportService {
         return reportRepository.findById(weeklyOffsetReportId).get().getDate();
     }
 
+    public LocalDate getTODAY() {
+        return TODAY;
+    }
 }

@@ -4,11 +4,11 @@ import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.pm.PmService;
+import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,10 +20,8 @@ import org.springframework.ui.Model;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
@@ -41,6 +39,7 @@ public class EventServiceImpl implements EventService {
     private final PmService pmService;
     private final EventTypeRepository eventTypeRepository;
     private final FileService fileService;
+    private final PersistenceService persistenceService;
 
 
     @Autowired
@@ -50,7 +49,7 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , PmService pmService
-            , EventTypeRepository eventTypeRepository, FileService fileService) {
+            , EventTypeRepository eventTypeRepository, FileService fileService, PersistenceService persistenceService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.reportService = reportService;
@@ -59,6 +58,7 @@ public class EventServiceImpl implements EventService {
         this.pmService = pmService;
         this.eventTypeRepository = eventTypeRepository;
         this.fileService = fileService;
+        this.persistenceService = persistenceService;
     }
 
     @Override
@@ -78,32 +78,16 @@ public class EventServiceImpl implements EventService {
     }
 
     private void eventDetailRegister(EventForm eventForm, Event event) throws IOException {
-        var registerTime = LocalTime.now();
         EventDetail eventDetail = new EventDetail();
-        var persistence = persistenceSetup(registerTime, eventForm);
+        var persistence = persistenceService.setupNewPersistence('0', personService.getCurrentPerson());
+        if (eventForm.getFile().getSize() > 0) {
+            fileService.registerAttachment(eventForm.getFile(), persistence.getLogHistoryList().stream().findFirst().get());
+        }
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setEvent(event);
-        if (event.getEventDetailList() == null) {
-            List<EventDetail> eventDetailList = new ArrayList<>();
-            eventDetailList.add(eventDetail);
-            event.setEventDetailList(eventDetailList);
-        } else {
-            event.getEventDetailList().add(eventDetail);
-        }
-    }
-
-    private Persistence persistenceSetup(LocalTime registerTime, EventForm eventForm) throws IOException {
-        Persistence persistence = new Persistence();
-        var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
-        var report = reportService.findActive(true).get();
-        persistence.setDailyReport(report);
-        persistence.setTime(registerTime);
-        persistence.setPerson(person);
-        if (eventForm.getFile().getSize() != 0) {
-            return fileService.registerAttachment(eventForm.getFile(), persistence);
-        }
-        return persistence;
+        reportService.findActive(true).get().getEventList().add(event);
+        event.getEventDetailList().add(eventDetail);
     }
 
 
@@ -111,7 +95,11 @@ public class EventServiceImpl implements EventService {
     public Event getEvent(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         Event event = eventRepository.findById(eventId).get();
-        event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate())));
+        event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event
+                .getEventDetailList().stream().findFirst().get()
+                .getPersistence()
+                .getLogHistoryList().stream().findFirst().get()
+                .getDate())));
         return event;
     }
 
@@ -161,13 +149,13 @@ public class EventServiceImpl implements EventService {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
         for (EventDetail eventDetail : event.getEventDetailList()
         ) {
-            var date = eventDetail.getPersistence().getDailyReport().getDate();
+            var date = eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getDate();
             eventDetail.setPersianDate(dateFormatter.format
                     (PersianDate
                             .fromGregorian
                                     (date)));
             eventDetail.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
-            eventDetail.setTime(timeFormatter.format(eventDetail.getPersistence().getTime()));
+            eventDetail.setTime(timeFormatter.format(eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
         }
 
         return event.getEventDetailList()
@@ -191,9 +179,9 @@ public class EventServiceImpl implements EventService {
 
         List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
         for (Event event : eventList) {
-            var date = event.getEventDetailList().get(0).getPersistence().getDailyReport().getDate();
+            var date = event.getEventDetailList().stream().findFirst().get().getPersistence().getLogHistoryList().stream().findFirst().get().getDate();
             event.setPersianDate(dateFormatter.format(PersianDate.fromGregorian(date)));
-            event.setTime(timeFormatter.format(event.getEventDetailList().get(0).getPersistence().getTime()));
+            event.setTime(timeFormatter.format(event.getEventDetailList().stream().findFirst().get().getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
             event.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
         }
 

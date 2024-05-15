@@ -4,12 +4,18 @@ import com.github.mfathi91.time.PersianDate;
 
 import java.time.LocalDate;
 import java.time.format.TextStyle;
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+
 import static java.util.Map.entry;
 
 public final class UtilService {
-    public static Map<String, String> persianDay = Map.ofEntries(
+
+    private static LocalDate DATE;
+
+    public static final Map<String, String> persianDay = Map.ofEntries(
             entry("Sat", "شنبه"),
             entry("Sun", "یکشنبه"),
             entry("Mon", "دوشنبه"),
@@ -19,6 +25,21 @@ public final class UtilService {
             entry("Fri", "جمعه")
     );
 
+    private static final List<String> LOG_MESSAGES = Arrays.asList(
+            "Event - ایجاد گردش رخداد",  // 0
+            "حذف پیوست گردش رخداد - Event", // 1
+            "بروزرسانی گردش - PM", // 2
+            "PM - حذف پیوست گردش کار", // 3
+            "PM - ثبت دسته بندی", // 4
+            "PM - ویرایش دسته بندی", // 5
+            "PM - ثبت جدید", // 6
+            "PM - حذف پیوست ", // 7
+            "PM - ویرایش", // 8
+            "PM - بارگذاری پیوست" // 9
+    );
+
+
+
    public static String getCurrentDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var month = date.getMonth().getPersianName();
@@ -26,8 +47,14 @@ public final class UtilService {
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         dayName = persianDay.get(dayName);
 
+
         return (dayName + "    " + day + "     " + month.toString());
     }
+    public static void setDate() {
+        UtilService.DATE = LocalDate.now();
+    }
 
-
+    public static LocalDate getDATE() {
+        return DATE;
+    }
 }

@@ -1,13 +1,13 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.LogHistory;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
 
 public interface FileService {
-    Persistence registerAttachment(MultipartFile file, Persistence persistence) throws IOException;
+    void registerAttachment(MultipartFile file, LogHistory logHistory) throws IOException;
     List<MetaData> getRelatedMetadataList(List<Long> persistenceIDlist);
 
     MetaData getDocument(long id);

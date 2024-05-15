@@ -7,6 +7,8 @@ import java.util.Optional;
 public interface ReportService {
 
     Optional<DailyReport> findActive(boolean active);
+
+    LocalDate getTODAY();
     DailyReport setCurrentReport();
     void saveAll(List<DailyReport> dailyReportList);
     List<LocalDate> getWeeklyDate();

@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
@@ -18,6 +20,9 @@ public class TaskDetail {
     @Column
     @Nationalized
     private String description;
+
+    @Column
+    private LocalDateTime registerDate;
 
     @ManyToOne
     @JoinColumn(name = "task_id")
@@ -34,74 +39,53 @@ public class TaskDetail {
     private int delay;
 
     @Transient
-    private String persianDate;
+    private String persianRegisterDate;
 
-
-    public int getDelay() {
-        return delay;
-    }
-
-    public void setDelay(int delay) {
-        this.delay = delay;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
+    public TaskDetail(String description, Task task, Persistence persistence, boolean active, int delay) {
         this.description = description;
-    }
-
-    public Task getTask() {
-        return task;
-    }
-
-    public void setTask(Task task) {
         this.task = task;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
-    }
-
-    public boolean isActive() {
-        return active;
+        this.active = active;
+        this.delay = delay;
     }
 
     public void setActive(boolean active) {
         this.active = active;
     }
 
-    public String getPersianDate() {
-        return persianDate;
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
-    public void setPersianDate(String persianDate) {
-        this.persianDate = persianDate;
+    public void setPersianRegisterDate(String persianRegisterDate) {
+        this.persianRegisterDate = persianRegisterDate;
     }
 
-    @Override
-    public String toString() {
-        return "TaskDetail{" +
-                "id=" + id +
-                ", description='" + description + '\'' +
-                ", task=" + task +
-                ", persistence=" + persistence +
-                ", active=" + active +
-                ", persianDate='" + persianDate + '\'' +
-                '}';
+    public Long getId() {
+        return id;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public int getDelay() {
+        return delay;
+    }
+
+    public String getPersianRegisterDate() {
+        return persianRegisterDate;
     }
 }

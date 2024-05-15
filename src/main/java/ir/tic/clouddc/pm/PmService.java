@@ -7,6 +7,7 @@ import java.util.Optional;
 
 public interface PmService {
 
+    void updateTodayTasks();
     Task getTask(Long taskId);
     List<Task> getTaskListByPmId(int pmId);
     Pm getPm(int pmId);

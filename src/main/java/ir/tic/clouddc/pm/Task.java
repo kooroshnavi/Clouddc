@@ -5,7 +5,6 @@ import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -25,6 +24,10 @@ public class Task {
     private int delay;
 
     @ManyToOne
+    @JoinColumn(name = "report_id")
+    private DailyReport dailyReport;
+
+    @ManyToOne
     @JoinColumn(name = "pm_id")
     private Pm pm;
 
@@ -32,71 +35,84 @@ public class Task {
     @JoinColumn(name = "salon_id")
     private Salon salon;
 
-    @ManyToOne
-    @JoinColumn(name = "due_report_id")
-    private DailyReport dailyReport;
-
-    @Column
-    private LocalDateTime completed;
-
     @OneToMany(mappedBy = "task", cascade = {CascadeType.ALL})
     private List<TaskDetail> taskDetailList;
 
     @Transient
-    private String dueDatePersian;
+    private String persianDueDate;
 
     @Transient
-    private String successDatePersian;
+    private String persianFinishedDate;
 
     @Transient
-    private String namePersian;
+    private String persianName;
 
-    public LocalDateTime getCompleted() {
-        return completed;
+    public Task(boolean active, int delay, Pm pm, Salon salon, List<TaskDetail> taskDetailList) {
+        this.active = active;
+        this.delay = delay;
+        this.pm = pm;
+        this.salon = salon;
+        this.taskDetailList = taskDetailList;
     }
 
-    public void setCompleted(LocalDateTime completed) {
-        this.completed = completed;
+    public void setPersianDueDate(String persianDueDate) {
+        this.persianDueDate = persianDueDate;
     }
 
-    public Long getId() {
-        return id;
+    public void setPersianFinishedDate(String persianFinishedDate) {
+        this.persianFinishedDate = persianFinishedDate;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public boolean isActive() {
-        return active;
+    public void setPersianName(String persianName) {
+        this.persianName = persianName;
     }
 
     public void setActive(boolean active) {
         this.active = active;
     }
 
-    public int getDelay() {
-        return delay;
-    }
-
     public void setDelay(int delay) {
         this.delay = delay;
+    }
+
+    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
+        this.taskDetailList = taskDetailList;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public int getDelay() {
+        return delay;
     }
 
     public Pm getPm() {
         return pm;
     }
 
-    public void setPm(Pm pm) {
-        this.pm = pm;
-    }
-
     public Salon getSalon() {
         return salon;
     }
 
-    public void setSalon(Salon salon) {
-        this.salon = salon;
+    public List<TaskDetail> getTaskDetailList() {
+        return taskDetailList;
+    }
+
+    public String getPersianDueDate() {
+        return persianDueDate;
+    }
+
+    public String getPersianFinishedDate() {
+        return persianFinishedDate;
+    }
+
+    public String getPersianName() {
+        return persianName;
     }
 
     public DailyReport getDailyReport() {
@@ -105,37 +121,5 @@ public class Task {
 
     public void setDailyReport(DailyReport dailyReport) {
         this.dailyReport = dailyReport;
-    }
-
-    public List<TaskDetail> getTaskDetailList() {
-        return taskDetailList;
-    }
-
-    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
-        this.taskDetailList = taskDetailList;
-    }
-
-    public String getDueDatePersian() {
-        return dueDatePersian;
-    }
-
-    public void setDueDatePersian(String dueDatePersian) {
-        this.dueDatePersian = dueDatePersian;
-    }
-
-    public String getSuccessDatePersian() {
-        return successDatePersian;
-    }
-
-    public void setSuccessDatePersian(String successDatePersian) {
-        this.successDatePersian = successDatePersian;
-    }
-
-    public String getNamePersian() {
-        return namePersian;
-    }
-
-    public void setNamePersian(String namePersian) {
-        this.namePersian = namePersian;
     }
 }

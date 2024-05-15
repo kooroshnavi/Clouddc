@@ -1,11 +1,9 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(schema = "Log")
@@ -17,47 +15,20 @@ public class Persistence {
     @Column
     private long id;
 
-    @Column
-    private LocalTime time;
 
-    @ManyToOne
-    @JoinColumn(name = "report_id")
-    private DailyReport dailyReport;
-
-    @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
+    @OneToMany(mappedBy = "persistence", cascade = {CascadeType.ALL})
+    private List<LogHistory> logHistoryList;
 
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
+    public List<LogHistory> getLogHistoryList() {
+        return logHistoryList;
     }
 
-    public LocalTime getTime() {
-        return time;
-    }
-
-    public void setTime(LocalTime time) {
-        this.time = time;
-    }
-
-    public DailyReport getDailyReport() {
-        return dailyReport;
-    }
-
-    public void setDailyReport(DailyReport dailyReport) {
-        this.dailyReport = dailyReport;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setLogHistoryList(List<LogHistory> logHistoryList) {
+        this.logHistoryList = logHistoryList;
     }
 
 }

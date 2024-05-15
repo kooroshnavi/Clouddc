@@ -1,6 +1,6 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.LogHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -20,7 +20,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public Persistence registerAttachment(MultipartFile file, Persistence persistence) throws IOException {
+    public void registerAttachment(MultipartFile file, LogHistory logHistory) throws IOException {
         DecimalFormat df = new DecimalFormat("###");
         MetaData metaData = new MetaData();
         metaData.setName(file.getOriginalFilename());
@@ -30,8 +30,8 @@ public class FileServiceImpl implements FileService {
         Attachment attachment = new Attachment();
         attachment.setDocument(file.getBytes());
         metaData.setAttachment(attachment);
-        metaData.setPersistence(persistence);
-        return metaDataRepository.save(metaData).getPersistence();
+        metaData.setLogHistory(logHistory);
+        metaDataRepository.save(metaData);
     }
 
     @Override

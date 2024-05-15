@@ -11,4 +11,6 @@ public interface PersonService {
 
     Person updatePerson(Person person);
 
+    Person getCurrentPerson();
+
 }

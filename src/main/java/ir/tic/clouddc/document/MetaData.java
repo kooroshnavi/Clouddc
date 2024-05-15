@@ -1,7 +1,7 @@
 package ir.tic.clouddc.document;
 
 
-import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.LogHistory;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
@@ -26,7 +26,7 @@ public class MetaData {
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "persistence_id")
-    private Persistence persistence;
+    private LogHistory logHistory;
 
     @OneToOne(fetch = FetchType.LAZY)
     @MapsId
@@ -65,12 +65,12 @@ public class MetaData {
         this.size = size;
     }
 
-    public Persistence getPersistence() {
-        return persistence;
+    public LogHistory getLogHistory() {
+        return logHistory;
     }
 
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
+    public void setLogHistory(LogHistory logHistory) {
+        this.logHistory = logHistory;
     }
 
     public Attachment getAttachment() {

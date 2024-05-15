@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
@@ -33,9 +34,12 @@ public class Pm {
     @Column
     private boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "type_id")
-    private PmType type;
+    @Column
+    private char type;
+
+    @OneToOne
+    @JoinColumn(name = "persistence_id")
+    private Persistence persistence;
 
     @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
     private List<Task> taskList;
@@ -43,16 +47,8 @@ public class Pm {
     @Transient
     private String nextDuePersian;
 
-    @Transient
-    private String lastSuccessfulPersian;
-
-
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {
@@ -87,12 +83,28 @@ public class Pm {
         this.enabled = enabled;
     }
 
-    public PmType getType() {
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public char getType() {
         return type;
     }
 
-    public void setType(PmType type) {
+    public void setType(char type) {
         this.type = type;
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
     }
 
     public List<Task> getTaskList() {
@@ -109,21 +121,5 @@ public class Pm {
 
     public void setNextDuePersian(String nextDuePersian) {
         this.nextDuePersian = nextDuePersian;
-    }
-
-    public String getLastSuccessfulPersian() {
-        return lastSuccessfulPersian;
-    }
-
-    public void setLastSuccessfulPersian(String lastSuccessfulPersian) {
-        this.lastSuccessfulPersian = lastSuccessfulPersian;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
     }
 }

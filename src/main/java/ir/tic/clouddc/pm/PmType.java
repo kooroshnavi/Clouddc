@@ -25,37 +25,7 @@ public class PmType {
     private List<Pm> pmList;
 
     @OneToOne
+    @JoinColumn(name = "persistent_id")
     private Persistence persistence;
 
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public List<Pm> getPmList() {
-        return pmList;
-    }
-
-    public void setPmList(List<Pm> pmList) {
-        this.pmList = pmList;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
-    }
 }
