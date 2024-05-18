@@ -129,7 +129,7 @@ public class PmController {
             return pmForm(model);
         }
 
-        pmService.taskRegister(pmRegisterForm);
+        pmService.pmRegister(pmRegisterForm);
         pmService.PmTypeOverview(model);
         return "pmList";
     }

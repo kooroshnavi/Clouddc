@@ -47,10 +47,8 @@ public class PmServiceImpl implements PmService {
     private final CenterService centerService;
     private final PersonService personService;
     private final ReportService reportService;
-    private final EventService eventService;
     private final NotificationService notificationService;
     private final PersistenceService persistenceService;
-    private static LocalDate CurrentDate;
     private static final int DEFAULT_ASSIGNEE_ID = 7;
 
     @Autowired
@@ -60,7 +58,8 @@ public class PmServiceImpl implements PmService {
                   PmTypeRepository pmTypeRepository, CenterService centerService,
                   PersonService personService,
                   ReportService reportService,
-                  @Lazy EventService eventService, NotificationService notificationService, PersistenceService persistenceService) {
+                  NotificationService notificationService,
+                  PersistenceService persistenceService) {
         this.pmRepository = pmRepository;
         this.taskRepository = taskRepository;
         this.taskDetailRepository = taskDetailRepository;
@@ -68,13 +67,11 @@ public class PmServiceImpl implements PmService {
         this.centerService = centerService;
         this.personService = personService;
         this.reportService = reportService;
-        this.eventService = eventService;
         this.notificationService = notificationService;
         this.persistenceService = persistenceService;
     }
 
     public void updateTodayTasks(DailyReport todayReport) {
-        CurrentDate = UtilService.getDATE();
         final List<Salon> defaultSalonList = centerService.getDefaultCenterList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<Pm> todayPmList = new ArrayList<>();
@@ -86,7 +83,7 @@ public class PmServiceImpl implements PmService {
         for (Salon salon : defaultSalonList) {
 
             for (var entry : salon.getPmDueMap().keySet()) {
-                if (salon.getPmDueMap().get(entry) == CurrentDate) {
+                if (salon.getPmDueMap().get(entry) == UtilService.getDATE()) {
                     todayPmList.add(new Pm(entry));
                 }
             }
@@ -96,7 +93,7 @@ public class PmServiceImpl implements PmService {
                 ) {
                     pm.setActive(true);
                     Task todayTask = new Task(true, 0, pm, salon);
-                    var persistence = persistenceService.setupNewPersistence('3', null);
+                    var persistence = persistenceService.setupNewPersistence('3', defaultPerson);
                     TaskDetail taskDetail = new TaskDetail("", todayTask, persistence, true, 0);
                 }
                 pmRepository.saveAll(todayPmList);
@@ -131,7 +128,6 @@ public class PmServiceImpl implements PmService {
     }
 
     private Pm endTask(Task task) {
-
         Pm pm = task.getPm();
         var salon = task.getSalon();
         var nextDue = UtilService.getDATE().plusDays(pm.getPeriod());
@@ -147,7 +143,7 @@ public class PmServiceImpl implements PmService {
         task.setDailyReport(new DailyReport(reportService.getActiveReportId()));
 
         if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
-            pm.setActive(false);    // task is inactive til next due
+            pm.setActive(false);    // pm is inactive til next due
         }
 
         return pmRepository.saveAndFlush(pm);
@@ -203,12 +199,12 @@ public class PmServiceImpl implements PmService {
         TaskDetail newTaskDetail = new TaskDetail("", task, persistence, true, 0);
         taskRepository.save(task);
 
-        notificationService.sendActiveTaskAssignedMessage(person.getAddress().getValue(), task.getPM().getName(), task.getDelay(), newTaskDetail.getAssignedDate());
+        notificationService.sendActiveTaskAssignedMessage(person.getAddress().getValue(), task.getPm().getName(), task.getDelay(), newTaskDetail.getAssignedDate());
         return task.getTaskDetailList();
     }
 
     private List<Person> getOtherPersonList() {
-        return personService.getPersonListNotIn(getCurrentPerson().getId());
+        return personService.getPersonListNotIn(personService.getPersonId(personService.getCurrentUsername()));
     } // returns a list of users that will be shown in the drop-down list of assignForm.
 
     @Override
@@ -264,7 +260,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public void taskRegister(PmRegisterForm pmRegisterForm) {
+    public void pmRegister(PmRegisterForm pmRegisterForm) {
         var person = personService.getPerson(pmRegisterForm.getPersonId());
         var centers = centerService.getCenterList();
         var newPm = new Pm();
@@ -287,10 +283,6 @@ public class PmServiceImpl implements PmService {
         }
 
         pmRepository.saveAndFlush(newPm);
-    }
-
-    private Person getCurrentPerson() {
-        return personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     private boolean checkPermission(String authenticatedName, Optional<TaskDetail> taskDetail) {

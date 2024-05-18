@@ -25,7 +25,7 @@ public interface PmService {
 
     TaskDetail modelForActionForm(Model model, Long taskDetailId);
 
-    void taskRegister(PmRegisterForm pmRegisterForm);
+    void pmRegister(PmRegisterForm pmRegisterForm);
 
     void updateTaskDetail(AssignForm assignForm, Long id);
 
