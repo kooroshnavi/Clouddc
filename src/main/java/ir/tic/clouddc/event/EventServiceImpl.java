@@ -109,6 +109,11 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public void deleteEventAttchment(long metaDataId) {
+
+    }
+
+    @Override
     public Model modelForEventController(Model model) {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();

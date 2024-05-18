@@ -47,12 +47,11 @@ public class Task {
     @Transient
     private String persianName;
 
-    public Task(boolean active, int delay, Pm pm, Salon salon, List<TaskDetail> taskDetailList) {
+    public Task(boolean active, int delay, Pm pm, Salon salon) {
         this.active = active;
         this.delay = delay;
         this.pm = pm;
         this.salon = salon;
-        this.taskDetailList = taskDetailList;
     }
 
     public void setPersianDueDate(String persianDueDate) {

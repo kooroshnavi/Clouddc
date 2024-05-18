@@ -27,6 +27,8 @@ class ReportServiceImpl implements ReportService {
 
     private static LocalDate TODAY;
 
+    private static int ACTIVE_REPORT_ID;
+
     @Autowired
     ReportServiceImpl(ReportRepository reportRepository, CenterService centerService, PmService pmService) {
         this.reportRepository = reportRepository;
@@ -37,8 +39,8 @@ class ReportServiceImpl implements ReportService {
     @Scheduled(cron = "0 5 0 * * SAT,SUN,MON,TUE,WED")
     public void startMidnightScheduling() {
         UtilService.setDate();
-        setCurrentReport();
-        pmService.updateTodayTasks();
+        var todayReport = setCurrentReport();
+        pmService.updateTodayTasks(todayReport);
         centerService.setDailyTemperatureReport(findActive(true).get());
 
     }
@@ -46,6 +48,11 @@ class ReportServiceImpl implements ReportService {
     @Override
     public Optional<DailyReport> findActive(boolean active) {
         return reportRepository.findByActive(active);
+    }
+
+    @Override
+    public int getActiveReportId() {
+        return ACTIVE_REPORT_ID;
     }
 
     @Override
@@ -62,8 +69,10 @@ class ReportServiceImpl implements ReportService {
         today.setActive(true);
         dailyReportList.add(today);
         reportRepository.saveAll(dailyReportList);
+        ACTIVE_REPORT_ID = yesterday.get().getId() + 1;
         return today;
     }
+
 
     @Override
     public void saveAll(List<DailyReport> dailyReportList) {
@@ -93,4 +102,6 @@ class ReportServiceImpl implements ReportService {
     public LocalDate getTODAY() {
         return TODAY;
     }
+
+
 }

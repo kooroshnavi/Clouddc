@@ -28,7 +28,7 @@ public class MetaData {
     @JoinColumn(name = "persistence_id")
     private LogHistory logHistory;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId
     @JoinColumn(name = "id")
     private Attachment attachment;

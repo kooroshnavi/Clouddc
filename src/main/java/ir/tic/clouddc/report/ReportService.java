@@ -8,6 +8,8 @@ public interface ReportService {
 
     Optional<DailyReport> findActive(boolean active);
 
+    int getActiveReportId();
+
     LocalDate getTODAY();
     DailyReport setCurrentReport();
     void saveAll(List<DailyReport> dailyReportList);

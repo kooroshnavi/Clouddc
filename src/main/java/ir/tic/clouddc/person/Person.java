@@ -37,6 +37,10 @@ public class Person {
     private Address address;
 
 
+    public Person(int id) {
+        this.id = id;
+    }
+
     public char getRole() {
         return role;
     }

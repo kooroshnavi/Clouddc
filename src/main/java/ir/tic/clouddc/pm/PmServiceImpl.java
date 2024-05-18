@@ -2,10 +2,10 @@ package ir.tic.clouddc.pm;
 
 import com.github.mfathi91.time.PersianDate;
 import com.github.mfathi91.time.PersianDateTime;
-import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.event.EventService;
-import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -28,9 +27,9 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -74,69 +73,39 @@ public class PmServiceImpl implements PmService {
         this.persistenceService = persistenceService;
     }
 
-    public void updateTodayTasks() {
-        CurrentDate = reportService.getTODAY();
+    public void updateTodayTasks(DailyReport todayReport) {
+        CurrentDate = UtilService.getDATE();
         final List<Salon> defaultSalonList = centerService.getDefaultCenterList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
-        List<Pm> todayPmList = pmRepository.findBynextDue(CurrentDate);
+        List<Pm> todayPmList = new ArrayList<>();
         List<Task> activeTaskList = taskRepository.findByActive(true);
 
-        var persistence = persistenceService.setupNewPersistence('3', null);
 
         delayCalculation(activeTaskList);
 
+        for (Salon salon : defaultSalonList) {
 
-        if (!todayPmList.isEmpty()) {
-            for (Pm pm : todayPmList
-            ) {
-                if (pm.getId() == 15) { // specific salon
-                    pm.setActive(true);
-                    var center = defaultSalonList.get(defaultSalonList.size() - 1);
-                    Task todayTask = taskSetup(pm, center, dailyReport);
-                    taskDetailSetup(todayTask, persistence);
-
-                } else {  // other salons
-                    for (int i = 0; i < 2; i++) {
-                        pm.setActive(true);
-                        Task todayTask = taskSetup(pm, defaultSalonList.get(i), dailyReport);
-                        taskDetailSetup(todayTask, persistence);
-                    }
+            for (var entry : salon.getPmDueMap().keySet()) {
+                if (salon.getPmDueMap().get(entry) == CurrentDate) {
+                    todayPmList.add(new Pm(entry));
                 }
             }
-            pmRepository.saveAll(todayPmList);
+
+            if (!todayPmList.isEmpty()) {
+                for (Pm pm : todayPmList
+                ) {
+                    pm.setActive(true);
+                    Task todayTask = new Task(true, 0, pm, salon);
+                    var persistence = persistenceService.setupNewPersistence('3', null);
+                    TaskDetail taskDetail = new TaskDetail("", todayTask, persistence, true, 0);
+                }
+                pmRepository.saveAll(todayPmList);
+            }
         }
 
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
-
-
-    private TaskDetail taskDetailSetup(Task todayTask, Persistence persistence) {
-        TaskDetail taskDetail = new TaskDetail();
-        taskDetail.setTask(todayTask);
-        taskDetail.setDescription("انتساب طبق زمان بندی");
-        taskDetail.setActive(true);
-        taskDetail.setPersistence(persistence);
-        return taskDetail;
-    }
-
-    private Task taskSetup(Pm pm, Salon salon, DailyReport dailyReport) {
-        Task todayTask = new Task();
-        todayTask.setDelay(0);
-        todayTask.setActive(true);
-        todayTask.setSalon(salon);
-        todayTask.setDailyReport(dailyReport);
-        todayTask.setPm(pm);
-        var pmTaskList = pm.getTaskList();
-        if (pmTaskList != null) {
-            pmTaskList.add(todayTask);
-        } else {
-            pmTaskList = new ArrayList<>();
-            pmTaskList.add(todayTask);
-        }
-
-        return todayTask;
-    }
 
     private void delayCalculation(List<Task> taskList) {
         if (!taskList.isEmpty()) {
@@ -145,6 +114,11 @@ public class PmServiceImpl implements PmService {
                 var delay = task.getDelay();
                 delay += 1;
                 task.setDelay(delay);
+
+                var activeFlow = task.getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst().get();
+                var activeLogHistory = activeFlow.getPersistence().getLogHistoryList().stream().filter(LogHistory::isActive).findFirst().get();
+                LocalDateTime assignedDate = LocalDateTime.of(activeLogHistory.getDate(), activeLogHistory.getTime());
+                activeFlow.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDate));
             }
             taskRepository.saveAll(taskList);
         }
@@ -156,34 +130,27 @@ public class PmServiceImpl implements PmService {
         return pmRepository.fetchRelatedPmList(pmTypeId);
     }
 
-    private Pm updateTask(Task task) {
-        CurrentDate = LocalDate.now();
-        Pm PM = task.getPM();
-        Optional<DailyReport> report = reportService.findActive(true);
+    private Pm endTask(Task task) {
 
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        task.setSuccessDate(LocalDateTime.now());
-        task.setSuccessDatePersian(dateTime.format(PersianDateTime.fromGregorian(task.getSuccessDate())));
-        task.setActive(false);
-        task.setDailyReport(report.get());
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        PM.setLastSuccessful(task.getSuccessDate());
-        PM.setLastSuccessfulPersian(dateTime.format(PersianDateTime.fromGregorian(PM.getLastSuccessful())));
-
-
-        if (PM.getTaskList().stream().noneMatch(Task::isActive)) {
-            PM.setActive(false);    // task is inactive til next due
-            var possibleNextDue = CurrentDate.plusDays(PM.getPeriod());
-            if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-                PM.setNextDue(LocalDate.now().plusDays(PM.getPeriod() + 2));
-            } else if (possibleNextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-                PM.setNextDue(LocalDate.now().plusDays(PM.getPeriod() + 1));
-            } else {
-                PM.setNextDue(possibleNextDue);
-            }
-            PM.setNextDuePersian(date.format(PersianDate.fromGregorian(PM.getNextDue())));
+        Pm pm = task.getPm();
+        var salon = task.getSalon();
+        var nextDue = UtilService.getDATE().plusDays(pm.getPeriod());
+        if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+            salon.getPmDueMap().put(pm.getId(), nextDue.plusDays(2));
+        } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+            salon.getPmDueMap().put(pm.getId(), nextDue.plusDays(1));
+        } else {
+            salon.getPmDueMap().put(pm.getId(), nextDue);
         }
-        return pmRepository.saveAndFlush(PM);
+
+        task.setActive(false);
+        task.setDailyReport(new DailyReport(reportService.getActiveReportId()));
+
+        if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
+            pm.setActive(false);    // task is inactive til next due
+        }
+
+        return pmRepository.saveAndFlush(pm);
     }
 
 
@@ -230,22 +197,14 @@ public class PmServiceImpl implements PmService {
                 .collect(Collectors.toList());
     }
 
-    private List<TaskDetail> assignNewTaskDetail(TaskDetail taskDetail, int actionType) {
-        Task thisTask = taskDetail.getTask();
-        Person person = personService.getPerson(actionType);
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private List<TaskDetail> assignNewTaskDetail(Task task, int actionType) {
+        Person person = new Person(actionType);
+        var persistence = persistenceService.setupNewPersistence(' ', person);
+        TaskDetail newTaskDetail = new TaskDetail("", task, persistence, true, 0);
+        taskRepository.save(task);
 
-        TaskDetail newTaskDetail = new TaskDetail();
-        newTaskDetail.setAssignedDate(LocalDateTime.now());
-        newTaskDetail.setActive(true);
-        newTaskDetail.setPersianRegisterDate(dateTime.format(PersianDateTime.fromGregorian(newTaskDetail.getAssignedDate())));
-        newTaskDetail.setPerson(person);
-        newTaskDetail.setTask(thisTask);
-        thisTask.getTaskDetailList().add(newTaskDetail);
-        taskRepository.save(thisTask);
-
-        notificationService.sendActiveTaskAssignedMessage(person.getAddress().getValue(), thisTask.getPM().getName(), thisTask.getDelay(), newTaskDetail.getAssignedDate());
-        return thisTask.getTaskDetailList();
+        notificationService.sendActiveTaskAssignedMessage(person.getAddress().getValue(), task.getPM().getName(), task.getDelay(), newTaskDetail.getAssignedDate());
+        return task.getTaskDetailList();
     }
 
     private List<Person> getOtherPersonList() {
@@ -253,20 +212,16 @@ public class PmServiceImpl implements PmService {
     } // returns a list of users that will be shown in the drop-down list of assignForm.
 
     @Override
-    public void updateTaskDetail(AssignForm assignForm, Long id) {
-        TaskDetail taskDetail = taskDetailRepository.findById(id).get();
-        switch (assignForm.getActionType()) {
-            case 100:     // Ends task. No assign
-                taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setActive(false);
-                updateTask(taskDetail.getTask());
-                break;
+    public void updateTaskDetail(AssignForm assignForm, Long taskDetailId) {
+        TaskDetail taskDetail = taskDetailRepository.findById(taskDetailId).get();
+        taskDetail.setDescription(assignForm.getDescription());
+        taskDetail.setActive(false);
+        persistenceService.updatePersistence(taskDetail.getPersistence(), '3', personService.getPersonId(personService.getCurrentUsername()));
 
-            default: // Updates current taskDetail ,creates a new taskDetail and assigns it to specified person
-                taskDetail.setDescription(assignForm.getDescription());
-                taskDetail.setActive(false);
-                assignNewTaskDetail(taskDetail, assignForm.getActionType());
-                break;
+        if (assignForm.getActionType() == 100) {
+            endTask(taskDetail.getTask());
+        } else {
+            assignNewTaskDetail(taskDetail.getTask(), assignForm.getActionType());
         }
     }
 

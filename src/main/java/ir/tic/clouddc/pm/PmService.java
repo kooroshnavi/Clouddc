@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
 import java.util.List;
@@ -7,7 +8,7 @@ import java.util.Optional;
 
 public interface PmService {
 
-    void updateTodayTasks();
+    void updateTodayTasks(DailyReport todayReport);
     Task getTask(Long taskId);
     List<Task> getTaskListByPmId(int pmId);
     Pm getPm(int pmId);

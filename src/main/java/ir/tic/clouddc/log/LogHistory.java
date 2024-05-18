@@ -34,16 +34,29 @@ public class LogHistory {
     @Column
     private char messageId;
 
+    @Column
+    private boolean active;
+
     @Transient
     private String message;
 
-    public LogHistory(LocalDate date, LocalTime time, Person person, char messageId, Persistence persistence) {
+    public LogHistory(LocalDate date, LocalTime time, Person person, char messageId, Persistence persistence, boolean active) {
         this.date = date;
         this.time = time;
         this.person = person;
         this.messageId = messageId;
         this.persistence = persistence;
+        this.active = active;
     }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
     public void setMessage(String message) {
         this.message = message;
     }

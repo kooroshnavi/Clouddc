@@ -1,7 +1,6 @@
 package ir.tic.clouddc.center;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ir.tic.clouddc.pm.Pm;
 import ir.tic.clouddc.pm.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -29,10 +28,17 @@ public class Salon {
     @JoinColumn(name = "datacenter_id")
     private DataCenter dataCenter;
 
-    @OneToMany(mappedBy = "salon_id")
+    @OneToMany(mappedBy = "salon")
     private List<Task> taskList;
 
-    private Map<Pm, LocalDate> pmDueMap;
+
+    @ElementCollection
+    @CollectionTable(name = "Pm_Due_mapping",
+            joinColumns = {@JoinColumn(name = "salon_id", referencedColumnName = "id")})
+    @MapKeyColumn(name = "Pm_id")
+    @Column(name = "due_date")
+    private Map<Integer, LocalDate> pmDueMap;
+
 
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
@@ -41,6 +47,31 @@ public class Salon {
     @MapKeyColumn(name = "date")
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
+
+
+    public Map<Integer, LocalDate> getPmDueMap() {
+        return pmDueMap;
+    }
+
+    public void setPmDueMap(Map<Integer, LocalDate> pmDueMap) {
+        this.pmDueMap = pmDueMap;
+    }
+
+    public DataCenter getDataCenter() {
+        return dataCenter;
+    }
+
+    public void setDataCenter(DataCenter dataCenter) {
+        this.dataCenter = dataCenter;
+    }
+
+    public List<Task> getTaskList() {
+        return taskList;
+    }
+
+    public void setTaskList(List<Task> taskList) {
+        this.taskList = taskList;
+    }
 
     @JsonIgnore
     public int getId() {

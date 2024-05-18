@@ -5,4 +5,6 @@ import ir.tic.clouddc.person.Person;
 public interface PersistenceService {
 
     Persistence setupNewPersistence(char messageId, Person person);
+
+    void updatePersistence(Persistence persistence, char messageId, int personId);
 }

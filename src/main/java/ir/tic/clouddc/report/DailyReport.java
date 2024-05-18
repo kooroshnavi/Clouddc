@@ -39,6 +39,10 @@ public class DailyReport {
     @Transient
     private String persianDate;
 
+    public DailyReport(int id) {
+        this.id = id;
+    }
+
     public String getPersianDate() {
         return persianDate;
     }

@@ -49,6 +49,10 @@ public class TaskDetail {
         this.delay = delay;
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public void setActive(boolean active) {
         this.active = active;
     }

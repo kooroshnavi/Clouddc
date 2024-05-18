@@ -8,7 +8,13 @@ import java.util.List;
 
 public interface FileService {
     void registerAttachment(MultipartFile file, LogHistory logHistory) throws IOException;
+
     List<MetaData> getRelatedMetadataList(List<Long> persistenceIDlist);
 
     MetaData getDocument(long id);
+
+    void deleteDocument(long medaDataId, int documentOwner, int requester);
+
+    int getDocumentOwner(long metaDataId);
+
 }

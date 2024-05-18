@@ -54,8 +54,18 @@ final class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    public int getPersonId(String username) {
+        return personRepository.fetchPersonId(username);
+    }
+
+    @Override
     public Person getCurrentPerson() {
         return getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
     }
 
 }

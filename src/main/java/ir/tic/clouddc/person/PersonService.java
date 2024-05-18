@@ -10,7 +10,9 @@ public interface PersonService {
     Person addPerson(Person person);
 
     Person updatePerson(Person person);
-
+    int getPersonId(String username);
     Person getCurrentPerson();
+
+    String getCurrentUsername();
 
 }

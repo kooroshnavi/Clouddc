@@ -41,11 +41,13 @@ public class Pm {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
-    @OneToMany(mappedBy = "taskStatus", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
     private List<Task> taskList;
 
-    @Transient
-    private String nextDuePersian;
+
+    public Pm(int id) {
+        this.id = id;
+    }
 
     public int getId() {
         return id;
@@ -113,13 +115,5 @@ public class Pm {
 
     public void setTaskList(List<Task> taskList) {
         this.taskList = taskList;
-    }
-
-    public String getNextDuePersian() {
-        return nextDuePersian;
-    }
-
-    public void setNextDuePersian(String nextDuePersian) {
-        this.nextDuePersian = nextDuePersian;
     }
 }

@@ -161,7 +161,8 @@
                                               enctype="multipart/form-data" th:object="${eventForm}" method="POST">
                                             <div class="col-12">
                                                 <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
-                                                <input class="form-control" type="file" name="attachment" id="attachment">
+                                                <input class="form-control" type="file" name="attachment"
+                                                       id="attachment">
                                             </div>
                                             <div class="col-12">
                                                 <label class="form-label">اقدامات انجام شده</label>
@@ -242,6 +243,7 @@
                             <th>ردیف</th>
                             <th>فایل</th>
                             <th>بارگذاری توسط</th>
+                            <th>حذف فایل</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -281,6 +283,14 @@
                             </td>
 
                             <td th:text="${metadata.persistence.person.name}"/>
+
+                            <td>
+                                <form>
+                                <a th:if="${metadata.logHistory.person.id == person.id }" th:href="@{/document/delete(id=${metadata.id})}"
+                                    class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="حذف فایل"
+                                    data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>
+                                </form>
+                            </td>
                         </tr>
 
 

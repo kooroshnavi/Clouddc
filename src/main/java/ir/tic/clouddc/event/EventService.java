@@ -15,6 +15,8 @@ public interface EventService {
 
     List<EventType> getEventTypeList();
 
+    void deleteEventAttchment(long metaDataId);
+
     Model modelForEventRegisterForm(Model model);
 
     Model modelForEventController(Model model);

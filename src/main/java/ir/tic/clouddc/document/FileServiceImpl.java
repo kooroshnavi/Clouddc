@@ -1,7 +1,9 @@
 package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.log.LogHistory;
+import ir.tic.clouddc.log.PersistenceService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,9 +16,13 @@ public class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
 
+    private final PersistenceService persistenceService;
+
+
     @Autowired
-    public FileServiceImpl(MetaDataRepository metaDataRepository) {
+    public FileServiceImpl(MetaDataRepository metaDataRepository, PersistenceService persistenceService) {
         this.metaDataRepository = metaDataRepository;
+        this.persistenceService = persistenceService;
     }
 
     @Override
@@ -25,8 +31,8 @@ public class FileServiceImpl implements FileService {
         MetaData metaData = new MetaData();
         metaData.setName(file.getOriginalFilename());
         metaData.setType(file.getContentType());
-        var size = file.getSize() / 1024;
-        metaData.setSize(Float.parseFloat(df.format(size))); // to KB
+        var size = file.getSize() / 1024; // KB
+        metaData.setSize(Float.parseFloat(df.format(size)));
         Attachment attachment = new Attachment();
         attachment.setDocument(file.getBytes());
         metaData.setAttachment(attachment);
@@ -36,11 +42,24 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<MetaData> getRelatedMetadataList(List<Long> persistenceIDlist) {
-       return metaDataRepository.fetchRelatedMetaDataList(persistenceIDlist);
+        return metaDataRepository.fetchRelatedMetaDataList(persistenceIDlist);
     }
 
     @Override
     public MetaData getDocument(long id) {
         return metaDataRepository.findById(id).get();
+    }
+
+    @Override
+    @PreAuthorize("documentOwner == requester")
+    public void deleteDocument(long medaDataId, int documentOwner, int requester) {
+        var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
+        persistenceService.updatePersistence(persistence, '1', documentOwner);
+        metaDataRepository.deleteById(medaDataId);
+    }
+
+    @Override
+    public int getDocumentOwner(long metaDataId) {
+        return metaDataRepository.fetchMetaDataOwnerName(metaDataId);
     }
 }
