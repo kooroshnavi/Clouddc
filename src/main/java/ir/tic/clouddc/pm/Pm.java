@@ -34,8 +34,9 @@ public class Pm {
     @Column
     private boolean active;
 
-    @Column
-    private char type;
+    @ManyToOne
+    @JoinColumn(name = "type_id")
+    private PmType type;
 
     @OneToOne
     @JoinColumn(name = "persistence_id")
@@ -93,11 +94,11 @@ public class Pm {
         this.active = active;
     }
 
-    public char getType() {
+    public PmType getType() {
         return type;
     }
 
-    public void setType(char type) {
+    public void setType(PmType type) {
         this.type = type;
     }
 

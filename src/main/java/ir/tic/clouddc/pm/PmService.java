@@ -10,7 +10,7 @@ public interface PmService {
 
     void updateTodayTasks(DailyReport todayReport);
     Task getTask(Long taskId);
-    List<Task> getTaskListByPmId(int pmId);
+    List<Task> getTaskList(int pmId);
     Pm getPm(int pmId);
     List<Task> getPersonTask();
     List<Task> getActiveTaskList(int statusId);

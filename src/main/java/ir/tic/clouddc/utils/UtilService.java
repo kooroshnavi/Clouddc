@@ -67,7 +67,7 @@ public final class UtilService {
         return LocalTime.now();
     }
 
-    public static String getPersianDate(LocalDate date){
+    public static String getFormattedPersianDate(LocalDate date){
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         return dateFormatter.format(PersianDate.fromGregorian(date));
     }

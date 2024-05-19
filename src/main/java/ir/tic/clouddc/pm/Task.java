@@ -5,6 +5,8 @@ import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -23,8 +25,14 @@ public class Task {
     @Column
     private int delay;
 
+    @Column
+    private LocalDate dueDate;
+
+    @Column
+    private LocalTime time;
+
     @ManyToOne
-    @JoinColumn(name = "report_id")
+    @JoinColumn(name = "finished_report_id")
     private DailyReport dailyReport;
 
     @ManyToOne
@@ -47,11 +55,24 @@ public class Task {
     @Transient
     private String persianName;
 
-    public Task(boolean active, int delay, Pm pm, Salon salon) {
+    public Task(boolean active, int delay, Pm pm, Salon salon, LocalDate dueDate) {
         this.active = active;
         this.delay = delay;
         this.pm = pm;
         this.salon = salon;
+    }
+
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
     public void setPersianDueDate(String persianDueDate) {

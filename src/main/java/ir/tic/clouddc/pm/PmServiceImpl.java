@@ -92,7 +92,7 @@ public class PmServiceImpl implements PmService {
                 for (Pm pm : todayPmList
                 ) {
                     pm.setActive(true);
-                    Task todayTask = new Task(true, 0, pm, salon);
+                    Task todayTask = new Task(true, 0, pm, salon, UtilService.getDATE());
                     var persistence = persistenceService.setupNewPersistence('3', defaultPerson);
                     TaskDetail taskDetail = new TaskDetail("", todayTask, persistence, true, 0);
                 }
@@ -128,6 +128,10 @@ public class PmServiceImpl implements PmService {
     }
 
     private Pm endTask(Task task) {
+        task.setTime(UtilService.getTime());
+        task.setActive(false);
+        task.setDailyReport(new DailyReport(reportService.getActiveReportId()));
+
         Pm pm = task.getPm();
         var salon = task.getSalon();
         var nextDue = UtilService.getDATE().plusDays(pm.getPeriod());
@@ -139,9 +143,6 @@ public class PmServiceImpl implements PmService {
             salon.getPmDueMap().put(pm.getId(), nextDue);
         }
 
-        task.setActive(false);
-        task.setDailyReport(new DailyReport(reportService.getActiveReportId()));
-
         if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
             pm.setActive(false);    // pm is inactive til next due
         }
@@ -151,17 +152,14 @@ public class PmServiceImpl implements PmService {
 
 
     @Override
-    public List<Task> getTaskListByPmId(int pmId) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+    public List<Task> getTaskList(int pmId) {
         List<Task> taskList = taskRepository.findByPmId(pmId);
         for (Task task : taskList) {
-            task.setDueDatePersian(dateFormatter.format(PersianDate.fromGregorian(task.getDailyReport().getDate())));
+            task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
             if (!task.isActive()) {
-                task.setSuccessDatePersian(dateTimeFormatter.format(PersianDateTime.fromGregorian(task.getCompleted())));
+                task.setPersianFinishedDate(UtilService.getFormattedPersianDateTime(LocalDateTime.of(task.getDailyReport().getDate(), task.getTime())));
             }
         }
-
         return taskList;
     }
 

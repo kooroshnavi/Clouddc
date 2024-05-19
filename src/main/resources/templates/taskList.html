@@ -72,9 +72,10 @@
 							   <i class="lni lni-chevron-left"></i>
 						   </div>
 						   <div class="info">
-							   <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${status.name}"></strong></h6>
-							   <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${status.period}"></p>
-							   <p class="mb-1" th:if="${status.description != null}" th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${status.description}"></p>
+							   <h6 class="mb-2" ><strong th:text=" 'دسته بندی: ' + ${pm.type.name}"></strong></h6>
+							   <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${pm.name}"></strong></h6>
+							   <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pm.period}"></p>
+							   <p class="mb-1" th:if="${status.description != null}" th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${pm.description}"></p>
 						   </div>
 					   </div>
 				   </div>
@@ -94,9 +95,9 @@
 									<th>ردیف</th>
 									<th>شماره وظیفه</th>
 									<th>مرکز</th>
-									<th>تاریخ سررسید</th>
+									<th>زمان سررسید</th>
+									<th>زمان اقدام</th>
 									<th>تاخیر (روز)</th>
-									<th>تاریخ اقدام</th>
 									<th>وضعیت</th>
 
 								</tr>
@@ -107,42 +108,38 @@
 
 									<td th:text="${iter.count}"/>
 									<td th:text="${task.getId}"/>
-									<td th:text="${task.getCenter.getNamePersian}"/>
-									<td th:text="${task.getDueDatePersian}"/>
-									<td class="clock">
-										<span th:if="${task.getDelay} > 0" th:text="${task.getDelay}" class="badge bg-light-danger text-danger w-100"></span>
-										<span th:if="${task.getDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
-									</td>
+									<td th:text="${task.salon.name}"/>
+									<td th:text="${task.persianDueDate}"/>
+
 									<td>
 										<div class="col">
-											<button th:if="${task.getSuccessDatePersian == null}"
-													class="btn btn-outline-warning px-10 radius-30" disabled="disabled">اقدام
-												نشده
-											</button>
+											<button th:if="${task.persianFinishedDate == null}"
+													class="btn btn-outline-warning px-10 radius-30" disabled="disabled">در حال انجام</button>
 										</div>
 										<div class="col">
-											<button th:if="${task.getSuccessDatePersian != null}" href="/pm"
+											<button th:if="${task.persianFinishedDate != null}" href="/pm"
 													th:text="${task.getSuccessDatePersian}"
 													class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
 													data-bs-placement="bottom" disabled="disabled"></button>
 										</div>
 									</td>
 
-
+									<td class="clock">
+										<span th:if="${task.delay} > 0" th:text="${task.delay}" class="badge bg-light-danger text-danger w-100"></span>
+										<span th:if="${task.delay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
+									</td>
 
 									<td>
-
 										<div class="col">
-											<a th:if="${task.isActive}" th:href="@{/pm/task(id=${task.id})}"
+											<a th:if="${task.isActive}" th:href="@{/pm/task/detailList(id=${task.id})}"
 											   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
 											   data-bs-placement="bottom" title="گردش کار">فعال</a>
 										</div>
 										<div class="col">
-											<a th:if="${not task.isActive}" th:href="@{/pm/task(id=${task.id})}"
+											<a th:if="${not task.isActive}" th:href="@{/pm/task/detailList(id=${task.id})}"
 											   class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
 													data-bs-placement="bottom" title="گردش کار">اتمام وظیفه</a>
 										</div>
-
 									</td>
 
 								</tr>

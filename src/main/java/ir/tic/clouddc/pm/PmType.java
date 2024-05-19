@@ -24,8 +24,33 @@ public class PmType {
     @OneToMany(mappedBy = "type")
     private List<Pm> pmList;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "persistent_id")
     private Persistence persistence;
 
+    public PmType(String name, List<Pm> pmList, Persistence persistence) {
+        this.name = name;
+        this.pmList = pmList;
+        this.persistence = persistence;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<Pm> getPmList() {
+        return pmList;
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
 }

@@ -69,12 +69,22 @@ public class PmController {
         return "pmEditView";
     }
 
-    @GetMapping("/")
+    @GetMapping("/task")
     public String showTaskList(@RequestParam int pmId, Model model) {
-        List<Task> taskList = pmService.getTaskListByPmId(pmId);
+        List<Task> taskList = pmService.getTaskList(pmId);
         model.addAttribute("taskList", taskList);
+        model.addAttribute("pm", taskList.get(0).getPm());
         return null;
     }
+
+    @GetMapping("/task/detailList")
+    public String showTaskDetailPage(@RequestParam Long taskId, Model model) {
+
+        pmService.modelForTaskDetail(model, taskId);
+
+        return "taskDetail";
+    }
+/*
 
     @GetMapping("/")
     public String showActiveTaskList(@RequestParam int pmId, Model model) {
@@ -86,14 +96,7 @@ public class PmController {
         return "taskList";
     }
 
-    @GetMapping("/task")
-    public String getTaskDetail(@RequestParam Long id, Model model) {
 
-        pmService.modelForTaskDetail(model, id);
-
-        return "taskDetail";
-    }
-/*
     @GetMapping("/pm/task/edit")
     public String modifyTask(@RequestParam long id, Model model) {
         Optional<TaskDetail> taskDetail = taskService.activeTaskDetail(id, true);
