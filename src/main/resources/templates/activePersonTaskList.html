@@ -75,23 +75,30 @@
 									<th>عنوان</th>
 									<th>مرکز</th>
 									<th>تاریخ سررسید</th>
-									<th>تاخیر (روز)</th>
+									<th>تاخیر کل (روز)</th>
+									<th>تاخیر شما در انجام این وظیفه (روز)</th>
 									<th>عملیات</th>
 								</tr>
 								</thead>
 								<tbody>
 
-								<tr th:each="task, iter : ${userTaskList}">
+								<tr th:each="task, iter : ${activePersonTaskList}">
 
 									<td th:text="${iter.count}"/>
 									<td>
-										<strong th:text="${task.getTaskStatus.name}" ></strong>
+										<strong th:text="${task.pm.name}" ></strong>
 									</td>
-									<td th:text="${task.getCenter.getNamePersian}"/>
-									<td th:text="${task.getDueDatePersian}"/>
+									<td th:text="${task.salon.name}"/>
+									<td th:text="${task.persianDueDate}"/>
+
 									<td>
 										<span th:if="${task.getDelay} > 0" th:text="${task.getDelay}" class="badge bg-light-danger text-danger w-100"></span>
 										<span th:if="${task.getDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
+									</td>
+
+									<td>
+										<span th:if="${task.currentPersonDelay} > 0" th:text="${task.currentPersonDelay}" class="badge bg-light-danger text-danger w-100"></span>
+										<span th:if="${task.currentPersonDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
 									</td>
 
 									<td>

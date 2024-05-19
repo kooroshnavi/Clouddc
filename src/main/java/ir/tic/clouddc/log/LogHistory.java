@@ -49,6 +49,14 @@ public class LogHistory {
         this.active = active;
     }
 
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
     public boolean isActive() {
         return active;
     }

@@ -21,9 +21,6 @@ public class TaskDetail {
     @Nationalized
     private String description;
 
-    @Column
-    private LocalDateTime registerDate;
-
     @ManyToOne
     @JoinColumn(name = "task_id")
     private Task task;
@@ -36,17 +33,62 @@ public class TaskDetail {
     private boolean active;
 
     @Column
+    private LocalDateTime assignedTime;
+
+    @Column
+    private LocalDateTime finishedTime;
+
+    @Column
     private int delay;
 
     @Transient
     private String persianRegisterDate;
 
-    public TaskDetail(String description, Task task, Persistence persistence, boolean active, int delay) {
+    @Transient
+    private String persianFinishedDate;
+
+    @Transient
+    private String personName;
+
+    public TaskDetail(String description, Task task, Persistence persistence, boolean active, int delay, LocalDateTime dateTime) {
         this.description = description;
         this.task = task;
         this.persistence = persistence;
         this.active = active;
         this.delay = delay;
+        this.assignedTime = dateTime;
+    }
+
+    public LocalDateTime getFinishedTime() {
+        return finishedTime;
+    }
+
+    public void setFinishedTime(LocalDateTime finishedTime) {
+        this.finishedTime = finishedTime;
+    }
+
+    public LocalDateTime getAssignedTime() {
+        return assignedTime;
+    }
+
+    public void setAssignedTime(LocalDateTime assignedTime) {
+        this.assignedTime = assignedTime;
+    }
+
+    public String getPersianFinishedDate() {
+        return persianFinishedDate;
+    }
+
+    public void setPersianFinishedDate(String persianFinishedDate) {
+        this.persianFinishedDate = persianFinishedDate;
+    }
+
+    public String getPersonName() {
+        return personName;
+    }
+
+    public void setPersonName(String personName) {
+        this.personName = personName;
     }
 
     public void setDescription(String description) {

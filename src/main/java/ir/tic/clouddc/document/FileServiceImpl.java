@@ -2,6 +2,8 @@ package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.PersistenceService;
+import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -54,7 +56,7 @@ public class FileServiceImpl implements FileService {
     @PreAuthorize("documentOwner == requester")
     public void deleteDocument(long medaDataId, int documentOwner, int requester) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        persistenceService.updatePersistence(persistence, '1', documentOwner);
+        persistenceService.setupNewPersistence(UtilService.getDATE(), UtilService.getTime(), '1', new Person(documentOwner), false);
         metaDataRepository.deleteById(medaDataId);
     }
 

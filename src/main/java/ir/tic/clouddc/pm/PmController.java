@@ -79,39 +79,10 @@ public class PmController {
 
     @GetMapping("/task/detailList")
     public String showTaskDetailPage(@RequestParam Long taskId, Model model) {
-
         pmService.modelForTaskDetail(model, taskId);
 
         return "taskDetail";
     }
-/*
-
-    @GetMapping("/")
-    public String showActiveTaskList(@RequestParam int pmId, Model model) {
-        List<Task> activeTaskList = pmService.getActiveTaskList(pmId);
-        var pm = pmService.getPmList(pmId);
-        model.addAttribute("status", pm);
-        model.addAttribute("taskList", activeTaskList);
-
-        return "taskList";
-    }
-
-
-    @GetMapping("/pm/task/edit")
-    public String modifyTask(@RequestParam long id, Model model) {
-        Optional<TaskDetail> taskDetail = taskService.activeTaskDetail(id, true);
-        if (taskDetail.isPresent()) {
-            model.addAttribute("modifyForm", new ModifyTaskForm());
-            model.addAttribute("name", taskDetail.get().getTask().getTaskStatus().getName());
-            model.addAttribute("taskPerson", taskDetail.get().getPerson().getName());
-            model.addAttribute("delay", taskDetail.get().getTask().getDelay());
-            model.addAttribute("dueDate", taskDetail.get().getTask().getDueDatePersian());
-            model.addAttribute("center", taskDetail.get().getTask().getCenter().getNamePersian());
-            taskService.modelForRegisterTask(model);
-            return "taskModify";
-        }
-        return "404";
-    }*/
 
     @GetMapping("/register")
     public String pmForm(Model model) {
@@ -139,11 +110,11 @@ public class PmController {
 
 
     @GetMapping("/myTask")
-    private String getUserTask(Model model) {
+    private String showActivePersonTaskList(Model model) {
 
-        pmService.modelForPersonTaskList(model);
+        pmService.modelForActivePersonTaskList(model);
 
-        return "userTask";
+        return "activePersonTaskList";
     }
 
 
@@ -165,7 +136,7 @@ public class PmController {
         System.out.println("Captured: " + model.getAttribute("assignForm").toString());
 
         pmService.updateTaskDetail(assignForm, id);
-        pmService.modelForPersonTaskList(model);
+        pmService.modelForActivePersonTaskList(model);
 
         return "userTask";
     }

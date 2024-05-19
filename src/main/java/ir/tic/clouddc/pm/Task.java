@@ -53,15 +53,35 @@ public class Task {
     private String persianFinishedDate;
 
     @Transient
-    private String persianName;
+    private String name;
+
+    @Transient
+    private int currentPersonDelay;
 
     public Task(boolean active, int delay, Pm pm, Salon salon, LocalDate dueDate) {
         this.active = active;
         this.delay = delay;
         this.pm = pm;
         this.salon = salon;
+        this.dueDate = dueDate;
     }
 
+
+    public int getCurrentPersonDelay() {
+        return currentPersonDelay;
+    }
+
+    public void setCurrentPersonDelay(int currentPersonDelay) {
+        this.currentPersonDelay = currentPersonDelay;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
 
     public LocalTime getTime() {
         return time;
@@ -83,9 +103,6 @@ public class Task {
         this.persianFinishedDate = persianFinishedDate;
     }
 
-    public void setPersianName(String persianName) {
-        this.persianName = persianName;
-    }
 
     public void setActive(boolean active) {
         this.active = active;
@@ -129,10 +146,6 @@ public class Task {
 
     public String getPersianFinishedDate() {
         return persianFinishedDate;
-    }
-
-    public String getPersianName() {
-        return persianName;
     }
 
     public DailyReport getDailyReport() {
