@@ -1,8 +1,7 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.log.LogHistory;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.PersistenceService;
-import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -28,7 +27,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void registerAttachment(MultipartFile file, LogHistory logHistory) throws IOException {
+    public void attachmentRegister(MultipartFile file, Persistence persistence) throws IOException {
         DecimalFormat df = new DecimalFormat("###");
         MetaData metaData = new MetaData();
         metaData.setName(file.getOriginalFilename());
@@ -38,7 +37,7 @@ public class FileServiceImpl implements FileService {
         Attachment attachment = new Attachment();
         attachment.setDocument(file.getBytes());
         metaData.setAttachment(attachment);
-        metaData.setLogHistory(logHistory);
+        metaData.setPersistence(persistence);
         metaDataRepository.save(metaData);
     }
 
@@ -56,7 +55,7 @@ public class FileServiceImpl implements FileService {
     @PreAuthorize("documentOwner == requester")
     public void deleteDocument(long medaDataId, int documentOwner, int requester) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        persistenceService.setupNewPersistence(UtilService.getDATE(), UtilService.getTime(), '1', new Person(documentOwner), false);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), persistence, ' ', false);
         metaDataRepository.deleteById(medaDataId);
     }
 

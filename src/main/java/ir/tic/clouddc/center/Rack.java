@@ -29,7 +29,7 @@ public class Rack {
     @CollectionTable(name = "device_unit_map",
             schema = "Center",
             joinColumns = {@JoinColumn(name = "device_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "date")
-    @Column(name = "unit")
+    @MapKeyColumn(name = "device_id")
+    @Column(name = "unit_offset")
     private Map<Device, Integer> deviceLocateMap;
 }

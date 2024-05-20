@@ -79,9 +79,9 @@ public class EventServiceImpl implements EventService {
 
     private void eventDetailRegister(EventForm eventForm, Event event) throws IOException {
         EventDetail eventDetail = new EventDetail();
-        var persistence = persistenceService.setupNewPersistence(UtilService.getDATE(), UtilService.getTime(), '0', personService.getCurrentPerson(), true);
+        var persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), '0', personService.getCurrentPerson(), true);
         if (eventForm.getFile().getSize() > 0) {
-            fileService.registerAttachment(eventForm.getFile(), persistence.getLogHistoryList().stream().findFirst().get());
+            fileService.attachmentRegister(eventForm.getFile(), persistence);
         }
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
@@ -135,7 +135,7 @@ public class EventServiceImpl implements EventService {
     @Override
     public Model modelForEventDetail(Model model, Long eventId) {
         List<EventDetail> eventDetailList = getEventDetailList(getEvent(eventId));
-        List<Long> persistenceIdList = eventDetailRepository.getPersistenceIdList(getEvent(eventId));
+        List<Long> persistenceIdList = eventDetailRepository.getPersistenceIdList(eventId);
         List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList);
         if (metaDataList.size() > 0) {
             model.addAttribute("metaDataList", metaDataList);

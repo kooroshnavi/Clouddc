@@ -31,7 +31,6 @@ public class Salon {
     @OneToMany(mappedBy = "salon")
     private List<Task> taskList;
 
-
     @ElementCollection
     @CollectionTable(name = "Pm_Due_mapping",
             joinColumns = {@JoinColumn(name = "salon_id", referencedColumnName = "id")})

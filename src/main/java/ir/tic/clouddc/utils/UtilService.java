@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
@@ -18,6 +19,8 @@ import static java.util.Map.entry;
 public final class UtilService {
 
     private static LocalDate DATE;
+
+    private static int TODAY_REPORT_ID ;
 
 
     public static final Map<String, String> persianDay = Map.ofEntries(
@@ -64,7 +67,7 @@ public final class UtilService {
     }
 
     public static LocalTime getTime() {
-        return LocalTime.now();
+        return LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
     public static String getFormattedPersianDate(LocalDate date){
@@ -78,4 +81,11 @@ public final class UtilService {
 
     }
 
+    public static void setTodayReportId(int todayReportId) {
+        TODAY_REPORT_ID = todayReportId;
+    }
+
+    public static int getTodayReportId() {
+        return TODAY_REPORT_ID;
+    }
 }

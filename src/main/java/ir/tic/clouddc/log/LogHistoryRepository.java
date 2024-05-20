@@ -12,9 +12,11 @@ import java.util.List;
 public interface LogHistoryRepository extends JpaRepository<LogHistory, Long> {
 
 
-    @Query("SELECT TOP(1) l.person FROM LogHistory l WHERE l.persistence.id = :persistenceId")
-    Person fetchTaskDetailPersonName(@Param("persistenceId") long persistenceId);
-
     @Query("SELECT l.persistence.id FROM LogHistory l WHERE l.person.id = :personId AND l.active = :active")
     List<Integer> fetchActivePersonPersistenceIdList(@Param("personId") int personId, @Param("active") boolean active);
+
+    @Query(value = "SELECT Top 1 person FROM LogHistory  WHERE persistence_id = :persistenceId AND active = :active", nativeQuery = true)
+    Person fetchRelatedCurrentPerson(@Param("persistenceId") long persistenceId, @Param("active") boolean active);
+
+
 }

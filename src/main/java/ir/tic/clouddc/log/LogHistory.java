@@ -35,18 +35,18 @@ public class LogHistory {
     private char messageId;
 
     @Column
-    private boolean active;
+    private boolean last;
 
     @Transient
     private String message;
 
-    public LogHistory(LocalDate date, LocalTime time, Person person, char messageId, Persistence persistence, boolean active) {
+    public LogHistory(LocalDate date, LocalTime time, Person person, char messageId, Persistence persistence, boolean last) {
         this.date = date;
         this.time = time;
         this.person = person;
         this.messageId = messageId;
         this.persistence = persistence;
-        this.active = active;
+        this.last = last;
     }
 
     public void setDate(LocalDate date) {
@@ -57,12 +57,12 @@ public class LogHistory {
         this.time = time;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isLast() {
+        return last;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setLast(boolean last) {
+        this.last = last;
     }
 
     public void setMessage(String message) {

@@ -128,7 +128,6 @@ public class PmController {
     }
 
 
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     @PostMapping("/task/form/update")
     public String assignTaskDetail(Model model,
                                    @RequestParam("id") Long id,

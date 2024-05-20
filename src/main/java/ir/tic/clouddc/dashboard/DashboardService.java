@@ -47,9 +47,9 @@ public class DashboardService {
 
     private Model overallStatistic(Model model) {
 
-        model = taskStatistics(model);
-        model = eventStatistics(model);
-        model = centerStatistics(model);
+     //   model = taskStatistics(model);
+       // model = eventStatistics(model);
+       // model = centerStatistics(model);
 
         return model;
     }

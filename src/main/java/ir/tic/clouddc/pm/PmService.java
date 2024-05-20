@@ -8,7 +8,6 @@ import java.util.List;
 public interface PmService {
 
     void updateTodayTasks(DailyReport todayReport);
-    Task getTask(Long taskId);
     List<Task> getTaskList(int pmId);
     Pm getPm(int pmId);
     List<Task> getActivePersonTaskList();

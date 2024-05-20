@@ -1,7 +1,6 @@
 package ir.tic.clouddc.pm;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -13,16 +12,23 @@ public class PmRegisterForm {
     @NotBlank(message = "توضیحات نباید خالی باشد")
     private String description;
 
-    @NotNull
     private int period;
 
-    @NotNull
     private int personId;
 
-    @NotNull
     private int centerId;
 
+    private int typeId;
+
     private MultipartFile file;
+
+    public int getTypeId() {
+        return typeId;
+    }
+
+    public void setTypeId(int typeId) {
+        this.typeId = typeId;
+    }
 
     public String getName() {
         return name;

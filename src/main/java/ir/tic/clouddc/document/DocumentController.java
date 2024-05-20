@@ -31,8 +31,8 @@ public class DocumentController {
     }
 
     @GetMapping("/download")
-    public void getDocument(@RequestParam long id, HttpServletResponse response) throws IOException {
-        MetaData metaData = fileService.getDocument(id);
+    public void getDocument(@RequestParam long metaDataId, HttpServletResponse response) throws IOException {
+        MetaData metaData = fileService.getDocument(metaDataId);
         response.setContentType(metaData.getType());
         String fileName = URLEncoder.encode(metaData.getName(), StandardCharsets.UTF_8);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);

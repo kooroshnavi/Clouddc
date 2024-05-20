@@ -8,11 +8,12 @@ import java.util.List;
 
 public interface PersistenceService {
 
-    Persistence setupNewPersistence(LocalDate date, LocalTime time, char messageId, Person person, boolean active);
+    Persistence persistenceSetup(LocalDate date, LocalTime time, char messageId, Person person);
 
-    void updatePersistence(LocalDate date, LocalTime time, Persistence persistence, char messageId, boolean active);
+    void historyUpdate(LocalDate date, LocalTime time, char messageId, Person person, Persistence persistence);
 
-    Person getAssignedPerson(long persistenceId);
 
     List<Integer> getActivePersonPersistenceIdList(int personId, boolean active);
+
+    Person getRelatedCurrentPerson(long persistenceId, boolean active);
 }

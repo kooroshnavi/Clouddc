@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+
+    <title>Snacked - Bootstrap 5 Admin Template</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">تجارت الکترونیک</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">دسته بندی ها</li>
+                    </ol>
+                </nav>
+            </div>
+            <div class="ms-auto">
+                <div class="btn-group">
+                    <button type="button" class="btn btn-primary">تنظیمات</button>
+                    <button type="button" class="btn btn-primary split-bg-primary dropdown-toggle dropdown-toggle-split"
+                            data-bs-toggle="dropdown"><span class="visually-hidden">کشویی را تغییر دهید</span>
+                    </button>
+                    <div class="dropdown-menu dropdown-menu-right dropdown-menu-lg-end"><a class="dropdown-item"
+                                                                                           href="javascript:;">عمل</a>
+                        <a class="dropdown-item" href="javascript:;">یک اقدام دیگر</a>
+                        <a class="dropdown-item" href="javascript:;">یه چیز دیگه اینجا</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript:;">لینک جدا شده</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="card">
+            <div class="card-header py-3">
+                <h6 class="mb-0">دسته بندی</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-lg-4 d-flex">
+                        <div class="card border shadow-none w-100">
+                            <div class="card-body">
+                                <form class="row g-3">
+                                    <div class="col-12">
+
+                                        <div class="col-12">
+                                            <label class="form-label">دسته بندی</label>
+                                            <select class="form-select">
+                                                <option>روش</option>
+                                                <option>الکترونیک</option>
+                                                <option>مبلمان</option>
+                                                <option>ورزش ها</option>
+                                            </select>
+                                        </div>
+
+                                        <label class="form-label">نام</label>
+                                        <input type="text" class="form-control" placeholder="Category name">
+                                    </div>
+
+
+                                    <div class="col-12">
+                                        <label class="form-label">شرح</label>
+                                        <textarea class="form-control" rows="3" cols="3"
+                                                  placeholder="شرح مختصر دسته بندی"></textarea>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <div class="d-grid">
+                                            <button class="btn btn-primary">بروزرسانی نام دسته بندی</button>
+                                        </div>
+                                    </div>
+                                </form>
+
+                                <div class="col-12">
+                                    <div class="d-grid">
+                                        <button class="btn btn-primary">تعریف دسته بندی جدید</button>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-8 d-flex">
+                        <div class="card border shadow-none w-100">
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table align-middle">
+                                        <thead class="table-light">
+                                        <tr>
+                                            <th>ردیف</th>
+                                            <th>عنوان Pm</th>
+                                            <th>دوره تکرار</th>
+                                            <th>تعداد وظایف</th>
+                                            <th>جزئیات</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+
+                                        <tr>
+                                            <td>روش</td>
+                                            <td>مقداری لورم ایپسوم</td>
+                                            <td>/روش</td>
+                                            <td>54</td>
+                                            <td>
+                                                <div class="d-flex align-items-center gap-3 fs-6">
+                                                    <a href="javascript:;" class="text-primary" data-bs-toggle="tooltip"
+                                                       data-bs-placement="bottom" title=""
+                                                       data-bs-original-title="View detail" aria-label="Views"><i
+                                                            class="bi bi-eye-fill"></i></a>
+                                                    <a href="javascript:;" class="text-warning" data-bs-toggle="tooltip"
+                                                       data-bs-placement="bottom" title=""
+                                                       data-bs-original-title="Edit info" aria-label="Edit"><i
+                                                            class="bi bi-pencil-fill"></i></a>
+                                                    <a href="javascript:;" class="text-danger" data-bs-toggle="tooltip"
+                                                       data-bs-placement="bottom" title=""
+                                                       data-bs-original-title="Delete" aria-label="Delete"><i
+                                                            class="bi bi-trash-fill"></i></a>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <nav class="float-end mt-0" aria-label="Page navigation">
+                                    <ul class="pagination">
+                                        <li class="page-item"><a class="page-link" href="#">قبلی</a></li>
+                                        <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">2</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">3</a></li>
+                                        <li class="page-item"><a class="page-link" href="#">بعد</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                </div><!--end row-->
+            </div>
+        </div>
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+
+</body>
+
+</html>

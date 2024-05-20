@@ -10,6 +10,6 @@ import java.util.List;
 @Repository
 public interface EventDetailRepository extends JpaRepository<EventDetail, Long> {
 
-    @Query("SELECT id FROM EventDetail WHERE event = :event")
-    List<Long> getPersistenceIdList(@Param("event") Event event);
+    @Query("SELECT e.persistence.id FROM EventDetail e WHERE event.id = :eventId")
+    List<Long> getPersistenceIdList(@Param("eventId") long event);
 }

@@ -10,9 +10,9 @@ import java.util.List;
 
 @Repository
 public interface TemperatureRepository extends JpaRepository<Temperature, Integer> {
-    boolean existsBydailyReportAndCenter(DailyReport dailyReport, Salon salon);
+    boolean existsBydailyReportAndSalon(DailyReport dailyReport, Salon salon);
 
-    @Query("SELECT value FROM Temperature WHERE center = :center AND dailyReport = :report")
-    List<Float> getDailytemperatureList(@Param("center") Salon salon, @Param("report") DailyReport report);
+    @Query("SELECT value FROM Temperature WHERE salon = :salon AND dailyReport = :report")
+    List<Float> getDailytemperatureList(@Param("salon") Salon salon, @Param("report") DailyReport report);
 
 }

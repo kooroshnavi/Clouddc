@@ -1,7 +1,7 @@
 package ir.tic.clouddc.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ir.tic.clouddc.log.LogHistory;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
@@ -34,21 +34,22 @@ public class Person {
     @Column
     private char role;
 
-    @OneToMany(mappedBy = "person" , cascade = {CascadeType.ALL})
-    private List<LogHistory> logHistoryList;
+    @OneToMany(mappedBy = "person")
+    private List<Persistence> persistenceList;
 
     @OneToOne
     @PrimaryKeyJoinColumn
     private Address address;
 
 
+    public List<Persistence> getPersistenceList() {
+        return persistenceList;
+    }
+
     public Person(int id) {
         this.id = id;
     }
 
-    public List<LogHistory> getLogHistoryList() {
-        return logHistoryList;
-    }
 
     public char getRole() {
         return role;

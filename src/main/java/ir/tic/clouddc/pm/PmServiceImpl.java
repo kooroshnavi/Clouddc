@@ -1,6 +1,5 @@
 package ir.tic.clouddc.pm;
 
-import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.log.LogHistory;
@@ -9,7 +8,6 @@ import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
-import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +20,6 @@ import org.springframework.ui.Model;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -43,7 +40,6 @@ public class PmServiceImpl implements PmService {
     private final PmTypeRepository pmTypeRepository;
     private final CenterService centerService;
     private final PersonService personService;
-    private final ReportService reportService;
     private final NotificationService notificationService;
     private final PersistenceService persistenceService;
     private static final int DEFAULT_ASSIGNEE_ID = 7;
@@ -54,7 +50,6 @@ public class PmServiceImpl implements PmService {
                   TaskDetailRepository taskDetailRepository,
                   PmTypeRepository pmTypeRepository, CenterService centerService,
                   PersonService personService,
-                  ReportService reportService,
                   NotificationService notificationService,
                   PersistenceService persistenceService) {
         this.pmRepository = pmRepository;
@@ -63,7 +58,6 @@ public class PmServiceImpl implements PmService {
         this.pmTypeRepository = pmTypeRepository;
         this.centerService = centerService;
         this.personService = personService;
-        this.reportService = reportService;
         this.notificationService = notificationService;
         this.persistenceService = persistenceService;
     }
@@ -90,7 +84,7 @@ public class PmServiceImpl implements PmService {
                 ) {
                     pm.setActive(true);
                     Task todayTask = new Task(true, 0, pm, salon, UtilService.getDATE());
-                    var persistence = persistenceService.setupNewPersistence(null, null, '3', defaultPerson, true);
+                    var persistence = persistenceService.persistenceSetup(null, null, '3', defaultPerson);
                     TaskDetail taskDetail = new TaskDetail("", todayTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
                 }
                 pmRepository.saveAll(todayPmList);
@@ -98,11 +92,6 @@ public class PmServiceImpl implements PmService {
         }
 
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
-    }
-
-    @Override
-    public Task getTask(Long taskId) {
-        return null;
     }
 
 
@@ -115,7 +104,7 @@ public class PmServiceImpl implements PmService {
                 task.setDelay(delay);
 
                 var activeFlow = task.getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst().get();
-                var activeLogHistory = activeFlow.getPersistence().getLogHistoryList().stream().filter(LogHistory::isActive).findFirst().get();
+                var activeLogHistory = activeFlow.getPersistence().getLogHistoryList().stream().filter(LogHistory::isLast).findFirst().get();
                 LocalDateTime assignedDate = LocalDateTime.of(activeLogHistory.getDate(), activeLogHistory.getTime());
                 activeFlow.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDate));
             }
@@ -132,7 +121,7 @@ public class PmServiceImpl implements PmService {
     private Pm endTask(Task task) {
         task.setTime(UtilService.getTime());
         task.setActive(false);
-        task.setDailyReport(new DailyReport(reportService.getActiveReportId()));
+        task.setDailyReport(new DailyReport(UtilService.getTodayReportId()));
 
         Pm pm = task.getPm();
         var salon = task.getSalon();
@@ -171,17 +160,14 @@ public class PmServiceImpl implements PmService {
         return pmRepository.findById(pmId).get();
     }
 
-    @Override
-    public Pm editPm(int pmId) {
-        return null;
-    }
+
 
     private List<TaskDetail> getPreparedTaskDetailList(Long taskId) {
         List<TaskDetail> taskDetailList = taskDetailRepository.findByTaskId(taskId);
         for (TaskDetail taskDetail : taskDetailList
         ) {
             taskDetail.setPersianRegisterDate(UtilService.getFormattedPersianDateTime(taskDetail.getAssignedTime()));
-            taskDetail.setPersonName(persistenceService.getAssignedPerson(taskDetail.getPersistence().getId()).getName());
+            taskDetail.setPersonName((taskDetail.getPersistence().getPerson()).getName());
             if (!taskDetail.isActive()) {
                 taskDetail.setPersianFinishedDate(UtilService.getFormattedPersianDateTime(taskDetail.getFinishedTime()));
             }
@@ -194,11 +180,11 @@ public class PmServiceImpl implements PmService {
     }
 
     private List<TaskDetail> assignNewTaskDetail(TaskDetail taskDetail, int personId) {
-        var persistence = persistenceService.setupNewPersistence(null, null, ' ', new Person(personId), true);
+        var persistence = persistenceService.persistenceSetup(null, null, ' ', new Person(personId));
         TaskDetail newTaskDetail = new TaskDetail("", taskDetail.getTask(), persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         taskRepository.save(taskDetail.getTask());
 
-        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), taskDetail.getTask().getPersianName(), taskDetail.getTask().getDelay(), taskDetail.getAssignedTime());
+        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), taskDetail.getTask().getName(), taskDetail.getTask().getDelay(), taskDetail.getAssignedTime());
         return taskDetail.getTask().getTaskDetailList();
     }
 
@@ -212,11 +198,10 @@ public class PmServiceImpl implements PmService {
         taskDetail.setFinishedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         taskDetail.setDescription(assignForm.getDescription());
         taskDetail.setActive(false);
-        persistenceService.updatePersistence(
+        persistenceService.historyUpdate(
                 taskDetail.getFinishedTime().toLocalDate()
                 , taskDetail.getFinishedTime().toLocalTime()
-                , taskDetail.getPersistence(), ' '
-                , false);
+                , ' ', personService.getCurrentPerson(), taskDetail.getPersistence());
 
         if (assignForm.getActionType() == 100) {
             endTask(taskDetail.getTask());
@@ -244,7 +229,7 @@ public class PmServiceImpl implements PmService {
     public int getWeeklyFinishedPercentage() {
         DecimalFormat decimalFormat = new DecimalFormat("##");
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
-        var percent = (float) taskRepository.getWeeklyFinishedTaskCount(reportService.getWeeklyOffsetDate().atStartOfDay(), false) / getFinishedTaskCount() * 100;
+        var percent = (float) taskRepository.getWeeklyFinishedTaskCount(UtilService.getDATE().minusDays(7), false) / getFinishedTaskCount() * 100;
         var formatted = decimalFormat.format(percent);
         return Integer.parseInt(formatted);
     }
@@ -262,25 +247,27 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public void pmRegister(PmRegisterForm pmRegisterForm) {
-        var person = personService.getPerson(pmRegisterForm.getPersonId());
-        var centers = centerService.getCenterList();
+        var salonList = centerService.getCenterList();
         var newPm = new Pm();
         newPm.setActive(true);
-        newPm.setNextDue(LocalDate.now());
         newPm.setName(pmRegisterForm.getName());
         newPm.setPeriod(pmRegisterForm.getPeriod());
         newPm.setDescription(pmRegisterForm.getDescription());
+        newPm.setEnabled(true);
+        newPm.setType(new PmType(pmRegisterForm.getTypeId()));
 
         if (pmRegisterForm.getCenterId() == 0) { // both salons
             for (int i = 0; i < 2; i++) {
-                Task newTask = taskSetup(newPm, centers.get(i), dailyReport);
-                var newTaskDetail = taskDetailSetup(newTask, person);
-                notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getName(), newTaskDetail.getAssignedDate());
+                Task newTask = new Task(true, 0, newPm, salonList.get(0), UtilService.getDATE());
+                var persistence = persistenceService.persistenceSetup(null, null, '3', new Person(pmRegisterForm.getPersonId()), true);
+                TaskDetail taskDetail = new TaskDetail("", newTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+                notificationService.sendNewTaskAssignedMessage(personService.getPerson(pmRegisterForm.getPersonId()).getAddress().getValue(), newPm.getName(), taskDetail.getAssignedTime());
             }
         } else { // selected salon
-            Task newTask = taskSetup(newPm, centerService.getCenter(pmRegisterForm.getCenterId()), dailyReport);
-            var newTaskDetail = taskDetailSetup(newTask, person);
-            notificationService.sendNewTaskAssignedMessage(newTaskDetail.getPerson().getAddress().getValue(), newPm.getName(), newTaskDetail.getAssignedDate());
+            Task newTask = new Task(true, 0, newPm, salonList.get(pmRegisterForm.getCenterId()), UtilService.getDATE());
+            var persistence = persistenceService.persistenceSetup(null, null, '3', new Person(pmRegisterForm.getPersonId()), true);
+            TaskDetail taskDetail = new TaskDetail("", newTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+            notificationService.sendNewTaskAssignedMessage(personService.getPerson(pmRegisterForm.getPersonId()).getAddress().getValue(), newPm.getName(), taskDetail.getAssignedTime());
         }
 
         pmRepository.saveAndFlush(newPm);
@@ -294,7 +281,7 @@ public class PmServiceImpl implements PmService {
         List<Task> activePersonTaskList;
 
         if (!activePersonPersistenceIdList.isEmpty()) {
-             activePersonTaskList = taskDetailRepository.fetchRelatedActivePersonTaskList(activePersonPersistenceIdList);
+            activePersonTaskList = taskDetailRepository.fetchRelatedActivePersonTaskList(activePersonPersistenceIdList);
             for (Task task : activePersonTaskList
             ) {
                 task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
@@ -366,7 +353,7 @@ public class PmServiceImpl implements PmService {
         return activeTaskDetail
                 .filter
                         (taskDetail ->
-                                persistenceService.getAssignedPerson(taskDetail.getPersistence().getId()).getId() == personService.getPersonId(personService.getCurrentUsername()))
+                                (taskDetail.getPersistence().getPerson()).getId() == personService.getPersonId(personService.getCurrentUsername()))
                 .isPresent();
     }
 
@@ -382,23 +369,12 @@ public class PmServiceImpl implements PmService {
     @Override
     @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
     public TaskDetail modelForActionForm(Model model, Long taskDetailId) {
-        taskDetailRepository.findById(taskDetailId);
-        List<Person> personList = getOtherPersonList();
-        Task thisTask = getTask(taskDetailId);
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        var taskName = thisTask.getPM().getName();
-        var description = thisTask.getPM().getDescription();
-        var dueDate = date.format(PersianDate.fromGregorian(thisTask.getDueDate()));
-        var center = thisTask.getCenter().getNamePersian();
-        var delay = thisTask.getDelay();
-        String person = "";
-        for (TaskDetail taskdetail : thisTask.getTaskDetailList()
-        ) {
-            if (taskdetail.getId() == taskDetailId) {
-                person = taskdetail.getPerson().getName();
-                break;
-            }
+        var activeTaskDetail = taskDetailRepository.findById(taskDetailId);
+        if (activeTaskDetail.isPresent()){
+            var persistence = activeTaskDetail.get().getPersistence();
         }
+
+/*
         AssignForm assignForm = new AssignForm();
         assignForm.setId(taskDetailId);
         model.addAttribute("id", taskDetailId);
@@ -410,8 +386,7 @@ public class PmServiceImpl implements PmService {
         model.addAttribute("personList", personList);
         model.addAttribute("delay", delay);
         model.addAttribute("assignForm", assignForm);
-        model.addAttribute("description", description);
-
+*/
         return taskDetailRepository.findById(taskDetailId).get();
     }
 

@@ -23,33 +23,37 @@ public class PersistenceServiceImpl implements PersistenceService {
         this.logHistoryRepository = logHistoryRepository;
     }
 
+
     @Override
-    public Persistence setupNewPersistence(LocalDate date, LocalTime time, char messageId, Person person, boolean active) {
-        Persistence persistence = new Persistence();
-        LogHistory logHistory = new LogHistory(date, time, person, messageId, persistence, active);
-        return new Persistence();
+    public Persistence persistenceSetup(LocalDate date, LocalTime time, char messageId, Person person) {
+        Persistence persistence = new Persistence(person);
+        LogHistory logHistory = new LogHistory(date, time, person, messageId, persistence, true);
+        return persistence;
     }
 
     @Override
-    public void updatePersistence(LocalDate date, LocalTime time, Persistence persistence, char messageId, boolean active) {
-        Optional<LogHistory> logHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isActive).findFirst();
-        if (logHistory.isPresent()) {
-            if (logHistory.get().getDate() == null) {
-                logHistory.get().setDate(date);
-                logHistory.get().setTime(time);
+    public void historyUpdate(LocalDate date, LocalTime time, char newHistoryMessageId, Person person, Persistence persistence) {
+        Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findFirst();
+        if (currentHistory.isPresent()) {
+            if (currentHistory.get().getDate() == null) { /// TaskDetail
+                currentHistory.get().setDate(date);
+                currentHistory.get().setTime(time);
+            } else {
+                LogHistory logHistory = new LogHistory(date, time, person, newHistoryMessageId, persistence, true);
+                persistence.getLogHistoryList().add(logHistory);
             }
-            logHistory.get().setActive(active);
+            currentHistory.get().setLast(false);
         }
         persistenceRepository.save(persistence);
     }
 
     @Override
-    public Person getAssignedPerson(long persistenceId) {
-        return logHistoryRepository.fetchTaskDetailPersonName(persistenceId);
+    public List<Integer> getActivePersonPersistenceIdList(int personId, boolean active) {
+        return logHistoryRepository.fetchActivePersonPersistenceIdList(personId, active);
     }
 
     @Override
-    public List<Integer> getActivePersonPersistenceIdList(int personId, boolean active) {
-        return logHistoryRepository.fetchActivePersonPersistenceIdList(personId, active);
+    public Person getRelatedCurrentPerson(long persistenceId, boolean active) {
+        return logHistoryRepository.fetchRelatedCurrentPerson(persistenceId, true);
     }
 }

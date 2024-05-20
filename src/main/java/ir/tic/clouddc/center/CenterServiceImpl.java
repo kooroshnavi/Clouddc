@@ -1,6 +1,7 @@
 package ir.tic.clouddc.center;
 
 import com.github.mfathi91.time.PersianDate;
+import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -15,9 +16,7 @@ import org.springframework.ui.Model;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.*;
 
 @Slf4j
@@ -33,12 +32,16 @@ public class CenterServiceImpl implements CenterService {
 
     private final NotificationService notificationService;
 
+    private final PersistenceService persistenceService;
+
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService) {
+    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, PersistenceService persistenceService) {
         this.centerRepository = centerRepository;
         this.temperatureRepository = temperatureRepository;
         this.personService = personService;
         this.notificationService = notificationService;
+
+        this.persistenceService = persistenceService;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -88,28 +91,31 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport) {
-        var time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
+        var time = UtilService.getTime();
+        var personId = personService.getPersonId(personService.getCurrentUsername());
         var temp1 = temperatureForm.getSalon1Temp();
         var temp2 = temperatureForm.getSalon2Temp();
         List<Temperature> dailyTemps = new ArrayList<>();
 
         if (!temp1.isEmpty() && Float.parseFloat(temperatureForm.getSalon1Temp()) >= 5.0 && Float.parseFloat(temperatureForm.getSalon1Temp()) <= 50.0) {
             Temperature salon1Temperature = new Temperature();
+            var persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), ' ', new Person(personId), true);
+            salon1Temperature.setPersistence(persistence);
             salon1Temperature.setTime(time);
             salon1Temperature.setValue(Float.parseFloat(temperatureForm.getSalon1Temp()));
             salon1Temperature.setSalon(getCenter(1));
-            salon1Temperature.setPerson(person);
             salon1Temperature.setDailyReport(dailyReport);
             dailyTemps.add(salon1Temperature);
+
         }
 
         if (!temp2.isEmpty() && Float.parseFloat(temperatureForm.getSalon2Temp()) >= 5.0 && Float.parseFloat(temperatureForm.getSalon2Temp()) <= 50.0) {
             Temperature salon2Temperature = new Temperature();
+            var persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), ' ', new Person(personId), true);
+            salon2Temperature.setPersistence(persistence);
             salon2Temperature.setTime(time);
             salon2Temperature.setValue(Float.parseFloat(temperatureForm.getSalon2Temp()));
             salon2Temperature.setSalon(getCenter(2));
-            salon2Temperature.setPerson(person);
             salon2Temperature.setDailyReport(dailyReport);
             dailyTemps.add(salon2Temperature);
         }
@@ -124,10 +130,10 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public void setDailyTemperatureReport(DailyReport currentReport) {
         DecimalFormat df = new DecimalFormat("##.#");
-        var center1 = getCenter(1);
-        var center2 = getCenter(2);
-        List<Float> salon1DailyTemperatures = temperatureRepository.getDailytemperatureList(center1, currentReport);
-        List<Float> salon2DailyTemperatures = temperatureRepository.getDailytemperatureList(center2, currentReport);
+        var salon1 = getCenter(1);
+        var salon2 = getCenter(2);
+        List<Float> salon1DailyTemperatures = temperatureRepository.getDailytemperatureList(salon1, currentReport);
+        List<Float> salon2DailyTemperatures = temperatureRepository.getDailytemperatureList(salon2, currentReport);
 
         float salonAverage = 0;
         List<Salon> salonList = new ArrayList<>();
@@ -138,14 +144,14 @@ public class CenterServiceImpl implements CenterService {
             }
             salonAverage /= salon1DailyTemperatures.size();
 
-            if (center1.getAverageTemperature() == null) {
+            if (salon1.getAverageTemperature() == null) {
                 Map<LocalDate, Float> averageMap1 = new HashMap<>();
                 averageMap1.put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
-                center1.setAverageTemperature(averageMap1);
+                salon1.setAverageTemperature(averageMap1);
             } else {
-                center1.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
+                salon1.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
             }
-            salonList.add(center1);
+            salonList.add(salon1);
         }
 
         if (!salon2DailyTemperatures.isEmpty()) {
@@ -155,14 +161,14 @@ public class CenterServiceImpl implements CenterService {
             }
             salonAverage /= salon2DailyTemperatures.size();
 
-            if (center2.getAverageTemperature() == null) {
+            if (salon2.getAverageTemperature() == null) {
                 Map<LocalDate, Float> averageMap2 = new HashMap<>();
                 averageMap2.put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
-                center2.setAverageTemperature(averageMap2);
+                salon2.setAverageTemperature(averageMap2);
             } else {
-                center2.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
+                salon2.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
             }
-            salonList.add(center2);
+            salonList.add(salon2);
         }
 
         if (!salonList.isEmpty()) {

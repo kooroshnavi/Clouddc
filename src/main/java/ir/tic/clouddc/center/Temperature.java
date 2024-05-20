@@ -1,6 +1,6 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -28,12 +28,12 @@ public class Temperature {
     private DailyReport dailyReport;
 
     @ManyToOne
-    @JoinColumn(name = "center_id")
+    @JoinColumn(name = "salon_id")
     private Salon salon;
 
-    @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "persistence_id")
+    private Persistence persistence;
 
     public int getId() {
         return id;
@@ -75,11 +75,11 @@ public class Temperature {
         this.salon = salon;
     }
 
-    public Person getPerson() {
-        return person;
+    public Persistence getPersistence() {
+        return persistence;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
     }
 }

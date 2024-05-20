@@ -25,9 +25,6 @@ class ReportServiceImpl implements ReportService {
 
     private final PmService pmService;
 
-    private static LocalDate TODAY;
-
-    private static int ACTIVE_REPORT_ID;
 
     @Autowired
     ReportServiceImpl(ReportRepository reportRepository, CenterService centerService, PmService pmService) {
@@ -50,10 +47,6 @@ class ReportServiceImpl implements ReportService {
         return reportRepository.findByActive(active);
     }
 
-    @Override
-    public int getActiveReportId() {
-        return ACTIVE_REPORT_ID;
-    }
 
     @Override
     public DailyReport setCurrentReport() {
@@ -65,11 +58,11 @@ class ReportServiceImpl implements ReportService {
             dailyReportList.add(yesterday.get());
         }
         DailyReport today = new DailyReport();
-        today.setDate(getTODAY());
+        today.setDate(UtilService.getDATE());
         today.setActive(true);
         dailyReportList.add(today);
         reportRepository.saveAll(dailyReportList);
-        ACTIVE_REPORT_ID = yesterday.get().getId() + 1;
+        UtilService.setTodayReportId(yesterday.get().getId() + 1);
         return today;
     }
 
@@ -97,10 +90,6 @@ class ReportServiceImpl implements ReportService {
         int activeReportId = reportRepository.getActiveReportId(true);
         int weeklyOffsetReportId = activeReportId - 5;
         return reportRepository.findById(weeklyOffsetReportId).get().getDate();
-    }
-
-    public LocalDate getTODAY() {
-        return TODAY;
     }
 
 

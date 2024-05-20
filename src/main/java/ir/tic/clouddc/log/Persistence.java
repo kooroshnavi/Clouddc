@@ -1,5 +1,6 @@
 package ir.tic.clouddc.log;
 
+import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -15,9 +16,17 @@ public class Persistence {
     @Column
     private long id;
 
+    @ManyToOne
+    @JoinColumn(name = "creator_id")
+    private Person person;
+
 
     @OneToMany(mappedBy = "persistence", cascade = {CascadeType.ALL})
     private List<LogHistory> logHistoryList;
+
+    public Persistence(Person person) {
+        this.person = person;
+    }
 
     public long getId() {
         return id;
@@ -31,4 +40,7 @@ public class Persistence {
         this.logHistoryList = logHistoryList;
     }
 
+    public Person getPerson() {
+        return person;
+    }
 }

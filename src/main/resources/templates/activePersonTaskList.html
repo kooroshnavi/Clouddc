@@ -76,7 +76,6 @@
 									<th>مرکز</th>
 									<th>تاریخ سررسید</th>
 									<th>تاخیر کل (روز)</th>
-									<th>تاخیر شما در انجام این وظیفه (روز)</th>
 									<th>عملیات</th>
 								</tr>
 								</thead>
@@ -96,10 +95,6 @@
 										<span th:if="${task.getDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
 									</td>
 
-									<td>
-										<span th:if="${task.currentPersonDelay} > 0" th:text="${task.currentPersonDelay}" class="badge bg-light-danger text-danger w-100"></span>
-										<span th:if="${task.currentPersonDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
-									</td>
 
 									<td>
 										<div class="table-actions d-flex align-items-salon gap-3 fs-6">
