@@ -84,7 +84,7 @@ public class PmServiceImpl implements PmService {
                 ) {
                     pm.setActive(true);
                     Task todayTask = new Task(true, 0, pm, salon, UtilService.getDATE());
-                    var persistence = persistenceService.persistenceSetup(null, null, '3', defaultPerson);
+                    var persistence = persistenceService.persistenceSetup(null, null, ' ', defaultPerson);
                     TaskDetail taskDetail = new TaskDetail("", todayTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
                 }
                 pmRepository.saveAll(todayPmList);
@@ -159,7 +159,6 @@ public class PmServiceImpl implements PmService {
     public Pm getPm(int pmId) {
         return pmRepository.findById(pmId).get();
     }
-
 
 
     private List<TaskDetail> getPreparedTaskDetailList(Long taskId) {
