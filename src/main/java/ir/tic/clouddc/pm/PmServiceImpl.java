@@ -107,10 +107,9 @@ public class PmServiceImpl implements PmService {
                 delay += 1;
                 task.setDelay(delay);
 
-                var activeFlow = task.getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst().get();
-                var activeLogHistory = activeFlow.getPersistence().getLogHistoryList().stream().filter(LogHistory::isLast).findFirst().get();
-                LocalDateTime assignedDate = LocalDateTime.of(activeLogHistory.getDate(), activeLogHistory.getTime());
-                activeFlow.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDate));
+                var activeTaskDetail = task.getTaskDetailList().stream().filter(TaskDetail::isActive).findFirst().get();
+                LocalDateTime assignedDate = activeTaskDetail.getAssignedTime();
+                activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDate));
             }
             taskRepository.saveAll(taskList);
         }
@@ -141,7 +140,6 @@ public class PmServiceImpl implements PmService {
         if (pm.getTaskList().stream().noneMatch(Task::isActive)) {
             pm.setActive(false);    // pm is inactive til next due
         }
-
 
         return pmRepository.saveAndFlush(pm);
     }
@@ -206,40 +204,37 @@ public class PmServiceImpl implements PmService {
         TaskDetail currentTaskDetail = taskDetailRepository.findById(taskDetailId).get();
         Persistence currentTaskDetailPersistence = currentTaskDetail.getPersistence();
         Person currentPerson = personService.getCurrentPerson();
-
         currentTaskDetail.setFinishedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         currentTaskDetail.setActive(false);
 
-        if (assignForm.getActionType() == 100) { /// End Task Operation
-            if (currentTaskDetailPersistence.getPerson().equals(currentPerson)) {  // assigned person ends Task
-                currentTaskDetail.setDescription(assignForm.getDescription());
-                persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPerson, currentTaskDetailPersistence);
-                checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
-                endTask(currentTaskDetail.getTask());
-            } else { /// supervisor ends task
-                currentTaskDetail.setDescription("Terminated by supervisor");
-                persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentTaskDetailPersistence);
-                var newTaskDetail = assignNewTaskDetail(currentTaskDetail.getTask(), currentPerson.getId(), '4', false);
-                newTaskDetail.setDescription(assignForm.getDescription());
-                newTaskDetail.setFinishedTime(newTaskDetail.getAssignedTime());
-                checkAttachment(assignForm.getFile(), newTaskDetail.getPersistence());
-                endTask(newTaskDetail.getTask());
+        if (currentTaskDetailPersistence.getPerson().equals(currentPerson)) {
+            routineOperation(currentTaskDetail, currentTaskDetailPersistence, assignForm);
+        } else {
+            supervisorOperation(currentTaskDetail, currentTaskDetailPersistence, assignForm, currentPerson);
+        }
 
-            }
-        } else { /// Assign Task Operation
-            if (currentTaskDetailPersistence.getPerson().equals(currentPerson)) {  // assigned person assigns task
-                currentTaskDetail.setDescription(assignForm.getDescription());
-                checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
-                persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPerson, currentTaskDetailPersistence);
-                endTask(currentTaskDetail.getTask());
-            }
-
-            else {  /// supervisor assigns task
-
-            }
-
+        if (assignForm.getActionType() == 100) {  // Routine End Task
+            endTask(currentTaskDetail.getTask());
+        } else { // Routine Assign Task
+            assignNewTaskDetail(currentTaskDetail.getTask(), assignForm.getActionType(), '0', true);
         }
     }
+
+    private void routineOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm) throws IOException {
+        currentTaskDetail.setDescription(assignForm.getDescription());
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', null, currentTaskDetailPersistence);
+        checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
+    }
+
+    private void supervisorOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm, Person currentPerson) throws IOException {
+        currentTaskDetail.setDescription("Terminated by supervisor");
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', null, currentTaskDetailPersistence);
+        var supervisorTaskDetail = assignNewTaskDetail(currentTaskDetail.getTask(), currentPerson.getId(), '3', false);
+        supervisorTaskDetail.setDescription(assignForm.getDescription());
+        supervisorTaskDetail.setFinishedTime(supervisorTaskDetail.getAssignedTime());
+        checkAttachment(assignForm.getFile(), supervisorTaskDetail.getPersistence());
+    }
+
 
     private void checkAttachment(MultipartFile file, Persistence persistence) throws IOException {
         if (!file.isEmpty()) {
