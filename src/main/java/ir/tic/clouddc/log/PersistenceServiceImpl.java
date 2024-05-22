@@ -25,24 +25,30 @@ public class PersistenceServiceImpl implements PersistenceService {
 
 
     @Override
-    public Persistence persistenceSetup(LocalDate date, LocalTime time, char messageId, Person person) {
+    public Persistence persistenceSetup(LocalDate date, LocalTime time, char actionCode, Person person) {
         Persistence persistence = new Persistence(person);
-        LogHistory logHistory = new LogHistory(date, time, person, messageId, persistence, true);
+        historyUpdate(date, time, actionCode, person, persistence);
         return persistence;
     }
 
     @Override
-    public void historyUpdate(LocalDate date, LocalTime time, char newHistoryMessageId, Person person, Persistence persistence) {
+    public void historyUpdate(LocalDate date, LocalTime time, char actionCode, Person person, Persistence persistence) {
         Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findFirst();
         if (currentHistory.isPresent()) {
-            if (currentHistory.get().getDate() == null) { /// TaskDetail
+            if (currentHistory.get().getDate() == null) { /// TaskDetail updates only
                 currentHistory.get().setDate(date);
                 currentHistory.get().setTime(time);
-            } else {
-                LogHistory logHistory = new LogHistory(date, time, person, newHistoryMessageId, persistence, true);
+                currentHistory.get().setActionCode(actionCode);   // varies
+            }
+            else {   // other object modifications + taskDetail modification (remove attachment only)
+                currentHistory.get().setLast(false);
+                LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
                 persistence.getLogHistoryList().add(logHistory);
             }
-            currentHistory.get().setLast(false);
+        }
+        else {  /// first history
+            LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
+            persistence.getLogHistoryList().add(logHistory);
         }
         persistenceRepository.save(persistence);
     }

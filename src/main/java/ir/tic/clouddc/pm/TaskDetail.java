@@ -50,8 +50,7 @@ public class TaskDetail {
     @Transient
     private String personName;
 
-    public TaskDetail(String description, Task task, Persistence persistence, boolean active, int delay, LocalDateTime dateTime) {
-        this.description = description;
+    public TaskDetail(Task task, Persistence persistence, boolean active, int delay, LocalDateTime dateTime) {
         this.task = task;
         this.persistence = persistence;
         this.active = active;

@@ -10,7 +10,7 @@ public interface PersistenceService {
 
     Persistence persistenceSetup(LocalDate date, LocalTime time, char messageId, Person person);
 
-    void historyUpdate(LocalDate date, LocalTime time, char messageId, Person person, Persistence persistence);
+    void historyUpdate(LocalDate date, LocalTime time, char actionCode, Person person, Persistence persistence);
 
 
     List<Integer> getActivePersonPersistenceIdList(int personId, boolean active);

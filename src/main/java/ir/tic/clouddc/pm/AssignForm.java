@@ -1,14 +1,13 @@
 package ir.tic.clouddc.pm;
 
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 public class AssignForm {
 
-    @NotNull
     private Long id;
 
     @NotBlank(message = "Description is obligatory")
@@ -18,9 +17,19 @@ public class AssignForm {
     @NotBlank
     private int actionType;
 
+    private MultipartFile file;
+
     public AssignForm(String description, int actionType) {
         this.description = description;
         this.actionType = actionType;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
     }
 
     public Long getId() {

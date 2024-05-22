@@ -32,7 +32,7 @@ public class LogHistory {
     private Persistence persistence;
 
     @Column
-    private char messageId;
+    private char actionCode;
 
     @Column
     private boolean last;
@@ -40,13 +40,17 @@ public class LogHistory {
     @Transient
     private String message;
 
-    public LogHistory(LocalDate date, LocalTime time, Person person, char messageId, Persistence persistence, boolean last) {
+    public LogHistory(LocalDate date, LocalTime time, Person person, char actionCode, Persistence persistence, boolean last) {
         this.date = date;
         this.time = time;
         this.person = person;
-        this.messageId = messageId;
+        this.actionCode = actionCode;
         this.persistence = persistence;
         this.last = last;
+    }
+
+    public void setActionCode(char actionCode) {
+        this.actionCode = actionCode;
     }
 
     public void setDate(LocalDate date) {
@@ -89,8 +93,8 @@ public class LogHistory {
         return persistence;
     }
 
-    public char getMessageId() {
-        return messageId;
+    public char getActionCode() {
+        return actionCode;
     }
 
     public String getMessage() {

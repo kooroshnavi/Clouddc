@@ -2,7 +2,9 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Salon;
+import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.log.LogHistory;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
@@ -17,7 +19,9 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
@@ -42,6 +46,7 @@ public class PmServiceImpl implements PmService {
     private final PersonService personService;
     private final NotificationService notificationService;
     private final PersistenceService persistenceService;
+    private final FileService fileService;
     private static final int DEFAULT_ASSIGNEE_ID = 7;
 
     @Autowired
@@ -51,7 +56,7 @@ public class PmServiceImpl implements PmService {
                   PmTypeRepository pmTypeRepository, CenterService centerService,
                   PersonService personService,
                   NotificationService notificationService,
-                  PersistenceService persistenceService) {
+                  PersistenceService persistenceService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.taskRepository = taskRepository;
         this.taskDetailRepository = taskDetailRepository;
@@ -60,6 +65,7 @@ public class PmServiceImpl implements PmService {
         this.personService = personService;
         this.notificationService = notificationService;
         this.persistenceService = persistenceService;
+        this.fileService = fileService;
     }
 
     public void updateTodayTasks(DailyReport todayReport) {
@@ -67,7 +73,6 @@ public class PmServiceImpl implements PmService {
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<Pm> todayPmList = new ArrayList<>();
         List<Task> activeTaskList = taskRepository.findByActive(true);
-
 
         delayCalculation(activeTaskList);
 
@@ -84,8 +89,7 @@ public class PmServiceImpl implements PmService {
                 ) {
                     pm.setActive(true);
                     Task todayTask = new Task(true, 0, pm, salon, UtilService.getDATE());
-                    var persistence = persistenceService.persistenceSetup(null, null, ' ', defaultPerson);
-                    TaskDetail taskDetail = new TaskDetail("", todayTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+                    TaskDetail taskDetail = assignNewTaskDetail(todayTask, defaultPerson.getId(), '0', true);
                 }
                 pmRepository.saveAll(todayPmList);
             }
@@ -178,13 +182,19 @@ public class PmServiceImpl implements PmService {
                 .collect(Collectors.toList());
     }
 
-    private List<TaskDetail> assignNewTaskDetail(TaskDetail taskDetail, int personId) {
-        var persistence = persistenceService.persistenceSetup(null, null, ' ', new Person(personId));
-        TaskDetail newTaskDetail = new TaskDetail("", taskDetail.getTask(), persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
-        taskRepository.save(taskDetail.getTask());
+    private TaskDetail assignNewTaskDetail(Task task, int personId, char actionCode, boolean active) {
+        Persistence persistence;
+        if (active) {
+            persistence = persistenceService.persistenceSetup(null, null, actionCode, new Person(personId));
+        } else {
+            persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId));
+        }
 
-        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), taskDetail.getTask().getName(), taskDetail.getTask().getDelay(), taskDetail.getAssignedTime());
-        return taskDetail.getTask().getTaskDetailList();
+        TaskDetail newTaskDetail = new TaskDetail(task, persistence, active, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+        taskRepository.save(task);
+
+        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), task.getName(), task.getDelay(), newTaskDetail.getAssignedTime());
+        return newTaskDetail;
     }
 
     private List<Person> getOtherPersonList() {
@@ -192,20 +202,48 @@ public class PmServiceImpl implements PmService {
     } // returns a list of users that will be shown in the drop-down list of assignForm.
 
     @Override
-    public void updateTaskDetail(AssignForm assignForm, Long taskDetailId) {
-        TaskDetail taskDetail = taskDetailRepository.findById(taskDetailId).get();
-        taskDetail.setFinishedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
-        taskDetail.setDescription(assignForm.getDescription());
-        taskDetail.setActive(false);
-        persistenceService.historyUpdate(
-                taskDetail.getFinishedTime().toLocalDate()
-                , taskDetail.getFinishedTime().toLocalTime()
-                , ' ', personService.getCurrentPerson(), taskDetail.getPersistence());
+    public void updateTaskDetail(AssignForm assignForm, Long taskDetailId) throws IOException {
+        TaskDetail currentTaskDetail = taskDetailRepository.findById(taskDetailId).get();
+        Persistence currentTaskDetailPersistence = currentTaskDetail.getPersistence();
+        Person currentPerson = personService.getCurrentPerson();
 
-        if (assignForm.getActionType() == 100) {
-            endTask(taskDetail.getTask());
-        } else {
-            assignNewTaskDetail(taskDetail, assignForm.getActionType());
+        currentTaskDetail.setFinishedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+        currentTaskDetail.setActive(false);
+
+        if (assignForm.getActionType() == 100) { /// End Task Operation
+            if (currentTaskDetailPersistence.getPerson().equals(currentPerson)) {  // assigned person ends Task
+                currentTaskDetail.setDescription(assignForm.getDescription());
+                persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPerson, currentTaskDetailPersistence);
+                checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
+                endTask(currentTaskDetail.getTask());
+            } else { /// supervisor ends task
+                currentTaskDetail.setDescription("Terminated by supervisor");
+                persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentTaskDetailPersistence);
+                var newTaskDetail = assignNewTaskDetail(currentTaskDetail.getTask(), currentPerson.getId(), '4', false);
+                newTaskDetail.setDescription(assignForm.getDescription());
+                newTaskDetail.setFinishedTime(newTaskDetail.getAssignedTime());
+                checkAttachment(assignForm.getFile(), newTaskDetail.getPersistence());
+                endTask(newTaskDetail.getTask());
+
+            }
+        } else { /// Assign Task Operation
+            if (currentTaskDetailPersistence.getPerson().equals(currentPerson)) {  // assigned person assigns task
+                currentTaskDetail.setDescription(assignForm.getDescription());
+                checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
+                persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPerson, currentTaskDetailPersistence);
+                endTask(currentTaskDetail.getTask());
+            }
+
+            else {  /// supervisor assigns task
+
+            }
+
+        }
+    }
+
+    private void checkAttachment(MultipartFile file, Persistence persistence) throws IOException {
+        if (!file.isEmpty()) {
+            fileService.attachmentRegister(file, persistence);
         }
     }
 
@@ -369,7 +407,7 @@ public class PmServiceImpl implements PmService {
     @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
     public TaskDetail modelForActionForm(Model model, Long taskDetailId) {
         var activeTaskDetail = taskDetailRepository.findById(taskDetailId);
-        if (activeTaskDetail.isPresent()){
+        if (activeTaskDetail.isPresent()) {
             var persistence = activeTaskDetail.get().getPersistence();
         }
 

@@ -3,6 +3,7 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
+import java.io.IOException;
 import java.util.List;
 
 public interface PmService {
@@ -23,7 +24,7 @@ public interface PmService {
 
     void pmRegister(PmRegisterForm pmRegisterForm);
 
-    void updateTaskDetail(AssignForm assignForm, Long id);
+    void updateTaskDetail(AssignForm assignForm, Long id) throws IOException;
 
     long getFinishedTaskCount();
 

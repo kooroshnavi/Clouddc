@@ -2,6 +2,7 @@ package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.PersistenceService;
+import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -32,7 +33,7 @@ public class FileServiceImpl implements FileService {
         MetaData metaData = new MetaData();
         metaData.setName(file.getOriginalFilename());
         metaData.setType(file.getContentType());
-        var size = file.getSize() / 1024; // KB
+        var size = file.getSize() / 1024.0; // KB
         metaData.setSize(Float.parseFloat(df.format(size)));
         Attachment attachment = new Attachment();
         attachment.setDocument(file.getBytes());
@@ -55,7 +56,7 @@ public class FileServiceImpl implements FileService {
     @PreAuthorize("documentOwner == requester")
     public void deleteDocument(long medaDataId, int documentOwner, int requester) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), persistence, ' ', false);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), new Person(documentOwner), persistence);
         metaDataRepository.deleteById(medaDataId);
     }
 
