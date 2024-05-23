@@ -9,6 +9,7 @@ import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
 
 @Slf4j
@@ -91,12 +92,11 @@ public class PmController {
         return "pmRegister";
     }
 
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
     @PostMapping("/register/form/submit")
     public String pmPost(
             Model model,
             @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
-            Errors errors) {
+            Errors errors) throws IOException {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
@@ -131,7 +131,7 @@ public class PmController {
     @PostMapping("/task/form/update")
     public String assignTaskDetail(Model model,
                                    @RequestParam("id") Long id,
-                                   @ModelAttribute("assignForm") AssignForm assignForm) {
+                                   @ModelAttribute("assignForm") AssignForm assignForm) throws IOException {
         System.out.println("Captured: " + model.getAttribute("assignForm").toString());
 
         pmService.updateTaskDetail(assignForm, id);

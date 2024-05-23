@@ -3,13 +3,13 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.document.FileService;
-import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
+import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +19,6 @@ import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.RoundingMode;
@@ -230,7 +229,7 @@ public class PmServiceImpl implements PmService {
     private void routineOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm) throws IOException {
         currentTaskDetail.setDescription(assignForm.getDescription());
         persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentTaskDetailPersistence.getPerson(), currentTaskDetailPersistence);
-        checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
+        fileService.checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
     }
 
     private void supervisorOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm, Person currentPerson) throws IOException {
@@ -239,15 +238,9 @@ public class PmServiceImpl implements PmService {
         TaskDetail supervisorTaskDetail = new TaskDetail(currentTaskDetail.getTask());
         supervisorTaskDetail.setDescription(assignForm.getDescription());
         assignNewTaskDetail(supervisorTaskDetail, currentPerson.getId(), '3', false);
-        checkAttachment(assignForm.getFile(), supervisorTaskDetail.getPersistence());
+        fileService.checkAttachment(assignForm.getFile(), supervisorTaskDetail.getPersistence());
     }
 
-
-    private void checkAttachment(MultipartFile file, Persistence persistence) throws IOException {
-        if (!file.isEmpty()) {
-            fileService.attachmentRegister(file, persistence);
-        }
-    }
 
     @Override
     public long getFinishedTaskCount() {
@@ -285,7 +278,8 @@ public class PmServiceImpl implements PmService {
 
 
     @Override
-    public void pmRegister(PmRegisterForm pmRegisterForm) {
+    @ModifyProtection
+    public void pmRegister(PmRegisterForm pmRegisterForm) throws IOException {
         var salonList = centerService.getCenterList();
         var newPm = new Pm();
         newPm.setActive(true);
@@ -294,22 +288,17 @@ public class PmServiceImpl implements PmService {
         newPm.setDescription(pmRegisterForm.getDescription());
         newPm.setEnabled(true);
         newPm.setType(new PmType(pmRegisterForm.getTypeId()));
+        var currentPerson = personService.getCurrentPerson();
 
-        if (pmRegisterForm.getCenterId() == 0) { // both salons
-            for (int i = 0; i < 2; i++) {
-                Task newTask = new Task(true, 0, newPm, salonList.get(0), UtilService.getDATE());
-                var persistence = persistenceService.persistenceSetup(null, null, '3', new Person(pmRegisterForm.getPersonId()), true);
-                TaskDetail taskDetail = new TaskDetail("", newTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
-                notificationService.sendNewTaskAssignedMessage(personService.getPerson(pmRegisterForm.getPersonId()).getAddress().getValue(), newPm.getName(), taskDetail.getAssignedTime());
-            }
-        } else { // selected salon
-            Task newTask = new Task(true, 0, newPm, salonList.get(pmRegisterForm.getCenterId()), UtilService.getDATE());
-            var persistence = persistenceService.persistenceSetup(null, null, '3', new Person(pmRegisterForm.getPersonId()), true);
-            TaskDetail taskDetail = new TaskDetail("", newTask, persistence, true, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
-            notificationService.sendNewTaskAssignedMessage(personService.getPerson(pmRegisterForm.getPersonId()).getAddress().getValue(), newPm.getName(), taskDetail.getAssignedTime());
-        }
+        Persistence persistence = persistenceService.persistenceSetup(currentPerson);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '6', currentPerson, persistence);
+        fileService.checkAttachment(pmRegisterForm.getFile(), persistence);
 
         pmRepository.saveAndFlush(newPm);
+
+        for (Integer id : pmRegisterForm.getSalonIdList()) {
+            centerService.getCenter(id).getPmDueMap().put(newPm.getId(), null);
+        }
     }
 
 

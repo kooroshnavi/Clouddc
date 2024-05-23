@@ -4,6 +4,8 @@ import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 @NoArgsConstructor
 public class PmRegisterForm {
     @NotBlank(message = "عنوان نباید خالی باشد")
@@ -16,9 +18,11 @@ public class PmRegisterForm {
 
     private int personId;
 
-    private int centerId;
+    private List<Integer> salonIdList;
 
     private int typeId;
+
+    private String persianFirstDueDate;
 
     private MultipartFile file;
 
@@ -62,19 +66,27 @@ public class PmRegisterForm {
         this.personId = personId;
     }
 
-    public int getCenterId() {
-        return centerId;
-    }
-
-    public void setCenterId(int centerId) {
-        this.centerId = centerId;
-    }
-
     public MultipartFile getFile() {
         return file;
     }
 
     public void setFile(MultipartFile file) {
         this.file = file;
+    }
+
+    public List<Integer> getSalonIdList() {
+        return salonIdList;
+    }
+
+    public String getPersianFirstDueDate() {
+        return persianFirstDueDate;
+    }
+
+    public void setPersianFirstDueDate(String persianFirstDueDate) {
+        this.persianFirstDueDate = persianFirstDueDate;
+    }
+
+    public void setSalonIdList(List<Integer> salonIdList) {
+        this.salonIdList = salonIdList;
     }
 }

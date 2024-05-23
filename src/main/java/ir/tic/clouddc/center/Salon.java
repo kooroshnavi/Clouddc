@@ -48,6 +48,10 @@ public class Salon {
     private Map<LocalDate, Float> averageTemperature;
 
 
+    public Salon(int id) {
+        this.id = id;
+    }
+
     public Map<Integer, LocalDate> getPmDueMap() {
         return pmDueMap;
     }

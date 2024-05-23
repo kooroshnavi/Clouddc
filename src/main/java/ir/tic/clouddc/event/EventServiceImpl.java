@@ -79,10 +79,10 @@ public class EventServiceImpl implements EventService {
 
     private void eventDetailRegister(EventForm eventForm, Event event) throws IOException {
         EventDetail eventDetail = new EventDetail();
-        var persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), '0', personService.getCurrentPerson());
-        if (eventForm.getFile().getSize() > 0) {
-            fileService.attachmentRegister(eventForm.getFile(), persistence);
-        }
+        var currentPerson = personService.getCurrentPerson();
+        var persistence = persistenceService.persistenceSetup(currentPerson);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
+        fileService.checkAttachment(eventForm.getFile(), persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setEvent(event);

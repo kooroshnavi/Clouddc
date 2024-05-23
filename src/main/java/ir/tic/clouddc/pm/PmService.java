@@ -22,7 +22,7 @@ public interface PmService {
 
     TaskDetail modelForActionForm(Model model, Long taskDetailId);
 
-    void pmRegister(PmRegisterForm pmRegisterForm);
+    void pmRegister(PmRegisterForm pmRegisterForm) throws IOException;
 
     void updateTaskDetail(AssignForm assignForm, Long id) throws IOException;
 

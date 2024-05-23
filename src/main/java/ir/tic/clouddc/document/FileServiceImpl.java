@@ -28,7 +28,13 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void attachmentRegister(MultipartFile file, Persistence persistence) throws IOException {
+    public void checkAttachment(MultipartFile file, Persistence persistence) throws IOException {
+        if (!file.isEmpty()) {
+            attachmentRegister(file, persistence);
+        }
+    }
+
+    private void attachmentRegister(MultipartFile file, Persistence persistence) throws IOException {
         DecimalFormat df = new DecimalFormat("###");
         MetaData metaData = new MetaData();
         metaData.setName(file.getOriginalFilename());

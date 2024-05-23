@@ -7,7 +7,8 @@ import java.io.IOException;
 import java.util.List;
 
 public interface FileService {
-    void attachmentRegister(MultipartFile file, Persistence persistence) throws IOException;
+
+    void checkAttachment(MultipartFile file, Persistence persistence) throws IOException;
 
     List<MetaData> getRelatedMetadataList(List<Long> persistenceIDlist);
 
