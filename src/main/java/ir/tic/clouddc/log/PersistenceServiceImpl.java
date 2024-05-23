@@ -25,28 +25,20 @@ public class PersistenceServiceImpl implements PersistenceService {
 
 
     @Override
-    public Persistence persistenceSetup(LocalDate date, LocalTime time, char actionCode, Person person) {
-        Persistence persistence = new Persistence(person);
-        historyUpdate(date, time, actionCode, person, persistence);
-        return persistence;
+    public Persistence persistenceSetup(Person person) {
+        return new Persistence(person);
     }
 
     @Override
     public void historyUpdate(LocalDate date, LocalTime time, char actionCode, Person person, Persistence persistence) {
         Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findFirst();
-        if (currentHistory.isPresent()) {
-            if (currentHistory.get().getDate() == null) { /// TaskDetail updates only
-                currentHistory.get().setDate(date);
-                currentHistory.get().setTime(time);
-                currentHistory.get().setActionCode(actionCode);   // varies
-            }
-            else {   // other object modifications + taskDetail modification (remove attachment only)
-                currentHistory.get().setLast(false);
-                LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
-                persistence.getLogHistoryList().add(logHistory);
-            }
-        }
-        else {  /// first history
+        if (currentHistory.isPresent()) { // modification
+            //  object modifications + taskDetail modification (remove attachment only)
+            currentHistory.get().setLast(false);
+            LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
+            persistence.getLogHistoryList().add(logHistory);
+
+        } else {  // first history
             LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
             persistence.getLogHistoryList().add(logHistory);
         }

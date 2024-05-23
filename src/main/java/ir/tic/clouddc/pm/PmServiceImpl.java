@@ -89,7 +89,7 @@ public class PmServiceImpl implements PmService {
                 ) {
                     pm.setActive(true);
                     Task todayTask = new Task(true, 0, pm, salon, UtilService.getDATE());
-                    TaskDetail taskDetail = assignNewTaskDetail(todayTask, defaultPerson.getId(), '0', true);
+                    assignNewTaskDetail(new TaskDetail(todayTask), defaultPerson.getId(), '0', true);
                 }
                 pmRepository.saveAll(todayPmList);
             }
@@ -180,19 +180,23 @@ public class PmServiceImpl implements PmService {
                 .collect(Collectors.toList());
     }
 
-    private TaskDetail assignNewTaskDetail(Task task, int personId, char actionCode, boolean active) {
-        Persistence persistence;
+    private TaskDetail assignNewTaskDetail(TaskDetail taskDetail, int personId, char actionCode, boolean active) {
+        taskDetail.setAssignedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+        taskDetail.setDelay(0);
+        Persistence persistence = persistenceService.persistenceSetup(new Person(personId));
+
         if (active) {
-            persistence = persistenceService.persistenceSetup(null, null, actionCode, new Person(personId));
+            taskDetail.setActive(true);
         } else {
-            persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId));
+            taskDetail.setActive(false);
+            persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId), persistence);
+            taskDetail.setFinishedTime(taskDetail.getAssignedTime());
         }
 
-        TaskDetail newTaskDetail = new TaskDetail(task, persistence, active, 0, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
-        taskRepository.save(task);
-
-        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), task.getName(), task.getDelay(), newTaskDetail.getAssignedTime());
-        return newTaskDetail;
+        taskDetail.setPersistence(persistence);
+        taskDetailRepository.save(taskDetail);
+        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), taskDetail.getTask().getName(), taskDetail.getTask().getDelay(), taskDetail.getAssignedTime());
+        return taskDetail;
     }
 
     private List<Person> getOtherPersonList() {
@@ -212,26 +216,29 @@ public class PmServiceImpl implements PmService {
         } else {
             supervisorOperation(currentTaskDetail, currentTaskDetailPersistence, assignForm, currentPerson);
         }
+        taskDetailRepository.save(currentTaskDetail);
 
-        if (assignForm.getActionType() == 100) {  // Routine End Task
+        if (assignForm.getActionType() == 100) {  //  End Task
             endTask(currentTaskDetail.getTask());
-        } else { // Routine Assign Task
-            assignNewTaskDetail(currentTaskDetail.getTask(), assignForm.getActionType(), '0', true);
+        } else { //  Assign Task
+            TaskDetail taskDetail = new TaskDetail();
+            taskDetail.setTask(currentTaskDetail.getTask());
+            assignNewTaskDetail(taskDetail, assignForm.getActionType(), '0', true);
         }
     }
 
     private void routineOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm) throws IOException {
         currentTaskDetail.setDescription(assignForm.getDescription());
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', null, currentTaskDetailPersistence);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentTaskDetailPersistence.getPerson(), currentTaskDetailPersistence);
         checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
     }
 
     private void supervisorOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm, Person currentPerson) throws IOException {
         currentTaskDetail.setDescription("Terminated by supervisor");
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', null, currentTaskDetailPersistence);
-        var supervisorTaskDetail = assignNewTaskDetail(currentTaskDetail.getTask(), currentPerson.getId(), '3', false);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentTaskDetailPersistence);
+        TaskDetail supervisorTaskDetail = new TaskDetail(currentTaskDetail.getTask());
         supervisorTaskDetail.setDescription(assignForm.getDescription());
-        supervisorTaskDetail.setFinishedTime(supervisorTaskDetail.getAssignedTime());
+        assignNewTaskDetail(supervisorTaskDetail, currentPerson.getId(), '3', false);
         checkAttachment(assignForm.getFile(), supervisorTaskDetail.getPersistence());
     }
 

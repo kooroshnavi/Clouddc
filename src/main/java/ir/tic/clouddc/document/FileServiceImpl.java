@@ -56,7 +56,7 @@ public class FileServiceImpl implements FileService {
     @PreAuthorize("documentOwner == requester")
     public void deleteDocument(long medaDataId, int documentOwner, int requester) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), new Person(documentOwner), persistence);
+        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '5', new Person(documentOwner), persistence);
         metaDataRepository.deleteById(medaDataId);
     }
 

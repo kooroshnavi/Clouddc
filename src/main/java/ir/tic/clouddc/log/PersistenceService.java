@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PersistenceService {
 
-    Persistence persistenceSetup(LocalDate date, LocalTime time, char messageId, Person person);
+    Persistence persistenceSetup(Person person);
 
     void historyUpdate(LocalDate date, LocalTime time, char actionCode, Person person, Persistence persistence);
 

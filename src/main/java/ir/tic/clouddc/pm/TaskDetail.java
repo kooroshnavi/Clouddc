@@ -50,12 +50,16 @@ public class TaskDetail {
     @Transient
     private String personName;
 
-    public TaskDetail(Task task, Persistence persistence, boolean active, int delay, LocalDateTime dateTime) {
-        this.task = task;
+    public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
-        this.active = active;
-        this.delay = delay;
-        this.assignedTime = dateTime;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
+    }
+
+    public TaskDetail(Task task) {
+        this.task = task;
     }
 
     public LocalDateTime getFinishedTime() {
