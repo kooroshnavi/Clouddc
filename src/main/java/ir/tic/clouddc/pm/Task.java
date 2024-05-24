@@ -56,7 +56,7 @@ public class Task {
     private String name;
 
     @Transient
-    private int currentPersonDelay;
+    private String currentAssignedPerson;
 
     public Task(boolean active, int delay, Pm pm, Salon salon, LocalDate dueDate) {
         this.active = active;
@@ -66,13 +66,12 @@ public class Task {
         this.dueDate = dueDate;
     }
 
-
-    public int getCurrentPersonDelay() {
-        return currentPersonDelay;
+    public String getCurrentAssignedPerson() {
+        return currentAssignedPerson;
     }
 
-    public void setCurrentPersonDelay(int currentPersonDelay) {
-        this.currentPersonDelay = currentPersonDelay;
+    public void setCurrentAssignedPerson(String currentAssignedPerson) {
+        this.currentAssignedPerson = currentAssignedPerson;
     }
 
     public String getName() {

@@ -31,11 +31,28 @@ public class PmController {
         return "pmTypeView";
     }
 
-    @GetMapping("/type/list")
-    public String showPmList(@RequestParam int pmTypeId, Model model) {
-        List<Pm> pmList = pmService.getPmList(pmTypeId);
-        model.addAttribute("pmTypeName", pmList.get(0).getType().getName());
+    @GetMapping("/list")
+    public String showPmList(Model model) {
+        List<Pm> pmList = pmService.getPmList();
         model.addAttribute("pmList", pmList);
+        return "pmListView";
+    }
+
+    @GetMapping("/archive/list")
+    public String showArchivePmTaskList(@RequestParam int pmId, Model model) {
+        List<Task> archiveTaskList = pmService.getPmTaskList(pmId, false);
+        var pm = archiveTaskList.get(0).getPm();
+        model.addAttribute("pm", pm);
+        model.addAttribute("archiveTaskList", archiveTaskList);
+        return "archiveTaskListView";
+    }
+
+    @GetMapping("/active/list")
+    public String showActivePmTaskList(@RequestParam int pmId, Model model) {
+        List<Task> activeTaskList = pmService.getPmTaskList(pmId, true);
+        var pm = activeTaskList.get(0).getPm();
+        model.addAttribute("pm", pm);
+        model.addAttribute("activeTaskList", activeTaskList);
         return "pmListView";
     }
 

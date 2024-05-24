@@ -47,8 +47,6 @@ public class TaskDetail {
     @Transient
     private String persianFinishedDate;
 
-    @Transient
-    private String personName;
 
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
@@ -84,14 +82,6 @@ public class TaskDetail {
 
     public void setPersianFinishedDate(String persianFinishedDate) {
         this.persianFinishedDate = persianFinishedDate;
-    }
-
-    public String getPersonName() {
-        return personName;
-    }
-
-    public void setPersonName(String personName) {
-        this.personName = personName;
     }
 
     public void setDescription(String description) {

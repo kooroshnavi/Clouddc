@@ -14,6 +14,7 @@ import ir.tic.clouddc.utils.UtilService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -24,7 +25,6 @@ import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -115,10 +115,35 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getPmList(int pmTypeId) {
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        return pmRepository.fetchRelatedPmList(pmTypeId);
+    public List<Pm> getPmList() {
+        return pmRepository.findAll(Sort.by("type"));
     }
+
+    @Override
+    public List<Task> getPmTaskList(int pmId, boolean active) {
+        List<Task> taskList;
+        if (active) {
+            taskList = taskRepository.findByPmAndActive(pmId, true);
+            for (Task task : taskList) {
+                task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
+                task.setCurrentAssignedPerson(task
+                        .getTaskDetailList().stream()
+                        .filter(TaskDetail::isActive)
+                        .findFirst().get()
+                        .getPersistence()
+                        .getPerson().getName());
+            }
+
+        } else {
+            taskList = taskRepository.findByPmAndActive(pmId, false);
+            for (Task task : taskList) {
+                task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
+                task.setPersianFinishedDate(UtilService.getFormattedPersianDate(task.getDailyReport().getDate()));
+            }
+        }
+        return taskList;
+    }
+
 
     private Pm endTask(Task task) {
         task.setTime(UtilService.getTime());

@@ -13,7 +13,9 @@ public interface PmService {
     Pm getPm(int pmId);
     List<Task> getActivePersonTaskList();
     void editPm(PmRegisterForm editForm, int id);
-    List<Pm> getPmList(int pmTypeId);
+    List<Pm> getPmList();
+    List<Task> getPmTaskList(int pmId, boolean active);
+
     Model PmTypeOverview(Model model);
     Model modelForRegisterTask(Model model);
     Model modelForTaskController(Model model);

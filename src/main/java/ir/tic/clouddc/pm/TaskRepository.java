@@ -15,6 +15,8 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByPmId(int pmId);
 
+    List<Task> findByPmAndActive(int pmId, boolean active);
+
     @Query("SELECT COUNT(t) FROM Task t WHERE t.active = :active")
     long getTaskCountByActivation(@Param("active") boolean active);
 

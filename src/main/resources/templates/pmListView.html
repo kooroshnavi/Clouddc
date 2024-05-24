@@ -53,6 +53,12 @@
             <a type="button" href="/pm/register" class="btn btn-warning px-5" data-bs-toggle="tooltip"
                data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">تعریف PM جدید</a>
         </div>
+
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <a type="button" href="/pm/register" class="btn btn-alert px-5" data-bs-toggle="tooltip"
+               data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">دسته بندی</a>
+        </div>
+
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
             <div class="breadcrumb-title pe-3">وظایف</div>
@@ -101,7 +107,25 @@
 
                             <td th:text="${pm.type.name}"></td>
 
-                            <td th:text="${pm.taskList.size}"></td>
+                            <td>
+                                <div class="col">
+                                    <a th:href="@{/pm/edit(pmId=${pm.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="بروزرسانی">ویرایش Pm</a>
+                                </div>
+
+                                <div class="col">
+                                    <a th:href="@{/pm/active/list(pmId=${pm.id})}"
+                                       class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
+                                </div>
+
+                                <div class="col">
+                                    <a th:href="@{/pm/archive/list(pmId=${pm.id})}"
+                                       class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف آرشیو</a>
+                                </div>
+                            </td>
 
                         </tr>
 
@@ -259,7 +283,8 @@ $.fn.ddTableFilter.defaultOptions = {
 })(jQuery);
 
 $('table').ddTableFilter();
-    </script>
+
+</script>
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
