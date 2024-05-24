@@ -11,7 +11,7 @@ import java.util.List;
 public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     List<Person> findAllByAssignee(boolean assignee);
-    List<Person> findAllByIdNotInAndAssignee(List personList, boolean assignee);
+    List<Person> findAllByUsernameNotInAndAssignee(List<String> usernameList, boolean assignee);
     Person findByUsername(String name);
     @Query("SELECT id FROM Person p WHERE p.username  = :username")
     int fetchPersonId(@Param("username") String username);

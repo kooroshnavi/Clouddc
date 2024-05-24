@@ -9,7 +9,7 @@ import java.util.List;
 public interface CenterService {
     Salon getCenter(int centerId);
     List<Salon> getDefaultCenterList();
-    List<Salon> getCenterList();
+    List<Salon> getSalonList();
     Model modelForCenterController(Model model);
     List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport);
     void setDailyTemperatureReport(DailyReport currentReport);

@@ -38,6 +38,47 @@ public class PmController {
         return "pmListView";
     }
 
+    @GetMapping("/register")
+    public String showPmForm(Model model) {
+        pmService.getPmFormData(model);
+        return "pmRegister";
+    }
+
+
+    @GetMapping("/edit")   // 1
+    public String showEditForm(@RequestParam int pmId, Model model) {
+        Pm selectedPm = pmService.getPm(pmId);
+        PmRegisterForm pmEdit = new PmRegisterForm();
+        pmEdit.setName(selectedPm.getName());
+        pmEdit.setDescription(selectedPm.getDescription());
+        pmEdit.setPeriod(selectedPm.getPeriod());
+        model.addAttribute("pmEdit", pmEdit);
+        model.addAttribute("taskSize", selectedPm.getTaskList().size());
+        model.addAttribute("pmId", selectedPm.getId());
+        pmService.getPmFormData(model);
+        return "pmEditView";
+    }
+
+    @PostMapping("/register")
+    public String pmPost(
+            Model model,
+            @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
+            @RequestParam("attachment") MultipartFile file,
+            Errors errors) throws IOException {
+
+        if (errors.hasErrors()) {
+            log.error("Failed to register task due to validation error on input data: " + errors);
+            return showPmForm(model);
+        }
+
+        if (!file.isEmpty()) {
+            pmRegisterForm.setFile(file);
+        }
+        pmService.pmRegister(pmRegisterForm);
+        return "pmList";
+    }
+
+
     @GetMapping("/taskList/archive")
     public String showArchivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> archiveTaskList = pmService.getPmTaskList(pmId, false);
@@ -70,23 +111,32 @@ public class PmController {
         return "taskDetail";
     }
 
-    @GetMapping("/edit")   // 1
-    public String showEditForm(@RequestParam int pmId, Model model) {
-        Pm selectedPm = pmService.getPm(pmId);
-        PmRegisterForm pmEdit = new PmRegisterForm();
-        pmEdit.setName(selectedPm.getName());
-        pmEdit.setDescription(selectedPm.getDescription());
-        pmEdit.setPeriod(selectedPm.getPeriod());
-        model.addAttribute("pmEdit", pmEdit);
-        model.addAttribute("taskSize", selectedPm.getTaskList().size());
-        model.addAttribute("pmId", selectedPm.getId());
-        pmService.modelForRegisterTask(model);
-        return "pmEditView";
+    @GetMapping("/task/{taskId}/update")
+    public String showAssignForm(@RequestParam("taskId") Long taskId,
+                                 Model model) {
+        pmService.prepareAssignForm(model, pmService.getTask(taskId), pmService.getOwnerUsername(taskId));
+
+        return "pmUpdateForm";
     }
 
-    //@PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
+    @PostMapping("/task/update")
+    public String updateTask(Model model,
+                                   @RequestParam("taskId") Long taskId,
+                                   @RequestParam("attachment") MultipartFile file,
+                                   @ModelAttribute("assignForm") AssignForm assignForm) throws IOException {
+        System.out.println("Captured: " + model.getAttribute("assignForm").toString());
+
+        if (!file.isEmpty()) {
+            assignForm.setFile(file);
+        }
+        pmService.updateTaskDetail(assignForm, pmService.getTask(taskId), pmService.getOwnerUsername(taskId));
+       // pmService.modelForActivePersonTaskList(model);
+
+        return "userTask";
+    }
+
     @PostMapping("/edit")
-    public String pmEdit(Model model,
+    public String pmTypeEdit(Model model,
                          @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
                          @RequestParam int id,
                          @RequestParam("attachment") MultipartFile file,
@@ -94,39 +144,12 @@ public class PmController {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
-            return pmForm(model);
+            return showPmForm(model);
         }
         pmService.editPm(editForm, id);
         pmService.PmTypeOverview(model);
         return "pmEditView";
     }
-
-
-
-
-    @GetMapping("/register")
-    public String pmForm(Model model) {
-        pmService.modelForRegisterTask(model);
-        model.addAttribute("pmRegister", new PmRegisterForm());
-        return "pmRegister";
-    }
-
-    @PostMapping("/register/form/submit")
-    public String pmPost(
-            Model model,
-            @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
-            Errors errors) throws IOException {
-
-        if (errors.hasErrors()) {
-            log.error("Failed to register task due to validation error on input data: " + errors);
-            return pmForm(model);
-        }
-
-        pmService.pmRegister(pmRegisterForm);
-        pmService.PmTypeOverview(model);
-        return "pmList";
-    }
-
 
     @GetMapping("/myTask")
     private String showActivePersonTaskList(Model model) {
@@ -136,28 +159,6 @@ public class PmController {
         return "activePersonTaskList";
     }
 
-
-    @GetMapping("/task/form")
-    public String showAssignForm(@RequestParam("id") Long id,
-                                 Model model) {
-
-        pmService.modelForActionForm(model, id);
-
-        return "pmUpdateForm";
-    }
-
-
-    @PostMapping("/task/form/update")
-    public String assignTaskDetail(Model model,
-                                   @RequestParam("id") Long id,
-                                   @ModelAttribute("assignForm") AssignForm assignForm) throws IOException {
-        System.out.println("Captured: " + model.getAttribute("assignForm").toString());
-
-        pmService.updateTaskDetail(assignForm, id);
-        pmService.modelForActivePersonTaskList(model);
-
-        return "userTask";
-    }
 
     @ModelAttribute
     public void addAttributes(Model model) {

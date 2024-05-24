@@ -99,7 +99,8 @@
         <div th:if="${task.active} and ${permission}" class="col">
             <div class="card bg-primary text-white">
                 <div class="card-body">
-                    <a th:href="@{/pm/task/form(id=${currentDetailId})}" class="btn btn-danger">بروزرسانی وظیفه</a>
+                    <input type="hidden" th:value="${otpUid}" name="username"/>
+                    <a th:href="@{/pm/task/{taskId}/update (taskId=${task.id})}" class="btn btn-danger">بروزرسانی وظیفه</a>
                 </div>
             </div>
         </div>

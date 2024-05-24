@@ -17,16 +17,16 @@ public interface PmService {
     List<Task> getPmTaskList(int pmId, boolean active);
 
     Model PmTypeOverview(Model model);
-    Model modelForRegisterTask(Model model);
+    Model getPmFormData(Model model);
     Model modelForTaskController(Model model);
     Model getTaskDetailList(Model model, Long taskId);
     Model modelForActivePersonTaskList(Model model);
 
-    TaskDetail modelForActionForm(Model model, Long taskDetailId);
+    Model prepareAssignForm(Model model, Task task, String ownerUsername);
 
     void pmRegister(PmRegisterForm pmRegisterForm) throws IOException;
 
-    void updateTaskDetail(AssignForm assignForm, Long id) throws IOException;
+    void updateTaskDetail(AssignForm assignForm, Task task, String ownerUsername) throws IOException;
 
     long getFinishedTaskCount();
 
@@ -37,5 +37,10 @@ public interface PmService {
     int getWeeklyFinishedPercentage();
 
     int getActiveDelayedPercentage();
+
+    String getOwnerUsername(Long taskId);
+
+    Task getTask(long taskId);
+
 
 }

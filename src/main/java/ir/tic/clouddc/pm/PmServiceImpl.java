@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -217,11 +217,12 @@ public class PmServiceImpl implements PmService {
             model.addAttribute("metaDataList", metaDataList);
         }
 
-        var currentTaskUsername = taskDetailList.stream().filter(TaskDetail::isActive).findFirst().get().getPersistence().getPerson().getUsername();
+        var ownerUsername = taskDetailList.stream().filter(TaskDetail::isActive).findFirst().get().getPersistence().getPerson().getUsername();
         task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
         model.addAttribute("taskDetailList", orderedTaskDetailList);
         model.addAttribute("task", task);
-        model.addAttribute("permission", taskDetailFormViewPermission(currentTaskUsername));
+        model.addAttribute("permission", taskDetailFormViewPermission(ownerUsername));
+        model.addAttribute("ownerUsername", ownerUsername);
 
         return model;
     }
@@ -252,30 +253,27 @@ public class PmServiceImpl implements PmService {
         return taskDetail;
     }
 
-    private List<Person> getOtherPersonList() {
-        return personService.getPersonListNotIn(personService.getPersonId(personService.getCurrentUsername()));
-    } // returns a list of users that will be shown in the drop-down list of assignForm.
-
     @Override
-    public void updateTaskDetail(AssignForm assignForm, Long taskDetailId) throws IOException {
-        TaskDetail currentTaskDetail = taskDetailRepository.findById(taskDetailId).get();
+    @PreAuthorize(" task.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
+    public void updateTaskDetail(AssignForm assignForm, Task task, String ownerUsername) throws IOException {
+        TaskDetail currentTaskDetail = taskDetailRepository.findByTaskIdAndActive(task.getId(), true).get();
         Persistence currentTaskDetailPersistence = currentTaskDetail.getPersistence();
-        Person currentPerson = personService.getCurrentPerson();
+        var currentUsername = personService.getCurrentUsername();
         currentTaskDetail.setFinishedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         currentTaskDetail.setActive(false);
 
-        if (currentTaskDetailPersistence.getPerson().equals(currentPerson)) {
+        if (ownerUsername.equals(currentUsername)) {
             routineOperation(currentTaskDetail, currentTaskDetailPersistence, assignForm);
         } else {
-            supervisorOperation(currentTaskDetail, currentTaskDetailPersistence, assignForm, currentPerson);
+            supervisorOperation(currentTaskDetail, currentTaskDetailPersistence, assignForm, personService.getCurrentPerson());
         }
         taskDetailRepository.save(currentTaskDetail);
 
-        if (assignForm.getActionType() == 100) {  //  End Task
-            endTask(currentTaskDetail.getTask());
+        if (assignForm.getActionType() == 0) {  //  End Task
+            endTask(task);
         } else { //  Assign Task
             TaskDetail taskDetail = new TaskDetail();
-            taskDetail.setTask(currentTaskDetail.getTask());
+            taskDetail.setTask(task);
             assignNewTaskDetail(taskDetail, assignForm.getActionType(), '0', true);
         }
     }
@@ -293,6 +291,37 @@ public class PmServiceImpl implements PmService {
         supervisorTaskDetail.setDescription(assignForm.getDescription());
         assignNewTaskDetail(supervisorTaskDetail, currentPerson.getId(), '3', false);
         fileService.checkAttachment(assignForm.getFile(), supervisorTaskDetail.getPersistence());
+    }
+
+    @Override
+    @PreAuthorize(" task.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
+    public Model prepareAssignForm(Model model, Task task, String ownerUsername) {
+        var currentUsername = personService.getCurrentUsername();
+        AssignForm assignForm = new AssignForm();
+        assignForm.setId(task.getId());
+        List<Person> assignPersonList;
+
+        if (ownerUsername.equals(currentUsername)) { /// taskDetail Owner updates task
+            assignPersonList = personService.getPersonListExcept(List.of(ownerUsername));
+        } else {  /// supervisor updates task
+            assignPersonList = personService.getPersonListExcept(List.of(ownerUsername, currentUsername));
+        }
+
+        model.addAttribute("assignPersonList", assignPersonList);
+        model.addAttribute("assignForm", assignForm);
+        model.addAttribute("task", task);
+        return model;
+    }
+
+    @Override
+    public String getOwnerUsername(Long taskId) {
+        return taskDetailRepository.fetchOwnerUsername(taskId, true);
+    }
+
+    @Override
+    public Task getTask(long taskId) {
+        var task = taskRepository.findById(taskId);
+        return task.orElse(null);
     }
 
 
@@ -334,24 +363,23 @@ public class PmServiceImpl implements PmService {
     @Override
     @ModifyProtection
     public void pmRegister(PmRegisterForm pmRegisterForm) throws IOException {
-        var salonList = centerService.getCenterList();
-        var newPm = new Pm();
-        newPm.setActive(true);
-        newPm.setName(pmRegisterForm.getName());
-        newPm.setPeriod(pmRegisterForm.getPeriod());
-        newPm.setDescription(pmRegisterForm.getDescription());
-        newPm.setEnabled(true);
-        newPm.setType(new PmType(pmRegisterForm.getTypeId()));
-        var currentPerson = personService.getCurrentPerson();
+        var pm = new Pm();
+        pm.setActive(false);
+        pm.setName(pmRegisterForm.getName());
+        pm.setPeriod(pmRegisterForm.getPeriod());
+        pm.setDescription(pmRegisterForm.getDescription());
+        pm.setEnabled(true);
+        pm.setType(new PmType(pmRegisterForm.getTypeId()));
 
+        var currentPerson = personService.getCurrentPerson();
         Persistence persistence = persistenceService.persistenceSetup(currentPerson);
         persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '6', currentPerson, persistence);
         fileService.checkAttachment(pmRegisterForm.getFile(), persistence);
 
-        pmRepository.saveAndFlush(newPm);
+        pmRepository.saveAndFlush(pm);
 
         for (Integer id : pmRegisterForm.getSalonIdList()) {
-            centerService.getCenter(id).getPmDueMap().put(newPm.getId(), null);
+            centerService.getCenter(id).getPmDueMap().put(pm.getId(), pmRegisterForm.getPersianFirstDueDate().toGregorian());
         }
     }
 
@@ -408,13 +436,12 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model modelForRegisterTask(Model model) {
-        model.addAttribute("personList", personService.getPersonList());
-        model.addAttribute("centerList", centerService.getCenterList());
-
+    public Model getPmFormData(Model model) {
+        model.addAttribute("salonList", centerService.getSalonList());
+        model.addAttribute("pmTypeList", pmTypeRepository.findAll(Sort.by("name")));
+        model.addAttribute("pmRegister", new PmRegisterForm());
         return model;
     }
-
 
     @Override
     public Model modelForActivePersonTaskList(Model model) {
@@ -425,28 +452,5 @@ public class PmServiceImpl implements PmService {
         return model;
     }
 
-    @Override
-    @PostAuthorize("returnObject.person.username == authentication.name && returnObject.active")
-    public TaskDetail modelForActionForm(Model model, Long taskDetailId) {
-        var activeTaskDetail = taskDetailRepository.findById(taskDetailId);
-        if (activeTaskDetail.isPresent()) {
-            var persistence = activeTaskDetail.get().getPersistence();
-        }
-
-/*
-        AssignForm assignForm = new AssignForm();
-        assignForm.setId(taskDetailId);
-        model.addAttribute("id", taskDetailId);
-        model.addAttribute("taskDetail", taskDetailRepository.findById(taskDetailId));
-        model.addAttribute("taskName", taskName);
-        model.addAttribute("dueDate", dueDate);
-        model.addAttribute("center", center);
-        model.addAttribute("personName", person);
-        model.addAttribute("personList", personList);
-        model.addAttribute("delay", delay);
-        model.addAttribute("assignForm", assignForm);
-*/
-        return taskDetailRepository.findById(taskDetailId).get();
-    }
 
 }

@@ -27,4 +27,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     long getWeeklyFinishedTaskCount(@Param("date") LocalDate date, @Param("active") boolean active);
 
 
+
+
 }

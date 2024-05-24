@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import com.github.mfathi91.time.PersianDate;
 import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
@@ -16,15 +17,31 @@ public class PmRegisterForm {
 
     private int period;
 
-    private int personId;
-
     private List<Integer> salonIdList;
+
+    private List<Integer> roomIdList;
 
     private int typeId;
 
-    private String persianFirstDueDate;
+    private PersianDate persianFirstDueDate;
 
     private MultipartFile file;
+
+    public List<Integer> getRoomIdList() {
+        return roomIdList;
+    }
+
+    public void setRoomIdList(List<Integer> roomIdList) {
+        this.roomIdList = roomIdList;
+    }
+
+    public PersianDate getPersianFirstDueDate() {
+        return persianFirstDueDate;
+    }
+
+    public void setPersianFirstDueDate(PersianDate persianFirstDueDate) {
+        this.persianFirstDueDate = persianFirstDueDate;
+    }
 
     public int getTypeId() {
         return typeId;
@@ -58,14 +75,6 @@ public class PmRegisterForm {
         this.period = period;
     }
 
-    public int getPersonId() {
-        return personId;
-    }
-
-    public void setPersonId(int personId) {
-        this.personId = personId;
-    }
-
     public MultipartFile getFile() {
         return file;
     }
@@ -78,13 +87,6 @@ public class PmRegisterForm {
         return salonIdList;
     }
 
-    public String getPersianFirstDueDate() {
-        return persianFirstDueDate;
-    }
-
-    public void setPersianFirstDueDate(String persianFirstDueDate) {
-        this.persianFirstDueDate = persianFirstDueDate;
-    }
 
     public void setSalonIdList(List<Integer> salonIdList) {
         this.salonIdList = salonIdList;

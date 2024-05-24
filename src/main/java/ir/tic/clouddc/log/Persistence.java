@@ -17,11 +17,11 @@ public class Persistence {
     private long id;
 
     @ManyToOne
-    @JoinColumn(name = "creator_id")
+    @JoinColumn(name = "owner_id")
     private Person person;
 
 
-    @OneToMany(mappedBy = "persistence", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "persistence")
     private List<LogHistory> logHistoryList;
 
     public Persistence(Person person) {

@@ -77,11 +77,11 @@
                                   <i class="lni lni-chevron-left"></i>
                               </div>
                               <div class="info">
-                                  <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${taskName}"></strong></h6>
-                                  <p class="mb-1" th:text=" 'مرکز: ' + ${salon}"></p>
-                                  <p class="mb-1" th:text=" 'سررسید: ' + ${dueDate}"></p>
-                                  <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${delay}"></p>
-                                  <p class="mb-1" th:if="${description != null}" th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${description}"></p>
+                                  <h6 class="mb-2" ><strong th:text=" 'عنوان: ' + ${task.pm.name}"></strong></h6>
+                                  <p class="mb-1" th:text=" 'مرکز: ' + ${task.salon.name}"></p>
+                                  <p class="mb-1" th:text=" 'سررسید: ' + ${task.dueDate}"></p>
+                                  <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${task.delay}"></p>
+                                  <p class="mb-1" th:if="${task.pm.description != null}" th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${task.pm.description}"></p>
                               </div>
                           </div>
                       </div>
@@ -102,24 +102,29 @@
                             <div class="card shadow-none bg-light border">
                               <div class="card-body">
 
-                                <form class="row g-3" th:action="@{/pm/task/form/update(id=${id})}" th:object="${assignForm}" method="POST">
-                                  <div class="col-12">
-                                    <label class="form-label">بارگذاری سند (در حال توسعه)</label>
-                                    <input class="form-control" type="file" disabled>
-                                  </div>
-                                  <div class="col-12">
-                                    <label class="form-label">اقدامات انجام شده</label>
-                                    <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4" th:field="*{description}" required="required" dir="rtl" maxlength="1000"></textarea>
-                                  </div>
+                                <form class="row g-3" th:action="@{/pm/task/update (taskId=${task.id})}" th:object="${assignForm}" method="POST">
+
+                                    <div class="col-12">
+                                        <label class="form-label">اقدامات انجام شده</label>
+                                        <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4" th:field="*{description}" required="required" dir="rtl" maxlength="1000"></textarea>
+                                    </div>
+
+                                    <div class="col-12">
+                                        <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+                                        <input class="form-control" type="file" name="attachment"
+                                               id="attachment">
+                                    </div>
+
 
                                     <div class="col-12">
                                         <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران</label>
                                         <select class="form-select" th:field="*{actionType}">
                                             <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                            <option th:value="100">اتمام وظیفه</option>
-                                            <option th:each="person : ${personList}" th:value="${person.getId}" th:text="${person.getName}"></option>
+                                            <option th:value="0">اتمام وظیفه</option>
+                                            <option th:each="person : ${assignPersonList}" th:value="${person.id}" th:text="${person.name}"></option>
                                         </select>
                                     </div>
+
 
                                     <div class="col">
                                         <!-- Button trigger modal -->
@@ -177,7 +182,9 @@
 
 
   <!-- Bootstrap bundle JS -->
+  <script src="/panel/assets/js/fileSizeValidation.js"></script>
   <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+
   <!--plugins-->
   <script src="/panel/assets/js/jquery.min.js"></script>
   <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
