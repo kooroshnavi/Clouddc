@@ -2,6 +2,7 @@ package ir.tic.clouddc.person;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +67,11 @@ final class PersonServiceImpl implements PersonService {
     @Override
     public String getCurrentUsername() {
         return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @Override
+    public List<GrantedAuthority> getCurrentPersonRoleList() {
+        return new ArrayList<>(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
     }
 
 }

@@ -47,6 +47,17 @@ public class TaskDetail {
     @Transient
     private String persianFinishedDate;
 
+    @Transient
+    private String assignedPerson;
+
+
+    public String getAssignedPerson() {
+        return assignedPerson;
+    }
+
+    public void setAssignedPerson(String assignedPerson) {
+        this.assignedPerson = assignedPerson;
+    }
 
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;

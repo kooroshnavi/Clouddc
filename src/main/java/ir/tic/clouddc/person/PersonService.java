@@ -1,5 +1,7 @@
 package ir.tic.clouddc.person;
 
+import org.springframework.security.core.GrantedAuthority;
+
 import java.util.List;
 
 public interface PersonService {
@@ -14,5 +16,7 @@ public interface PersonService {
     Person getCurrentPerson();
 
     String getCurrentUsername();
+
+    List<GrantedAuthority> getCurrentPersonRoleList();
 
 }

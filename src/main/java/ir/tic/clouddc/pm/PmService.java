@@ -9,7 +9,7 @@ import java.util.List;
 public interface PmService {
 
     void updateTodayTasks(DailyReport todayReport);
-    List<Task> getTaskList(int pmId);
+    List<Task> getAllActiveTaskList();
     Pm getPm(int pmId);
     List<Task> getActivePersonTaskList();
     void editPm(PmRegisterForm editForm, int id);
@@ -19,7 +19,7 @@ public interface PmService {
     Model PmTypeOverview(Model model);
     Model modelForRegisterTask(Model model);
     Model modelForTaskController(Model model);
-    Model modelForTaskDetail(Model model, Long taskId);
+    Model getTaskDetailList(Model model, Long taskId);
     Model modelForActivePersonTaskList(Model model);
 
     TaskDetail modelForActionForm(Model model, Long taskDetailId);

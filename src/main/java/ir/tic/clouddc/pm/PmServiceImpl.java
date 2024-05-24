@@ -3,6 +3,7 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.document.FileService;
+import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.PersistenceService;
 import ir.tic.clouddc.notification.NotificationService;
@@ -17,6 +18,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.prepost.PostAuthorize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -170,13 +173,17 @@ public class PmServiceImpl implements PmService {
 
 
     @Override
-    public List<Task> getTaskList(int pmId) {
-        List<Task> taskList = taskRepository.findByPmId(pmId);
+    public List<Task> getAllActiveTaskList() {
+        List<Task> taskList = taskRepository.findByActive(true);
         for (Task task : taskList) {
             task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
-            if (!task.isActive()) {
-                task.setPersianFinishedDate(UtilService.getFormattedPersianDateTime(LocalDateTime.of(task.getDailyReport().getDate(), task.getTime())));
-            }
+            task.setName(task.getPm().getName());
+            task.setCurrentAssignedPerson(task
+                    .getTaskDetailList().stream()
+                    .filter(TaskDetail::isActive)
+                    .findFirst().get()
+                    .getPersistence()
+                    .getPerson().getName());
         }
         return taskList;
     }
@@ -187,21 +194,43 @@ public class PmServiceImpl implements PmService {
     }
 
 
-    private List<TaskDetail> getPreparedTaskDetailList(Long taskId) {
+    @Override
+    public Model getTaskDetailList(Model model, Long taskId) {
         List<TaskDetail> taskDetailList = taskDetailRepository.findByTaskId(taskId);
         for (TaskDetail taskDetail : taskDetailList
         ) {
             taskDetail.setPersianRegisterDate(UtilService.getFormattedPersianDateTime(taskDetail.getAssignedTime()));
-            taskDetail.setPersonName((taskDetail.getPersistence().getPerson()).getName());
+            taskDetail.setAssignedPerson((taskDetail.getPersistence().getPerson()).getName());
             if (!taskDetail.isActive()) {
                 taskDetail.setPersianFinishedDate(UtilService.getFormattedPersianDateTime(taskDetail.getFinishedTime()));
             }
         }
-
-        return taskDetailList
+        var orderedTaskDetailList = taskDetailList
                 .stream()
                 .sorted(Comparator.comparing(TaskDetail::getId).reversed())
-                .collect(Collectors.toList());
+                .toList();
+
+        var task = taskDetailList.get(0).getTask();
+        List<Long> persistenceIdList = taskDetailRepository.getPersistenceIdList(task.getId());
+        List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList);
+        if (!metaDataList.isEmpty()) {
+            model.addAttribute("metaDataList", metaDataList);
+        }
+
+        var currentTaskUsername = taskDetailList.stream().filter(TaskDetail::isActive).findFirst().get().getPersistence().getPerson().getUsername();
+        task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
+        model.addAttribute("taskDetailList", orderedTaskDetailList);
+        model.addAttribute("task", task);
+        model.addAttribute("permission", taskDetailFormViewPermission(currentTaskUsername));
+
+        return model;
+    }
+
+    private boolean taskDetailFormViewPermission(String currentTaskUsername) {
+        List<GrantedAuthority> supervisorRoleList = List.of(new SimpleGrantedAuthority("SUPERVISOR"), new SimpleGrantedAuthority("ADMIN"));
+        if (personService.getCurrentPersonRoleList().contains((GrantedAuthority) supervisorRoleList)) {
+            return true;
+        } else return currentTaskUsername.equals(personService.getCurrentUsername());
     }
 
     private TaskDetail assignNewTaskDetail(TaskDetail taskDetail, int personId, char actionCode, boolean active) {
@@ -386,29 +415,6 @@ public class PmServiceImpl implements PmService {
         return model;
     }
 
-    @Override
-    public Model modelForTaskDetail(Model model, Long taskId) {
-        List<TaskDetail> taskDetailList = getPreparedTaskDetailList(taskId);
-        var task = taskDetailList.get(0).getTask();
-        task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
-        //var currentDetailId = taskDetailList.get(0).getId();
-        // model.addAttribute("currentDetailId", currentDetailId);
-        model.addAttribute("taskDetailList", taskDetailList);
-        model.addAttribute("task", task);
-        model.addAttribute("permission", formPermission(taskDetailList));
-
-
-        return model;
-    }
-
-    private boolean formPermission(List<TaskDetail> taskDetailList) {
-        Optional<TaskDetail> activeTaskDetail = taskDetailList.stream().filter(TaskDetail::isActive).findFirst();
-        return activeTaskDetail
-                .filter
-                        (taskDetail ->
-                                (taskDetail.getPersistence().getPerson()).getId() == personService.getPersonId(personService.getCurrentUsername()))
-                .isPresent();
-    }
 
     @Override
     public Model modelForActivePersonTaskList(Model model) {

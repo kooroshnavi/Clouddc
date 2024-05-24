@@ -31,7 +31,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>وظایف فعال</title>
+    <title>تاریخچه PM</title>
 </head>
 
 <body>
@@ -57,7 +57,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">وظایف فعال</li>
+                        <li class="breadcrumb-item active" aria-current="page">PM</li>
                     </ol>
                 </nav>
             </div>
@@ -73,7 +73,11 @@
                             <i class="lni lni-chevron-left"></i>
                         </div>
                         <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'تعداد کل وظایف فعال: ' + ${size}"></strong></h6>
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pm.type.name}"></strong></h6>
+                            <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pm.name}"></strong></h6>
+                            <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pm.period}"></p>
+                            <p class="mb-1" th:if="${pm.description not null}"
+                               th:text=" 'توضیحات پیرامون این Pm: ' + ${pm.description}"></p>
                         </div>
                     </div>
                 </div>
@@ -82,7 +86,7 @@
 
         <hr/>
 
-        <h6 class="mb-0 text-uppercase" align="salon">لیست وظایف فعال Pm ها</h6>
+        <h6 class="mb-0 text-uppercase" align="salon">وظایف فعال</h6>
         <hr/>
         <div class="card">
             <div class="card-body">
@@ -91,13 +95,12 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>نام Pm وظیفه</th>
                             <th>شماره وظیفه</th>
                             <th>تاریخ سررسید</th>
-                            <th index=0>سالن
+                            <th index=0>دسته بندی
                                 <div class="filter"></div>
                             </th>
-                            <th index=1>کارتابل فعلی
+                            <th index=1>کارتابل
                                 <div class="filter"></div>
                             </th>
                             <th>تاخیر</th>
@@ -110,7 +113,6 @@
                         <tr th:each="task, iter : ${archiveTaskList}">
 
                             <td th:text="${iter.count}"/>
-                            <td th:text="${task.name}"/>
                             <td th:text="${task.getId}"/>
                             <td th:text="${task.persianDueDate}"/>
                             <td th:text="${task.salon.name}"/>

@@ -137,7 +137,7 @@ public class EventServiceImpl implements EventService {
         List<EventDetail> eventDetailList = getEventDetailList(getEvent(eventId));
         List<Long> persistenceIdList = eventDetailRepository.getPersistenceIdList(eventId);
         List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList);
-        if (metaDataList.size() > 0) {
+        if (!metaDataList.isEmpty()) {
             model.addAttribute("metaDataList", metaDataList);
         }
         var firstReport = eventDetailList.get(eventDetailList.size() - 1);

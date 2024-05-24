@@ -38,22 +38,36 @@ public class PmController {
         return "pmListView";
     }
 
-    @GetMapping("/archive/list")
+    @GetMapping("/taskList/archive")
     public String showArchivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> archiveTaskList = pmService.getPmTaskList(pmId, false);
         var pm = archiveTaskList.get(0).getPm();
         model.addAttribute("pm", pm);
         model.addAttribute("archiveTaskList", archiveTaskList);
-        return "archiveTaskListView";
+        return "archivePmTaskListView";
     }
 
-    @GetMapping("/active/list")
+    @GetMapping("/taskList/active")
     public String showActivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> activeTaskList = pmService.getPmTaskList(pmId, true);
         var pm = activeTaskList.get(0).getPm();
         model.addAttribute("pm", pm);
         model.addAttribute("activeTaskList", activeTaskList);
-        return "pmListView";
+        return "activePmTaskListView";
+    }
+
+    @GetMapping("/activeTaskList")
+    public String showAllActiveTaskList(Model model) {
+        List<Task> activeTaskList = pmService.getAllActiveTaskList();
+        model.addAttribute("activeTaskList", activeTaskList);
+        model.addAttribute("size", activeTaskList.size());
+        return "activePmTaskListView";
+    }
+
+    @GetMapping("/task/detailList")
+    public String showTaskDetailPage(@RequestParam Long taskId, Model model) {
+        pmService.getTaskDetailList(model, taskId);
+        return "taskDetail";
     }
 
     @GetMapping("/edit")   // 1
@@ -87,20 +101,8 @@ public class PmController {
         return "pmEditView";
     }
 
-    @GetMapping("/task")
-    public String showTaskList(@RequestParam int pmId, Model model) {
-        List<Task> taskList = pmService.getTaskList(pmId);
-        model.addAttribute("taskList", taskList);
-        model.addAttribute("pm", taskList.get(0).getPm());
-        return null;
-    }
 
-    @GetMapping("/task/detailList")
-    public String showTaskDetailPage(@RequestParam Long taskId, Model model) {
-        pmService.modelForTaskDetail(model, taskId);
 
-        return "taskDetail";
-    }
 
     @GetMapping("/register")
     public String pmForm(Model model) {
