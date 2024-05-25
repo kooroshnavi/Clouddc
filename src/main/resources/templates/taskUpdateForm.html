@@ -102,7 +102,7 @@
                             <div class="card shadow-none bg-light border">
                               <div class="card-body">
 
-                                <form class="row g-3" th:action="@{/pm/task/update (taskId=${task.id})}" th:object="${assignForm}" method="POST">
+                                <form class="row g-3" th:action="@{/pm/task/{taskId}/update (taskId=${task.id})}" th:object="${assignForm}" method="POST">
 
                                     <div class="col-12">
                                         <label class="form-label">اقدامات انجام شده</label>
@@ -115,7 +115,6 @@
                                                id="attachment">
                                     </div>
 
-
                                     <div class="col-12">
                                         <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران</label>
                                         <select class="form-select" th:field="*{actionType}">
@@ -124,7 +123,6 @@
                                             <option th:each="person : ${assignPersonList}" th:value="${person.id}" th:text="${person.name}"></option>
                                         </select>
                                     </div>
-
 
                                     <div class="col">
                                         <!-- Button trigger modal -->

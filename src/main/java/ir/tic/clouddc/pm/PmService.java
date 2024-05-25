@@ -11,7 +11,6 @@ public interface PmService {
     void updateTodayTasks(DailyReport todayReport);
     List<Task> getAllActiveTaskList();
     Pm getPm(int pmId);
-    List<Task> getActivePersonTaskList();
     void editPm(PmRegisterForm editForm, int id);
     List<Pm> getPmList();
     List<Task> getPmTaskList(int pmId, boolean active);
@@ -20,7 +19,7 @@ public interface PmService {
     Model getPmFormData(Model model);
     Model modelForTaskController(Model model);
     Model getTaskDetailList(Model model, Long taskId);
-    Model modelForActivePersonTaskList(Model model);
+    Model getPersonTaskList(Model model);
 
     Model prepareAssignForm(Model model, Task task, String ownerUsername);
 

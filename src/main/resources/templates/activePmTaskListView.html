@@ -96,27 +96,23 @@
                         <tr>
                             <th>ردیف</th>
                             <th>شماره وظیفه</th>
+                            <th>سالن</th>
                             <th>تاریخ سررسید</th>
-                            <th index=0>دسته بندی
-                                <div class="filter"></div>
-                            </th>
-                            <th index=1>کارتابل
-                                <div class="filter"></div>
-                            </th>
                             <th>تاخیر</th>
+                            <th index=0>کارتابل
+                                <div class="filter"></div>
+                            </th>
                             <th>جزئیات</th>
-
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="task, iter : ${archiveTaskList}">
+                        <tr th:each="task, iter : ${activeTaskList}">
 
                             <td th:text="${iter.count}"/>
                             <td th:text="${task.getId}"/>
-                            <td th:text="${task.persianDueDate}"/>
                             <td th:text="${task.salon.name}"/>
-                            <td th:text="${task.currentAssignedPerson}"/>
+                            <td th:text="${task.persianDueDate}"/>
 
                             <td class="clock">
                                 <span th:if="${task.delay} > 0" th:text="${task.delay}"
@@ -125,9 +121,11 @@
                                       class="badge bg-light-success text-success w-100">ندارد</span>
                             </td>
 
+                            <td th:text="${task.currentAssignedPerson}"/>
+
                             <td>
                                 <div class="col">
-                                    <a th:href="@{/pm/task/detailList(id=${task.id})}">مشاهده جزئیات</a>
+                                    <a th:href="@{/task/{taskId}/detailList(taskId=${task.id})}">مشاهده جزئیات</a>
                                 </div>
                             </td>
 

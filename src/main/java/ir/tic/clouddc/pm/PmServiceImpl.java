@@ -30,8 +30,10 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Locale;
 
 @Slf4j
 @Service
@@ -178,12 +180,13 @@ public class PmServiceImpl implements PmService {
         for (Task task : taskList) {
             task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
             task.setName(task.getPm().getName());
-            task.setCurrentAssignedPerson(task
-                    .getTaskDetailList().stream()
-                    .filter(TaskDetail::isActive)
-                    .findFirst().get()
-                    .getPersistence()
-                    .getPerson().getName());
+            task.setCurrentAssignedPerson(
+                    task
+                            .getTaskDetailList().stream()
+                            .filter(TaskDetail::isActive)
+                            .findFirst().get()
+                            .getPersistence()
+                            .getPerson().getName());
         }
         return taskList;
     }
@@ -383,24 +386,24 @@ public class PmServiceImpl implements PmService {
         }
     }
 
-
     @Override
-    public List<Task> getActivePersonTaskList() {
-        var personId = personService.getPersonId(personService.getCurrentUsername());
-        List<Integer> activePersonPersistenceIdList = persistenceService.getActivePersonPersistenceIdList(personId, true);
-        List<Task> activePersonTaskList;
+    public Model getPersonTaskList(Model model) {
+        List<Task> activePersonTaskList = taskDetailRepository.fetchActivePersonTaskList(personService.getCurrentUsername(), true);
 
-        if (!activePersonPersistenceIdList.isEmpty()) {
-            activePersonTaskList = taskDetailRepository.fetchRelatedActivePersonTaskList(activePersonPersistenceIdList);
+        if (!activePersonTaskList.isEmpty()) {
             for (Task task : activePersonTaskList
             ) {
                 task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
                 task.setName(task.getPm().getName());
             }
-            return activePersonTaskList
+            var sortedPersonTaskList = activePersonTaskList
                     .stream()
                     .sorted(Comparator.comparing(Task::getDelay).reversed())
-                    .collect(Collectors.toList());
+                    .toList();
+
+            model.addAttribute("activePersonTaskList", sortedPersonTaskList);
+
+            return model;
         }
         return null;
     }
@@ -440,15 +443,6 @@ public class PmServiceImpl implements PmService {
         model.addAttribute("salonList", centerService.getSalonList());
         model.addAttribute("pmTypeList", pmTypeRepository.findAll(Sort.by("name")));
         model.addAttribute("pmRegister", new PmRegisterForm());
-        return model;
-    }
-
-    @Override
-    public Model modelForActivePersonTaskList(Model model) {
-        List<Task> activePersonTaskList = getActivePersonTaskList();
-        if (!activePersonTaskList.isEmpty()) {
-            model.addAttribute("activePersonTaskList", activePersonTaskList);
-        }
         return model;
     }
 

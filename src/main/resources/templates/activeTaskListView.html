@@ -91,27 +91,26 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>نام Pm وظیفه</th>
                             <th>شماره وظیفه</th>
-                            <th>تاریخ سررسید</th>
+                            <th>عنوان Pm وظیفه</th>
                             <th index=0>سالن
                                 <div class="filter"></div>
                             </th>
+                            <th>تاریخ سررسید</th>
+                            <th>تاخیر</th>
                             <th index=1>کارتابل فعلی
                                 <div class="filter"></div>
                             </th>
-                            <th>تاخیر</th>
                             <th>جزئیات</th>
-
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="task, iter : ${archiveTaskList}">
+                        <tr th:each="task, iter : ${activeTaskList}">
 
                             <td th:text="${iter.count}"/>
+                            <td th:text="${task.id}"/>
                             <td th:text="${task.name}"/>
-                            <td th:text="${task.getId}"/>
                             <td th:text="${task.persianDueDate}"/>
                             <td th:text="${task.salon.name}"/>
                             <td th:text="${task.currentAssignedPerson}"/>
@@ -125,7 +124,7 @@
 
                             <td>
                                 <div class="col">
-                                    <a th:href="@{/pm/task/detailList(id=${task.id})}">مشاهده جزئیات</a>
+                                    <a th:href="@{/task/{taskId}/detailList(taskId=${task.id})}">مشاهده جزئیات</a>
                                 </div>
                             </td>
 

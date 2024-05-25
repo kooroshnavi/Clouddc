@@ -15,8 +15,8 @@ public interface TaskDetailRepository extends JpaRepository<TaskDetail, Long> {
 
     List<TaskDetail> findByTaskId(long taskId);
 
-    @Query("SELECT t.task FROM TaskDetail t WHERE t.persistence.id IN :persistenceIdList")
-    List<Task> fetchRelatedActivePersonTaskList(List<Integer> persistenceIdList);
+    @Query("SELECT t.task FROM TaskDetail t WHERE t.persistence.person.username = :username AND t.active = :active")
+    List<Task> fetchActivePersonTaskList(@Param("username") String username, @Param("active") boolean active);
 
     @Query("SELECT t.persistence.id FROM TaskDetail t WHERE t.task.id = :taskId")
     List<Long> getPersistenceIdList(@Param("taskId") long taskId);

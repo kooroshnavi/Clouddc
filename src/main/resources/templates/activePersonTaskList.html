@@ -72,11 +72,12 @@
 								<thead>
 								<tr>
 									<th>ردیف</th>
-									<th>عنوان</th>
-									<th>مرکز</th>
+									<th>شماره وظیفه</th>
+									<th>عنوان Pm وظیفه</th>
+									<th>سالن</th>
 									<th>تاریخ سررسید</th>
-									<th>تاخیر کل (روز)</th>
-									<th>عملیات</th>
+									<th>تاخیر</th>
+									<th>جزئیات</th>
 								</tr>
 								</thead>
 								<tbody>
@@ -84,10 +85,15 @@
 								<tr th:each="task, iter : ${activePersonTaskList}">
 
 									<td th:text="${iter.count}"/>
+
+									<td th:text="${task.id}"/>
+
 									<td>
 										<strong th:text="${task.pm.name}" ></strong>
 									</td>
+
 									<td th:text="${task.salon.name}"/>
+
 									<td th:text="${task.persianDueDate}"/>
 
 									<td>
@@ -95,13 +101,11 @@
 										<span th:if="${task.getDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
 									</td>
 
-
 									<td>
 										<div class="table-actions d-flex align-items-salon gap-3 fs-6">
-											<a th:href="@{/pm/task(id=${task.id})}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="گردش کار"><i class="bi bi-eye-fill"></i></a>
+											<a th:href="@{/pm/task/{taskId}/detailList (taskId=${task.id})}" class="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom" title="گردش کار"><i class="bi bi-eye-fill"></i></a>
 										</div>
 									</td>
-
 
 								</tr>
 								</tbody>
