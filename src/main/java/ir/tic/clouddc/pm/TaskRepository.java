@@ -15,7 +15,7 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     List<Task> findByPmId(int pmId);
 
-    List<Task> findByPmAndActive(int pmId, boolean active);
+    List<Task> findByPmIdAndActive(int pmId, boolean active);
 
     @Query("SELECT COUNT(t) FROM Task t WHERE t.active = :active")
     long getTaskCountByActivation(@Param("active") boolean active);
@@ -25,8 +25,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
 
     @Query("SELECT DISTINCT COUNT(t) FROM Task t WHERE t.dailyReport.date > :date AND t.active = :active")
     long getWeeklyFinishedTaskCount(@Param("date") LocalDate date, @Param("active") boolean active);
-
-
 
 
 }

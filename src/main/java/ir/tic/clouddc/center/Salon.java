@@ -1,10 +1,8 @@
 package ir.tic.clouddc.center;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ir.tic.clouddc.pm.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,16 +11,7 @@ import java.util.Map;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Salon {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
-
-    @Column
-    @Nationalized
-    private String name;
+public class Salon extends Location {
 
     @ManyToOne
     @JoinColumn(name = "datacenter_id")
@@ -48,18 +37,6 @@ public class Salon {
     private Map<LocalDate, Float> averageTemperature;
 
 
-    public Salon(int id) {
-        this.id = id;
-    }
-
-    public Map<Integer, LocalDate> getPmDueMap() {
-        return pmDueMap;
-    }
-
-    public void setPmDueMap(Map<Integer, LocalDate> pmDueMap) {
-        this.pmDueMap = pmDueMap;
-    }
-
     public DataCenter getDataCenter() {
         return dataCenter;
     }
@@ -76,21 +53,12 @@ public class Salon {
         this.taskList = taskList;
     }
 
-    @JsonIgnore
-    public int getId() {
-        return id;
+    public Map<Integer, LocalDate> getPmDueMap() {
+        return pmDueMap;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setPmDueMap(Map<Integer, LocalDate> pmDueMap) {
+        this.pmDueMap = pmDueMap;
     }
 
     public Map<LocalDate, Float> getAverageTemperature() {
@@ -98,7 +66,6 @@ public class Salon {
     }
 
     public void setAverageTemperature(Map<LocalDate, Float> averageTemperature) {
-
         this.averageTemperature = averageTemperature;
     }
 }

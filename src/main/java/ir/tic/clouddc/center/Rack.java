@@ -1,25 +1,17 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.person.Utilizer;
 import ir.tic.clouddc.resource.Device;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
+import java.time.LocalDate;
 import java.util.Map;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Rack {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private long id;
-
-    @Column
-    @Nationalized
-    private String name;
+public class Rack extends Location {
 
     @ManyToOne
     @JoinColumn(name = "salon_id")
@@ -28,8 +20,52 @@ public class Rack {
     @ElementCollection
     @CollectionTable(name = "device_unit_map",
             schema = "Center",
-            joinColumns = {@JoinColumn(name = "device_id", referencedColumnName = "id")})
+            joinColumns = {@JoinColumn(name = "rack_id", referencedColumnName = "id")})
     @MapKeyColumn(name = "device_id")
     @Column(name = "unit_offset")
-    private Map<Device, Integer> deviceLocateMap;
+    private Map<Integer, Device> deviceLocateMap;
+
+    @ElementCollection
+    @CollectionTable(name = "date_temperature_mapping",
+            schema = "Center",
+            joinColumns = {@JoinColumn(name = "rack_id", referencedColumnName = "id")})
+    @MapKeyColumn(name = "date")
+    @Column(name = "average_temperature")
+    private Map<LocalDate, Float> averageTemperature;
+
+    @ManyToOne
+    @JoinColumn(name = "utilizer_id")
+    private Utilizer utilizer;
+
+    public Salon getSalon() {
+        return salon;
+    }
+
+    public void setSalon(Salon salon) {
+        this.salon = salon;
+    }
+
+    public Map<Integer, Device> getDeviceLocateMap() {
+        return deviceLocateMap;
+    }
+
+    public void setDeviceLocateMap(Map<Integer, Device> deviceLocateMap) {
+        this.deviceLocateMap = deviceLocateMap;
+    }
+
+    public Map<LocalDate, Float> getAverageTemperature() {
+        return averageTemperature;
+    }
+
+    public void setAverageTemperature(Map<LocalDate, Float> averageTemperature) {
+        this.averageTemperature = averageTemperature;
+    }
+
+    public Utilizer getUtilizer() {
+        return utilizer;
+    }
+
+    public void setUtilizer(Utilizer utilizer) {
+        this.utilizer = utilizer;
+    }
 }

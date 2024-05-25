@@ -15,7 +15,7 @@ public class Temperature {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private long id;
 
     @Column
     private float value; // Celsius. its approximate
@@ -32,12 +32,24 @@ public class Temperature {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
-    public int getId() {
+    @ManyToOne
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    public long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(long id) {
         this.id = id;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
     }
 
     public float getValue() {

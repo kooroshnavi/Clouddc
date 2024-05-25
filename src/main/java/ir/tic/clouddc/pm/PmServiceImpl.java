@@ -73,7 +73,7 @@ public class PmServiceImpl implements PmService {
     }
 
     public void updateTodayTasks(DailyReport todayReport) {
-        final List<Salon> defaultSalonList = centerService.getDefaultCenterList();
+        final List<Salon> defaultSalonList = centerService.getSalonList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<Pm> todayPmList = new ArrayList<>();
         List<Task> activeTaskList = taskRepository.findByActive(true);
@@ -128,7 +128,7 @@ public class PmServiceImpl implements PmService {
     public List<Task> getPmTaskList(int pmId, boolean active) {
         List<Task> taskList;
         if (active) {
-            taskList = taskRepository.findByPmAndActive(pmId, true);
+            taskList = taskRepository.findByPmIdAndActive(pmId, true);
             for (Task task : taskList) {
                 task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
                 task.setCurrentAssignedPerson(task
@@ -140,7 +140,7 @@ public class PmServiceImpl implements PmService {
             }
 
         } else {
-            taskList = taskRepository.findByPmAndActive(pmId, false);
+            taskList = taskRepository.findByPmIdAndActive(pmId, false);
             for (Task task : taskList) {
                 task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
                 task.setPersianFinishedDate(UtilService.getFormattedPersianDate(task.getDailyReport().getDate()));
@@ -371,7 +371,7 @@ public class PmServiceImpl implements PmService {
 
         pmRepository.saveAndFlush(pm);
 
-        for (Integer id : pmRegisterForm.getSalonIdList()) {
+        for (long id : pmRegisterForm.getLocationIdList()) {
             centerService.getSalon(id).getPmDueMap().put(pm.getId(), pmRegisterForm.getPersianFirstDueDate().toGregorian());
         }
     }
@@ -417,13 +417,13 @@ public class PmServiceImpl implements PmService {
             pmForm.setId(selectedPm.getId());
             pmForm.setTypeId(selectedPm.getType().getId());
 
-            List<Integer> salonIdList = new ArrayList<>();
+            List<Long> salonIdList = new ArrayList<>();
             for (Salon salon : centerService.getSalonList()) {
                 if (salon.getPmDueMap().containsKey(pmId)) {
                     salonIdList.add(salon.getId());
                 }
             }
-            pmForm.setSalonIdList(salonIdList);
+            pmForm.setLocationIdList(salonIdList);
 
             List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(selectedPm.getPersistence().getId()));
             if (!metaDataList.isEmpty()) {

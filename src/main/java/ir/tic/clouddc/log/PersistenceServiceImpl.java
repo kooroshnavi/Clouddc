@@ -45,13 +45,5 @@ public class PersistenceServiceImpl implements PersistenceService {
         persistenceRepository.save(persistence);
     }
 
-    @Override
-    public List<Integer> getActivePersonPersistenceIdList(int personId, boolean active) {
-        return logHistoryRepository.fetchActivePersonPersistenceIdList(personId, active);
-    }
 
-    @Override
-    public Person getRelatedCurrentPerson(long persistenceId, boolean active) {
-        return logHistoryRepository.fetchRelatedCurrentPerson(persistenceId, true);
-    }
 }

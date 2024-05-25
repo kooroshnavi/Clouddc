@@ -1,15 +1,16 @@
 package ir.tic.clouddc.resource;
 
+import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.person.Utilizer;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 @Entity
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(schema = "Resource")
-@NoArgsConstructor
-public class Device {
+public abstract class Device {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private long id;
 
@@ -21,6 +22,14 @@ public class Device {
 
     @Column
     private boolean dualPower;
+
+    @ManyToOne
+    @JoinColumn(name = "utilizer_id")
+    private Utilizer utilizer;
+
+    @ManyToOne
+    @JoinColumn(name = "rack_id")
+    private Rack rack;
 
     public long getId() {
         return id;

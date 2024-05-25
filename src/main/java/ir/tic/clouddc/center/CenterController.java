@@ -30,18 +30,22 @@ public class CenterController {
         model.addAttribute("temperatureHistoryList", centerService.getTemperatureHistoryList());
         return "temperatureHistoryView";
     }
-    @GetMapping("/temperature/form")
-    public String getTemperatureForm(Model model) {
+    @GetMapping("/temperature/salon/form")
+    public String showSalonTemperatureForm(Model model) {
         model.addAttribute("temperatureForm", new TemperatureForm());
         return "dailyTemperatureForm";
     }
 
+    @GetMapping("/temperature/rack/form")
+    public String showRackTemperatureForm(Model model) {
+        model.addAttribute("temperatureForm", new TemperatureForm());
+        return "dailyTemperatureForm";
+    }
+
+
     @PostMapping("/temperature/form")
     public String submitTemperatureForm(Model model, @ModelAttribute("temperatureForm") TemperatureForm temperatureForm) {
-        if (temperatureForm.getSalon1Temp().isBlank() && temperatureForm.getSalon2Temp().isBlank()) {
-            model.addAttribute("temperatureForm", new TemperatureForm());
-            return "dailyTemperatureForm";
-        }
+
         model.addAttribute("temperatureHistoryList", centerService.saveDailyTemperature(temperatureForm, reportService.findActive(true).get()));
         return "temperatureHistoryView";
     }

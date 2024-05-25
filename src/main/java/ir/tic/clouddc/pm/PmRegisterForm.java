@@ -22,13 +22,22 @@ public class PmRegisterForm {
 
     private boolean enabled;
 
-    private List<Integer> salonIdList;
+    private List<Long> locationIdList;
 
     private int typeId;
 
     private PersianDate persianFirstDueDate;
 
     private MultipartFile file;
+
+
+    public List<Long> getLocationIdList() {
+        return locationIdList;
+    }
+
+    public void setLocationIdList(List<Long> locationIdList) {
+        this.locationIdList = locationIdList;
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -94,12 +103,5 @@ public class PmRegisterForm {
         this.file = file;
     }
 
-    public List<Integer> getSalonIdList() {
-        return salonIdList;
-    }
 
-
-    public void setSalonIdList(List<Integer> salonIdList) {
-        this.salonIdList = salonIdList;
-    }
 }

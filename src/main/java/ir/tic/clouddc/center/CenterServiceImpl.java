@@ -14,10 +14,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @Slf4j
 @Service
@@ -63,15 +64,10 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public Salon getSalon(int salonId) {
+    public Salon getSalon(long salonId) {
         return centerRepository.findById(salonId).get();
     }
 
-    @Override
-    public List<Salon> getDefaultCenterList() {
-        List<Integer> centerIds = Arrays.asList(1, 2, 3);
-        return centerRepository.findAllByIdIn(centerIds);
-    }
 
     @Override
     public List<Salon> getSalonList() {
@@ -91,67 +87,20 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport) {
-        var time = UtilService.getTime();
-        var personId = personService.getPersonId(personService.getCurrentUsername());
-        var temp1 = temperatureForm.getSalon1Temp();
-        var temp2 = temperatureForm.getSalon2Temp();
-        List<Temperature> dailyTemps = new ArrayList<>();
 
 
-        if (!dailyTemps.isEmpty()) {
-            temperatureRepository.saveAll(dailyTemps);
-        }
+
+
+
+
+
 
         return getTemperatureHistoryList();
     }
 
     @Override
     public void setDailyTemperatureReport(DailyReport currentReport) {
-        DecimalFormat df = new DecimalFormat("##.#");
-        var salon1 = getSalon(1);
-        var salon2 = getSalon(2);
-        List<Float> salon1DailyTemperatures = temperatureRepository.getDailytemperatureList(salon1, currentReport);
-        List<Float> salon2DailyTemperatures = temperatureRepository.getDailytemperatureList(salon2, currentReport);
 
-        float salonAverage = 0;
-        List<Salon> salonList = new ArrayList<>();
-
-        if (!salon1DailyTemperatures.isEmpty()) {
-            for (float temp : salon1DailyTemperatures) {
-                salonAverage += temp;
-            }
-            salonAverage /= salon1DailyTemperatures.size();
-
-            if (salon1.getAverageTemperature() == null) {
-                Map<LocalDate, Float> averageMap1 = new HashMap<>();
-                averageMap1.put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
-                salon1.setAverageTemperature(averageMap1);
-            } else {
-                salon1.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
-            }
-            salonList.add(salon1);
-        }
-
-        if (!salon2DailyTemperatures.isEmpty()) {
-            salonAverage = 0;
-            for (float temp : salon2DailyTemperatures) {
-                salonAverage += temp;
-            }
-            salonAverage /= salon2DailyTemperatures.size();
-
-            if (salon2.getAverageTemperature() == null) {
-                Map<LocalDate, Float> averageMap2 = new HashMap<>();
-                averageMap2.put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
-                salon2.setAverageTemperature(averageMap2);
-            } else {
-                salon2.getAverageTemperature().put(currentReport.getDate(), Float.parseFloat(df.format(salonAverage)));
-            }
-            salonList.add(salon2);
-        }
-
-        if (!salonList.isEmpty()) {
-            centerRepository.saveAllAndFlush(salonList);
-        }
     }
 
     @Override
