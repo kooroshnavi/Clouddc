@@ -9,6 +9,9 @@ import java.util.List;
 
 @NoArgsConstructor
 public class PmRegisterForm {
+
+    private int id;
+
     @NotBlank(message = "عنوان نباید خالی باشد")
     private String name;
 
@@ -17,9 +20,9 @@ public class PmRegisterForm {
 
     private int period;
 
-    private List<Integer> salonIdList;
+    private boolean enabled;
 
-    private List<Integer> roomIdList;
+    private List<Integer> salonIdList;
 
     private int typeId;
 
@@ -27,12 +30,20 @@ public class PmRegisterForm {
 
     private MultipartFile file;
 
-    public List<Integer> getRoomIdList() {
-        return roomIdList;
+    public boolean isEnabled() {
+        return enabled;
     }
 
-    public void setRoomIdList(List<Integer> roomIdList) {
-        this.roomIdList = roomIdList;
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public PersianDate getPersianFirstDueDate() {

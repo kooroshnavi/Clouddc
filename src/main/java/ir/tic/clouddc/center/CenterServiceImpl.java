@@ -63,8 +63,8 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public Salon getCenter(int centerId) {
-        return centerRepository.findById(centerId).get();
+    public Salon getSalon(int salonId) {
+        return centerRepository.findById(salonId).get();
     }
 
     @Override
@@ -97,28 +97,6 @@ public class CenterServiceImpl implements CenterService {
         var temp2 = temperatureForm.getSalon2Temp();
         List<Temperature> dailyTemps = new ArrayList<>();
 
-        if (!temp1.isEmpty() && Float.parseFloat(temperatureForm.getSalon1Temp()) >= 5.0 && Float.parseFloat(temperatureForm.getSalon1Temp()) <= 50.0) {
-            Temperature salon1Temperature = new Temperature();
-            var persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), ' ', new Person(personId), true);
-            salon1Temperature.setPersistence(persistence);
-            salon1Temperature.setTime(time);
-            salon1Temperature.setValue(Float.parseFloat(temperatureForm.getSalon1Temp()));
-            salon1Temperature.setSalon(getCenter(1));
-            salon1Temperature.setDailyReport(dailyReport);
-            dailyTemps.add(salon1Temperature);
-
-        }
-
-        if (!temp2.isEmpty() && Float.parseFloat(temperatureForm.getSalon2Temp()) >= 5.0 && Float.parseFloat(temperatureForm.getSalon2Temp()) <= 50.0) {
-            Temperature salon2Temperature = new Temperature();
-            var persistence = persistenceService.persistenceSetup(UtilService.getDATE(), UtilService.getTime(), ' ', new Person(personId), true);
-            salon2Temperature.setPersistence(persistence);
-            salon2Temperature.setTime(time);
-            salon2Temperature.setValue(Float.parseFloat(temperatureForm.getSalon2Temp()));
-            salon2Temperature.setSalon(getCenter(2));
-            salon2Temperature.setDailyReport(dailyReport);
-            dailyTemps.add(salon2Temperature);
-        }
 
         if (!dailyTemps.isEmpty()) {
             temperatureRepository.saveAll(dailyTemps);
@@ -130,8 +108,8 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public void setDailyTemperatureReport(DailyReport currentReport) {
         DecimalFormat df = new DecimalFormat("##.#");
-        var salon1 = getCenter(1);
-        var salon2 = getCenter(2);
+        var salon1 = getSalon(1);
+        var salon2 = getSalon(2);
         List<Float> salon1DailyTemperatures = temperatureRepository.getDailytemperatureList(salon1, currentReport);
         List<Float> salon2DailyTemperatures = temperatureRepository.getDailytemperatureList(salon2, currentReport);
 
@@ -194,7 +172,7 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
-        var center = getCenter(centerId);
+        var center = getSalon(centerId);
         List<Float> weeklyTemperature = new ArrayList<>();
         for (LocalDate date : weeklyDateList) {
             weeklyTemperature.add(center.getAverageTemperature().get(date));

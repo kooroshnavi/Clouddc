@@ -30,7 +30,7 @@ public class DocumentController {
         this.personService = personService;
     }
 
-    @GetMapping("/download")
+    @GetMapping("/{metaDataId}/download")
     public void getDocument(@RequestParam long metaDataId, HttpServletResponse response) throws IOException {
         MetaData metaData = fileService.getDocument(metaDataId);
         response.setContentType(metaData.getType());
@@ -42,7 +42,7 @@ public class DocumentController {
         outputStream.close();
     }
 
-    @GetMapping("/delete")
+    @GetMapping("/{metaDataId}/delete")
     public String deleteDocument(@RequestParam long metaDataId) {
         fileService.deleteDocument(
                 metaDataId,

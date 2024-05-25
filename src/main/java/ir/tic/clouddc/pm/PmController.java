@@ -38,24 +38,15 @@ public class PmController {
         return "pmListView";
     }
 
-    @GetMapping("/register")
+    @GetMapping("/register/form")
     public String showPmForm(Model model) {
         pmService.getPmFormData(model);
-        return "pmRegister";
+        return "pmRegisterView";
     }
 
-
-    @GetMapping("/edit")   // 1
+    @GetMapping("/{pmId}/edit/form")
     public String showEditForm(@RequestParam int pmId, Model model) {
-        Pm selectedPm = pmService.getPm(pmId);
-        PmRegisterForm pmEdit = new PmRegisterForm();
-        pmEdit.setName(selectedPm.getName());
-        pmEdit.setDescription(selectedPm.getDescription());
-        pmEdit.setPeriod(selectedPm.getPeriod());
-        model.addAttribute("pmEdit", pmEdit);
-        model.addAttribute("taskSize", selectedPm.getTaskList().size());
-        model.addAttribute("pmId", selectedPm.getId());
-        pmService.getPmFormData(model);
+        pmService.pmEditFormData(model, pmId);
         return "pmEditView";
     }
 
@@ -74,12 +65,12 @@ public class PmController {
         if (!file.isEmpty()) {
             pmRegisterForm.setFile(file);
         }
+
         pmService.pmRegister(pmRegisterForm);
         return "pmList";
     }
 
-
-    @GetMapping("/taskList/archive")
+    @GetMapping("/{pmId}/archive/taskList")
     public String showArchivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> archiveTaskList = pmService.getPmTaskList(pmId, false);
         var pm = archiveTaskList.get(0).getPm();
@@ -88,7 +79,7 @@ public class PmController {
         return "archivePmTaskListView";
     }
 
-    @GetMapping("/taskList/active")
+    @GetMapping("/{pmId}/active/taskList")
     public String showActivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> activeTaskList = pmService.getPmTaskList(pmId, true);
         var pm = activeTaskList.get(0).getPm();
@@ -127,34 +118,18 @@ public class PmController {
         if (!file.isEmpty()) {
             assignForm.setFile(file);
         }
+
         pmService.updateTaskDetail(assignForm, pmService.getTask(taskId), pmService.getOwnerUsername(taskId));
         // pmService.modelForActivePersonTaskList(model);
-
         return "redirect:activePersonTaskList";
     }
 
     @GetMapping("/myTask")
-    private String showActivePersonTaskList(Model model) {
+    private String showPersonTaskList(Model model) {
 
         pmService.getPersonTaskList(model);
 
         return "activePersonTaskList";
-    }
-
-    @PostMapping("/edit")
-    public String pmTypeEdit(Model model,
-                             @Valid @ModelAttribute("pmEdit") PmRegisterForm editForm,
-                             @RequestParam int id,
-                             @RequestParam("attachment") MultipartFile file,
-                             Errors errors) {
-
-        if (errors.hasErrors()) {
-            log.error("Failed to register task due to validation error on input data: " + errors);
-            return showPmForm(model);
-        }
-        pmService.editPm(editForm, id);
-        pmService.PmTypeOverview(model);
-        return "pmEditView";
     }
 
     @ModelAttribute

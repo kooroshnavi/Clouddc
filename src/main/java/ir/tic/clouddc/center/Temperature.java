@@ -27,9 +27,6 @@ public class Temperature {
     @JoinColumn(name = "report_id")
     private DailyReport dailyReport;
 
-    @ManyToOne
-    @JoinColumn(name = "salon_id")
-    private Salon salon;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "persistence_id")
@@ -65,14 +62,6 @@ public class Temperature {
 
     public void setDailyReport(DailyReport dailyReport) {
         this.dailyReport = dailyReport;
-    }
-
-    public Salon getSalon() {
-        return salon;
-    }
-
-    public void setSalon(Salon salon) {
-        this.salon = salon;
     }
 
     public Persistence getPersistence() {

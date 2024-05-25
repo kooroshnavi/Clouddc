@@ -192,12 +192,6 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Pm getPm(int pmId) {
-        return pmRepository.findById(pmId).get();
-    }
-
-
-    @Override
     public Model getTaskDetailList(Model model, Long taskId) {
         List<TaskDetail> taskDetailList = taskDetailRepository.findByTaskId(taskId);
         for (TaskDetail taskDetail : taskDetailList
@@ -327,6 +321,126 @@ public class PmServiceImpl implements PmService {
         return task.orElse(null);
     }
 
+    @Override
+    public Model getPersonTaskList(Model model) {
+        List<Task> activePersonTaskList = taskDetailRepository.fetchActivePersonTaskList(personService.getCurrentUsername(), true);
+
+        if (!activePersonTaskList.isEmpty()) {
+            for (Task task : activePersonTaskList
+            ) {
+                task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
+                task.setName(task.getPm().getName());
+            }
+            var sortedPersonTaskList = activePersonTaskList
+                    .stream()
+                    .sorted(Comparator.comparing(Task::getDelay).reversed())
+                    .toList();
+
+            model.addAttribute("activePersonTaskList", sortedPersonTaskList);
+
+            return model;
+        }
+        return null;
+    }
+
+    @Override
+    @ModifyProtection
+    public void pmRegister(PmRegisterForm pmRegisterForm) throws IOException {
+        Pm pm;
+        Persistence persistence;
+        var currentPerson = personService.getCurrentPerson();
+
+        if (pmRegisterForm.getId() > 0) {  ///// Modify Pm
+            pm = pmRepository.findById(pmRegisterForm.getId()).get();
+            persistence = pm.getPersistence();
+            persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '7', currentPerson, persistence);
+        } else {  //// New Pm
+            pm = new Pm();
+            pm.setActive(false);
+            persistence = persistenceService.persistenceSetup(currentPerson);
+            persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
+            pm.setPersistence(persistence);
+        }
+
+        pm.setName(pmRegisterForm.getName());
+        pm.setPeriod(pmRegisterForm.getPeriod());
+        pm.setDescription(pmRegisterForm.getDescription());
+        pm.setEnabled(pmRegisterForm.isEnabled());
+        pm.setType(new PmType(pmRegisterForm.getTypeId()));
+        fileService.checkAttachment(pmRegisterForm.getFile(), persistence);
+
+        pmRepository.saveAndFlush(pm);
+
+        for (Integer id : pmRegisterForm.getSalonIdList()) {
+            centerService.getSalon(id).getPmDueMap().put(pm.getId(), pmRegisterForm.getPersianFirstDueDate().toGregorian());
+        }
+    }
+
+
+    @Override
+    public Model modelForTaskController(Model model) {
+        var authenticated = SecurityContextHolder.getContext().getAuthentication();
+        var personName = authenticated.getName();
+        Person person = personService.getPerson(personName);
+        model.addAttribute("person", person);
+        model.addAttribute("role", authenticated.getAuthorities());
+        model.addAttribute("date", UtilService.getCurrentDate());
+
+        return model;
+    }
+
+    @Override
+    public Model PmTypeOverview(Model model) {
+        List<PmType> pmTypeList = pmTypeRepository.findAll();
+        model.addAttribute("pmTypeList", pmTypeList);
+        return model;
+    }
+
+    @Override
+    public Model getPmFormData(Model model) {
+        model.addAttribute("salonList", centerService.getSalonList());
+        model.addAttribute("pmTypeList", pmTypeRepository.findAll(Sort.by("name")));
+        model.addAttribute("pmRegister", new PmRegisterForm());
+        return model;
+    }
+
+    @Override
+    public Model pmEditFormData(Model model, int pmId) {
+        var pm = pmRepository.findById(pmId);
+
+        if (pm.isPresent()) {
+            var selectedPm = pm.get();
+            PmRegisterForm pmForm = new PmRegisterForm();
+            pmForm.setName(selectedPm.getName());
+            pmForm.setDescription(selectedPm.getDescription());
+            pmForm.setPeriod(selectedPm.getPeriod());
+            pmForm.setId(selectedPm.getId());
+            pmForm.setTypeId(selectedPm.getType().getId());
+
+            List<Integer> salonIdList = new ArrayList<>();
+            for (Salon salon : centerService.getSalonList()) {
+                if (salon.getPmDueMap().containsKey(pmId)) {
+                    salonIdList.add(salon.getId());
+                }
+            }
+            pmForm.setSalonIdList(salonIdList);
+
+            List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(selectedPm.getPersistence().getId()));
+            if (!metaDataList.isEmpty()) {
+                model.addAttribute("metaDataList", metaDataList);
+            }
+            model.addAttribute("pmForm", pmForm);
+            model.addAttribute("taskSize", selectedPm.getTaskList().size());
+            model.addAttribute("pm", selectedPm);
+            model.addAttribute("salonList", centerService.getSalonList());
+            model.addAttribute("pmTypeList", pmTypeRepository.findAll(Sort.by("name")));
+
+            return model;
+        }
+
+        return null;
+    }
+
 
     @Override
     public long getFinishedTaskCount() {
@@ -361,90 +475,5 @@ public class PmServiceImpl implements PmService {
         var formatted = decimalFormat.format(percent);
         return Integer.parseInt(formatted);
     }
-
-
-    @Override
-    @ModifyProtection
-    public void pmRegister(PmRegisterForm pmRegisterForm) throws IOException {
-        var pm = new Pm();
-        pm.setActive(false);
-        pm.setName(pmRegisterForm.getName());
-        pm.setPeriod(pmRegisterForm.getPeriod());
-        pm.setDescription(pmRegisterForm.getDescription());
-        pm.setEnabled(true);
-        pm.setType(new PmType(pmRegisterForm.getTypeId()));
-
-        var currentPerson = personService.getCurrentPerson();
-        Persistence persistence = persistenceService.persistenceSetup(currentPerson);
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '6', currentPerson, persistence);
-        fileService.checkAttachment(pmRegisterForm.getFile(), persistence);
-
-        pmRepository.saveAndFlush(pm);
-
-        for (Integer id : pmRegisterForm.getSalonIdList()) {
-            centerService.getCenter(id).getPmDueMap().put(pm.getId(), pmRegisterForm.getPersianFirstDueDate().toGregorian());
-        }
-    }
-
-    @Override
-    public Model getPersonTaskList(Model model) {
-        List<Task> activePersonTaskList = taskDetailRepository.fetchActivePersonTaskList(personService.getCurrentUsername(), true);
-
-        if (!activePersonTaskList.isEmpty()) {
-            for (Task task : activePersonTaskList
-            ) {
-                task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
-                task.setName(task.getPm().getName());
-            }
-            var sortedPersonTaskList = activePersonTaskList
-                    .stream()
-                    .sorted(Comparator.comparing(Task::getDelay).reversed())
-                    .toList();
-
-            model.addAttribute("activePersonTaskList", sortedPersonTaskList);
-
-            return model;
-        }
-        return null;
-    }
-
-
-    @Override
-    public void editPm(PmRegisterForm editForm, int id) {
-        var status = pmRepository.findById(id).get();
-        status.setName(editForm.getName());
-        status.setPeriod(editForm.getPeriod());
-        status.setDescription(editForm.getDescription());
-        pmRepository.saveAndFlush(status);
-    }
-
-
-    @Override
-    public Model modelForTaskController(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
-        model.addAttribute("person", person);
-        model.addAttribute("role", authenticated.getAuthorities());
-        model.addAttribute("date", UtilService.getCurrentDate());
-
-        return model;
-    }
-
-    @Override
-    public Model PmTypeOverview(Model model) {
-        List<PmType> pmTypeList = pmTypeRepository.findAll();
-        model.addAttribute("pmTypeList", pmTypeList);
-        return model;
-    }
-
-    @Override
-    public Model getPmFormData(Model model) {
-        model.addAttribute("salonList", centerService.getSalonList());
-        model.addAttribute("pmTypeList", pmTypeRepository.findAll(Sort.by("name")));
-        model.addAttribute("pmRegister", new PmRegisterForm());
-        return model;
-    }
-
 
 }

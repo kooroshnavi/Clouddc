@@ -10,11 +10,10 @@ public interface PmService {
 
     void updateTodayTasks(DailyReport todayReport);
     List<Task> getAllActiveTaskList();
-    Pm getPm(int pmId);
-    void editPm(PmRegisterForm editForm, int id);
     List<Pm> getPmList();
     List<Task> getPmTaskList(int pmId, boolean active);
 
+    Model pmEditFormData(Model model, int pmId);
     Model PmTypeOverview(Model model);
     Model getPmFormData(Model model);
     Model modelForTaskController(Model model);

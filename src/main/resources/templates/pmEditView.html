@@ -88,7 +88,7 @@
                     <div class="card-body">
                       <div class="border p-3 rounded">
 
-                      <form class="row g-3"  th:action="@{/pm/edit(id=${statusId})}" th:object="${pmEdit}" method="POST">
+                      <form class="row g-3"  th:action="@{/pm/register}" th:object="${pmForm}" method="POST">
 
                         <div class="col-12">
                           <label class="form-label">عنوان PM</label>
@@ -118,10 +118,22 @@
                           </select>
                         </div>
 
+                        <div class="col-12 col-md-6">
+                          <label class="form-label">تاریخ اولین انتساب</label>
+                          <input type="text" id="dtp1">
+                        </div>
+
                         <div class="col-12">
-                          <label class="form-label">فایل پیوست (در حال توسعه)</label>
                           <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
                           <input class="form-control" type="file" name="attachment" id="attachment">
+                        </div>
+
+                        <div class="mb-3">
+                          <label class="form-label">انتخاب سالن</label>
+                          <select class="multiple-select" multiple="multiple" th:field="*{salonIdList}">
+                            <option th:each="salon : ${salonList}" th:value="${salon.id}"
+                                    th:text="${salon.name}"></option>
+                          </select>
                         </div>
 
                         <div class="col">
@@ -150,6 +162,80 @@
                     </div>
                  </div>
               </div><!--end row-->
+
+
+            <div class="card" align="center">
+              <div class="card-body">
+                <h6 class="mb-0 text-uppercase" align="center">
+                  <strong>پیوست ها</strong>
+                </h6>
+                <div class="d-flex align-items-salon">
+
+                </div>
+                <div class="card-body">
+                  <table class="table mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                      <th>ردیف</th>
+                      <th>فایل</th>
+                      <th>بارگذاری توسط</th>
+                      <th>حذف فایل</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:each="metadata, iter : ${metaDataList}">
+                      <td th:text="${iter.count}"></td>
+                      <td>
+
+                        <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-salon">
+                          <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                          <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                             class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                        </div>
+
+                        <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
+                             class="d-flex align-items-salon">
+                          <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                          <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                             class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                        </div>
+
+                        <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
+                             class="d-flex align-items-salon">
+                          <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
+                          <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                             class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
+                        </div>
+
+                        <div class="d-flex align-items-salon gap-2"
+                             th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
+                          <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                          <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                             class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                        </div>
+
+
+                      </td>
+
+                      <td th:text="${metadata.persistence.person.name}"/>
+
+                      <td>
+                        <form>
+                          <a th:if="${metadata.logHistory.person.id == person.id }" th:href="@{/document/{metadataId}/delete (metadataId=${metadata.id})}"
+                             class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="حذف فایل"
+                             data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>
+                        </form>
+                      </td>
+                    </tr>
+
+
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
 
           </main>
        <!--end page main-->

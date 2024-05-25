@@ -67,7 +67,7 @@ public class EventServiceImpl implements EventService {
 
         Event event = new Event(eventForm.isActive()
                 , new EventType(eventForm.getEventType())
-                , centerService.getCenter(eventForm.getCenterId()));
+                , centerService.getSalon(eventForm.getCenterId()));
 
         eventDetailRegister(eventForm, event);
 

@@ -109,19 +109,19 @@
 
                             <td>
                                 <div class="col">
-                                    <a th:href="@{/pm/edit(pmId=${pm.id})}"
+                                    <a th:href="@{/pm/{pmId}/edit/form(pmId=${pm.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="بروزرسانی">ویرایش Pm</a>
                                 </div>
 
                                 <div class="col">
-                                    <a th:href="@{/pm/active/list(pmId=${pm.id})}"
+                                    <a th:href="@{/pm/{pmId}/active/taskList(pmId=${pm.id})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
                                 </div>
 
                                 <div class="col">
-                                    <a th:href="@{/pm/archive/list(pmId=${pm.id})}"
+                                    <a th:href="@{/pm/{pmId}/archive/taskList(pmId=${pm.id})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف آرشیو</a>
                                 </div>
