@@ -24,6 +24,4 @@ public interface TaskDetailRepository extends JpaRepository<TaskDetail, Long> {
     @Query("SELECT t.persistence.person.username FROM TaskDetail t WHERE t.task.id = :taskId AND t.active = :active")
     String fetchOwnerUsername(@Param("taskId") long taskId, @Param("active") boolean active);
 
-
-
 }
