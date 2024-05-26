@@ -16,6 +16,12 @@ public interface CenterService {
 
     List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
 
+    List<String> getAllDataCenterNameList();
+    List<String> getSalonNameList();
+
+    List<Rack> getRackList();
+
+
 
 
 }

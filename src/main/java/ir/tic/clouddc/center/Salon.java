@@ -13,6 +13,10 @@ import java.util.Map;
 @NoArgsConstructor
 public class Salon extends Location {
 
+    @Transient
+    private final String LOCATION = "Salon";
+
+
     @ManyToOne
     @JoinColumn(name = "datacenter_id")
     private DataCenter dataCenter;
@@ -36,6 +40,9 @@ public class Salon extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
+    public String getLOCATION() {
+        return LOCATION;
+    }
 
     public DataCenter getDataCenter() {
         return dataCenter;

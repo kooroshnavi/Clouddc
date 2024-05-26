@@ -13,6 +13,7 @@ import java.util.Map;
 @NoArgsConstructor
 public class Rack extends Location {
 
+
     @ManyToOne
     @JoinColumn(name = "salon_id")
     private Salon salon;
@@ -37,35 +38,5 @@ public class Rack extends Location {
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
 
-    public Salon getSalon() {
-        return salon;
-    }
 
-    public void setSalon(Salon salon) {
-        this.salon = salon;
-    }
-
-    public Map<Integer, Device> getDeviceLocateMap() {
-        return deviceLocateMap;
-    }
-
-    public void setDeviceLocateMap(Map<Integer, Device> deviceLocateMap) {
-        this.deviceLocateMap = deviceLocateMap;
-    }
-
-    public Map<LocalDate, Float> getAverageTemperature() {
-        return averageTemperature;
-    }
-
-    public void setAverageTemperature(Map<LocalDate, Float> averageTemperature) {
-        this.averageTemperature = averageTemperature;
-    }
-
-    public Utilizer getUtilizer() {
-        return utilizer;
-    }
-
-    public void setUtilizer(Utilizer utilizer) {
-        this.utilizer = utilizer;
-    }
 }

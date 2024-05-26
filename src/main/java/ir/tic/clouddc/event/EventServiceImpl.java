@@ -2,6 +2,7 @@ package ir.tic.clouddc.event;
 
 import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.DataCenterRepository;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.PersistenceService;
@@ -13,6 +14,7 @@ import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -49,7 +51,7 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , PmService pmService
-            , EventTypeRepository eventTypeRepository, FileService fileService, PersistenceService persistenceService) {
+            , EventTypeRepository eventTypeRepository, FileService fileService, PersistenceService persistenceService, DataCenterRepository dataCenterRepository) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.reportService = reportService;
@@ -125,11 +127,25 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Model modelForEventRegisterForm(Model model) {
-        model.addAttribute("centerList", centerService.getSalonList());
-        model.addAttribute("eventTypeList", eventTypeRepository.findAll());
-        model.addAttribute("eventForm", new EventForm());
+    @PreAuthorize("id >= 1 && id <= 4")
+    public Model getEventRegisterForm(Model model, int eventCategory) {
+        EventForm eventForm = new EventForm();
+        switch (eventCategory) {
+            case 1 -> eventForm.setEventType(1);
+            case 2 -> eventForm.setEventType(2);
+            case 3 -> eventForm.setEventType(3);
+            case 4 -> eventForm.setEventType(4);
+        }
+        prepareDataCenterData(model);
+        model.addAttribute("eventForm", eventForm);
         return model;
+    }
+
+    private void prepareDataCenterData(Model model) {
+        model.addAttribute("dataCenterNameList", centerService.getAllDataCenterNameList());
+        model.addAttribute("salonNameList", centerService.getSalonNameList());
+        model.addAttribute("rackList", centerService.getRackList());
+        model.addAttribute("utilizerList", personService.getUtilizerList());
     }
 
     @Override

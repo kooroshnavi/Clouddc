@@ -15,17 +15,32 @@ public class EventForm {
 
     private boolean active;
 
-    @NotBlank
-    private int centerId;
-
     private MultipartFile file;
 
-    public int getCenterId() {
-        return centerId;
+    private int rackId;
+
+    private int salonId;
+
+    private int deviceType;
+
+    private int utilizerId;
+
+    private String serialNumber;
+
+    public int getUtilizerId() {
+        return utilizerId;
     }
 
-    public void setCenterId(int centerId) {
-        this.centerId = centerId;
+    public void setUtilizerId(int utilizerId) {
+        this.utilizerId = utilizerId;
+    }
+
+    public String getSerialNumber() {
+        return serialNumber;
+    }
+
+    public void setSerialNumber(String serialNumber) {
+        this.serialNumber = serialNumber;
     }
 
     public int getEventType() {
@@ -60,12 +75,27 @@ public class EventForm {
         this.file = file;
     }
 
-    @Override
-    public String toString() {
-        return "EventForm{" +
-                "eventType=" + eventType +
-                ", description='" + description + '\'' +
-                ", active=" + active +
-                '}';
+    public int getRackId() {
+        return rackId;
+    }
+
+    public void setRackId(int rackId) {
+        this.rackId = rackId;
+    }
+
+    public int getSalonId() {
+        return salonId;
+    }
+
+    public void setSalonId(int salonId) {
+        this.salonId = salonId;
+    }
+
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
     }
 }

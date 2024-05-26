@@ -35,14 +35,23 @@ public class CenterServiceImpl implements CenterService {
 
     private final PersistenceService persistenceService;
 
+    private final DataCenterRepository dataCenterRepository;
+
+    private final LocationRepository locationRepository;
+
+    private final RackRepository rackRepository;
+
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, PersistenceService persistenceService) {
+    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, PersistenceService persistenceService, DataCenterRepository dataCenterRepository, LocationRepository locationRepository, RackRepository rackRepository) {
         this.centerRepository = centerRepository;
         this.temperatureRepository = temperatureRepository;
         this.personService = personService;
         this.notificationService = notificationService;
 
         this.persistenceService = persistenceService;
+        this.dataCenterRepository = dataCenterRepository;
+        this.locationRepository = locationRepository;
+        this.rackRepository = rackRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -89,12 +98,6 @@ public class CenterServiceImpl implements CenterService {
     public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport) {
 
 
-
-
-
-
-
-
         return getTemperatureHistoryList();
     }
 
@@ -127,6 +130,21 @@ public class CenterServiceImpl implements CenterService {
             weeklyTemperature.add(center.getAverageTemperature().get(date));
         }
         return weeklyTemperature;
+    }
+
+    @Override
+    public List<String> getAllDataCenterNameList() {
+        return dataCenterRepository.fetchAllIdNameMap();
+    }
+
+    @Override
+    public List<String> getSalonNameList() {
+        return locationRepository.getNameList("Salon");
+    }
+
+    @Override
+    public List<Rack> getRackList() {
+        return locationRepository.findAllByRack();
     }
 
 }

@@ -19,12 +19,22 @@ public class EventController {
         this.eventService = eventService;
     }
 
-
-    @GetMapping("/register")
+    @GetMapping("/category")
     public String eventForm(Model model) {
-        eventService.modelForEventRegisterForm(model);
+        return "eventLandingPage";
+    }
+
+    @GetMapping("/category/{id}/form")
+    public String eventForm(Model model, @RequestParam("id") int id) {
+        eventService.getEventRegisterForm(model, id);
+        switch (id){
+            case 1 -> {
+                return "eventForDeviceFailure";
+            }
+        }
         return "eventRegister";
     }
+
 
     @PostMapping("/register")
     public String eventPost(
@@ -37,7 +47,6 @@ public class EventController {
         eventService.modelForEventList(model);
         return "events";
     }
-
 
     @GetMapping("/list")
     public String viewEvent(Model model) {
@@ -63,7 +72,6 @@ public class EventController {
         eventService.modelForEventList(model);
         return "events";
     }
-
 
     @ModelAttribute
     public void addAttributes(Model model) {

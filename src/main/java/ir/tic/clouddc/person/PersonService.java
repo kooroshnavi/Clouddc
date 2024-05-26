@@ -19,4 +19,6 @@ public interface PersonService {
 
     List<GrantedAuthority> getCurrentPersonRoleList();
 
+    List<Utilizer> getUtilizerList();
+
 }

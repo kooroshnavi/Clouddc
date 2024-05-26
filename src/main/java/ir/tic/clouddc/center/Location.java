@@ -7,7 +7,6 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Table(schema = "Center")
 public abstract class Location {
 
     @Id
@@ -22,6 +21,8 @@ public abstract class Location {
     @OneToMany(mappedBy = "location")
     private List<Temperature> temperatureList;
 
+    @Column
+    private String type;
 
     public long getId() {
         return id;
@@ -45,5 +46,13 @@ public abstract class Location {
 
     public void setTemperatureList(List<Temperature> temperatureList) {
         this.temperatureList = temperatureList;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

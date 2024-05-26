@@ -13,11 +13,15 @@ import java.util.List;
 @Service
 final class PersonServiceImpl implements PersonService {
 
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
+
+    private final UtilizerRepository utilizerRepository;
+
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository) {
+    public PersonServiceImpl(PersonRepository personRepository, UtilizerRepository utilizerRepository) {
         this.personRepository = personRepository;
+        this.utilizerRepository = utilizerRepository;
     }
 
     @Override
@@ -70,6 +74,11 @@ final class PersonServiceImpl implements PersonService {
     @Override
     public List<GrantedAuthority> getCurrentPersonRoleList() {
         return new ArrayList<>(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+    }
+
+    @Override
+    public List<Utilizer> getUtilizerList() {
+        return utilizerRepository.findAll();
     }
 
 }

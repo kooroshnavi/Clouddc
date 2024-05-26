@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>گزارش رخداد</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
+            <div class="breadcrumb-title pe-3">رخدادها</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">ذسته بندی</li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header py-3 bg-transparent" align="salon">
+                        <h5 class="mb-0">انتخاب دسته بندی</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="border p-3 rounded">
+
+                            <div class="card bg-transparent shadow-none">
+                                <div class="card-body">
+                                    <h6 class="mb-0 text-uppercase">دسته بندی</h6>
+                                    <div class="my-3 border-top"></div>
+                                    <div class="row row-cols-1 row-cols-lg-3 justify-content-center g-lg-5">
+
+                                        <div class="col">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <div>
+                                                        <h5 class="card-title">خرابی</h5>
+                                                    </div>
+                                                    <p class="card-text">گزارش خرابی یک تجهیز شامل سرور، سوییچ و ...</p>
+                                                    <a href="/event/category/{1}/form" class="btn btn-primary">برو یه جایی</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <div>
+                                                        <h5 class="card-title">مشکل سالن</h5>
+                                                    </div>
+                                                    <p class="card-text">جزئیات رخداد مرتبط با سالن</p>
+                                                    <a href="/event/category/{2}/form" class="btn btn-danger">برو یه جایی</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <div>
+                                                        <h5 class="card-title">نصب</h5>
+                                                    </div>
+                                                    <p class="card-text">جزئیات نصب تعدادی تجهیز (سرور، سوئیچ، ...) در یک رک مشخص</p>
+                                                    <a href="/event/category/{3}/form" class="btn btn-dark">برو یه جایی</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <div>
+                                                        <h5 class="card-title">بازدید</h5>
+                                                    </div>
+                                                    <p class="card-text">جزئیات بازدید انجام شده از سالن</p>
+                                                    <a href="/event/category/{4}/form" class="btn btn-dark">برو یه جایی</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end row-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/app.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<!--app-->
+
+
+
+</body>
+
+</html>

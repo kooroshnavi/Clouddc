@@ -2,35 +2,28 @@ package ir.tic.clouddc.event;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import ir.tic.clouddc.center.Salon;
+import ir.tic.clouddc.log.WorkFlow;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 import java.util.List;
 
 @Entity
-@Table(schema = "Event")
-@NoArgsConstructor
-public class Event {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Event {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private Long id;
 
     @Column
     private boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "event_type_id")
-    private EventType eventType;
-
-    @ManyToOne
-    @JoinColumn(name = "center_id")
-    private Salon salon;
-
     @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
-    private List<EventDetail> eventDetailList;
+    private List<WorkFlow> eventDetailList;
+
+    @Column
+    private String description;
 
     @Transient
     private String persianDate;
@@ -41,10 +34,21 @@ public class Event {
     @Transient
     private String time;
 
-    public Event(boolean active, EventType eventType, Salon salon) {
-        this.active = active;
-        this.eventType = eventType;
-        this.salon = salon;
+
+    public List<WorkFlow> getEventDetailList() {
+        return eventDetailList;
+    }
+
+    public void setEventDetailList(List<WorkFlow> eventDetailList) {
+        this.eventDetailList = eventDetailList;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public String getPersianDay() {
@@ -63,14 +67,6 @@ public class Event {
         this.time = time;
     }
 
-    public List<EventDetail> getEventDetailList() {
-        return eventDetailList;
-    }
-
-    public void setEventDetailList(List<EventDetail> eventDetailList) {
-        this.eventDetailList = eventDetailList;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -79,29 +75,13 @@ public class Event {
         this.active = active;
     }
 
-    public void setEventType(EventType eventType) {
-        this.eventType = eventType;
-    }
-
-    public void setSalon(Salon salon) {
-        this.salon = salon;
-    }
-
     public void setPersianDate(String persianDate) {
         this.persianDate = persianDate;
-    }
-
-    public Salon getSalon() {
-        return salon;
     }
 
     @JsonIgnore
     public Long getId() {
         return id;
-    }
-
-    public EventType getEventType() {
-        return eventType;
     }
 
     @JsonIgnore
@@ -113,8 +93,5 @@ public class Event {
         return persianDate;
     }
 
-
-    public void setType(EventType eventType) {
-        this.eventType = eventType;
-    }
 }
+
