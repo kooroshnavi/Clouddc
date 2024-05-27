@@ -28,6 +28,7 @@ import java.time.format.TextStyle;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -43,6 +44,7 @@ public class EventServiceImpl implements EventService {
     private final FileService fileService;
     private final LogService logService;
     private final ResourceService resourceService;
+    private final FailureDeviceEventRepository failureDeviceEventRepository;
 
 
     @Autowired
@@ -52,7 +54,7 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , PmService pmService
-            , FileService fileService, LogService logService, DataCenterRepository dataCenterRepository, ResourceService resourceService) {
+            , FileService fileService, LogService logService, DataCenterRepository dataCenterRepository, ResourceService resourceService, FailureDeviceEventRepository failureDeviceEventRepository) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.reportService = reportService;
@@ -62,6 +64,7 @@ public class EventServiceImpl implements EventService {
         this.resourceService = resourceService;
         this.fileService = fileService;
         this.logService = logService;
+        this.failureDeviceEventRepository = failureDeviceEventRepository;
     }
 
     @Override
@@ -69,18 +72,18 @@ public class EventServiceImpl implements EventService {
     public Model getEventRegisterFormModel(Model model, int eventCategory) {
         EventForm eventForm = new EventForm();
         switch (eventCategory) {
-            case 1 -> {  //// prepare deviceFailure Form model
+            case 1 -> {  //// prepare deviceFailureForm model
                 eventForm.setEventType(1);
                 model.addAttribute("dataCenterNameList", centerService.getAllDataCenterNameList());
                 model.addAttribute("salonNameList", centerService.getSalonNameList());
                 model.addAttribute("rackList", centerService.getRackList());
                 model.addAttribute("utilizerList", personService.getUtilizerList());
             }
-            case 2 -> {  //// prepare centerVisit Form model
+            case 2 -> {  //// prepare centerVisitForm model
                 eventForm.setEventType(2);
                 model.addAttribute("dataCenterList", centerService.getCenterList());
             }
-            case 3 -> {  //// prepare salonEvent Form model
+            case 3 -> {  //// prepare salonEventForm model
                 eventForm.setEventType(3);
                 model.addAttribute("salonList", centerService.getSalonList());
             }
@@ -157,7 +160,15 @@ public class EventServiceImpl implements EventService {
 
         for (Event event : eventList) {
             event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
-            event.setPersianDay(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+            event.setPersianDayTime(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
+            switch (event.getCategory()) {
+                case '1':
+                    event.setCategoryName("خرابی تجهیز");
+                case '2':
+                    event.setCategoryName("بازدید");
+                case '3':
+                    event.setCategoryName("مشکل سالن");
+            }
         }
         model.addAttribute("eventList", getEventListModel());
         return model;
@@ -168,9 +179,44 @@ public class EventServiceImpl implements EventService {
         return null;
     }
 
+    @Override
+    public Model getEventDetailModel(Model model, Long eventId) {
+        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        List<EventDetail> eventDetailList;
+        if (optionalEvent.isPresent()) {
+            Event baseEvent = optionalEvent.get();
+
+            if (baseEvent instanceof FailureDeviceEvent failureDeviceEvent) {
+                eventDetailList = failureDeviceEvent.getEventDetailList();
+                model.addAttribute("failureDeviceEvent", failureDeviceEvent);
+            } else if (baseEvent instanceof VisitEvent visitEvent) {
+                eventDetailList = visitEvent.getEventDetailList();
+                model.addAttribute("visitEvent", visitEvent);
+            } else if (baseEvent instanceof SalonEvent salonEvent) {
+                eventDetailList = salonEvent.getEventDetailList();
+                model.addAttribute("salonEvent", salonEvent);
+            } else {
+                return null;
+            }
+
+            for (EventDetail eventDetail : eventDetailList) {
+                loadEventDetailTransients(eventDetail);
+            }
+
+            model.addAttribute("eventDetailList", eventDetailList);
+            return model;
+        }
+        return null;
+    }
+
+    private void loadEventDetailTransients(EventDetail eventDetail) {
+        eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getDate()));
+        eventDetail.setPersianDay(UtilService.persianDay.get(eventDetail.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+    }
+
 
     @Override
-    public Event getEvent(Long eventId) {
+    public Model getEvent(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         Event event = eventRepository.findById(eventId).get();
         event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event
@@ -193,22 +239,6 @@ public class EventServiceImpl implements EventService {
         return model;
     }
 
-    @Override
-    public Model getEventDetailModel(Model model, Long eventId) {
-        List<EventDetail> eventDetailList = getEventDetailList(getEvent(eventId));
-        List<Long> persistenceIdList = eventDetailRepository.getPersistenceIdList(eventId);
-        List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList);
-        if (!metaDataList.isEmpty()) {
-            model.addAttribute("metaDataList", metaDataList);
-        }
-        var firstReport = eventDetailList.get(eventDetailList.size() - 1);
-        model.addAttribute("eventDetailList", eventDetailList);
-        model.addAttribute("event", this.getEvent(eventId));
-        model.addAttribute("id", eventId);
-        model.addAttribute("eventForm", new EventForm());
-        model.addAttribute("firstReport", firstReport);
-        return model;
-    }
 
     private List<EventDetail> getEventDetailList(Event event) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
@@ -284,3 +314,4 @@ public class EventServiceImpl implements EventService {
         return Integer.parseInt(formatted);
     }
 }
+

@@ -32,10 +32,20 @@ public abstract class Event {
     private List<EventDetail> eventDetailList;
 
     @Transient
-    private String persianDay;
+    private String persianDayTime;
 
     @Transient
     private String persianDate;
+
+    private String categoryName;
+
+    public String getCategoryName() {
+        return categoryName;
+    }
+
+    public void setCategoryName(String categoryName) {
+        this.categoryName = categoryName;
+    }
 
     public char getCategory() {
         return category;
@@ -77,12 +87,12 @@ public abstract class Event {
         return eventDetailList;
     }
 
-    public String getPersianDay() {
-        return persianDay;
+    public String getPersianDayTime() {
+        return persianDayTime;
     }
 
-    public void setPersianDay(String persianDay) {
-        this.persianDay = persianDay;
+    public void setPersianDayTime(String persianDayTime) {
+        this.persianDayTime = persianDayTime;
     }
 
     public void setId(Long id) {

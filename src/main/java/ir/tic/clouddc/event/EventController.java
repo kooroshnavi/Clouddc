@@ -61,8 +61,9 @@ public class EventController {
         return "eventListView";
     }
 
-    @GetMapping("/view")
-    public String viewEvent(@RequestParam Long eventId, Model model) {
+    @GetMapping("/{eventCategory}/{eventId}/detail")
+    public String viewEventDetail(@RequestParam Long eventId,
+                                  Model model) {
         eventService.getEventDetailModel(model, eventId);
         return "eventDetailList";
     }
