@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>گزارش رخداد</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
+            <div class="breadcrumb-title pe-3">رخدادها</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">بازدید</li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div class="card-header py-3 bg-transparent" align="salon">
+                        <h5 class="mb-0">بازدید مرکز</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="border p-3 rounded">
+
+                            <form class="row g-3" th:action="@{/event/register}" enctype="multipart/form-data"
+                                  th:object="${eventForm}" method="POST">
+
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">مرکز</label>
+                                    <select class="form-select" name="subject" th:field="*{centerId}">
+                                        <option th:value="100" selected="selected">انتخاب</option>
+                                        <option th:each="center : ${dataCenterList}" th:value="${center.id}"
+                                                th:text="${center.name}"></option>
+                                    </select>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">شرح بازدید</label>
+                                    <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4"
+                                              th:field="*{description}" required="required" dir="rtl"></textarea>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+                                    <input class="form-control" type="file" name="attachment" id="attachment">
+                                </div>
+
+
+                                <div class="col">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                            data-bs-target="#exampleLargeModal">ثبت
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleLargeModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">همکار گرامی</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">رخداد اعلامی به تاریخ و ساعت حال حاضر ثبت می
+                                                    شود.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">لغو
+                                                    </button>
+                                                    <button type="submit" class="btn btn-primary">ثبت رخداد جدید
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end row-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/fileSizeValidation.js"></script>
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+
+</body>
+
+</html>

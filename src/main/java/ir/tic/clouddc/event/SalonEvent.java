@@ -1,18 +1,16 @@
 package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Salon;
-import jakarta.persistence.Transient;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import lombok.NoArgsConstructor;
 
-public class SalonIssue extends Event{
-
-    @Transient
-    private final String EVENT_TYPE = "مشکل سالن";
+@Entity
+@Table(schema = "Event")
+@NoArgsConstructor
+public class SalonEvent extends Event{
 
     private Salon salon;
-
-    public String getEVENT_TYPE() {
-        return EVENT_TYPE;
-    }
 
     public Salon getSalon() {
         return salon;

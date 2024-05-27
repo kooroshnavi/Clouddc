@@ -21,9 +21,21 @@ public abstract class WorkFlow {
     @Column
     private LocalTime time;
 
+    @Column
+    private String description;
+
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public long getId() {
         return id;

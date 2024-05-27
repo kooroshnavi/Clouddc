@@ -8,7 +8,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "installation", schema = "Event")
-public class Installation extends Event {
+public class InstallationEvent extends Event {
 
     @Transient
     private final String EVENT_TYPE = "نصب";

@@ -13,13 +13,9 @@ import java.util.Map;
 @NoArgsConstructor
 public class Salon extends Location {
 
-    @Transient
-    private final String LOCATION = "Salon";
-
-
     @ManyToOne
     @JoinColumn(name = "datacenter_id")
-    private DataCenter dataCenter;
+    private Center center;
 
     @OneToMany(mappedBy = "salon")
     private List<Task> taskList;
@@ -40,16 +36,12 @@ public class Salon extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
-    public String getLOCATION() {
-        return LOCATION;
+    public Center getCenter() {
+        return center;
     }
 
-    public DataCenter getDataCenter() {
-        return dataCenter;
-    }
-
-    public void setDataCenter(DataCenter dataCenter) {
-        this.dataCenter = dataCenter;
+    public void setCenter(Center center) {
+        this.center = center;
     }
 
     public List<Task> getTaskList() {

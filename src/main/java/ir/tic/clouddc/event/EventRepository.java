@@ -14,13 +14,6 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     @Query("SELECT COUNT(e) FROM Event e WHERE e.active = :active")
     long getActiveEventCount(@Param("active") boolean active);
 
-    @Query(value = """
-            SELECT count(Event.event.id) as event_count
-            from Event.event_type as t
-            left join Event.event
-            on (t.id = event.event_type_id)
-            group by t.id""", nativeQuery = true)
-    List<Long> getEventTypeCount();
 
    /* @Query("SELECT DISTINCT COUNT(e) FROM Event e WHERE e.eventDetailList.get[:0] > :date")
     long getWeeklyFinishedTaskCount(@Param("date") LocalDate weeklyOffsetDate);*/

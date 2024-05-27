@@ -25,16 +25,21 @@ public class EventController {
     }
 
     @GetMapping("/category/{id}/form")
-    public String eventForm(Model model, @RequestParam("id") int id) {
-        eventService.getEventRegisterForm(model, id);
-        switch (id){
+    public String ShowEventForm(Model model, @RequestParam("id") int id) {
+        eventService.getEventRegisterFormModel(model, id);
+        switch (id) {
             case 1 -> {
-                return "eventForDeviceFailure";
+                return "eventFormForDeviceFailure";
+            }
+            case 2 -> {
+                return "eventFormForCenterVisit";
+            }
+            case 3 -> {
+                return "eventFormForSalon";
             }
         }
         return "eventRegister";
     }
-
 
     @PostMapping("/register")
     public String eventPost(
@@ -42,21 +47,23 @@ public class EventController {
             , @ModelAttribute("eventForm") EventForm eventForm
             , @RequestParam("attachment") MultipartFile file) throws IOException {
 
-        eventForm.setFile(file);
+        if (!file.isEmpty()) {
+            eventForm.setFile(file);
+        }
         eventService.eventRegister(eventForm);
-        eventService.modelForEventList(model);
-        return "events";
+        eventService.getEventListModel(model);
+        return "redirect:eventListView";
     }
 
     @GetMapping("/list")
-    public String viewEvent(Model model) {
-        eventService.modelForEventList(model);
-        return "events";
+    public String viewEventList(Model model) {
+        eventService.getEventListModel(model);
+        return "eventListView";
     }
 
     @GetMapping("/view")
     public String viewEvent(@RequestParam Long eventId, Model model) {
-        eventService.modelForEventDetail(model, eventId);
+        eventService.getEventDetailModel(model, eventId);
         return "eventDetailList";
     }
 
@@ -69,7 +76,7 @@ public class EventController {
 
         eventForm.setFile(file);
         eventService.updateEvent(eventId, eventForm);
-        eventService.modelForEventList(model);
+        eventService.getEventListModel(model);
         return "events";
     }
 

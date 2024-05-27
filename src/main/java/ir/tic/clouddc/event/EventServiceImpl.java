@@ -1,15 +1,16 @@
 package ir.tic.clouddc.event;
 
 import com.github.mfathi91.time.PersianDate;
-import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.DataCenterRepository;
+import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.log.PersistenceService;
+import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.report.ReportService;
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,9 @@ public class EventServiceImpl implements EventService {
     private final CenterService centerService;
     private final PersonService personService;
     private final PmService pmService;
-    private final EventTypeRepository eventTypeRepository;
     private final FileService fileService;
-    private final PersistenceService persistenceService;
+    private final LogService logService;
+    private final ResourceService resourceService;
 
 
     @Autowired
@@ -51,45 +52,120 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , PmService pmService
-            , EventTypeRepository eventTypeRepository, FileService fileService, PersistenceService persistenceService, DataCenterRepository dataCenterRepository) {
+            , FileService fileService, LogService logService, DataCenterRepository dataCenterRepository, ResourceService resourceService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
         this.pmService = pmService;
-        this.eventTypeRepository = eventTypeRepository;
+        this.resourceService = resourceService;
         this.fileService = fileService;
-        this.persistenceService = persistenceService;
+        this.logService = logService;
     }
 
     @Override
+    @PreAuthorize("id >= 1 && id <= 4")
+    public Model getEventRegisterFormModel(Model model, int eventCategory) {
+        EventForm eventForm = new EventForm();
+        switch (eventCategory) {
+            case 1 -> {  //// prepare deviceFailure Form model
+                eventForm.setEventType(1);
+                model.addAttribute("dataCenterNameList", centerService.getAllDataCenterNameList());
+                model.addAttribute("salonNameList", centerService.getSalonNameList());
+                model.addAttribute("rackList", centerService.getRackList());
+                model.addAttribute("utilizerList", personService.getUtilizerList());
+            }
+            case 2 -> {  //// prepare centerVisit Form model
+                eventForm.setEventType(2);
+                model.addAttribute("dataCenterList", centerService.getCenterList());
+            }
+            case 3 -> {  //// prepare salonEvent Form model
+                eventForm.setEventType(3);
+                model.addAttribute("salonList", centerService.getSalonList());
+            }
+        }
+
+        model.addAttribute("eventForm", eventForm);
+        return model;
+    }
+
+
+    @Override
     public void eventRegister(EventForm eventForm) throws IOException {
-        var eventType = new EventType(eventForm.getEventType());
 
-        Event event = new Event(eventForm.isActive()
-                , new EventType(eventForm.getEventType())
-                , centerService.getSalon(eventForm.getCenterId()));
-
-        eventDetailRegister(eventForm, event);
-
-        event.setType(eventType);
-        eventType.setEvent(event);
-        eventRepository.save(event);
+        switch (eventForm.getEventType()) {
+            case 1 -> failureDeviceEventSetup(eventForm, '1');
+            case 2 -> visitEventSetup(eventForm, '2');
+            case 3 -> salonEventSetup(eventForm, '3');
+        }
 
     }
+
+    private void failureDeviceEventSetup(EventForm eventForm, char category) throws IOException {
+        FailureDeviceEvent event = new FailureDeviceEvent();
+        event.setCategory(category);
+        event.setDate(UtilService.getDATE());
+        event.setTime(UtilService.getTime());
+        event.setActive(eventForm.isActive());
+        Device device = resourceService.validateFormDevice(eventForm);
+        device.setFailure(eventForm.isActive());
+        event.setFailedDevice(device);
+
+        eventDetailRegister(eventForm, event);
+    }
+
+    private void visitEventSetup(EventForm eventForm, char category) throws IOException {
+        VisitEvent event = new VisitEvent();
+        event.setCategory(category);
+        event.setDate(UtilService.getDATE());
+        event.setTime(UtilService.getTime());
+        event.setActive(false);
+        event.setCenter(new Center(eventForm.getCenterId()));
+        eventDetailRegister(eventForm, event);
+    }
+
+    private void salonEventSetup(EventForm eventForm, char category) throws IOException {
+        SalonEvent event = new SalonEvent();
+        event.setCategory(category);
+        event.setDate(UtilService.getDATE());
+        event.setTime(UtilService.getTime());
+        event.setActive(false);
+        event.setSalon(centerService.getSalon(eventForm.getSalonId()));
+        eventDetailRegister(eventForm, event);
+    }
+
 
     private void eventDetailRegister(EventForm eventForm, Event event) throws IOException {
         EventDetail eventDetail = new EventDetail();
         var currentPerson = personService.getCurrentPerson();
-        var persistence = persistenceService.persistenceSetup(currentPerson);
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
+        var persistence = logService.persistenceSetup(currentPerson);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
         fileService.checkAttachment(eventForm.getFile(), persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
+        eventDetail.setDate(UtilService.getDATE());
+        eventDetail.setTime(UtilService.getTime());
         eventDetail.setEvent(event);
         reportService.findActive(true).get().getEventList().add(event);
-        event.getEventDetailList().add(eventDetail);
+        eventDetailRepository.save(eventDetail);
+    }
+
+    @Override
+    public Model getEventListModel(Model model) {
+        List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
+
+        for (Event event : eventList) {
+            event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
+            event.setPersianDay(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+        }
+        model.addAttribute("eventList", getEventListModel());
+        return model;
+    }
+
+    @Override
+    public List<Event> getEventListModel() {
+        return null;
     }
 
 
@@ -105,15 +181,6 @@ public class EventServiceImpl implements EventService {
         return event;
     }
 
-    @Override
-    public List<EventType> getEventTypeList() {
-        return eventTypeRepository.findAll();
-    }
-
-    @Override
-    public void deleteEventAttchment(long metaDataId) {
-
-    }
 
     @Override
     public Model modelForEventController(Model model) {
@@ -127,29 +194,7 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @PreAuthorize("id >= 1 && id <= 4")
-    public Model getEventRegisterForm(Model model, int eventCategory) {
-        EventForm eventForm = new EventForm();
-        switch (eventCategory) {
-            case 1 -> eventForm.setEventType(1);
-            case 2 -> eventForm.setEventType(2);
-            case 3 -> eventForm.setEventType(3);
-            case 4 -> eventForm.setEventType(4);
-        }
-        prepareDataCenterData(model);
-        model.addAttribute("eventForm", eventForm);
-        return model;
-    }
-
-    private void prepareDataCenterData(Model model) {
-        model.addAttribute("dataCenterNameList", centerService.getAllDataCenterNameList());
-        model.addAttribute("salonNameList", centerService.getSalonNameList());
-        model.addAttribute("rackList", centerService.getRackList());
-        model.addAttribute("utilizerList", personService.getUtilizerList());
-    }
-
-    @Override
-    public Model modelForEventDetail(Model model, Long eventId) {
+    public Model getEventDetailModel(Model model, Long eventId) {
         List<EventDetail> eventDetailList = getEventDetailList(getEvent(eventId));
         List<Long> persistenceIdList = eventDetailRepository.getPersistenceIdList(eventId);
         List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList);
@@ -185,29 +230,6 @@ public class EventServiceImpl implements EventService {
                 .collect(Collectors.toList());
     }
 
-    @Override
-    public Model modelForEventList(Model model) {
-        model.addAttribute("centerList", centerService.getSalonList());
-        model.addAttribute("eventTypeList", getEventTypeList());
-        model.addAttribute("eventList", getEventList());
-        return model;
-    }
-
-    @Override
-    public List<Event> getEventList() {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-
-        List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
-        for (Event event : eventList) {
-            var date = event.getEventDetailList().stream().findFirst().get().getPersistence().getLogHistoryList().stream().findFirst().get().getDate();
-            event.setPersianDate(dateFormatter.format(PersianDate.fromGregorian(date)));
-            event.setTime(timeFormatter.format(event.getEventDetailList().stream().findFirst().get().getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
-            event.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
-        }
-
-        return eventList;
-    }
 
     @Override
     public void updateEvent(Long eventId, EventForm eventForm) throws IOException {

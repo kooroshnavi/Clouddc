@@ -30,7 +30,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>گزارش خرابی تجهیز</title>
+    <title>گزارش رخداد</title>
 </head>
 
 <body>
@@ -56,7 +56,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">خرابی تجهیز</li>
+                        <li class="breadcrumb-item active" aria-current="page">رخداد سالن</li>
                     </ol>
                 </nav>
             </div>
@@ -68,7 +68,7 @@
             <div class="col-lg-8 mx-auto">
                 <div class="card">
                     <div class="card-header py-3 bg-transparent" align="salon">
-                        <h5 class="mb-0">فرم ثبت خرابی تجهیز</h5>
+                        <h5 class="mb-0">بازدید مرکز</h5>
                     </div>
                     <div class="card-body">
                         <div class="border p-3 rounded">
@@ -78,56 +78,15 @@
 
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">مرکز</label>
-                                    <select class="form-select" name="subject" >
-                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                        <option th:each="item : ${dataCenterNameList}"
-                                                th:text="${item}"></option>
-                                    </select>
-                                </div>
-
-
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">سالن</label>
-                                    <select class="form-select" name="subject" >
-                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                        <option th:each="item : ${salonNameList}"
-                                                th:text="${item}"></option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">رک</label>
-                                    <select class="form-select" name="subject" th:field="*{rackId}">
+                                    <select class="form-select" name="subject" th:field="*{salonId}">
                                         <option th:value="100" selected="selected">انتخاب</option>
-                                        <option th:each="rack : ${rackList}" th:value="${rack.id}"
-                                                th:text="${rack.name}"></option>
+                                        <option th:each="salon : ${salonList}" th:value="${salon.id}"
+                                                th:text="${salon.name}"></option>
                                     </select>
-                                </div>
-
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">بهره بردار</label>
-                                    <select class="form-select" name="subject" th:field="*{utilizerId}">
-                                        <option th:value="100" selected="selected">انتخاب</option>
-                                        <option th:each="utilizer : ${utilizerList}" th:value="${utilizer.id}"
-                                                th:text="${utilizer.name}"></option>
-                                    </select>
-                                </div>
-
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">نوع تجهیز</label>
-                                    <select class="form-select" name="subject" th:field="*{deviceType}">
-                                        <option th:value="1">سرور</option>
-                                        <option th:value="2">سوئیچ</option>
-                                        <option th:value="3">فایروال</option>
-                                    </select>
-                                </div>
-
-                                <div class="input-group input-group-lg"> <span class="input-group-text" id="inputGroup-sizing-lg">شماره سریال</span>
-                                    <input type="text" th:field="*{serialNumber}" required="required" dir="rtl" autocapitalize="characters" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
                                 </div>
 
                                 <div class="col-12">
-                                    <label class="form-label">شرح رخداد</label>
+                                    <label class="form-label">شرح مشکل سالن</label>
                                     <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4"
                                               th:field="*{description}" required="required" dir="rtl"></textarea>
                                 </div>
@@ -135,14 +94,6 @@
                                 <div class="col-12">
                                     <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
                                     <input class="form-control" type="file" name="attachment" id="attachment">
-                                </div>
-
-                                <div class="col-12 col-md-6">
-                                    <label class="form-label">آیا رخداد پیش آمده رفع شده است؟</label>
-                                    <select class="form-select" name="subject" th:field="*{active}">
-                                        <option th:value="0">بله - پایان رخداد</option>
-                                        <option th:value="1">خیر - در حال پیگیری</option>
-                                    </select>
                                 </div>
 
 

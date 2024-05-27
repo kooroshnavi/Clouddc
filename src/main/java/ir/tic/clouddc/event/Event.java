@@ -1,10 +1,10 @@
 package ir.tic.clouddc.event;
 
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import ir.tic.clouddc.log.WorkFlow;
 import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -19,36 +19,62 @@ public abstract class Event {
     @Column
     private boolean active;
 
-    @OneToMany(mappedBy = "event", cascade = {CascadeType.ALL})
-    private List<WorkFlow> eventDetailList;
+    @Column
+    private LocalDate date;
 
     @Column
-    private String description;
+    private LocalTime time;
 
-    @Transient
-    private String persianDate;
+    @Column
+    private char category;
+
+    @OneToMany(mappedBy = "event")
+    private List<EventDetail> eventDetailList;
 
     @Transient
     private String persianDay;
 
     @Transient
-    private String time;
+    private String persianDate;
 
-
-    public List<WorkFlow> getEventDetailList() {
-        return eventDetailList;
+    public char getCategory() {
+        return category;
     }
 
-    public void setEventDetailList(List<WorkFlow> eventDetailList) {
+    public void setCategory(char category) {
+        this.category = category;
+    }
+
+    public void setEventDetailList(List<EventDetail> eventDetailList) {
         this.eventDetailList = eventDetailList;
     }
 
-    public String getDescription() {
-        return description;
+    public String getPersianDate() {
+        return persianDate;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setPersianDate(String persianDate) {
+        this.persianDate = persianDate;
+    }
+
+    public LocalDate getDate() {
+        return date;
+    }
+
+    public void setDate(LocalDate date) {
+        this.date = date;
+    }
+
+    public LocalTime getTime() {
+        return time;
+    }
+
+    public void setTime(LocalTime time) {
+        this.time = time;
+    }
+
+    public List<EventDetail> getEventDetailList() {
+        return eventDetailList;
     }
 
     public String getPersianDay() {
@@ -59,14 +85,6 @@ public abstract class Event {
         this.persianDay = persianDay;
     }
 
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
-    }
-
     public void setId(Long id) {
         this.id = id;
     }
@@ -75,23 +93,13 @@ public abstract class Event {
         this.active = active;
     }
 
-    public void setPersianDate(String persianDate) {
-        this.persianDate = persianDate;
-    }
-
-    @JsonIgnore
     public Long getId() {
         return id;
     }
-
-    @JsonIgnore
     public boolean isActive() {
         return active;
     }
 
-    public String getPersianDate() {
-        return persianDate;
-    }
 
 }
 

@@ -1,7 +1,7 @@
 package ir.tic.clouddc.center;
 
 import com.github.mfathi91.time.PersianDate;
-import ir.tic.clouddc.log.PersistenceService;
+import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -9,6 +9,7 @@ import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -33,25 +34,25 @@ public class CenterServiceImpl implements CenterService {
 
     private final NotificationService notificationService;
 
-    private final PersistenceService persistenceService;
+    private final LogService logService;
 
     private final DataCenterRepository dataCenterRepository;
 
     private final LocationRepository locationRepository;
 
-    private final RackRepository rackRepository;
+    private final SalonRepository salonRepository;
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, PersistenceService persistenceService, DataCenterRepository dataCenterRepository, LocationRepository locationRepository, RackRepository rackRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, LogService logService, DataCenterRepository dataCenterRepository, LocationRepository locationRepository, RackRepository rackRepository, SalonRepository salonRepository) {
         this.centerRepository = centerRepository;
         this.temperatureRepository = temperatureRepository;
         this.personService = personService;
         this.notificationService = notificationService;
 
-        this.persistenceService = persistenceService;
+        this.logService = logService;
         this.dataCenterRepository = dataCenterRepository;
         this.locationRepository = locationRepository;
-        this.rackRepository = rackRepository;
+        this.salonRepository = salonRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -74,13 +75,18 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public Salon getSalon(long salonId) {
-        return centerRepository.findById(salonId).get();
+        return salonRepository.findById(salonId).get();
     }
 
 
     @Override
     public List<Salon> getSalonList() {
-        return centerRepository.findAll();
+        return salonRepository.findAll();
+    }
+
+    @Override
+    public List<Center> getCenterList() {
+        return centerRepository.findAll(Sort.by("name"));
     }
 
     @Override

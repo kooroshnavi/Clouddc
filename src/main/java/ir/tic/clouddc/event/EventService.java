@@ -13,19 +13,15 @@ public interface EventService {
 
     Event getEvent(Long eventId);
 
-    List<EventType> getEventTypeList();
-
-    void deleteEventAttchment(long metaDataId);
-
-    Model getEventRegisterForm(Model model, int eventCategory);
+    Model getEventRegisterFormModel(Model model, int eventCategory);
 
     Model modelForEventController(Model model);
 
-    Model modelForEventDetail(Model model, Long eventId);
+    Model getEventDetailModel(Model model, Long eventId);
 
-    Model modelForEventList(Model model);
+    Model getEventListModel(Model model);
 
-    List<Event> getEventList();
+    List<Event> getEventListModel();
 
     void updateEvent(Long eventId, EventForm eventForm) throws IOException;
 

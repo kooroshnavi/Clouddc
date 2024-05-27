@@ -7,18 +7,17 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 import java.util.Optional;
 
 @Service
 @Slf4j
-public class PersistenceServiceImpl implements PersistenceService {
+public class LogServiceImpl implements LogService {
 
     private final PersistenceRepository persistenceRepository;
     private final LogHistoryRepository logHistoryRepository;
 
     @Autowired
-    public PersistenceServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository) {
+    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository) {
         this.persistenceRepository = persistenceRepository;
         this.logHistoryRepository = logHistoryRepository;
     }

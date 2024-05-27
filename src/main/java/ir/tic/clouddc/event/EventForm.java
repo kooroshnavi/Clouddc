@@ -17,15 +17,42 @@ public class EventForm {
 
     private MultipartFile file;
 
-    private int rackId;
+    private long rackId;
 
-    private int salonId;
+    private long salonId;
+
+    private int centerId;
 
     private int deviceType;
 
     private int utilizerId;
 
     private String serialNumber;
+
+
+    public long getRackId() {
+        return rackId;
+    }
+
+    public void setRackId(long rackId) {
+        this.rackId = rackId;
+    }
+
+    public long getSalonId() {
+        return salonId;
+    }
+
+    public void setSalonId(long salonId) {
+        this.salonId = salonId;
+    }
+
+    public int getCenterId() {
+        return centerId;
+    }
+
+    public void setCenterId(int centerId) {
+        this.centerId = centerId;
+    }
 
     public int getUtilizerId() {
         return utilizerId;
@@ -75,17 +102,11 @@ public class EventForm {
         this.file = file;
     }
 
-    public int getRackId() {
-        return rackId;
-    }
 
     public void setRackId(int rackId) {
         this.rackId = rackId;
     }
 
-    public int getSalonId() {
-        return salonId;
-    }
 
     public void setSalonId(int salonId) {
         this.salonId = salonId;

@@ -5,7 +5,7 @@ import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.log.PersistenceService;
+import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -49,7 +49,7 @@ public class PmServiceImpl implements PmService {
     private final CenterService centerService;
     private final PersonService personService;
     private final NotificationService notificationService;
-    private final PersistenceService persistenceService;
+    private final LogService logService;
     private final FileService fileService;
     private static final int DEFAULT_ASSIGNEE_ID = 7;
 
@@ -60,7 +60,7 @@ public class PmServiceImpl implements PmService {
                   PmTypeRepository pmTypeRepository, CenterService centerService,
                   PersonService personService,
                   NotificationService notificationService,
-                  PersistenceService persistenceService, FileService fileService) {
+                  LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.taskRepository = taskRepository;
         this.taskDetailRepository = taskDetailRepository;
@@ -68,7 +68,7 @@ public class PmServiceImpl implements PmService {
         this.centerService = centerService;
         this.personService = personService;
         this.notificationService = notificationService;
-        this.persistenceService = persistenceService;
+        this.logService = logService;
         this.fileService = fileService;
     }
 
@@ -234,13 +234,13 @@ public class PmServiceImpl implements PmService {
     private TaskDetail assignNewTaskDetail(TaskDetail taskDetail, int personId, char actionCode, boolean active) {
         taskDetail.setAssignedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         taskDetail.setDelay(0);
-        Persistence persistence = persistenceService.persistenceSetup(new Person(personId));
+        Persistence persistence = logService.persistenceSetup(new Person(personId));
 
         if (active) {
             taskDetail.setActive(true);
         } else {
             taskDetail.setActive(false);
-            persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId), persistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId), persistence);
             taskDetail.setFinishedTime(taskDetail.getAssignedTime());
         }
 
@@ -277,13 +277,13 @@ public class PmServiceImpl implements PmService {
 
     private void routineOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm) throws IOException {
         currentTaskDetail.setDescription(assignForm.getDescription());
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentTaskDetailPersistence.getPerson(), currentTaskDetailPersistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentTaskDetailPersistence.getPerson(), currentTaskDetailPersistence);
         fileService.checkAttachment(assignForm.getFile(), currentTaskDetailPersistence);
     }
 
     private void supervisorOperation(TaskDetail currentTaskDetail, Persistence currentTaskDetailPersistence, AssignForm assignForm, Person currentPerson) throws IOException {
         currentTaskDetail.setDescription("Terminated by supervisor");
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentTaskDetailPersistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentTaskDetailPersistence);
         TaskDetail supervisorTaskDetail = new TaskDetail(currentTaskDetail.getTask());
         supervisorTaskDetail.setDescription(assignForm.getDescription());
         assignNewTaskDetail(supervisorTaskDetail, currentPerson.getId(), '3', false);
@@ -353,12 +353,12 @@ public class PmServiceImpl implements PmService {
         if (pmRegisterForm.getId() > 0) {  ///// Modify Pm
             pm = pmRepository.findById(pmRegisterForm.getId()).get();
             persistence = pm.getPersistence();
-            persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '7', currentPerson, persistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '7', currentPerson, persistence);
         } else {  //// New Pm
             pm = new Pm();
             pm.setActive(false);
-            persistence = persistenceService.persistenceSetup(currentPerson);
-            persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
+            persistence = logService.persistenceSetup(currentPerson);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
             pm.setPersistence(persistence);
         }
 

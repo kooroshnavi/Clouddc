@@ -2,7 +2,7 @@ package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.event.Event;
-import ir.tic.clouddc.event.Installation;
+import ir.tic.clouddc.event.InstallationEvent;
 import ir.tic.clouddc.person.Utilizer;
 import jakarta.persistence.*;
 
@@ -29,6 +29,9 @@ public abstract class Device {
     @Column
     private boolean failure;
 
+    @Column
+    private String type;
+
     @ManyToOne
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
@@ -42,7 +45,55 @@ public abstract class Device {
 
     @ManyToOne
     @JoinColumn(name = "installation_event_id")
-    private Installation installation;
+    private InstallationEvent installationEvent;
+
+    public boolean isFailure() {
+        return failure;
+    }
+
+    public void setFailure(boolean failure) {
+        this.failure = failure;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public Utilizer getUtilizer() {
+        return utilizer;
+    }
+
+    public void setUtilizer(Utilizer utilizer) {
+        this.utilizer = utilizer;
+    }
+
+    public Rack getRack() {
+        return rack;
+    }
+
+    public void setRack(Rack rack) {
+        this.rack = rack;
+    }
+
+    public List<Event> getEventList() {
+        return eventList;
+    }
+
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
+    }
+
+    public InstallationEvent getInstallationEvent() {
+        return installationEvent;
+    }
+
+    public void setInstallationEvent(InstallationEvent installationEvent) {
+        this.installationEvent = installationEvent;
+    }
 
     public long getId() {
         return id;

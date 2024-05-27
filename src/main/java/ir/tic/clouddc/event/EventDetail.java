@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class EventDetail extends WorkFlow {
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "event_id")
     private Event event;
 
@@ -19,12 +19,12 @@ public class EventDetail extends WorkFlow {
     @Transient
     private String persianDay;
 
-    public String getPersianDay() {
-        return persianDay;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setPersianDay(String persianDay) {
-        this.persianDay = persianDay;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public String getPersianDate() {
@@ -35,11 +35,11 @@ public class EventDetail extends WorkFlow {
         this.persianDate = persianDate;
     }
 
-    public Event getEvent() {
-        return event;
+    public String getPersianDay() {
+        return persianDay;
     }
 
-    public void setEvent(Event event) {
-        this.event = event;
+    public void setPersianDay(String persianDay) {
+        this.persianDay = persianDay;
     }
 }

@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DataCenterRepository extends JpaRepository<DataCenter, Integer> {
+public interface DataCenterRepository extends JpaRepository<Center, Integer> {
 
     @Query("SELECT D.name FROM DataCenter D")
     List<String> fetchAllIdNameMap();

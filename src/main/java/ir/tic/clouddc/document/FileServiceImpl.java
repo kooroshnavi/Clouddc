@@ -1,7 +1,7 @@
 package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.log.PersistenceService;
+import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,13 +18,13 @@ public class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
 
-    private final PersistenceService persistenceService;
+    private final LogService logService;
 
 
     @Autowired
-    public FileServiceImpl(MetaDataRepository metaDataRepository, PersistenceService persistenceService) {
+    public FileServiceImpl(MetaDataRepository metaDataRepository, LogService logService) {
         this.metaDataRepository = metaDataRepository;
-        this.persistenceService = persistenceService;
+        this.logService = logService;
     }
 
     @Override
@@ -60,7 +60,7 @@ public class FileServiceImpl implements FileService {
     @PreAuthorize("documentOwner == requester")
     public void deleteDocument(long medaDataId, int documentOwner, int requester) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        persistenceService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '5', new Person(documentOwner), persistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '5', new Person(documentOwner), persistence);
         metaDataRepository.deleteById(medaDataId);
     }
 

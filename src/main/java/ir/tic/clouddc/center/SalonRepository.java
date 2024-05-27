@@ -1,8 +1,8 @@
-package ir.tic.clouddc.event;
+package ir.tic.clouddc.center;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface EventTypeRepository extends JpaRepository<EventType, Integer> {
+public interface SalonRepository extends JpaRepository<Salon, Long> {
 }
