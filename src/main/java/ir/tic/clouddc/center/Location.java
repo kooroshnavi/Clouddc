@@ -24,6 +24,7 @@ public abstract class Location {
     @Column
     private String type;
 
+
     public long getId() {
         return id;
     }

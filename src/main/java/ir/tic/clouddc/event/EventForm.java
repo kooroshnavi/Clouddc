@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 public class EventForm {
 
     @NotBlank
-    private int eventType;
+    private int categoryId;
 
     @NotBlank
     private String description;
@@ -70,12 +70,12 @@ public class EventForm {
         this.serialNumber = serialNumber;
     }
 
-    public int getEventType() {
-        return eventType;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setEventType(int eventType) {
-        this.eventType = eventType;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getDescription() {

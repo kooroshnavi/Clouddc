@@ -23,35 +23,49 @@ public class LogHistory {
     @Column
     private LocalTime time;
 
-    @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
-
-    @ManyToOne
-    @JoinColumn(name = "persistence_id")
-    private Persistence persistence;
-
-    @Column
-    private char actionCode;
-
     @Column
     private boolean last;
 
-    @Transient
-    private String message;
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "person_id")
+    private Person person;
 
-    public LogHistory(LocalDate date, LocalTime time, Person person, char actionCode, Persistence persistence, boolean last) {
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "persistence_id")
+    private Persistence persistence;
+
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "message_id")
+    private LogMessage logMessage;
+
+    public LogHistory(LocalDate date, LocalTime time, Person person, Persistence persistence, LogMessage logMessage, boolean last) {
         this.date = date;
         this.time = time;
         this.person = person;
-        this.actionCode = actionCode;
         this.persistence = persistence;
+        this.logMessage = logMessage;
         this.last = last;
     }
-
-    public void setActionCode(char actionCode) {
-        this.actionCode = actionCode;
+    public void setId(long id) {
+        this.id = id;
     }
+
+    public void setPerson(Person person) {
+        this.person = person;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
+
+    public LogMessage getLogMessage() {
+        return logMessage;
+    }
+
+    public void setLogMessage(LogMessage logMessage) {
+        this.logMessage = logMessage;
+    }
+
 
     public void setDate(LocalDate date) {
         this.date = date;
@@ -69,9 +83,6 @@ public class LogHistory {
         this.last = last;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
 
     public long getId() {
         return id;
@@ -93,11 +104,4 @@ public class LogHistory {
         return persistence;
     }
 
-    public char getActionCode() {
-        return actionCode;
-    }
-
-    public String getMessage() {
-        return message;
-    }
 }

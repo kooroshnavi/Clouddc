@@ -83,10 +83,10 @@
                                             <div class="card">
                                                 <div class="card-body text-center">
                                                     <div>
-                                                        <h5 class="card-title">خرابی</h5>
+                                                        <h5 class="card-title">خرابی تجهیز</h5>
                                                     </div>
-                                                    <p class="card-text">گزارش خرابی یک تجهیز شامل سرور، سوییچ و ...</p>
-                                                    <a href="/event/category/{1}/form" class="btn btn-primary">برو یه جایی</a>
+                                                    <p class="card-text">خرابی یک تجهیز شامل سرور، سوییچ و ...</p>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(0).id)}" class="btn btn-primary">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -97,8 +97,8 @@
                                                     <div>
                                                         <h5 class="card-title">مشکل سالن</h5>
                                                     </div>
-                                                    <p class="card-text">جزئیات رخداد مرتبط با سالن</p>
-                                                    <a href="/event/category/{2}/form" class="btn btn-danger">برو یه جایی</a>
+                                                    <p class="card-text">رخداد مرتبط با سالن</p>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(1).id)}" class="btn btn-danger">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -109,8 +109,8 @@
                                                     <div>
                                                         <h5 class="card-title">نصب</h5>
                                                     </div>
-                                                    <p class="card-text">جزئیات نصب تعدادی تجهیز (سرور، سوئیچ، ...) در یک رک مشخص</p>
-                                                    <a href="/event/category/{3}/form" class="btn btn-dark">برو یه جایی</a>
+                                                    <p class="card-text">نصب تعدادی تجهیز (سرور، سوئیچ، ...) در یک رک مشخص</p>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(2).id)}" class="btn btn-dark">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -121,8 +121,8 @@
                                                     <div>
                                                         <h5 class="card-title">بازدید</h5>
                                                     </div>
-                                                    <p class="card-text">جزئیات بازدید انجام شده از سالن</p>
-                                                    <a href="/event/category/{4}/form" class="btn btn-dark">برو یه جایی</a>
+                                                    <p class="card-text">بازدید مرکز</p>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(3).id)}" class="btn btn-dark">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>

@@ -7,6 +7,8 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,19 +31,16 @@ public class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void historyUpdate(LocalDate date, LocalTime time, char actionCode, Person person, Persistence persistence) {
+    public void historyUpdate(LocalDate date, LocalTime time, int logMessageId, Person person, Persistence persistence) {
+        List<LogHistory> logHistoryList = new ArrayList<>();
+        LogHistory logHistory = new LogHistory(date, time, person, persistence, new LogMessage(logMessageId), true);
+        logHistoryList.add(logHistory);
         Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findFirst();
-        if (currentHistory.isPresent()) { // modification
-            //  object modifications + taskDetail modification (remove attachment only)
+        if (currentHistory.isPresent()) {
             currentHistory.get().setLast(false);
-            LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
-            persistence.getLogHistoryList().add(logHistory);
-
-        } else {  // first history
-            LogHistory logHistory = new LogHistory(date, time, person, actionCode, persistence, true);
-            persistence.getLogHistoryList().add(logHistory);
+            logHistoryList.add(currentHistory.get());
         }
-        persistenceRepository.save(persistence);
+        logHistoryRepository.saveAll(logHistoryList);
     }
 
 

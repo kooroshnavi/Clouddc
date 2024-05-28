@@ -56,7 +56,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">خرابی تجهیز</li>
+                        <li class="breadcrumb-item active" aria-current="page">ثبت</li>
                     </ol>
                 </nav>
             </div>
@@ -68,7 +68,7 @@
             <div class="col-lg-8 mx-auto">
                 <div class="card">
                     <div class="card-header py-3 bg-transparent" align="salon">
-                        <h5 class="mb-0">فرم ثبت خرابی تجهیز</h5>
+                        <h5 class="mb-0">فرم ثبت رخداد</h5>
                     </div>
                     <div class="card-body">
                         <div class="border p-3 rounded">
@@ -76,44 +76,43 @@
                             <form class="row g-3" th:action="@{/event/register}" enctype="multipart/form-data"
                                   th:object="${eventForm}" method="POST">
 
-                                <div class="col-12 col-md-6">
+                                <div th:if="${(eventForm.categoryId == 1) || (eventForm.categoryId == 2)}" class="col-12 col-md-6">
                                     <label class="form-label">مرکز</label>
-                                    <select class="form-select" name="subject" >
+                                    <select class="form-select" name="subject" th:field="*{centerId}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                        <option th:each="item : ${dataCenterNameList}"
-                                                th:text="${item}"></option>
+                                        <option th:each="center : ${dataCenterList}" th:value="${center.id}"
+                                                th:text="${center.name}"></option>
                                     </select>
                                 </div>
 
-
-                                <div class="col-12 col-md-6">
+                                <div th:if="${(eventForm.categoryId == 1) || (eventForm.categoryId == 3)}" class="col-12 col-md-6">
                                     <label class="form-label">سالن</label>
-                                    <select class="form-select" name="subject" >
+                                    <select class="form-select" name="subject" th:field="*{salonId}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                        <option th:each="item : ${salonNameList}"
-                                                th:text="${item}"></option>
+                                        <option th:each="salon : ${salonList}" th:value="${salon.id}"
+                                                th:text="${salon.name}"></option>
                                     </select>
                                 </div>
 
-                                <div class="col-12 col-md-6">
+                                <div th:if="${(eventForm.categoryId == 1)}" class="col-12 col-md-6">
                                     <label class="form-label">رک</label>
                                     <select class="form-select" name="subject" th:field="*{rackId}">
-                                        <option th:value="100" selected="selected">انتخاب</option>
+                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
                                         <option th:each="rack : ${rackList}" th:value="${rack.id}"
                                                 th:text="${rack.name}"></option>
                                     </select>
                                 </div>
 
-                                <div class="col-12 col-md-6">
+                                <div th:if="${(eventForm.categoryId == 1)}" class="col-12 col-md-6">
                                     <label class="form-label">بهره بردار</label>
                                     <select class="form-select" name="subject" th:field="*{utilizerId}">
-                                        <option th:value="100" selected="selected">انتخاب</option>
+                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
                                         <option th:each="utilizer : ${utilizerList}" th:value="${utilizer.id}"
                                                 th:text="${utilizer.name}"></option>
                                     </select>
                                 </div>
 
-                                <div class="col-12 col-md-6">
+                                <div th:if="${(eventForm.categoryId == 1)}" class="col-12 col-md-6">
                                     <label class="form-label">نوع تجهیز</label>
                                     <select class="form-select" name="subject" th:field="*{deviceType}">
                                         <option th:value="1">سرور</option>
@@ -122,7 +121,7 @@
                                     </select>
                                 </div>
 
-                                <div class="input-group input-group-lg"> <span class="input-group-text" id="inputGroup-sizing-lg">شماره سریال</span>
+                                <div th:if="${(eventForm.categoryId == 1)}" class="input-group input-group-lg"> <span class="input-group-text" id="inputGroup-sizing-lg">شماره سریال</span>
                                     <input type="text" th:field="*{serialNumber}" required="required" dir="rtl" autocapitalize="characters" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
                                 </div>
 
@@ -138,10 +137,10 @@
                                 </div>
 
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label">آیا رخداد پیش آمده رفع شده است؟</label>
+                                    <label class="form-label">آخرین وضعیت</label>
                                     <select class="form-select" name="subject" th:field="*{active}">
-                                        <option th:value="0">بله - پایان رخداد</option>
-                                        <option th:value="1">خیر - در حال پیگیری</option>
+                                        <option th:value="0">پایان رخداد</option>
+                                        <option th:value="1">فعال - در حال پیگیری</option>
                                     </select>
                                 </div>
 

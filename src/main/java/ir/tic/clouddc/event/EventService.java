@@ -13,6 +13,8 @@ public interface EventService {
 
     Event getEvent(Long eventId);
 
+    List<EventCategory> getEventCategoryList();
+
     Model getEventRegisterFormModel(Model model, int eventCategory);
 
     Model modelForEventController(Model model);

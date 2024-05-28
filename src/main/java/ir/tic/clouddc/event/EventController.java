@@ -21,23 +21,13 @@ public class EventController {
 
     @GetMapping("/category")
     public String eventForm(Model model) {
+        model.addAttribute("eventCategoryList", eventService.getEventCategoryList());
         return "eventLandingPage";
     }
 
-    @GetMapping("/category/{id}/form")
-    public String ShowEventForm(Model model, @RequestParam("id") int id) {
-        eventService.getEventRegisterFormModel(model, id);
-        switch (id) {
-            case 1 -> {
-                return "eventFormForDeviceFailure";
-            }
-            case 2 -> {
-                return "eventFormForCenterVisit";
-            }
-            case 3 -> {
-                return "eventFormForSalon";
-            }
-        }
+    @GetMapping("/category/{categoryId}/form")
+    public String ShowEventForm(Model model, @RequestParam("categoryId") int categoryId) {
+        eventService.getEventRegisterFormModel(model, categoryId);
         return "eventRegister";
     }
 

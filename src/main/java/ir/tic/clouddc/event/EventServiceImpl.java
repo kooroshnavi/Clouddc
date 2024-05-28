@@ -3,7 +3,6 @@ package ir.tic.clouddc.event;
 import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
-import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -37,6 +36,7 @@ public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final EventDetailRepository eventDetailRepository;
+    private final EventCategoryRepository eventCategoryRepository;
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
@@ -50,13 +50,14 @@ public class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , EventDetailRepository eventDetailRepository, ReportService reportService
+            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
             , PmService pmService
             , FileService fileService, LogService logService, DataCenterRepository dataCenterRepository, ResourceService resourceService, FailureDeviceEventRepository failureDeviceEventRepository) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
+        this.eventCategoryRepository = eventCategoryRepository;
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
@@ -69,22 +70,20 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @PreAuthorize("id >= 1 && id <= 4")
-    public Model getEventRegisterFormModel(Model model, int eventCategory) {
+    public Model getEventRegisterFormModel(Model model, int categoryId) {
         EventForm eventForm = new EventForm();
-        switch (eventCategory) {
+        eventForm.setCategoryId(categoryId);
+        switch (categoryId) {
             case 1 -> {  //// prepare deviceFailureForm model
-                eventForm.setEventType(1);
-                model.addAttribute("dataCenterNameList", centerService.getAllDataCenterNameList());
-                model.addAttribute("salonNameList", centerService.getSalonNameList());
+                model.addAttribute("dataCenterList", centerService.getCenterList());
+                model.addAttribute("salonList", centerService.getSalonList());
                 model.addAttribute("rackList", centerService.getRackList());
                 model.addAttribute("utilizerList", personService.getUtilizerList());
             }
             case 2 -> {  //// prepare centerVisitForm model
-                eventForm.setEventType(2);
                 model.addAttribute("dataCenterList", centerService.getCenterList());
             }
             case 3 -> {  //// prepare salonEventForm model
-                eventForm.setEventType(3);
                 model.addAttribute("salonList", centerService.getSalonList());
             }
         }
@@ -97,43 +96,42 @@ public class EventServiceImpl implements EventService {
     @Override
     public void eventRegister(EventForm eventForm) throws IOException {
 
-        switch (eventForm.getEventType()) {
-            case 1 -> failureDeviceEventSetup(eventForm, '1');
-            case 2 -> visitEventSetup(eventForm, '2');
-            case 3 -> salonEventSetup(eventForm, '3');
+        switch (eventForm.getCategoryId()) {
+            case 1 -> failureDeviceEventSetup(eventForm);
+            case 2 -> visitEventSetup(eventForm);
+            case 3 -> salonEventSetup(eventForm);
         }
-
     }
 
-    private void failureDeviceEventSetup(EventForm eventForm, char category) throws IOException {
+    private void failureDeviceEventSetup(EventForm eventForm) throws IOException {
         FailureDeviceEvent event = new FailureDeviceEvent();
-        event.setCategory(category);
+        event.setEventCategory(new EventCategory(eventForm.getCategoryId()));
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
-        event.setActive(eventForm.isActive());
         Device device = resourceService.validateFormDevice(eventForm);
         device.setFailure(eventForm.isActive());
+        event.setActive(eventForm.isActive());
         event.setFailedDevice(device);
 
         eventDetailRegister(eventForm, event);
     }
 
-    private void visitEventSetup(EventForm eventForm, char category) throws IOException {
+    private void visitEventSetup(EventForm eventForm) throws IOException {
         VisitEvent event = new VisitEvent();
-        event.setCategory(category);
+        event.setEventCategory(new EventCategory(eventForm.getCategoryId()));
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
-        event.setActive(false);
+        event.setActive(eventForm.isActive());
         event.setCenter(new Center(eventForm.getCenterId()));
         eventDetailRegister(eventForm, event);
     }
 
-    private void salonEventSetup(EventForm eventForm, char category) throws IOException {
+    private void salonEventSetup(EventForm eventForm) throws IOException {
         SalonEvent event = new SalonEvent();
-        event.setCategory(category);
+        event.setEventCategory(new EventCategory(eventForm.getCategoryId()));
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
-        event.setActive(false);
+        event.setActive(eventForm.isActive());
         event.setSalon(centerService.getSalon(eventForm.getSalonId()));
         eventDetailRegister(eventForm, event);
     }
@@ -143,7 +141,7 @@ public class EventServiceImpl implements EventService {
         EventDetail eventDetail = new EventDetail();
         var currentPerson = personService.getCurrentPerson();
         var persistence = logService.persistenceSetup(currentPerson);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), 5, currentPerson, persistence);
         fileService.checkAttachment(eventForm.getFile(), persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
@@ -160,7 +158,7 @@ public class EventServiceImpl implements EventService {
 
         for (Event event : eventList) {
             event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
-            event.setPersianDayTime(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
+            event.setPersianWeekDay(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
             switch (event.getCategory()) {
                 case '1':
                     event.setCategoryName("خرابی تجهیز");
@@ -204,6 +202,7 @@ public class EventServiceImpl implements EventService {
             }
 
             model.addAttribute("eventDetailList", eventDetailList);
+            model.addAttribute("eventId", eventId);
             return model;
         }
         return null;
@@ -225,6 +224,11 @@ public class EventServiceImpl implements EventService {
                 .getLogHistoryList().stream().findFirst().get()
                 .getDate())));
         return event;
+    }
+
+    @Override
+    public List<EventCategory> getEventCategoryList() {
+        return (List<EventCategory>) eventCategoryRepository.findAll();
     }
 
 

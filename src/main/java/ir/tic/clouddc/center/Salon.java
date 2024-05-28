@@ -36,6 +36,7 @@ public class Salon extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
+
     public Center getCenter() {
         return center;
     }

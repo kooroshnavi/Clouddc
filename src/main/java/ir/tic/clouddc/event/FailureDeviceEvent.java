@@ -9,14 +9,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class FailureDeviceEvent extends Event {
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "device_id")
     private Device failedDevice;
 
     public Device getFailedDevice() {
         return failedDevice;
     }
-
     public void setFailedDevice(Device failedDevice) {
         this.failedDevice = failedDevice;
     }

@@ -1,15 +1,16 @@
 package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Salon;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-public class SalonEvent extends Event{
+public class SalonEvent extends Event {
 
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "salon_id")
     private Salon salon;
 
     public Salon getSalon() {
