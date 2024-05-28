@@ -1,0 +1,69 @@
+package ir.tic.clouddc.resource;
+
+import jakarta.persistence.*;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Entity
+@Table(schema = "Resource")
+@NoArgsConstructor
+public class DeviceCategory {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
+    private int id;
+
+    @Column
+    private String type;  // server - switch - firewall
+
+    @Column
+    private String vendor; // hpe - cisco - Fortigate
+
+    @Column
+    private String model;   //
+
+    @OneToMany(mappedBy = "deviceCategory")
+    private List<Device> deviceList;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public String getVendor() {
+        return vendor;
+    }
+
+    public void setVendor(String vendor) {
+        this.vendor = vendor;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public List<Device> getDeviceList() {
+        return deviceList;
+    }
+
+    public void setDeviceList(List<Device> deviceList) {
+        this.deviceList = deviceList;
+    }
+}

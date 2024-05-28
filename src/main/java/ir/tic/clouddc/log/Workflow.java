@@ -8,7 +8,7 @@ import java.time.LocalTime;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(schema = "Log")
-public abstract class WorkFlow {
+public abstract class Workflow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

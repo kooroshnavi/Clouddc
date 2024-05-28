@@ -1,7 +1,10 @@
 package ir.tic.clouddc.resource;
 
+import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.event.EventForm;
+import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.ui.Model;
 
 import java.util.Optional;
 
@@ -20,26 +23,47 @@ public class ResourceServiceImpl implements ResourceService {
         return currentDevice.orElseGet(() -> registerNewDevice(eventForm));
     }
 
+    @Override
+    public Model getDeviceDetailModel(Model model, long deviceId) {
+        Optional<Device> optionalDevice = deviceRepository.findById(deviceId);
+        if (optionalDevice.isPresent()) {
+            var baseDevice = optionalDevice.get();
+            var deviceEventList = baseDevice.getEventList();
+            if (baseDevice instanceof Server device) {
+                model.addAttribute("device", device);
+            } else if (baseDevice instanceof Switch device) {
+                model.addAttribute("device", device);
+            } else if (baseDevice instanceof Firewall device) {
+                model.addAttribute("device", device);
+            }
+
+            for (Event event : deviceEventList){
+                event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
+            }
+            model.addAttribute("deviceEventList", deviceEventList);
+
+            return model;
+        }
+        return null;
+    }
+
     private Device registerNewDevice(EventForm eventForm) {
 
         switch (eventForm.getDeviceType()) {
             case 1 -> {   /// Server
                 Server srv = new Server();
                 srv.setSerialNumber(eventForm.getSerialNumber());
-                srv.setType("Server");
                 return deviceRepository.save(srv);
             }
             case 2 -> { /// Switch
                 Switch sw = new Switch();
                 sw.setSerialNumber(eventForm.getSerialNumber());
-                sw.setType("Switch");
                 return deviceRepository.save(sw);
             }
 
             case 3 -> { /// Firewall
                 Firewall fw = new Firewall();
                 fw.setSerialNumber(eventForm.getSerialNumber());
-                fw.setType("Firewall");
                 return deviceRepository.save(fw);
             }
 

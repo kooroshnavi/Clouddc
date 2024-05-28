@@ -1,6 +1,6 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.log.WorkFlow;
+import ir.tic.clouddc.log.Workflow;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-public class TaskDetail extends WorkFlow {
+public class TaskDetail extends Workflow {
 
     @ManyToOne
     @JoinColumn(name = "task_id")

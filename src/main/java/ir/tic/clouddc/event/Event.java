@@ -25,6 +25,9 @@ public abstract class Event {
     @Column
     private LocalTime time;
 
+    @Column
+    private String title;
+
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "category_id")
     private EventCategory eventCategory;
@@ -33,10 +36,18 @@ public abstract class Event {
     private List<EventDetail> eventDetailList;
 
     @Transient
-    private String persianWeekDay;
+    private String persianWeekday;
 
     @Transient
     private String persianDate;
+
+    public String getTitle() {
+        return title;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
 
     public EventCategory getEventCategory() {
         return eventCategory;
@@ -78,12 +89,12 @@ public abstract class Event {
         return eventDetailList;
     }
 
-    public String getPersianWeekDay() {
-        return persianWeekDay;
+    public String getPersianWeekday() {
+        return persianWeekday;
     }
 
-    public void setPersianWeekDay(String persianWeekDay) {
-        this.persianWeekDay = persianWeekDay;
+    public void setPersianWeekday(String persianWeekday) {
+        this.persianWeekday = persianWeekday;
     }
 
     public void setId(Long id) {

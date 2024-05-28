@@ -3,6 +3,7 @@ package ir.tic.clouddc.event;
 import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
+import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -24,10 +25,7 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -105,34 +103,40 @@ public class EventServiceImpl implements EventService {
 
     private void failureDeviceEventSetup(EventForm eventForm) throws IOException {
         FailureDeviceEvent event = new FailureDeviceEvent();
-        event.setEventCategory(new EventCategory(eventForm.getCategoryId()));
-        event.setDate(UtilService.getDATE());
-        event.setTime(UtilService.getTime());
+        event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
         Device device = resourceService.validateFormDevice(eventForm);
         device.setFailure(eventForm.isActive());
+        device.setLocation(centerService.getLocation(eventForm.getRackId()));
+        event.setDate(UtilService.getDATE());
+        event.setTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
         event.setFailedDevice(device);
+        event.setTitle(eventForm.getTitle());
 
         eventDetailRegister(eventForm, event);
     }
 
     private void visitEventSetup(EventForm eventForm) throws IOException {
         VisitEvent event = new VisitEvent();
-        event.setEventCategory(new EventCategory(eventForm.getCategoryId()));
+        event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
-        event.setCenter(new Center(eventForm.getCenterId()));
+        event.setCenter(centerService.getCenter(eventForm.getCenterId()));
+        event.setTitle(eventForm.getTitle());
+
         eventDetailRegister(eventForm, event);
     }
 
     private void salonEventSetup(EventForm eventForm) throws IOException {
         SalonEvent event = new SalonEvent();
-        event.setEventCategory(new EventCategory(eventForm.getCategoryId()));
+        event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
         event.setSalon(centerService.getSalon(eventForm.getSalonId()));
+        event.setTitle(eventForm.getTitle());
+
         eventDetailRegister(eventForm, event);
     }
 
@@ -148,6 +152,7 @@ public class EventServiceImpl implements EventService {
         eventDetail.setDate(UtilService.getDATE());
         eventDetail.setTime(UtilService.getTime());
         eventDetail.setEvent(event);
+
         reportService.findActive(true).get().getEventList().add(event);
         eventDetailRepository.save(eventDetail);
     }
@@ -155,54 +160,56 @@ public class EventServiceImpl implements EventService {
     @Override
     public Model getEventListModel(Model model) {
         List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
-
         for (Event event : eventList) {
             event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
-            event.setPersianWeekDay(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
-            switch (event.getCategory()) {
-                case '1':
-                    event.setCategoryName("خرابی تجهیز");
-                case '2':
-                    event.setCategoryName("بازدید");
-                case '3':
-                    event.setCategoryName("مشکل سالن");
-            }
+            event.setPersianWeekday(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
         }
-        model.addAttribute("eventList", getEventListModel());
+        model.addAttribute("eventList", eventList);
         return model;
     }
 
     @Override
-    public List<Event> getEventListModel() {
-        return null;
-    }
-
-    @Override
     public Model getEventDetailModel(Model model, Long eventId) {
-        Optional<Event> optionalEvent = eventRepository.findById(eventId);
+        var optionalEvent = eventRepository.findById(eventId);
         List<EventDetail> eventDetailList;
-        if (optionalEvent.isPresent()) {
-            Event baseEvent = optionalEvent.get();
 
-            if (baseEvent instanceof FailureDeviceEvent failureDeviceEvent) {
-                eventDetailList = failureDeviceEvent.getEventDetailList();
-                model.addAttribute("failureDeviceEvent", failureDeviceEvent);
-            } else if (baseEvent instanceof VisitEvent visitEvent) {
-                eventDetailList = visitEvent.getEventDetailList();
-                model.addAttribute("visitEvent", visitEvent);
-            } else if (baseEvent instanceof SalonEvent salonEvent) {
-                eventDetailList = salonEvent.getEventDetailList();
-                model.addAttribute("salonEvent", salonEvent);
+        if (optionalEvent.isPresent()) {
+            var baseEvent = optionalEvent.get();
+            eventDetailList = baseEvent.getEventDetailList();
+
+            if (baseEvent instanceof FailureDeviceEvent event) {
+
+                model.addAttribute("event", event);
+
+            } else if (baseEvent instanceof VisitEvent event) {
+
+                model.addAttribute("event", event);
+
+            } else if (baseEvent instanceof SalonEvent event) {
+
+                model.addAttribute("event", event);
+
             } else {
                 return null;
             }
 
+            List<Long> persistenceIdList = new ArrayList<>();
             for (EventDetail eventDetail : eventDetailList) {
                 loadEventDetailTransients(eventDetail);
+                persistenceIdList.add(eventDetail.getPersistence().getId());
             }
 
-            model.addAttribute("eventDetailList", eventDetailList);
-            model.addAttribute("eventId", eventId);
+            var sortedEventDetail = eventDetailList
+                    .stream()
+                    .sorted(Comparator.comparing(EventDetail::getId).reversed())
+                    .toList();
+
+            var eventForm = new EventForm();
+            eventForm.setEventId(eventId);
+
+            model.addAttribute("eventDetailList", sortedEventDetail);
+            model.addAttribute("eventForm", eventForm);
+            model.addAttribute("metaDataList", fileService.getRelatedMetadataList(persistenceIdList));
             return model;
         }
         return null;
@@ -215,7 +222,7 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public Model getEvent(Long eventId) {
+    public Event getEvent(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         Event event = eventRepository.findById(eventId).get();
         event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event
@@ -266,16 +273,12 @@ public class EventServiceImpl implements EventService {
 
 
     @Override
-    public void updateEvent(Long eventId, EventForm eventForm) throws IOException {
-        Event event = eventRepository.findById(eventId).get();
-        eventDetailRegister(eventForm, event);
-
+    @PreAuthorize("event.active == true")
+    public void updateEvent(EventForm eventForm, Event event) throws IOException {
         if (!eventForm.isActive()) {
             event.setActive(false);
         }
-
-        eventRepository.save(event);
-
+        eventDetailRegister(eventForm, event);
     }
 
     @Override

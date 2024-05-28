@@ -30,10 +30,11 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>رخدادها</title>
+    <title>جزئیات مکان</title>
 </head>
 
 <body>
+
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -48,71 +49,92 @@
     <!--start content-->
     <main class="page-content">
         <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
-            <div class="breadcrumb-title pe-3">رخدادها</div>
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">جداول</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">گزارشات ثبت شده</li>
+                        <li class="breadcrumb-item active" aria-current="page">جدول داده</li>
                     </ol>
                 </nav>
             </div>
-
         </div>
         <!--end breadcrumb-->
-
-        <h6 class="mb-0 text-uppercase" align="salon">رخدادهای گزارش شده</h6>
+        <h6 class="mb-0 text-uppercase">مشخصات</h6>
         <hr/>
         <div class="card">
             <div class="card-body">
-                <div class="col" dir="ltr">
-                    <a type="button" href="/event/category" class="btn btn-warning px-5" data-bs-toggle="tooltip"
-                       data-bs-placement="top" title="لطفا از ثبت وظیفه در فرم پیش رو خودداری نمایید." dir="auto">گزارش
-                        رخداد</a>
-                </div>
+                <table class="table mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">نوع</th>
+                        <th scope="col">نام</th>
+                        <th th:if="${location.type == 'Rack'}" scope="col">نام سالن</th>
+                        <th th:if="${location.type == 'Rack'}" scope="col">بهره بردار</th>
+                        <th scope="col">نام مرکز</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                        <td th:text="${location.type}"/>
+                        <td th:text="${location.name}"/>
+                        <td th:if="${location.type == 'Rack'}" th:text="${location.salon.name}"/>
+                        <td th:if="${location.type == 'Rack'}"
+                            th:text="${location.utilizer.name}">
+                            <div class="col">
+                                <a th:href="@{/resource/utilizer/detail(utilizerId=${location.utilizer.id})}"
+                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                   data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
+                            </div>
+                        </td>
+                        <td th:if="${location.type == 'Rack'}" th:text="${location.salon.center.name}"/>
+                        <td th:if="${location.type == 'Room'}" th:text="${location.center.name}"/>
+                    </tr>
+
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <h6 class="mb-0 text-uppercase">لیست تجهیزات</h6>
+        <hr/>
+
+        <div class="card">
+            <div class="card-body">
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>دسته بندی رخداد</th>
-                            <th>عنوان</th>
-                            <th>زمان</th>
-                            <th>وضعیت</th>
+                            <th>نوع تجهیز</th>
+                            <th>نام</th>
+                            <th>بهره بردار</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="event, iter : ${eventList}">
+                        <tr th:each="device, iter : ${deviceList}">
 
-                            <td th:text="${iter.count}" dir="rtl"/>
-                            <td th:text="${event.eventCategory.name}" dir="rtl"/>
-                            <td th:text="${event.title}" dir="rtl"/>
-                            <td th:text="${event.persianDate}" data-bs-toggle="tooltip" data-bs-placement="top"
-                                th:title="${event.persianWeekdayTime}" dir="rtl"/>
+                            <td th:text="${iter.count}"/>
+                            <td th:text="${device.deviceCategory.type} "/>
 
-                            <td dir="rtl">
+                            <td
+                                    th:text="${device.name}">
                                 <div class="col">
-                                    <a th:if="${event.isActive}"
-                                       th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
+                                    <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده تاریخچه و بروزرسانی">فعال</a>
-                                </div>
-
-                                <div class="col">
-                                    <a th:if="${not event.isActive}"
-                                       th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
-                                       class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده تاریخچه">خاتمه رخداد</a>
+                                       data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                 </div>
                             </td>
 
+                            <td th:text="${device.utilizer.name}"/>
+
                         </tr>
+
                         </tbody>
-                        <tfoot>
-                        </tfoot>
+
                     </table>
                 </div>
             </div>

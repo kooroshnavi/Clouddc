@@ -51,7 +51,7 @@ public class EventController {
         return "eventListView";
     }
 
-    @GetMapping("/{eventCategory}/{eventId}/detail")
+    @GetMapping("/{eventId}/detail")
     public String viewEventDetail(@RequestParam Long eventId,
                                   Model model) {
         eventService.getEventDetailModel(model, eventId);
@@ -60,15 +60,17 @@ public class EventController {
 
     @PostMapping("/update")
     public String updateEvent(Model model
-            , @RequestParam Long eventId
             , @ModelAttribute("eventForm") EventForm eventForm
             , @RequestParam("attachment") MultipartFile file)
             throws IOException {
 
-        eventForm.setFile(file);
-        eventService.updateEvent(eventId, eventForm);
+        if (!file.isEmpty()) {
+            eventForm.setFile(file);
+        }
+        Event event = eventService.getEvent(eventForm.getEventId());
+        eventService.updateEvent(eventForm, event);
         eventService.getEventListModel(model);
-        return "events";
+        return "redirect:eventListView";
     }
 
     @ModelAttribute

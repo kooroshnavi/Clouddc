@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -14,17 +15,12 @@ import java.util.Map;
 public class Rack extends Location {
 
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "salon_id")
     private Salon salon;
 
-    @ElementCollection
-    @CollectionTable(name = "device_unit_map",
-            schema = "Center",
-            joinColumns = {@JoinColumn(name = "rack_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "device_id")
-    @Column(name = "unit_offset")
-    private Map<Integer, Device> deviceLocateMap;
+    @OneToMany(mappedBy = "location")
+    private List<Device> deviceList;
 
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
@@ -39,4 +35,35 @@ public class Rack extends Location {
     private Utilizer utilizer;
 
 
+    public Salon getSalon() {
+        return salon;
+    }
+
+    public void setSalon(Salon salon) {
+        this.salon = salon;
+    }
+
+    public List<Device> getDeviceList() {
+        return deviceList;
+    }
+
+    public void setDeviceList(List<Device> deviceList) {
+        this.deviceList = deviceList;
+    }
+
+    public Map<LocalDate, Float> getAverageTemperature() {
+        return averageTemperature;
+    }
+
+    public void setAverageTemperature(Map<LocalDate, Float> averageTemperature) {
+        this.averageTemperature = averageTemperature;
+    }
+
+    public Utilizer getUtilizer() {
+        return utilizer;
+    }
+
+    public void setUtilizer(Utilizer utilizer) {
+        this.utilizer = utilizer;
+    }
 }

@@ -66,20 +66,79 @@
         <div class="col">
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
-                    <div class="d-flex align-items-salon gap-3">
-                        <div class="icon-box bg-light-success border-0">
-                            <i class="lni lni-chevron-left"></i>
-                        </div>
-                        <div class="info">
-                            <h6 class="mb-2"><strong
-                                    th:text=" 'دسته بندی رخداد: ' + ${event.getEventType.getName}"></strong></h6>
-                            <p class="mb-1" th:text=" 'شماره رخداد: ' + ${id}"></p>
-                            <p class="mb-1" th:text=" 'مرکز: ' + ${event.getCenter.getNamePersian}"></p>
-                            <p class="mb-1" th:text=" 'تاریخ ثبت: ' + ${event.persianDate}"></p>
-                            <p class="mb-1"
-                               th:text=" 'گزارش کننده رخداد: ' + ${firstReport.persistence.person.name}"></p>
+                    <h6 class="mb-0 text-uppercase">جزئیات</h6>
+                    <hr/>
+
+                    <div class="card warning-table bg-warning">
+                        <div class="card-body">
+                            <table class="table mb-0">
+                                <thead>
+                                <tr>
+                                    <th scope="col">شماره رخداد</th>
+                                    <th scope="col">عنوان</th>
+                                    <th scope="col">دسته بندی</th>
+                                    <th scope="col">تاریخ ثبت</th>
+                                    <th scope="col">ساعت ثبت</th>
+
+                                    <th th:if="${event.eventCategory.id == 1}" scope="col">سریال تجهیز</th>
+                                    <th th:if="${event.eventCategory.id == 1}" scope="col">نوع تجهیز</th>
+                                    <th th:if="${event.eventCategory.id == 1}" scope="col">بهره بردار</th>
+                                    <th th:if="${event.eventCategory.id == 1}" scope="col">آدرس نصب</th>
+
+                                    <th th:if="(${event.eventCategory.id == 2}"
+                                        scope="col">مرکز
+                                    </th>
+
+                                    <th th:if="${event.eventCategory.id == 3}" scope="col">مرکز</th>
+                                    <th th:if="${event.eventCategory.id == 3}" scope="col">سالن</th>
+
+                                </tr>
+                                </thead>
+
+                                <tbody>
+                                <tr>
+                                    <td th:text="${event.id}"/>
+                                    <td th:text="${event.title}"/>
+                                    <td th:text="${event.eventCategory.name}"/>
+                                    <td th:text="${event.persianDate}" data-bs-toggle="tooltip" data-bs-placement="top"
+                                        th:title="${event.persianWeekday}" dir="rtl"/>
+                                    <td th:text="${event.time}"/>
+
+                                    <td th:if="${event.eventCategory.id == 1}"
+                                        th:text="${event.failedDevice.serialNumber}">
+                                        <div class="col">
+                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${event.failedDevice.id})}"
+                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                               data-bs-placement="bottom" title="جزئیات تجهیز"></a>
+                                        </div>
+                                    </td>
+
+                                    <td th:if="${event.eventCategory.id == 1}" th:text="${event.failedDevice.type}"/>
+                                    <td th:if="${event.eventCategory.id == 1}" th:text="${event.failedDevice.utilizer.name}"/>
+
+                                    <td th:if="${event.eventCategory.id == 1}"
+                                        th:text="${event.failedDevice.location.name}">
+                                        <div class="col">
+                                            <a th:href="@{/center/location/{locationId}/detail(locationId=${event.failedDevice.location.id})}"
+                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                               data-bs-placement="bottom" title="جزئیات محل نصب تجهیز"></a>
+                                        </div>
+                                    </td>
+
+                                    <td th:if="(${event.eventCategory.id == 2}" th:text="${event.center.name}"/>
+
+                                    <td th:if="(${event.eventCategory.id == 3}" th:text="${event.salon.center.name}"/>
+                                    <td th:if="(${event.eventCategory.id == 3}" th:text="${event.salon.name}"/>
+
+                                </tr>
+
+                                </tbody>
+
+                            </table>
                         </div>
                     </div>
+
+
                 </div>
             </div>
         </div>
@@ -93,19 +152,11 @@
             </div>
         </div>
 
-        <div class="col" th:if="${event.active}">
-            <div class="card bg-warning text-white">
-                <div class="card-body">
-                    <p class="card-text">رخداد فعال است. کلیه همکاران در صورت آگاهی و پیگیری می توانند نسبت به بروزرسانی
-                        آن اقدام نمایند.</p>
-                </div>
-            </div>
-        </div>
+
         <h6 class="mb-0 text-uppercase" align="salon">
             <strong>گردش رخداد</strong>
         </h6>
         <hr/>
-
 
         <div class="card">
             <div class="card-body">
@@ -114,8 +165,8 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>تاریخ گردش کار</th>
-                            <th>روز و ساعت بروزرسانی</th>
+                            <th>تاریخ بروزرسانی</th>
+                            <th>ساعت</th>
                             <th>اقدام کننده</th>
                             <th>توضیحات</th>
                         </tr>
@@ -124,11 +175,10 @@
 
                         <tr th:each="detail, iter : ${eventDetailList}">
 
-                            <td th:text="${iter.count}">
-
-                            </td>
-                            <td th:text="${detail.getPersianDate}"/>
-                            <td th:text="${detail.persianDay} + ' - ' + ${detail.time} "/>
+                            <td th:text="${iter.count}"/>
+                            <td th:text="${detail.persianDate}"data-bs-toggle="tooltip" data-bs-placement="top"
+                                th:title="${detail.persianDay}" dir="rtl"/>
+                            <td th:text="${detail.time} "/>
                             <td th:text="${detail.persistence.person.name}"/>
                             <td th:text="${detail.description}"/>
 
@@ -142,10 +192,10 @@
         </div>
 
         <hr/>
+
         <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="salon">
             <strong>فرم بروزرسانی وضعیت رخداد</strong>
         </h6>
-
 
         <div class="row" th:if="${event.active}" align="salon" dir="rtl">
             <div class="col-lg-12 mx-auto">
@@ -157,7 +207,8 @@
                                 <div class="card shadow-none bg-light border">
                                     <div class="card-body">
 
-                                        <form class="row g-3" th:action="@{/event/update(eventId=${id})}" enctype="multipart/form-data" th:object="${eventForm}" method="POST">
+                                        <form class="row g-3" th:action="@{/event/update}"
+                                              enctype="multipart/form-data" th:object="${eventForm}" method="POST">
 
                                             <div class="col-12">
                                                 <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
@@ -234,7 +285,7 @@
         <div class="card" align="center">
             <div class="card-body">
                 <h6 class="mb-0 text-uppercase" align="center">
-                    <strong>پیوست ها</strong>
+                    <strong>لیست پیوست</strong>
                 </h6>
                 <div class="d-flex align-items-salon">
 
@@ -252,6 +303,7 @@
                         <tbody>
 
                         <tr th:each="metadata, iter : ${metaDataList}">
+
                             <td th:text="${iter.count}"></td>
                             <td>
 
@@ -289,9 +341,12 @@
 
                             <td>
                                 <form>
-                                <a th:if="${metadata.logHistory.person.id == person.id }" th:href="@{/document/{metadataId}/delete (metadataId=${metadata.id})}"
-                                    class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom" title="حذف فایل"
-                                    data-bs-original-title="Delete" aria-label="Delete"><i class="bi bi-trash-fill"></i></a>
+                                    <a th:if="${metadata.logHistory.person.id == person.id }"
+                                       th:href="@{/document/{metadataId}/delete (metadataId=${metadata.id})}"
+                                       class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="حذف فایل"
+                                       data-bs-original-title="Delete" aria-label="Delete"><i
+                                            class="bi bi-trash-fill"></i></a>
                                 </form>
                             </td>
                         </tr>

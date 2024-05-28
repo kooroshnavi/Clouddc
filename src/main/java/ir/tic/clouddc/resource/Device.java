@@ -1,6 +1,6 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.event.InstallationEvent;
 import ir.tic.clouddc.person.Utilizer;
@@ -21,24 +21,28 @@ public abstract class Device {
     private String serialNumber;
 
     @Column
-    private String vendor;
-
-    @Column
     private boolean dualPower;
 
     @Column
     private boolean failure;
 
     @Column
-    private String type;
+    private boolean active;
+
+    @Column
+    private String name;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "device_category_id")
+    private DeviceCategory deviceCategory;
 
     @ManyToOne
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
 
     @ManyToOne
-    @JoinColumn(name = "rack_id")
-    private Rack rack;
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @OneToMany(mappedBy = "device")
     private List<Event> eventList;
@@ -47,20 +51,45 @@ public abstract class Device {
     @JoinColumn(name = "installation_event_id")
     private InstallationEvent installationEvent;
 
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public DeviceCategory getDeviceCategory() {
+        return deviceCategory;
+    }
+
+    public void setDeviceCategory(DeviceCategory deviceCategory) {
+        this.deviceCategory = deviceCategory;
+    }
+
     public boolean isFailure() {
         return failure;
     }
 
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
     public void setFailure(boolean failure) {
         this.failure = failure;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
     }
 
     public Utilizer getUtilizer() {
@@ -69,14 +98,6 @@ public abstract class Device {
 
     public void setUtilizer(Utilizer utilizer) {
         this.utilizer = utilizer;
-    }
-
-    public Rack getRack() {
-        return rack;
-    }
-
-    public void setRack(Rack rack) {
-        this.rack = rack;
     }
 
     public List<Event> getEventList() {
@@ -109,14 +130,6 @@ public abstract class Device {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
-    }
-
-    public String getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
     }
 
     public boolean isDualPower() {

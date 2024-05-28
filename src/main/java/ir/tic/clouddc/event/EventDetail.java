@@ -1,13 +1,13 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.log.WorkFlow;
+import ir.tic.clouddc.log.Workflow;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-public class EventDetail extends WorkFlow {
+public class EventDetail extends Workflow {
 
     @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "event_id")

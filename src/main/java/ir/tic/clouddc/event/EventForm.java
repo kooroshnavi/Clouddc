@@ -13,6 +13,8 @@ public class EventForm {
     @NotBlank
     private String description;
 
+    private long eventId;
+
     private boolean active;
 
     private MultipartFile file;
@@ -29,6 +31,47 @@ public class EventForm {
 
     private String serialNumber;
 
+    private String title;
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public long getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(long eventId) {
+        this.eventId = eventId;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
 
     public long getRackId() {
         return rackId;
@@ -54,6 +97,14 @@ public class EventForm {
         this.centerId = centerId;
     }
 
+    public int getDeviceType() {
+        return deviceType;
+    }
+
+    public void setDeviceType(int deviceType) {
+        this.deviceType = deviceType;
+    }
+
     public int getUtilizerId() {
         return utilizerId;
     }
@@ -70,53 +121,11 @@ public class EventForm {
         this.serialNumber = serialNumber;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public String getTitle() {
+        return title;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public MultipartFile getFile() {
-        return file;
-    }
-
-    public void setFile(MultipartFile file) {
-        this.file = file;
-    }
-
-
-    public void setRackId(int rackId) {
-        this.rackId = rackId;
-    }
-
-
-    public void setSalonId(int salonId) {
-        this.salonId = salonId;
-    }
-
-    public int getDeviceType() {
-        return deviceType;
-    }
-
-    public void setDeviceType(int deviceType) {
-        this.deviceType = deviceType;
+    public void setTitle(String title) {
+        this.title = title;
     }
 }

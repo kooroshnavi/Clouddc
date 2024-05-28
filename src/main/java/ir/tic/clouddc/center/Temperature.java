@@ -1,20 +1,18 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.log.WorkFlow;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Table;
+import ir.tic.clouddc.log.Workflow;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Temperature extends WorkFlow {
+public class Temperature extends Workflow {
 
     @Column
     private float value; // Celsius. its approximate
 
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
     private Location location;
 

@@ -18,11 +18,11 @@ public abstract class Location {
     @Nationalized
     private String name;
 
-    @OneToMany(mappedBy = "location")
-    private List<Temperature> temperatureList;
-
     @Column
     private String type;
+
+    @OneToMany(mappedBy = "location")
+    private List<Temperature> temperatureList;
 
 
     public long getId() {

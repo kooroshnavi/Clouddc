@@ -20,6 +20,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -76,6 +77,37 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public Salon getSalon(long salonId) {
         return salonRepository.findById(salonId).get();
+    }
+
+    @Override
+    public Location getLocation(long locationId) {
+        return locationRepository.findById(locationId).get();
+    }
+
+    @Override
+    public Model getLocationDetailModel(long locationId, Model model) {
+        Optional<Location> optionalLocation = locationRepository.findById(locationId);
+        if (optionalLocation.isPresent()) {
+            var baseLocation = optionalLocation.get();
+
+            if (baseLocation instanceof Rack location) {
+                location.setType("Rack");
+                model.addAttribute("location", location);
+                model.addAttribute("deviceList", location.getDeviceList());
+            } else if (baseLocation instanceof Room location) {
+                location.setType("Room");
+                model.addAttribute("location", location);
+                model.addAttribute("deviceList", location.getDeviceList());
+            }
+            return model;
+        }
+        return null;
+    }
+
+    @Override
+    public Center getCenter(int centerId) {
+        centerRepository.findById(centerId);
+        return null;
     }
 
 

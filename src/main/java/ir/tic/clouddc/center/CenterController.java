@@ -5,10 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
@@ -24,6 +21,15 @@ public class CenterController {
         this.centerService = centerService;
         this.reportService = reportService;
     }
+
+    @GetMapping("/location/{locationId}/detail") // Covers Room and Rack
+    public String showLocationDetail(Model model, @RequestParam("locationId") long locationId) {
+        centerService.getLocationDetailModel(locationId, model);
+        return "locationView";
+    }
+
+
+
 
     @GetMapping("/temperature/history")
     public String getTemperatureHistory(Model model) {
