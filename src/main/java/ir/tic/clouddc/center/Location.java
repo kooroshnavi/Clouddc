@@ -3,8 +3,6 @@ package ir.tic.clouddc.center;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
-import java.util.List;
-
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Location {
@@ -18,12 +16,9 @@ public abstract class Location {
     @Nationalized
     private String name;
 
-    @Column
-    private String type;
-
-    @OneToMany(mappedBy = "location")
-    private List<Temperature> temperatureList;
-
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_type_id")
+    private LocationType locationType;
 
     public long getId() {
         return id;
@@ -41,19 +36,11 @@ public abstract class Location {
         this.name = name;
     }
 
-    public List<Temperature> getTemperatureList() {
-        return temperatureList;
+    public LocationType getLocationType() {
+        return locationType;
     }
 
-    public void setTemperatureList(List<Temperature> temperatureList) {
-        this.temperatureList = temperatureList;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
     }
 }

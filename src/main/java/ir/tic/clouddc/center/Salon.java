@@ -20,13 +20,8 @@ public class Salon extends Location {
     @OneToMany(mappedBy = "salon")
     private List<Task> taskList;
 
-    @ElementCollection
-    @CollectionTable(name = "Pm_Due_mapping",
-            joinColumns = {@JoinColumn(name = "salon_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "Pm_id")
-    @Column(name = "due_date")
-    private Map<Integer, LocalDate> pmDueMap;
-
+    @OneToMany(mappedBy = "location")
+    private List<Temperature> temperatureList;
 
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
@@ -36,6 +31,20 @@ public class Salon extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
+    @ElementCollection
+    @CollectionTable(name = "Pm_Due_mapping",
+            joinColumns = {@JoinColumn(name = "salon_id", referencedColumnName = "id")})
+    @MapKeyColumn(name = "Pm_id")
+    @Column(name = "due_date")
+    private Map<Integer, LocalDate> pmDueMap;
+
+    public List<Temperature> getTemperatureList() {
+        return temperatureList;
+    }
+
+    public void setTemperatureList(List<Temperature> temperatureList) {
+        this.temperatureList = temperatureList;
+    }
 
     public Center getCenter() {
         return center;

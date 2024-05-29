@@ -17,10 +17,7 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -41,19 +38,16 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationRepository locationRepository;
 
-    private final SalonRepository salonRepository;
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, LogService logService, DataCenterRepository dataCenterRepository, LocationRepository locationRepository, RackRepository rackRepository, SalonRepository salonRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, LogService logService, DataCenterRepository dataCenterRepository, LocationRepository locationRepository) {
         this.centerRepository = centerRepository;
         this.temperatureRepository = temperatureRepository;
         this.personService = personService;
         this.notificationService = notificationService;
-
         this.logService = logService;
         this.dataCenterRepository = dataCenterRepository;
         this.locationRepository = locationRepository;
-        this.salonRepository = salonRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -75,9 +69,21 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public Salon getSalon(long salonId) {
-        return salonRepository.findById(salonId).get();
+    public Model getCenterLandingPageModel(Model model) {
+        List<Center> centerList = centerRepository.findAll();
+        for (Center center : centerList) {
+            center.getLocationList()
+                    .sort(Comparator.comparing(location -> location.getLocationType().getId()));
+        }
+        var center1 = centerList.get(0);
+        var center2 = centerList.get(1);
+        center2.getLocationList().get(0).getLocationType().getId()
+
+        model.addAttribute("center1", center1);
+        model.addAttribute("center2", center2);
+        return model;
     }
+
 
     @Override
     public Location getLocation(long locationId) {
@@ -91,11 +97,9 @@ public class CenterServiceImpl implements CenterService {
             var baseLocation = optionalLocation.get();
 
             if (baseLocation instanceof Rack location) {
-                location.setType("Rack");
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
             } else if (baseLocation instanceof Room location) {
-                location.setType("Room");
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
             }
@@ -108,12 +112,6 @@ public class CenterServiceImpl implements CenterService {
     public Center getCenter(int centerId) {
         centerRepository.findById(centerId);
         return null;
-    }
-
-
-    @Override
-    public List<Salon> getSalonList() {
-        return salonRepository.findAll();
     }
 
     @Override

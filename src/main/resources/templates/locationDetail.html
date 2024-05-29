@@ -80,8 +80,8 @@
                     <tr>
                         <td th:text="${location.type}"/>
                         <td th:text="${location.name}"/>
-                        <td th:if="${location.type == 'Rack'}" th:text="${location.salon.name}"/>
-                        <td th:if="${location.type == 'Rack'}"
+                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.name}"/>
+                        <td th:if="${location.locationType.type == 2}"
                             th:text="${location.utilizer.name}">
                             <div class="col">
                                 <a th:href="@{/resource/utilizer/detail(utilizerId=${location.utilizer.id})}"
@@ -89,8 +89,8 @@
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
-                        <td th:if="${location.type == 'Rack'}" th:text="${location.salon.center.name}"/>
-                        <td th:if="${location.type == 'Room'}" th:text="${location.center.name}"/>
+                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.center.name}"/>
+                        <td th:if="${location.locationType.type == 3}" th:text="${location.center.name}"/>
                     </tr>
 
                     </tbody>

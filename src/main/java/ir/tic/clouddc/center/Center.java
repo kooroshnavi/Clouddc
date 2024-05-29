@@ -21,16 +21,26 @@ public class Center {
     private String name;
 
     @Column
+    @Nationalized
     private String city;
 
     @Column
+    @Nationalized
     private String province;
 
-    @OneToMany(mappedBy = "dataCenter")
-    private List<Salon> salonList;
+    @OneToMany(mappedBy = "Center")
+    private List<Location> locationList;
 
     public Center(int id) {
         this.id = id;
+    }
+
+    public List<Location> getLocationList() {
+        return locationList;
+    }
+
+    public void setLocationList(List<Location> locationList) {
+        this.locationList = locationList;
     }
 
     public int getId() {
@@ -65,11 +75,4 @@ public class Center {
         this.province = province;
     }
 
-    public List<Salon> getSalonList() {
-        return salonList;
-    }
-
-    public void setSalonList(List<Salon> salonList) {
-        this.salonList = salonList;
-    }
 }

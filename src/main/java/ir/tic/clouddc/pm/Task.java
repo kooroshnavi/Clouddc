@@ -31,19 +31,19 @@ public class Task {
     @Column
     private LocalTime time;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "finished_report_id")
     private DailyReport dailyReport;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pm_id")
     private Pm pm;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "salon_id")
     private Salon salon;
 
-    @OneToMany(mappedBy = "task", cascade = {CascadeType.ALL})
+    @OneToMany(mappedBy = "task")
     private List<TaskDetail> taskDetailList;
 
     @Transient

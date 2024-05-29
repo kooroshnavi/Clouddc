@@ -14,13 +14,19 @@ import java.util.Map;
 @NoArgsConstructor
 public class Rack extends Location {
 
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "salon_id")
     private Salon salon;
 
+    @ManyToOne
+    @JoinColumn(name = "utilizer_id")
+    private Utilizer utilizer;
+
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
+
+    @OneToMany(mappedBy = "location")
+    private List<Temperature> temperatureList;
 
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
@@ -30,10 +36,14 @@ public class Rack extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
-    @ManyToOne
-    @JoinColumn(name = "utilizer_id")
-    private Utilizer utilizer;
 
+    public List<Temperature> getTemperatureList() {
+        return temperatureList;
+    }
+
+    public void setTemperatureList(List<Temperature> temperatureList) {
+        this.temperatureList = temperatureList;
+    }
 
     public Salon getSalon() {
         return salon;

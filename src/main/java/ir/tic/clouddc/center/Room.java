@@ -11,8 +11,8 @@ import java.util.List;
 @NoArgsConstructor
 public class Room extends Location {
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "room_id")
+    @ManyToOne
+    @JoinColumn(name = "datacenter_id")
     private Center center;
 
     @OneToMany(mappedBy = "location")

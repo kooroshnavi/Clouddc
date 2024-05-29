@@ -23,6 +23,8 @@ public interface EventService {
 
     Model getEventListModel(Model model);
 
+    Model getEventListByCategoryModel(Model model, int categoryId);
+
     void updateEvent(EventForm eventForm, Event event) throws IOException;
 
     List<Event> getPendingEventList();

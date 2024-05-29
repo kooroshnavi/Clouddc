@@ -5,7 +5,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(schema = "Center")
-public final class EventCategory {
+public class EventCategory {
     public EventCategory(int id) {
         this.id = id;
     }

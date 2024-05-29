@@ -169,6 +169,22 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Model getEventListByCategoryModel(Model model, int categoryId) {
+        var optionalEventCategory = eventCategoryRepository.findById(categoryId);
+        if (optionalEventCategory.isPresent()) {
+            var category = optionalEventCategory.get();
+            List<Event> eventList = eventRepository.findAllByCategory(category);
+            for (Event event : eventList) {
+                event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
+                event.setPersianWeekday(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
+            }
+            model.addAttribute("eventList", eventList);
+        }
+
+        return model;
+    }
+
+    @Override
     public Model getEventDetailModel(Model model, Long eventId) {
         var optionalEvent = eventRepository.findById(eventId);
         List<EventDetail> eventDetailList;
@@ -190,7 +206,7 @@ public class EventServiceImpl implements EventService {
                 model.addAttribute("event", event);
 
             } else {
-                return null;
+                return model;
             }
 
             List<Long> persistenceIdList = new ArrayList<>();
@@ -210,9 +226,9 @@ public class EventServiceImpl implements EventService {
             model.addAttribute("eventDetailList", sortedEventDetail);
             model.addAttribute("eventForm", eventForm);
             model.addAttribute("metaDataList", fileService.getRelatedMetadataList(persistenceIdList));
-            return model;
+
         }
-        return null;
+        return model;
     }
 
     private void loadEventDetailTransients(EventDetail eventDetail) {

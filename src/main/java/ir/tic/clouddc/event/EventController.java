@@ -26,9 +26,21 @@ public class EventController {
     }
 
     @GetMapping("/category/{categoryId}/form")
-    public String ShowEventForm(Model model, @RequestParam("categoryId") int categoryId) {
+    public String showEventForm(Model model, @RequestParam("categoryId") int categoryId) {
         eventService.getEventRegisterFormModel(model, categoryId);
         return "eventRegister";
+    }
+
+    @GetMapping("/category/{categoryId}/list")
+    public String showCategoryEventList(Model model, @RequestParam("categoryId") int categoryId) {
+        eventService.getEventListByCategoryModel(model, categoryId);
+        return "eventListView";
+    }
+
+    @GetMapping("/list")
+    public String showEventList(Model model) {
+        eventService.getEventListModel(model);
+        return "eventListView";
     }
 
     @PostMapping("/register")
@@ -43,12 +55,6 @@ public class EventController {
         eventService.eventRegister(eventForm);
         eventService.getEventListModel(model);
         return "redirect:eventListView";
-    }
-
-    @GetMapping("/list")
-    public String viewEventList(Model model) {
-        eventService.getEventListModel(model);
-        return "eventListView";
     }
 
     @GetMapping("/{eventId}/detail")

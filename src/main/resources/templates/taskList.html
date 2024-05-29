@@ -130,16 +130,19 @@
 									</td>
 
 									<td>
+
 										<div class="col">
 											<a th:if="${task.isActive}" th:href="@{/pm/task/detailList(id=${task.id})}"
 											   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
 											   data-bs-placement="bottom" title="گردش کار">فعال</a>
 										</div>
+
 										<div class="col">
 											<a th:if="${not task.isActive}" th:href="@{/pm/task/detailList(id=${task.id})}"
 											   class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
 													data-bs-placement="bottom" title="گردش کار">اتمام وظیفه</a>
 										</div>
+
 									</td>
 
 								</tr>

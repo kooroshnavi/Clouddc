@@ -7,9 +7,10 @@ import java.time.LocalDate;
 import java.util.List;
 
 public interface CenterService {
+
+    Model getCenterLandingPageModel(Model model);
     Salon getSalon(long salonId);
     Location getLocation(long locationId);
-
     Model getLocationDetailModel(long locationId, Model model);
     Center getCenter(int centerId);
     List<Salon> getSalonList();

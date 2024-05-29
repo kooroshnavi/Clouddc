@@ -10,7 +10,7 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Long> {
     List<Event> findAllByActive(boolean active);
-
+    List<Event> findAllByCategory(EventCategory eventCategory);
     @Query("SELECT COUNT(e) FROM Event e WHERE e.active = :active")
     long getActiveEventCount(@Param("active") boolean active);
 
