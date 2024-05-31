@@ -81,13 +81,12 @@ public class OtpServiceImpl implements OtpService {
         } else if (!realOtp.equals(providedOtp)) { //invalid otp
             return "-1";
         }
-        var address = otpCache.get(realOtp);
-       /* otpCache.invalidate(otpUid);
+        /* otpCache.invalidate(otpUid);
         otpCache.invalidate(address);
         otpCache.invalidate(UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8)).toString());
         otpCache.invalidate(realOtp);*/
 
-        return address;
+        return otpCache.get(realOtp);
     }
 
 

@@ -1,6 +1,7 @@
 package ir.tic.clouddc.exception;
 
 import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -38,7 +39,7 @@ public class GlobalExceptionHandler {
     public void sqlException(SQLException sqlException) {
         log.error(sqlException.getSQLState());
         log.error(sqlException.getMessage());
-        notificationService.sendExceptionMessage(sqlException.getMessage(), LocalDateTime.now());
+        notificationService.sendExceptionMessage(sqlException.getMessage(), LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
     }
 
 }

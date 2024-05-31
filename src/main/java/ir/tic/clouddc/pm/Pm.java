@@ -2,18 +2,16 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
 @Entity
-@Table(schema = "Pm")
-@NoArgsConstructor
-public class Pm {
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Pm {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
     private int id;
 
@@ -35,8 +33,8 @@ public class Pm {
     private boolean active;
 
     @ManyToOne
-    @JoinColumn(name = "type_id")
-    private PmType type;
+    @JoinColumn(name = "category_id")
+    private PmCategory category;
 
     @OneToOne
     @JoinColumn(name = "persistence_id")
@@ -45,10 +43,6 @@ public class Pm {
     @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
     private List<Task> taskList;
 
-
-    public Pm(int id) {
-        this.id = id;
-    }
 
     public int getId() {
         return id;
@@ -94,12 +88,12 @@ public class Pm {
         this.active = active;
     }
 
-    public PmType getType() {
-        return type;
+    public PmCategory getCategory() {
+        return category;
     }
 
-    public void setType(PmType type) {
-        this.type = type;
+    public void setCategory(PmCategory category) {
+        this.category = category;
     }
 
     public Persistence getPersistence() {

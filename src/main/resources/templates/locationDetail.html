@@ -12,6 +12,9 @@
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/normalize.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/jquery-ui.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
     <link href="/panel/assets/css/style.css" rel="stylesheet"/>
@@ -30,7 +33,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>جزئیات مکان</title>
+    <title>سالن، رک و اتاق</title>
 </head>
 
 <body>
@@ -50,18 +53,20 @@
     <main class="page-content">
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
-            <div class="breadcrumb-title pe-3">جداول</div>
+            <div class="breadcrumb-title pe-3">مرکز داده</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">جدول داده</li>
+                        <li class="breadcrumb-item active" aria-current="page">جزئیات سالن، رک یا اتاق</li>
                     </ol>
                 </nav>
             </div>
         </div>
         <!--end breadcrumb-->
+
+        <!--Salon/Rack/Room overview table-->
         <h6 class="mb-0 text-uppercase">مشخصات</h6>
         <hr/>
         <div class="card">
@@ -71,16 +76,17 @@
                     <tr>
                         <th scope="col">نوع</th>
                         <th scope="col">نام</th>
-                        <th th:if="${location.type == 'Rack'}" scope="col">نام سالن</th>
-                        <th th:if="${location.type == 'Rack'}" scope="col">بهره بردار</th>
+                        <th th:if="${location.locationType.type == 2}" scope="col">نام سالن</th>
+                        <th th:if="${location.locationType.type == 2}" scope="col">بهره بردار</th>
                         <th scope="col">نام مرکز</th>
                     </tr>
                     </thead>
+
                     <tbody>
                     <tr>
-                        <td th:text="${location.type}"/>
-                        <td th:text="${location.name}"/>
-                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.name}"/>
+                        <td th:text="${location.type}"></td>
+                        <td th:text="${location.name}"></td>
+                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.name}"></td>
                         <td th:if="${location.locationType.type == 2}"
                             th:text="${location.utilizer.name}">
                             <div class="col">
@@ -89,27 +95,55 @@
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
-                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.center.name}"/>
-                        <td th:if="${location.locationType.type == 3}" th:text="${location.center.name}"/>
+                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.center.name}"></td>
+                        <td th:if="${location.locationType.type == 3}" th:text="${location.center.name}"></td>
                     </tr>
-
                     </tbody>
                 </table>
             </div>
         </div>
+        <!--Salon/Rack/Room overview table-->
 
-        <h6 class="mb-0 text-uppercase">لیست تجهیزات</h6>
+
+        <!--Device view (Rack)-->
+        <h6 th:if="${location.locationType.type == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
         <hr/>
+        <div th:if="${location.locationType.type == 2}" class='housing'>
+            <div class='door'>
+                <div class='handle'></div>
+            </div>
+            <div class='foot'></div>
+            <div class='foot'></div>
 
-        <div class="card">
+            <ol class='rack'>
+                <li class='medium'>
+                    <a href='#'>M 0</a>
+                    <div class='light'></div>
+                    <div class='light'></div>
+                </li>
+
+                <li class='large'>
+                    <a href='#'>L 0</a>
+                    <div class='light'></div>
+                    <div class='light'></div>
+                </li>
+            </ol>
+        </div>
+        <!--Device view (Rack)-->
+
+
+        <!--Device table (Room)-->
+        <h6 th:if="${location.locationType.type == 3}" class="mb-0 text-uppercase">لیست تجهیزات اتاق</h6>
+        <hr/>
+        <div th:if="${location.locationType.type == 3}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table id="example2" class="table table-striped table-bordered">
+                    <table class="table mb-0 table-striped">
                         <thead>
                         <tr>
                             <th>ردیف</th>
                             <th>نوع تجهیز</th>
-                            <th>نام</th>
+                            <th>شماره سریال</th>
                             <th>بهره بردار</th>
                         </tr>
                         </thead>
@@ -117,11 +151,11 @@
 
                         <tr th:each="device, iter : ${deviceList}">
 
-                            <td th:text="${iter.count}"/>
-                            <td th:text="${device.deviceCategory.type} "/>
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${device.deviceCategory.type} "></td>
 
                             <td
-                                    th:text="${device.name}">
+                                    th:text="${device.serialNumber}">
                                 <div class="col">
                                     <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
@@ -129,7 +163,7 @@
                                 </div>
                             </td>
 
-                            <td th:text="${device.utilizer.name}"/>
+                            <td th:text="${device.utilizer.name}"></td>
 
                         </tr>
 
@@ -139,6 +173,69 @@
                 </div>
             </div>
         </div>
+        <!--Device table (Room)-->
+
+        <!--Module table (Room)-->
+        <!--Module table (Room)-->
+
+        <!--Rack table (Salon)-->
+        <h6 th:if="${location.locationType.type == 1}" class="mb-0 text-uppercase">رک های سالن</h6>
+        <hr/>
+        <div th:if="${location.locationType.type == 1}" class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="example2" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نام رک</th>
+                            <th>تعداد تجهیز نصب شده</th>
+                            <th>بهره بردار</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="rack, counter : ${rackList}">
+
+                            <td th:text="${counter.count}"></td>
+
+                            <td th:text="${rack.name}">
+                                <div class="col">
+                                    <a th:href="@{/center/location/{locationId}/detail(locationId=${rack.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="جزئیات رک"></a>
+                                </div>
+                            </td>
+
+                            <td th:text="${rack.deviceList.size} "></td>
+                            <td th:text="${rack.utilizer.name} "></td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--Rack table (Salon)-->
+
+        <!--Pm table-->
+        <!--Pm table-->
+
+        <!--Event table-->
+        <h6 class="mb-0 text-uppercase">رخدادها</h6>
+        <hr/>
+        <div class="card" th:replace="~{staticDetailsTemplate :: eventTable}"></div>
+        <!--Event table-->
+
+        <!--File attachment form -->
+        <!--File attachment form -->
+
+        <!--attachment table-->
+        <div class="card" align="center" th:replace="~{staticDetailsTemplate :: attachment}"></div>
+        <!--End attachment table-->
+
     </main>
     <!--end page main-->
 
@@ -163,6 +260,8 @@
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
 <script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/js/jquery-ui.min.js"></script>
+<script src="/panel/assets/js/rackScript.js"></script>
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>

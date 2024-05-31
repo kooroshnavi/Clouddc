@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EventDetailRepository extends JpaRepository<EventDetail, Long> {
+public interface EventDetailRepository extends JpaRepository<EventDetail, Integer> {
 
     @Query("SELECT e.persistence.id FROM EventDetail e WHERE event.id = :eventId")
     List<Long> getPersistenceIdList(@Param("eventId") long event);

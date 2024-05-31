@@ -366,7 +366,7 @@ public class PmServiceImpl implements PmService {
         pm.setPeriod(pmRegisterForm.getPeriod());
         pm.setDescription(pmRegisterForm.getDescription());
         pm.setEnabled(pmRegisterForm.isEnabled());
-        pm.setType(new PmType(pmRegisterForm.getTypeId()));
+        pm.setCategory(new PmCategory(pmRegisterForm.getTypeId()));
         fileService.checkAttachment(pmRegisterForm.getFile(), persistence);
 
         pmRepository.saveAndFlush(pm);
@@ -391,8 +391,8 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public Model PmTypeOverview(Model model) {
-        List<PmType> pmTypeList = pmTypeRepository.findAll();
-        model.addAttribute("pmTypeList", pmTypeList);
+        List<PmCategory> pmCategoryList = pmTypeRepository.findAll();
+        model.addAttribute("pmTypeList", pmCategoryList);
         return model;
     }
 
@@ -415,7 +415,7 @@ public class PmServiceImpl implements PmService {
             pmForm.setDescription(selectedPm.getDescription());
             pmForm.setPeriod(selectedPm.getPeriod());
             pmForm.setId(selectedPm.getId());
-            pmForm.setTypeId(selectedPm.getType().getId());
+            pmForm.setTypeId(selectedPm.getCategory().getId());
 
             List<Long> salonIdList = new ArrayList<>();
             for (Salon salon : centerService.getSalonList()) {

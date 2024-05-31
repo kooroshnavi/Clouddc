@@ -1,7 +1,10 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
+
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -10,7 +13,7 @@ public abstract class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private long id;
+    private int id;
 
     @Column
     @Nationalized
@@ -20,13 +23,26 @@ public abstract class Location {
     @JoinColumn(name = "location_type_id")
     private LocationType locationType;
 
+    @OneToMany(mappedBy = "location")
+    private List<Event> eventList;
+
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public List<Event> getEventList() {
+        return eventList;
+    }
+
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
+    }
+
     public long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
 
     public String getName() {
         return name;

@@ -23,6 +23,9 @@ public class Salon extends Location {
     @OneToMany(mappedBy = "location")
     private List<Temperature> temperatureList;
 
+    @OneToMany(mappedBy = "salon")
+    private List<Rack> rackList;
+
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
             schema = "Center",
@@ -37,6 +40,14 @@ public class Salon extends Location {
     @MapKeyColumn(name = "Pm_id")
     @Column(name = "due_date")
     private Map<Integer, LocalDate> pmDueMap;
+
+    public List<Rack> getRackList() {
+        return rackList;
+    }
+
+    public void setRackList(List<Rack> rackList) {
+        this.rackList = rackList;
+    }
 
     public List<Temperature> getTemperatureList() {
         return temperatureList;

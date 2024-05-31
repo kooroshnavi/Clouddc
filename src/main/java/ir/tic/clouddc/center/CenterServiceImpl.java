@@ -18,6 +18,7 @@ import org.springframework.ui.Model;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -71,16 +72,39 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public Model getCenterLandingPageModel(Model model) {
         List<Center> centerList = centerRepository.findAll();
-        for (Center center : centerList) {
-            center.getLocationList()
-                    .sort(Comparator.comparing(location -> location.getLocationType().getId()));
-        }
+
         var center1 = centerList.get(0);
         var center2 = centerList.get(1);
-        center2.getLocationList().get(0).getLocationType().getId()
+
+        var center1SalonList = center1
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationType().getId() == 1)
+                .toList();
+        var center1RoomList = center1
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationType().getId() == 3)
+                .toList();
+
+        var center2SalonList = center2
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationType().getId() == 1)
+                .toList();
+        var center2RoomList = center2
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationType().getId() == 3)
+                .toList();
+
 
         model.addAttribute("center1", center1);
+        model.addAttribute("center1SalonList", center1SalonList);
+        model.addAttribute("center1RoomList", center1RoomList);
         model.addAttribute("center2", center2);
+        model.addAttribute("center2SalonList", center2SalonList);
+        model.addAttribute("center2RoomList", center2RoomList);
         return model;
     }
 
@@ -96,16 +120,21 @@ public class CenterServiceImpl implements CenterService {
         if (optionalLocation.isPresent()) {
             var baseLocation = optionalLocation.get();
 
-            if (baseLocation instanceof Rack location) {
+            if (baseLocation instanceof Salon location) {
+                model.addAttribute("location", location);
+                model.addAttribute("rackList", location.getRackList());
+
+            } else if (baseLocation instanceof Rack location) {
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
-            } else if (baseLocation instanceof Room location) {
+            }
+            else if (baseLocation instanceof Room location) {
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
             }
             return model;
         }
-        return null;
+        return model;
     }
 
     @Override

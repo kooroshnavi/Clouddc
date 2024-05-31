@@ -54,52 +54,41 @@
                 <div class="my-3 border-top"></div>
                 <div class="row row-cols-1 row-cols-lg-3 justify-content-center g-lg-5">
 
+                    <div class="w-100 border-top"></div>
+
                     <div class="col">
                         <div class="card">
-                            <img src="assets/images/gallery/05.png" class="card-img-top" alt="...">
-
-                            <div class="card-body border-bottom">
+                            <img src="/panel/assets/images/gallery/03.png" class="card-img-top" alt="...">
+                            <div class="card-body">
                                 <h5 class="card-title" th:text="${center1.name}"></h5>
-                                <p class="card-text">با کلیک روی سالن یا اتاق مربوطه جزئیات آن در دسترس می باشد.</p>
-                            </div>
+                                <p class="card-text">مرکز داده پیش فرض زیرساخت ابری و میزبان پیام رسان های بومی</p>
 
-                            <div th:each="location, iter : ${center1.locationList}" class="card-body border-top">
+                                <a th:each="salon: ${center1SalonList}" th:text="${salon.name}"
+                                   th:href="@{/center/location/{locationId}/detail(locationId=${salon.id})}"
+                                   class="btn btn-primary"></a>
 
-                                <a th:if="${location.locationType.id == 1}" th:text="${location.name} + ' سالن '"
-                                   th:href="@{/center/location/{locationId}/detail(locationId=${location.id})}"
-                                   class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
-                                   data-bs-placement="bottom" title="اطلاعات سالن"></a>
-
-                                <a th:if="${location.locationType.id == 3}" th:text="${location.name} + ' اتاق '"
-                                   th:href="@{/center/location/{locationId}/detail(locationId=${location.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                   data-bs-placement="bottom" title="جزئیات اتاق"></a>
-
+                                <a th:each="room: ${center1RoomList}" th:text="${room.name}"
+                                   th:href="@{/center/location/{locationId}/detail(locationId=${room.id})}"
+                                   class="btn btn-warning"></a>
                             </div>
                         </div>
                     </div>
 
                     <div class="col">
                         <div class="card">
-                            <img src="assets/images/gallery/05.png" class="card-img-top" alt="...">
-
-                            <div class="card-body border-bottom">
+                            <img src="/panel/assets/images/gallery/03.png" class="card-img-top" alt="...">
+                            <div class="card-body">
                                 <h5 class="card-title" th:text="${center2.name}"></h5>
-                                <p class="card-text">با کلیک روی سالن یا اتاق مربوطه جزئیات آن در دسترس می باشد.</p>
-                            </div>
+                                <p class="card-text">مرکز داده بورس در حال حاضر به عنوان مرکز پشتیبان زیرساخت ابر فعال
+                                    است.</p>
 
-                            <div th:each="location, iter : ${center2.locationList}" class="card-body border-top">
+                                <a th:each="salon: ${center2SalonList}" th:text="${salon.name}"
+                                   th:href="@{/center/location/{locationId}/detail(locationId=${salon.id})}"
+                                   class="btn btn-primary"></a>
 
-                                <a th:if="${location.locationType.id == 1}" th:text="${location.name} + ' سالن '"
-                                   th:href="@{/center/location/{locationId}/detail(locationId=${location.id})}"
-                                   class="btn btn-outline-success px-10 radius-30" data-bs-toggle="tooltip"
-                                   data-bs-placement="bottom" title="اطلاعات سالن"></a>
-
-                                <a th:if="${location.locationType.id == 3}" th:text="${location.name} + ' اتاق '"
-                                   th:href="@{/center/location/{locationId}/detail(locationId=${location.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                   data-bs-placement="bottom" title="جزئیات اتاق"></a>
-
+                                <a th:each="room: ${center2RoomList}" th:text="${room.name}"
+                                   th:href="@{/center/location/{locationId}/detail(locationId=${room.id})}"
+                                   class="btn btn-warning"></a>
                             </div>
                         </div>
                     </div>
@@ -107,21 +96,32 @@
                 </div><!--end row-->
             </div>
         </div>
-    </main>
-    <!--end page main-->
+</div>
 
 
-    <!--start overlay-->
-    <div class="overlay nav-toggle-icon"></div>
-    <!--end overlay-->
+</div><!--end row-->
+</div>
+</div>
 
-    <!--Start Back To Top Button-->
-    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
-    <!--End Back To Top Button-->
+<!--attachment table-->
+<div class="card" align="center" th:replace="~{attachmentTemplate :: attachment}"></div>
+<!--End attachment table-->
 
-    <!--start switcher-->
-    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
-    <!--end switcher-->
+</main>
+<!--end page main-->
+
+
+<!--start overlay-->
+<div class="overlay nav-toggle-icon"></div>
+<!--end overlay-->
+
+<!--Start Back To Top Button-->
+<a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+<!--End Back To Top Button-->
+
+<!--start switcher-->
+<div class="switcher-body" th:replace="~{base :: switcher}"></div>
+<!--end switcher-->
 
 </div>
 <!--end wrapper-->

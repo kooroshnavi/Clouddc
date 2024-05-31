@@ -4,10 +4,12 @@ import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.event.EventForm;
 import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.util.Optional;
 
+@Service
 public class ResourceServiceImpl implements ResourceService {
 
     private final DeviceRepository deviceRepository;

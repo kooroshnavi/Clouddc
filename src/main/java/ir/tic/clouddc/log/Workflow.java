@@ -7,13 +7,12 @@ import java.time.LocalTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Table(schema = "Log")
 public abstract class Workflow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private long id;
+    private int id;
 
     @Column
     private LocalDate date;
@@ -28,6 +27,13 @@ public abstract class Workflow {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getDescription() {
         return description;
@@ -35,14 +41,6 @@ public abstract class Workflow {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public void setId(long id) {
-        this.id = id;
     }
 
     public LocalDate getDate() {

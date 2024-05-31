@@ -1,6 +1,6 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.Salon;
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -17,7 +17,7 @@ public class Task {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private Long id;
+    private int id;
 
     @Column
     private boolean active;
@@ -40,8 +40,8 @@ public class Task {
     private Pm pm;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "salon_id")
-    private Salon salon;
+    @JoinColumn(name = "location_id")
+    private Location location;
 
     @OneToMany(mappedBy = "task")
     private List<TaskDetail> taskDetailList;
@@ -58,11 +58,18 @@ public class Task {
     @Transient
     private String currentAssignedPerson;
 
-    public Task(boolean active, int delay, Pm pm, Salon salon, LocalDate dueDate) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public Task(boolean active, int delay, Pm pm, LocalDate dueDate) {
         this.active = active;
         this.delay = delay;
         this.pm = pm;
-        this.salon = salon;
         this.dueDate = dueDate;
     }
 
@@ -115,10 +122,6 @@ public class Task {
         this.taskDetailList = taskDetailList;
     }
 
-    public Long getId() {
-        return id;
-    }
-
     public boolean isActive() {
         return active;
     }
@@ -131,9 +134,6 @@ public class Task {
         return pm;
     }
 
-    public Salon getSalon() {
-        return salon;
-    }
 
     public List<TaskDetail> getTaskDetailList() {
         return taskDetailList;

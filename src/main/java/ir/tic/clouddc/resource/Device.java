@@ -15,7 +15,7 @@ public abstract class Device {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private long id;
+    private int id;
 
     @Column
     private String serialNumber;
@@ -116,11 +116,11 @@ public abstract class Device {
         this.installationEvent = installationEvent;
     }
 
-    public long getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
     }
 

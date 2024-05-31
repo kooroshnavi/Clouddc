@@ -9,8 +9,6 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -31,19 +29,6 @@ public final class UtilService {
             entry("Wed", "چهارشنبه"),
             entry("Thu", "پنج شنبه"),
             entry("Fri", "جمعه")
-    );
-
-    private static final List<String> LOG_MESSAGES = Arrays.asList(
-            "Event - ایجاد گردش رخداد",  // 0
-            "حذف پیوست گردش رخداد - Event", // 1
-            "بروزرسانی گردش - PM", // 2
-            "PM - حذف پیوست گردش کار", // 3
-            "PM - ثبت دسته بندی", // 4
-            "PM - ویرایش دسته بندی", // 5
-            "PM - ثبت جدید", // 6
-            "PM - حذف پیوست ", // 7
-            "PM - ویرایش", // 8
-            "PM - بارگذاری پیوست" // 9
     );
 
 
