@@ -13,15 +13,13 @@ public class EventForm {
     @NotBlank
     private String description;
 
-    private long eventId;
+    private int eventId;
 
     private boolean active;
 
     private MultipartFile file;
 
-    private long rackId;
-
-    private long salonId;
+    private int locationId;
 
     private int centerId;
 
@@ -32,6 +30,22 @@ public class EventForm {
     private String serialNumber;
 
     private String title;
+
+    public int getLocationId() {
+        return locationId;
+    }
+
+    public int getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(int eventId) {
+        this.eventId = eventId;
+    }
+
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
+    }
 
     public int getCategoryId() {
         return categoryId;
@@ -49,14 +63,6 @@ public class EventForm {
         this.description = description;
     }
 
-    public long getEventId() {
-        return eventId;
-    }
-
-    public void setEventId(long eventId) {
-        this.eventId = eventId;
-    }
-
     public boolean isActive() {
         return active;
     }
@@ -71,22 +77,6 @@ public class EventForm {
 
     public void setFile(MultipartFile file) {
         this.file = file;
-    }
-
-    public long getRackId() {
-        return rackId;
-    }
-
-    public void setRackId(long rackId) {
-        this.rackId = rackId;
-    }
-
-    public long getSalonId() {
-        return salonId;
-    }
-
-    public void setSalonId(long salonId) {
-        this.salonId = salonId;
     }
 
     public int getCenterId() {

@@ -1,4 +1,4 @@
-package ir.tic.clouddc.person;
+package ir.tic.clouddc.resource;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

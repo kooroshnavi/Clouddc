@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-public class TaskDetail extends Workflow {
+public class GeneralTaskDetail extends Workflow {
 
     @ManyToOne
     @JoinColumn(name = "task_id")
@@ -45,7 +45,7 @@ public class TaskDetail extends Workflow {
         this.task = task;
     }
 
-    public TaskDetail(Task task) {
+    public GeneralTaskDetail(Task task) {
         this.task = task;
     }
 

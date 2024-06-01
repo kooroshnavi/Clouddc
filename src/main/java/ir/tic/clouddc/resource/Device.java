@@ -2,8 +2,7 @@ package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.event.Event;
-import ir.tic.clouddc.event.InstallationEvent;
-import ir.tic.clouddc.person.Utilizer;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 
 import java.util.List;
@@ -47,9 +46,17 @@ public abstract class Device {
     @OneToMany(mappedBy = "device")
     private List<Event> eventList;
 
-    @ManyToOne
-    @JoinColumn(name = "installation_event_id")
-    private InstallationEvent installationEvent;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "persistence_id")
+    private Persistence persistence;
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
 
     public boolean isActive() {
         return active;
@@ -106,14 +113,6 @@ public abstract class Device {
 
     public void setEventList(List<Event> eventList) {
         this.eventList = eventList;
-    }
-
-    public InstallationEvent getInstallationEvent() {
-        return installationEvent;
-    }
-
-    public void setInstallationEvent(InstallationEvent installationEvent) {
-        this.installationEvent = installationEvent;
     }
 
     public int getId() {

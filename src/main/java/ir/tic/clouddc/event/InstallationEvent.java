@@ -18,7 +18,7 @@ public class InstallationEvent extends Event {
 
     @ManyToOne
     @JoinColumn(name = "rack_id")
-    private Rack rack;
+    private Rack location;
 
 
     public String getEVENT_TYPE() {
@@ -33,11 +33,11 @@ public class InstallationEvent extends Event {
         this.deviceList = deviceList;
     }
 
-    public Rack getRack() {
-        return rack;
+    public Rack getLocation() {
+        return location;
     }
 
-    public void setRack(Rack rack) {
-        this.rack = rack;
+    public void setLocation(Rack location) {
+        this.location = location;
     }
 }

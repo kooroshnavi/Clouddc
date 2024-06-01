@@ -13,10 +13,6 @@ import java.util.Map;
 @NoArgsConstructor
 public class Salon extends Location {
 
-    @ManyToOne
-    @JoinColumn(name = "datacenter_id")
-    private Center center;
-
     @OneToMany(mappedBy = "salon")
     private List<Task> taskList;
 
@@ -55,14 +51,6 @@ public class Salon extends Location {
 
     public void setTemperatureList(List<Temperature> temperatureList) {
         this.temperatureList = temperatureList;
-    }
-
-    public Center getCenter() {
-        return center;
-    }
-
-    public void setCenter(Center center) {
-        this.center = center;
     }
 
     public List<Task> getTaskList() {

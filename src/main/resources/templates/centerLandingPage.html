@@ -79,8 +79,7 @@
                             <img src="/panel/assets/images/gallery/03.png" class="card-img-top" alt="...">
                             <div class="card-body">
                                 <h5 class="card-title" th:text="${center2.name}"></h5>
-                                <p class="card-text">مرکز داده بورس در حال حاضر به عنوان مرکز پشتیبان زیرساخت ابر فعال
-                                    است.</p>
+                                <p class="card-text">مرکز داده بورس در حال حاضر به عنوان مرکز پشتیبان زیرساخت ابر فعال است.</p>
 
                                 <a th:each="salon: ${center2SalonList}" th:text="${salon.name}"
                                    th:href="@{/center/location/{locationId}/detail(locationId=${salon.id})}"

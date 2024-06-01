@@ -1,7 +1,6 @@
 package ir.tic.clouddc.event;
 
 
-import ir.tic.clouddc.center.Location;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -11,6 +10,7 @@ import java.util.List;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Event {
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
@@ -35,10 +35,6 @@ public abstract class Event {
     @OneToMany(mappedBy = "event")
     private List<EventDetail> eventDetailList;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
-    private Location location;
-
     @Transient
     private String persianWeekday;
 
@@ -51,14 +47,6 @@ public abstract class Event {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
     }
 
     public String getTitle() {

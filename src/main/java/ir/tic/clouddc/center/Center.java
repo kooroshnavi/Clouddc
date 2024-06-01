@@ -1,5 +1,6 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
@@ -28,8 +29,20 @@ public class Center {
     @Nationalized
     private String province;
 
-    @OneToMany(mappedBy = "Center")
+    @OneToMany(mappedBy = "center")
     private List<Location> locationList;
+
+    @OneToOne
+    @JoinTable(name = "persistence_id")
+    private Persistence persistence;
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
 
     public Center(int id) {
         this.id = id;

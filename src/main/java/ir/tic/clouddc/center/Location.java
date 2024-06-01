@@ -1,6 +1,7 @@
 package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.Event;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
@@ -19,6 +20,10 @@ public abstract class Location {
     @Nationalized
     private String name;
 
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private Center center;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_type_id")
     private LocationType locationType;
@@ -26,6 +31,24 @@ public abstract class Location {
     @OneToMany(mappedBy = "location")
     private List<Event> eventList;
 
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "persistence_id")
+    private Persistence persistence;
+
+    public Center getCenter() {
+        return center;
+    }
+
+    public void setCenter(Center center) {
+        this.center = center;
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
 
     public void setId(int id) {
         this.id = id;

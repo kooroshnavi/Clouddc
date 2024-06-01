@@ -1,6 +1,6 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.person.Utilizer;
+import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.resource.Device;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

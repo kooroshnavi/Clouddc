@@ -1,5 +1,7 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.resource.Utilizer;
+import ir.tic.clouddc.resource.UtilizerRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;

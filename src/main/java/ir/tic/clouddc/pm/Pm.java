@@ -4,8 +4,6 @@ import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
-import java.util.List;
-
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Pm {
@@ -39,10 +37,6 @@ public abstract class Pm {
     @OneToOne
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
-
-    @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
-    private List<Task> taskList;
-
 
     public int getId() {
         return id;
@@ -104,11 +98,4 @@ public abstract class Pm {
         this.persistence = persistence;
     }
 
-    public List<Task> getTaskList() {
-        return taskList;
-    }
-
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
-    }
 }

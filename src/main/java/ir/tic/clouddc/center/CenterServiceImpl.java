@@ -35,19 +35,17 @@ public class CenterServiceImpl implements CenterService {
 
     private final LogService logService;
 
-    private final DataCenterRepository dataCenterRepository;
-
     private final LocationRepository locationRepository;
 
 
+
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, LogService logService, DataCenterRepository dataCenterRepository, LocationRepository locationRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository) {
         this.centerRepository = centerRepository;
         this.temperatureRepository = temperatureRepository;
         this.personService = personService;
         this.notificationService = notificationService;
         this.logService = logService;
-        this.dataCenterRepository = dataCenterRepository;
         this.locationRepository = locationRepository;
     }
 /*
@@ -110,15 +108,16 @@ public class CenterServiceImpl implements CenterService {
 
 
     @Override
-    public Location getLocation(long locationId) {
+    public Location getLocation(int locationId) {
         return locationRepository.findById(locationId).get();
     }
 
     @Override
-    public Model getLocationDetailModel(long locationId, Model model) {
+    public Model getLocationDetailModel(int locationId, Model model) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
             var baseLocation = optionalLocation.get();
+            var persistence = baseLocation.getPersistence();
 
             if (baseLocation instanceof Salon location) {
                 model.addAttribute("location", location);
@@ -127,8 +126,7 @@ public class CenterServiceImpl implements CenterService {
             } else if (baseLocation instanceof Rack location) {
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
-            }
-            else if (baseLocation instanceof Room location) {
+            } else if (baseLocation instanceof Room location) {
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
             }

@@ -1,4 +1,4 @@
-package ir.tic.clouddc.person;
+package ir.tic.clouddc.resource;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

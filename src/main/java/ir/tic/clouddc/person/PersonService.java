@@ -1,5 +1,6 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.resource.Utilizer;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;

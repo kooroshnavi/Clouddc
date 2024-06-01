@@ -29,13 +29,11 @@ public class CenterController {
         return "centerLandingPage";
     }
 
-
     @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
-    public String showLocationDetail(Model model, @RequestParam("locationId") long locationId) {
+    public String showLocationDetail(Model model, @RequestParam("locationId") int locationId) {
         centerService.getLocationDetailModel(locationId, model);
         return "locationView";
     }
-
 
     @GetMapping("/temperature/history")
     public String getTemperatureHistory(Model model) {

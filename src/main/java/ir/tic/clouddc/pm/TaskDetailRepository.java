@@ -10,10 +10,10 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TaskDetailRepository extends JpaRepository<TaskDetail, Long> {
-    Optional<TaskDetail> findByTaskIdAndActive(long taskId, boolean active);
+public interface TaskDetailRepository extends JpaRepository<GeneralTaskDetail, Long> {
+    Optional<GeneralTaskDetail> findByTaskIdAndActive(long taskId, boolean active);
 
-    List<TaskDetail> findByTaskId(long taskId);
+    List<GeneralTaskDetail> findByTaskId(long taskId);
 
     @Query("SELECT t.task FROM TaskDetail t WHERE t.persistence.person.username = :username AND t.active = :active")
     List<Task> fetchActivePersonTaskList(@Param("username") String username, @Param("active") boolean active);

@@ -25,7 +25,6 @@
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
 
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -95,8 +94,7 @@
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
-                        <td th:if="${location.locationType.type == 2}" th:text="${location.salon.center.name}"></td>
-                        <td th:if="${location.locationType.type == 3}" th:text="${location.center.name}"></td>
+                        <td  th:text="${location.center.name}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -154,8 +152,7 @@
                             <td th:text="${iter.count}"></td>
                             <td th:text="${device.deviceCategory.type} "></td>
 
-                            <td
-                                    th:text="${device.serialNumber}">
+                            <td th:text="${device.serialNumber}">
                                 <div class="col">
                                     <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"

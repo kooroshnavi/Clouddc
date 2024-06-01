@@ -3,7 +3,6 @@ package ir.tic.clouddc.event;
 import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
-import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -52,7 +51,7 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , PmService pmService
-            , FileService fileService, LogService logService, DataCenterRepository dataCenterRepository, ResourceService resourceService, FailureDeviceEventRepository failureDeviceEventRepository) {
+            , FileService fileService, LogService logService, ResourceService resourceService, FailureDeviceEventRepository failureDeviceEventRepository) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
@@ -106,12 +105,11 @@ public class EventServiceImpl implements EventService {
         event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
         Device device = resourceService.validateFormDevice(eventForm);
         device.setFailure(eventForm.isActive());
-        device.setLocation(centerService.getLocation(eventForm.getRackId()));
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
-        event.setFailedDevice(device);
         event.setTitle(eventForm.getTitle());
+        event.setFailedDevice(device);
 
         eventDetailRegister(eventForm, event);
     }
@@ -122,8 +120,8 @@ public class EventServiceImpl implements EventService {
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
-        event.setCenter(centerService.getCenter(eventForm.getCenterId()));
         event.setTitle(eventForm.getTitle());
+        event.setCenter(centerService.getCenter(eventForm.getCenterId()));
 
         eventDetailRegister(eventForm, event);
     }
@@ -134,8 +132,8 @@ public class EventServiceImpl implements EventService {
         event.setDate(UtilService.getDATE());
         event.setTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
-        event.setSalon(centerService.getSalon(eventForm.getSalonId()));
         event.setTitle(eventForm.getTitle());
+        event.setLocation(centerService.getSalon(eventForm.getLocationId()));
 
         eventDetailRegister(eventForm, event);
     }

@@ -11,13 +11,13 @@ public class SalonEvent extends Event {
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "salon_id")
-    private Salon salon;
+    private Salon location;
 
-    public Salon getSalon() {
-        return salon;
+    public Salon getLocation() {
+        return location;
     }
 
-    public void setSalon(Salon salon) {
-        this.salon = salon;
+    public void setLocation(Salon location) {
+        this.location = location;
     }
 }

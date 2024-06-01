@@ -9,5 +9,7 @@ public interface ResourceService {
 
     Model getDeviceDetailModel(Model model, long deviceId);
 
+    Utilizer getUtilizer(int utilizerId);
+
 
 }

@@ -44,7 +44,7 @@ public class Task {
     private Location location;
 
     @OneToMany(mappedBy = "task")
-    private List<TaskDetail> taskDetailList;
+    private List<GeneralTaskDetail> generalTaskDetailList;
 
     @Transient
     private String persianDueDate;
@@ -118,8 +118,8 @@ public class Task {
         this.delay = delay;
     }
 
-    public void setTaskDetailList(List<TaskDetail> taskDetailList) {
-        this.taskDetailList = taskDetailList;
+    public void setGeneralTaskDetailList(List<GeneralTaskDetail> generalTaskDetailList) {
+        this.generalTaskDetailList = generalTaskDetailList;
     }
 
     public boolean isActive() {
@@ -135,8 +135,8 @@ public class Task {
     }
 
 
-    public List<TaskDetail> getTaskDetailList() {
-        return taskDetailList;
+    public List<GeneralTaskDetail> getGeneralTaskDetailList() {
+        return generalTaskDetailList;
     }
 
     public String getPersianDueDate() {
