@@ -14,4 +14,6 @@ public interface LogService {
 
     List<Long> getPersistenceIdList(long workFlow);
 
+    void saveWorkFlow(List<Workflow> workflowList);
+
 }

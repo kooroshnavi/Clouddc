@@ -8,12 +8,8 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface PmRepository extends JpaRepository<Pm, Integer> {
-
-    @Query("SELECT p FROM Pm p WHERE p.type.id = :typeId")
+public interface PmInterfaceRepository extends JpaRepository<PmInterface, Integer> {
+    @Query("SELECT p.id FROM PmInterface p WHERE p.type.id = :typeId")
     List<Pm> fetchRelatedPmList(@Param("typeId") int typeId);
-
-    List<Pm> findAllByActive(boolean active);
-
 
 }

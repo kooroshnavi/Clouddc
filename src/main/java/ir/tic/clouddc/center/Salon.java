@@ -1,6 +1,5 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.pm.Task;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

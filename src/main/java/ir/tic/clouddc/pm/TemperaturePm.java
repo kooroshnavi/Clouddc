@@ -14,9 +14,6 @@ public class TemperaturePm extends Pm {
     @Column
     private float averageDailyValue;
 
-    @OneToMany(mappedBy = "temperaturePm")
-    private List<TemperaturePmDetail> temperaturePmDetailList;
-
     @ManyToOne
     @JoinColumn(name = "location_id")  // Pm locate: Salon, Rack, Room
     private Location location;

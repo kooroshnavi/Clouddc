@@ -5,8 +5,9 @@ import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.Workflow;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -31,10 +32,7 @@ import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -44,7 +42,7 @@ public class PmServiceImpl implements PmService {
 
 
     private final PmRepository pmRepository;
-    private final TaskRepository taskRepository;
+    private final PmInterfaceRepository pmInterfaceRepository;
     private final TaskDetailRepository taskDetailRepository;
     private final PmTypeRepository pmTypeRepository;
     private final CenterService centerService;
@@ -56,14 +54,13 @@ public class PmServiceImpl implements PmService {
 
     @Autowired
     PmServiceImpl(PmRepository pmRepository,
-                  TaskRepository taskRepository,
-                  TaskDetailRepository taskDetailRepository,
+                  PmInterfaceRepository pmInterfaceRepository, TaskDetailRepository taskDetailRepository,
                   PmTypeRepository pmTypeRepository, CenterService centerService,
                   PersonService personService,
                   NotificationService notificationService,
                   LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
-        this.taskRepository = taskRepository;
+        this.pmInterfaceRepository = pmInterfaceRepository;
         this.taskDetailRepository = taskDetailRepository;
         this.pmTypeRepository = pmTypeRepository;
         this.centerService = centerService;
@@ -74,49 +71,87 @@ public class PmServiceImpl implements PmService {
     }
 
     public void updateTodayTasks(DailyReport todayReport) {
-        final List<Location>  = centerService.getSalonList();
+        final List<Location> locationList = centerService.getLocationList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
-        List<Pm> todayPmList = new ArrayList<>();
-        List<Task> activeTaskList = taskRepository.findByActive(true);
+        List<Pm> activePmList = pmRepository.findAllByActive(true);
+        List<Workflow> workflowList = new ArrayList<>();
 
-        delayCalculation(activeTaskList);
+        delayCalculation(activePmList, workflowList);
 
-        for (Salon salon : defaultSalonList) {
-
-            for (var entry : salon.getPmDueMap().keySet()) {
-                if (salon.getPmDueMap().get(entry) == UtilService.getDATE()) {
-                    todayPmList.add(new Pm(entry));
+        for (Location location : locationList) {
+            Set<Integer> pmInterfaceIdSet = location.getPmDueMap().keySet();
+            if (!pmInterfaceIdSet.isEmpty()) {
+                for (Integer pmInterfaceId : pmInterfaceIdSet) {
+                    if (location.getPmDueMap().get(pmInterfaceId) == UtilService.getDATE()) {
+                        PmInterface pmInterface = pmInterfaceRepository.findById(pmInterfaceId).get();
+                        pmSetup(location, pmInterface, workflowList, defaultPerson);
+                    }
                 }
-            }
-
-            if (!todayPmList.isEmpty()) {
-                for (Pm pm : todayPmList
-                ) {
-                    pm.setActive(true);
-                    Task todayTask = new Task(true, 0, pm, salon, UtilService.getDATE());
-                    assignNewTaskDetail(new GeneralPmDetail(todayTask), defaultPerson.getId(), '0', true);
-                }
-                pmRepository.saveAll(todayPmList);
             }
         }
 
+        logService.saveWorkFlow(workflowList);
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
 
-    private void delayCalculation(List<Task> taskList) {
-        if (!taskList.isEmpty()) {
-            for (Task task : taskList
+    private void delayCalculation(List<Pm> currentPmList, List<Workflow> workflowList) {
+        if (!currentPmList.isEmpty()) {
+            for (Pm pm : currentPmList
             ) {
-                var delay = task.getDelay();
+                var delay = pm.getDelay();
                 delay += 1;
-                task.setDelay(delay);
-
-                var activeTaskDetail = task.getGeneralPmDetailList().stream().filter(GeneralPmDetail::isActive).findFirst().get();
-                LocalDateTime assignedDate = activeTaskDetail.getAssignedTime();
-                activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDate));
+                pm.setDelay(delay);
+                var activeTaskDetail = pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get();
+                LocalDateTime assignedDateTime = LocalDateTime.of(activeTaskDetail.getDate(), activeTaskDetail.getTime());
+                activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDateTime));
+                workflowList.add(activeTaskDetail);
             }
-            taskRepository.saveAll(taskList);
+        }
+    }
+
+    private void pmSetup(Location location, PmInterface pmInterface, List<Workflow> workflowList, Person defaultPerson) {
+        if (pmInterface.isGeneral()) {
+            GeneralPm todayGeneralPm = new GeneralPm();
+            todayGeneralPm.setActive(true);
+            todayGeneralPm.setDelay(0);
+            todayGeneralPm.setDueDate(location.getPmDueMap().get(pmInterface.getId()));
+            todayGeneralPm.setPmInterface(pmInterface);
+            todayGeneralPm.setLocation(location);
+
+            pmDetailSetup(todayGeneralPm, workflowList, pmInterface.isGeneral(), defaultPerson);
+
+        } else {
+            TemperaturePm todayTemperaturePm = new TemperaturePm();
+            todayTemperaturePm.setActive(true);
+            todayTemperaturePm.setDelay(0);
+            todayTemperaturePm.setDueDate(location.getPmDueMap().get(pmInterface.getId()));
+            todayTemperaturePm.setPmInterface(pmInterface);
+            todayTemperaturePm.setLocation(location);
+
+            pmDetailSetup(todayTemperaturePm, workflowList, pmInterface.isGeneral(), defaultPerson);
+        }
+    }
+
+    private void pmDetailSetup(Pm todayPm, List<Workflow> workflowList, boolean isGeneral, Person defaultPerson) {
+        if (isGeneral) {
+            GeneralPmDetail generalPmDetail = new GeneralPmDetail();
+            generalPmDetail.setGeneralPm(todayPm);
+            generalPmDetail.setActive(true);
+            generalPmDetail.setDelay(0);
+            generalPmDetail.setDate(UtilService.getDATE());
+            generalPmDetail.setTime(UtilService.getTime());
+            generalPmDetail.setPersistence(logService.persistenceSetup(defaultPerson));
+            workflowList.add(generalPmDetail);
+        } else {
+            TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
+            temperaturePmDetail.setTemperaturePm(todayPm);
+            temperaturePmDetail.setActive(true);
+            temperaturePmDetail.setDelay(0);
+            temperaturePmDetail.setDate(UtilService.getDATE());
+            temperaturePmDetail.setTime(UtilService.getTime());
+            temperaturePmDetail.setPersistence(logService.persistenceSetup(defaultPerson));
+            workflowList.add(temperaturePmDetail);
         }
     }
 
@@ -200,7 +235,7 @@ public class PmServiceImpl implements PmService {
             generalPmDetail.setPersianRegisterDate(UtilService.getFormattedPersianDateTime(generalPmDetail.getAssignedTime()));
             generalPmDetail.setAssignedPerson((generalPmDetail.getPersistence().getPerson()).getName());
             if (!generalPmDetail.isActive()) {
-                generalPmDetail.setPersianFinishedDate(UtilService.getFormattedPersianDateTime(generalPmDetail.getFinishedTime()));
+                generalPmDetail.setPersianFinishedDate(UtilService.getFormattedPersianDateTime(generalPmDetail.getFinishedDateTime()));
             }
         }
         var orderedTaskDetailList = generalPmDetailList
@@ -242,7 +277,7 @@ public class PmServiceImpl implements PmService {
         } else {
             generalPmDetail.setActive(false);
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId), persistence);
-            generalPmDetail.setFinishedTime(generalPmDetail.getAssignedTime());
+            generalPmDetail.setFinishedDateTime(generalPmDetail.getAssignedTime());
         }
 
         generalPmDetail.setPersistence(persistence);
@@ -257,7 +292,7 @@ public class PmServiceImpl implements PmService {
         GeneralPmDetail currentGeneralPmDetail = taskDetailRepository.findByTaskIdAndActive(task.getId(), true).get();
         Persistence currentTaskDetailPersistence = currentGeneralPmDetail.getPersistence();
         var currentUsername = personService.getCurrentUsername();
-        currentGeneralPmDetail.setFinishedTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+        currentGeneralPmDetail.setFinishedDateTime(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         currentGeneralPmDetail.setActive(false);
 
         if (ownerUsername.equals(currentUsername)) {

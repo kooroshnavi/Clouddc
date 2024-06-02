@@ -14,4 +14,6 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
     List<String> getNameList(@Param("type") String type);
 
     List<Rack> findAllByRack();
+
+
 }

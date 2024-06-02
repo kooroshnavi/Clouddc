@@ -9,6 +9,8 @@ import java.util.List;
 public interface CenterService {
 
     Model getCenterLandingPageModel(Model model);
+
+    List<Location> getLocationList();
     Salon getSalon(int salonId);
     Location getLocation(int locationId);
     Model getLocationDetailModel(int locationId, Model model);
@@ -20,7 +22,5 @@ public interface CenterService {
     void setDailyTemperatureReport(DailyReport currentReport);
     List<Temperature> getTemperatureHistoryList();
     List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
-    List<String> getAllDataCenterNameList();
-    List<String> getSalonNameList();
     List<Rack> getRackList();
 }

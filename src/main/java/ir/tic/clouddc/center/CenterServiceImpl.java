@@ -106,6 +106,11 @@ public class CenterServiceImpl implements CenterService {
         return model;
     }
 
+    @Override
+    public List<Location> getLocationList() {
+        return locationRepository.findAll();
+    }
+
 
     @Override
     public Location getLocation(int locationId) {

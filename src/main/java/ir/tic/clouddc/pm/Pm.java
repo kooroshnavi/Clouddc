@@ -1,10 +1,10 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -25,16 +25,67 @@ public abstract class Pm {    // new Task style
     private LocalDate dueDate;
 
     @Column
+    private LocalDate finishedDate;
+
+    @Column
     private LocalTime finishedTime;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "finished_report_id")
-    private DailyReport dailyReport;
+    @OneToMany(mappedBy = "pm")
+    private List<PmDetail> pmDetailList;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pmInterface_id")
     private PmInterface pmInterface;
 
+    @Transient
+    private String persianDueDate;
+
+    @Transient
+    private String persianFinishedDate;
+
+    @Transient
+    private String activePersonName;
+
+
+    public LocalTime getFinishedTime() {
+        return finishedTime;
+    }
+
+    public void setFinishedTime(LocalTime finishedTime) {
+        this.finishedTime = finishedTime;
+    }
+
+    public String getPersianDueDate() {
+        return persianDueDate;
+    }
+
+    public void setPersianDueDate(String persianDueDate) {
+        this.persianDueDate = persianDueDate;
+    }
+
+    public String getPersianFinishedDate() {
+        return persianFinishedDate;
+    }
+
+    public void setPersianFinishedDate(String persianFinishedDate) {
+        this.persianFinishedDate = persianFinishedDate;
+    }
+
+    public String getActivePersonName() {
+        return activePersonName;
+    }
+
+    public void setActivePersonName(String activePersonName) {
+        this.activePersonName = activePersonName;
+    }
+
+    public List<PmDetail> getPmDetailList() {
+        return pmDetailList;
+    }
+
+    public void setPmDetailList(List<PmDetail> pmDetailList) {
+        this.pmDetailList = pmDetailList;
+    }
 
     public int getId() {
         return id;
@@ -68,12 +119,12 @@ public abstract class Pm {    // new Task style
         this.dueDate = dueDate;
     }
 
-    public LocalTime getFinishedTime() {
-        return finishedTime;
+    public LocalDate getFinishedDate() {
+        return finishedDate;
     }
 
-    public void setFinishedTime(LocalTime finishedTime) {
-        this.finishedTime = finishedTime;
+    public void setFinishedDate(LocalDate finishedDate) {
+        this.finishedDate = finishedDate;
     }
 
     public PmInterface getPmInterface() {
@@ -84,11 +135,4 @@ public abstract class Pm {    // new Task style
         this.pmInterface = pmInterface;
     }
 
-    public DailyReport getDailyReport() {
-        return dailyReport;
-    }
-
-    public void setDailyReport(DailyReport dailyReport) {
-        this.dailyReport = dailyReport;
-    }
 }

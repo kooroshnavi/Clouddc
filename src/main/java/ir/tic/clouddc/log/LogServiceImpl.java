@@ -17,11 +17,13 @@ public class LogServiceImpl implements LogService {
 
     private final PersistenceRepository persistenceRepository;
     private final LogHistoryRepository logHistoryRepository;
+    private final WorkflowRepository workflowRepository;
 
     @Autowired
-    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository) {
+    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository, WorkflowRepository workflowRepository) {
         this.persistenceRepository = persistenceRepository;
         this.logHistoryRepository = logHistoryRepository;
+        this.workflowRepository = workflowRepository;
     }
 
 
@@ -41,6 +43,16 @@ public class LogServiceImpl implements LogService {
             logHistoryList.add(currentHistory.get());
         }
         logHistoryRepository.saveAll(logHistoryList);
+    }
+
+    @Override
+    public List<Long> getPersistenceIdList(long workFlow) {
+        return null;
+    }
+
+    @Override
+    public void saveWorkFlow(List<Workflow> workflowList) {
+        workflowRepository.saveAll(workflowList);
     }
 
 

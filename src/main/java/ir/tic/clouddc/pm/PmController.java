@@ -38,7 +38,7 @@ public class PmController {
         return "pmListView";
     }
 
-    @GetMapping("/register/form")
+    @GetMapping("/register/form")    /// General Pm only
     public String showPmForm(Model model) {
         pmService.getPmFormData(model);
         return "pmRegisterView";

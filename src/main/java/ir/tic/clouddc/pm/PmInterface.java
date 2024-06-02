@@ -31,12 +31,12 @@ public class PmInterface {
     @Column
     private boolean general;
 
-    @OneToMany(mappedBy = "pmInterface")
-    private List<Pm> pmList;
-
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pmCategory_id")
     private PmCategory pmCategory;
+
+    @OneToMany(mappedBy = "pmInterface")
+    private List<Pm> pmList;
 
     @OneToOne
     @JoinColumn(name = "persistence_id")
