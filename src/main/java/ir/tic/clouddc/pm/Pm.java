@@ -1,12 +1,14 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.report.DailyReport;
 import jakarta.persistence.*;
-import org.hibernate.annotations.Nationalized;
+
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Pm {
+public abstract class Pm {    // new Task style
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -14,64 +16,32 @@ public abstract class Pm {
     private int id;
 
     @Column
-    @Nationalized
-    private String name;
-
-    @Column
-    @Nationalized
-    private String description;
-
-    @Column
-    private int period;
-
-    @Column
-    private boolean enabled;
-
-    @Column
     private boolean active;
 
-    @ManyToOne
-    @JoinColumn(name = "category_id")
-    private PmCategory category;
+    @Column
+    private int delay;
 
-    @OneToOne
-    @JoinColumn(name = "persistence_id")
-    private Persistence persistence;
+    @Column
+    private LocalDate dueDate;
+
+    @Column
+    private LocalTime finishedTime;
+
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "finished_report_id")
+    private DailyReport dailyReport;
+
+    @ManyToOne
+    @JoinColumn(name = "pmInterface_id")
+    private PmInterface pmInterface;
+
 
     public int getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public int getPeriod() {
-        return period;
-    }
-
-    public void setPeriod(int period) {
-        this.period = period;
-    }
-
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        this.enabled = enabled;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public boolean isActive() {
@@ -82,20 +52,43 @@ public abstract class Pm {
         this.active = active;
     }
 
-    public PmCategory getCategory() {
-        return category;
+    public int getDelay() {
+        return delay;
     }
 
-    public void setCategory(PmCategory category) {
-        this.category = category;
+    public void setDelay(int delay) {
+        this.delay = delay;
     }
 
-    public Persistence getPersistence() {
-        return persistence;
+    public LocalDate getDueDate() {
+        return dueDate;
     }
 
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
+    public void setDueDate(LocalDate dueDate) {
+        this.dueDate = dueDate;
     }
 
+    public LocalTime getFinishedTime() {
+        return finishedTime;
+    }
+
+    public void setFinishedTime(LocalTime finishedTime) {
+        this.finishedTime = finishedTime;
+    }
+
+    public PmInterface getPmInterface() {
+        return pmInterface;
+    }
+
+    public void setPmInterface(PmInterface pmInterface) {
+        this.pmInterface = pmInterface;
+    }
+
+    public DailyReport getDailyReport() {
+        return dailyReport;
+    }
+
+    public void setDailyReport(DailyReport dailyReport) {
+        this.dailyReport = dailyReport;
+    }
 }

@@ -15,10 +15,10 @@ public abstract class Workflow {
     private int id;
 
     @Column
-    private LocalDate date;
+    private LocalDate date;  // Register or assign date
 
     @Column
-    private LocalTime time;
+    private LocalTime time;    // Register or assign time
 
     @Column
     private String description;

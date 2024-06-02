@@ -1,9 +1,7 @@
 package ir.tic.clouddc.pm;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import ir.tic.clouddc.center.Location;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -13,9 +11,11 @@ import java.util.List;
 @NoArgsConstructor
 public class GeneralPm extends Pm { /// Text-based Pm. No specific field
 
-    @OneToMany(mappedBy = "pm", cascade = CascadeType.ALL)
-    private List<Task> taskList;
+    @OneToMany(mappedBy = "generalPm")
+    private List<GeneralPmDetail> generalPmDetailList;
 
-
+    @ManyToOne
+    @JoinColumn(name = "location_id")  // Pm locate: Salon, Rack, Room
+    private Location location;
 
 }

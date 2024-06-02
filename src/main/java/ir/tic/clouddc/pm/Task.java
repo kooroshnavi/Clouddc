@@ -29,22 +29,22 @@ public class Task {
     private LocalDate dueDate;
 
     @Column
-    private LocalTime time;
+    private LocalTime finishedTime;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "finished_report_id")
     private DailyReport dailyReport;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pm_id")
-    private Pm pm;
-
-    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
     private Location location;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pm_id")
+    private GeneralPm generalPm;
+
     @OneToMany(mappedBy = "task")
-    private List<GeneralTaskDetail> generalTaskDetailList;
+    private List<GeneralPmDetail> generalPmDetailList;
 
     @Transient
     private String persianDueDate;
@@ -66,10 +66,10 @@ public class Task {
         this.id = id;
     }
 
-    public Task(boolean active, int delay, Pm pm, LocalDate dueDate) {
+    public Task(boolean active, int delay, GeneralPm generalPm, LocalDate dueDate) {
         this.active = active;
         this.delay = delay;
-        this.pm = pm;
+        this.generalPm = generalPm;
         this.dueDate = dueDate;
     }
 
@@ -89,12 +89,12 @@ public class Task {
         this.name = name;
     }
 
-    public LocalTime getTime() {
-        return time;
+    public LocalTime getFinishedTime() {
+        return finishedTime;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public void setFinishedTime(LocalTime finishedTime) {
+        this.finishedTime = finishedTime;
     }
 
     public LocalDate getDueDate() {
@@ -118,8 +118,8 @@ public class Task {
         this.delay = delay;
     }
 
-    public void setGeneralTaskDetailList(List<GeneralTaskDetail> generalTaskDetailList) {
-        this.generalTaskDetailList = generalTaskDetailList;
+    public void setGeneralPmDetailList(List<GeneralPmDetail> generalPmDetailList) {
+        this.generalPmDetailList = generalPmDetailList;
     }
 
     public boolean isActive() {
@@ -130,13 +130,13 @@ public class Task {
         return delay;
     }
 
-    public Pm getPm() {
-        return pm;
+    public Pm getGeneralPm() {
+        return generalPm;
     }
 
 
-    public List<GeneralTaskDetail> getGeneralTaskDetailList() {
-        return generalTaskDetailList;
+    public List<GeneralPmDetail> getGeneralPmDetailList() {
+        return generalPmDetailList;
     }
 
     public String getPersianDueDate() {

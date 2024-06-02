@@ -73,7 +73,7 @@ public class PmController {
     @GetMapping("/{pmId}/archive/taskList")
     public String showArchivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> archiveTaskList = pmService.getPmTaskList(pmId, false);
-        var pm = archiveTaskList.get(0).getPm();
+        var pm = archiveTaskList.get(0).getGeneralPm();
         model.addAttribute("pm", pm);
         model.addAttribute("archiveTaskList", archiveTaskList);
         return "archivePmTaskListView";
@@ -82,7 +82,7 @@ public class PmController {
     @GetMapping("/{pmId}/active/taskList")
     public String showActivePmTaskList(@RequestParam int pmId, Model model) {
         List<Task> activeTaskList = pmService.getPmTaskList(pmId, true);
-        var pm = activeTaskList.get(0).getPm();
+        var pm = activeTaskList.get(0).getGeneralPm();
         model.addAttribute("pm", pm);
         model.addAttribute("activeTaskList", activeTaskList);
         return "activePmTaskListView";

@@ -9,11 +9,11 @@ import java.time.LocalDateTime;
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-public class GeneralTaskDetail extends Workflow {
+public class GeneralPmDetail extends Workflow {
 
-    @ManyToOne
-    @JoinColumn(name = "task_id")
-    private Task task;
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "pm_id")
+    private GeneralPm generalPm;
 
     @Column
     private boolean active;
@@ -33,6 +33,15 @@ public class GeneralTaskDetail extends Workflow {
     @Transient
     private String assignedPerson;
 
+
+    public GeneralPm getGeneralPm() {
+        return generalPm;
+    }
+
+    public void setGeneralPm(GeneralPm generalPm) {
+        this.generalPm = generalPm;
+    }
+
     public String getAssignedPerson() {
         return assignedPerson;
     }
@@ -40,15 +49,6 @@ public class GeneralTaskDetail extends Workflow {
     public void setAssignedPerson(String assignedPerson) {
         this.assignedPerson = assignedPerson;
     }
-
-    public void setTask(Task task) {
-        this.task = task;
-    }
-
-    public GeneralTaskDetail(Task task) {
-        this.task = task;
-    }
-
     public LocalDateTime getFinishedTime() {
         return finishedTime;
     }
@@ -75,10 +75,6 @@ public class GeneralTaskDetail extends Workflow {
 
     public void setPersianRegisterDate(String persianRegisterDate) {
         this.persianRegisterDate = persianRegisterDate;
-    }
-
-    public Task getTask() {
-        return task;
     }
 
     public boolean isActive() {

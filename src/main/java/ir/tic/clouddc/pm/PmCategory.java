@@ -21,36 +21,11 @@ public class PmCategory {
     @Nationalized
     private String name;
 
-    @OneToMany(mappedBy = "type")
-    private List<Pm> pmList;
+    @OneToMany(mappedBy = "pmCategory")
+    private List<PmInterface> pmInterfaceList;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "persistent_id")
     private Persistence persistence;
 
-    public PmCategory(String name, List<Pm> pmList, Persistence persistence) {
-        this.name = name;
-        this.pmList = pmList;
-        this.persistence = persistence;
-    }
-
-    public void setId(short id) {
-        this.id = id;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public List<Pm> getPmList() {
-        return pmList;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
 }

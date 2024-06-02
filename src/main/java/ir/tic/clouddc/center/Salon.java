@@ -30,12 +30,7 @@ public class Salon extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
-    @ElementCollection
-    @CollectionTable(name = "Pm_Due_mapping",
-            joinColumns = {@JoinColumn(name = "salon_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "Pm_id")
-    @Column(name = "due_date")
-    private Map<Integer, LocalDate> pmDueMap;
+
 
     public List<Rack> getRackList() {
         return rackList;
@@ -59,14 +54,6 @@ public class Salon extends Location {
 
     public void setTaskList(List<Task> taskList) {
         this.taskList = taskList;
-    }
-
-    public Map<Integer, LocalDate> getPmDueMap() {
-        return pmDueMap;
-    }
-
-    public void setPmDueMap(Map<Integer, LocalDate> pmDueMap) {
-        this.pmDueMap = pmDueMap;
     }
 
     public Map<LocalDate, Float> getAverageTemperature() {

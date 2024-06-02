@@ -5,7 +5,9 @@ import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -35,8 +37,23 @@ public abstract class Location {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+    @ElementCollection
+    @CollectionTable(name = "Pm_Due_mapping",
+            joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")})
+    @MapKeyColumn(name = "pmInterfaceId_id")
+    @Column(name = "due_date")
+    private Map<Integer, LocalDate> pmDueMap;    /// <pmInterfaceId, DueDate>
+
     public Center getCenter() {
         return center;
+    }
+
+    public Map<Integer, LocalDate> getPmDueMap() {
+        return pmDueMap;
+    }
+
+    public void setPmDueMap(Map<Integer, LocalDate> pmDueMap) {
+        this.pmDueMap = pmDueMap;
     }
 
     public void setCenter(Center center) {
@@ -46,6 +63,7 @@ public abstract class Location {
     public Persistence getPersistence() {
         return persistence;
     }
+
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
     }
