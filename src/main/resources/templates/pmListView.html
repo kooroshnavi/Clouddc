@@ -95,27 +95,27 @@
                         </thead>
                         <tbody>
 
-                        <tr th:each="pm, iter : ${pmList}">
+                        <tr th:each="pmInterface, iter : ${pmInterfaceList}">
 
                             <td th:text="${iter.count}"/>
 
                             <td>
-                                <strong th:text="${pm.name}"></strong>
+                                <strong th:text="${pmInterface.name}"></strong>
                             </td>
 
-                            <td th:text="${pm.period}"></td>
+                            <td th:text="${pmInterface.period}"></td>
 
-                            <td th:text="${pm.type.name}"></td>
+                            <td th:text="${pmInterface.pmCategory.name}"></td>
 
                             <td>
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmId}/edit/form(pmId=${pm.id})}"
+                                    <a th:href="@{/pm/{pmInterfaceId}/edit/form(pmInterfaceId=${pmInterface.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="بروزرسانی">ویرایش Pm</a>
                                 </div>
 
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmId}/active/taskList(pmId=${pm.id})}"
+                                    <a th:href="@{/pm/{pmInterfaceId}/active/taskList(pmInterfaceId=${pmInterface.id})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
                                 </div>

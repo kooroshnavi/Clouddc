@@ -3,6 +3,7 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class PmInterface {
     private int id;
 
     @Column
+    @Nationalized
     private String name;
 
     @Column
@@ -31,6 +33,10 @@ public class PmInterface {
     @Column
     private boolean general;
 
+    @Column
+    @Nationalized
+    private String description;
+
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pmCategory_id")
     private PmCategory pmCategory;
@@ -42,6 +48,14 @@ public class PmInterface {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public int getId() {
         return id;

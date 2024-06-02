@@ -44,8 +44,19 @@ public abstract class Pm {    // new Task style
     private String persianFinishedDate;
 
     @Transient
+    private String persianFinishedDayTime;
+
+    @Transient
     private String activePersonName;
 
+
+    public String getPersianFinishedDayTime() {
+        return persianFinishedDayTime;
+    }
+
+    public void setPersianFinishedDayTime(String persianFinishedDayTime) {
+        this.persianFinishedDayTime = persianFinishedDayTime;
+    }
 
     public LocalTime getFinishedTime() {
         return finishedTime;

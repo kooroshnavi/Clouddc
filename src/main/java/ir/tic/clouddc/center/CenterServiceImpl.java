@@ -111,6 +111,11 @@ public class CenterServiceImpl implements CenterService {
         return locationRepository.findAll();
     }
 
+    @Override
+    public Salon getSalon(int salonId) {
+        return null;
+    }
+
 
     @Override
     public Location getLocation(int locationId) {
@@ -122,7 +127,6 @@ public class CenterServiceImpl implements CenterService {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
             var baseLocation = optionalLocation.get();
-            var persistence = baseLocation.getPersistence();
 
             if (baseLocation instanceof Salon location) {
                 model.addAttribute("location", location);
@@ -143,6 +147,11 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public Center getCenter(int centerId) {
         centerRepository.findById(centerId);
+        return null;
+    }
+
+    @Override
+    public List<Salon> getSalonList() {
         return null;
     }
 

@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 
 @NoArgsConstructor
-public class PmRegisterForm {
+public class pmInterfaceRegisterForm {
 
     private int id;
 
@@ -22,20 +22,19 @@ public class PmRegisterForm {
 
     private boolean enabled;
 
-    private List<Long> locationIdList;
+    private List<Integer> locationIdList;
 
-    private int typeId;
+    private int categoryId;
 
     private PersianDate persianFirstDueDate;
 
     private MultipartFile file;
 
-
-    public List<Long> getLocationIdList() {
+    public List<Integer> getLocationIdList() {
         return locationIdList;
     }
 
-    public void setLocationIdList(List<Long> locationIdList) {
+    public void setLocationIdList(List<Integer> locationIdList) {
         this.locationIdList = locationIdList;
     }
 
@@ -63,12 +62,12 @@ public class PmRegisterForm {
         this.persianFirstDueDate = persianFirstDueDate;
     }
 
-    public int getTypeId() {
-        return typeId;
+    public int getCategoryId() {
+        return categoryId;
     }
 
-    public void setTypeId(int typeId) {
-        this.typeId = typeId;
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getName() {

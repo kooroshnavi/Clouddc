@@ -33,27 +33,27 @@ public class PmController {
 
     @GetMapping("/list")
     public String showPmList(Model model) {
-        List<Pm> pmList = pmService.getPmList();
-        model.addAttribute("pmList", pmList);
+        List<PmInterface> pmInterfaceList = pmService.getPmList();
+        model.addAttribute("pmInterfaceList", pmInterfaceList);
         return "pmListView";
     }
 
     @GetMapping("/register/form")    /// General Pm only
     public String showPmForm(Model model) {
-        pmService.getPmFormData(model);
+        pmService.getPmInterfaceFormData(model);
         return "pmRegisterView";
     }
 
-    @GetMapping("/{pmId}/edit/form")
-    public String showEditForm(@RequestParam int pmId, Model model) {
-        pmService.pmEditFormData(model, pmId);
+    @GetMapping("/{pmInterfaceId}/edit/form")
+    public String showEditForm(@RequestParam int pmInterfaceId, Model model) {
+        pmService.pmInterfaceEditFormData(model, pmInterfaceId);
         return "pmEditView";
     }
 
-    @PostMapping("/register")
-    public String pmPost(
+    @PostMapping("/register")  /// General Pm only
+    public String pmInterfacePost(
             Model model,
-            @Valid @ModelAttribute("pmRegister") PmRegisterForm pmRegisterForm,
+            @Valid @ModelAttribute("pmRegister") pmInterfaceRegisterForm pmInterfaceRegisterForm,
             @RequestParam("attachment") MultipartFile file,
             Errors errors) throws IOException {
 
@@ -63,29 +63,23 @@ public class PmController {
         }
 
         if (!file.isEmpty()) {
-            pmRegisterForm.setFile(file);
+            pmInterfaceRegisterForm.setFile(file);
         }
 
-        pmService.pmRegister(pmRegisterForm);
+        pmService.pmInterfaceRegister(pmInterfaceRegisterForm);
         return "pmList";
     }
 
-    @GetMapping("/{pmId}/archive/taskList")
-    public String showArchivePmTaskList(@RequestParam int pmId, Model model) {
-        List<Task> archiveTaskList = pmService.getPmTaskList(pmId, false);
-        var pm = archiveTaskList.get(0).getGeneralPm();
-        model.addAttribute("pm", pm);
-        model.addAttribute("archiveTaskList", archiveTaskList);
-        return "archivePmTaskListView";
+    @GetMapping("/{pmInterfaceId}/archive/list")
+    public String showArchivePmTaskList(@RequestParam int pmInterfaceId, Model model) {
+        pmService.getPmInterfacePmListModel(model, pmInterfaceId, false);
+        return "pmInterfacePmList";
     }
 
-    @GetMapping("/{pmId}/active/taskList")
-    public String showActivePmTaskList(@RequestParam int pmId, Model model) {
-        List<Task> activeTaskList = pmService.getPmTaskList(pmId, true);
-        var pm = activeTaskList.get(0).getGeneralPm();
-        model.addAttribute("pm", pm);
-        model.addAttribute("activeTaskList", activeTaskList);
-        return "activePmTaskListView";
+    @GetMapping("/{pmInterfaceId}/active/list")
+    public String showActivePmTaskList(@RequestParam int pmInterfaceId, Model model) {
+        pmService.getPmInterfacePmListModel(model, pmInterfaceId, true);
+        return "pmInterfacePmList";
     }
 
     @GetMapping("/activeTaskList")

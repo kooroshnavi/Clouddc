@@ -73,11 +73,11 @@
                             <i class="lni lni-chevron-left"></i>
                         </div>
                         <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pm.type.name}"></strong></h6>
-                            <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pm.name}"></strong></h6>
-                            <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pm.period}"></p>
-                            <p class="mb-1" th:if="${pm.description not null}"
-                               th:text=" 'توضیحات پیرامون این Pm: ' + ${pm.description}"></p>
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.pmCategory.name}"></strong></h6>
+                            <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
+                            <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pmInterface.period}"></p>
+                            <p class="mb-1" th:if="${pmInterface.description not null}"
+                               th:text=" 'توضیحات پیرامون این Pm: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
                 </div>
@@ -99,7 +99,10 @@
                             <th>سالن</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
-                            <th index=0>کارتابل
+                            <th th:if="${pmInterface.active}" index=0>کارتابل
+                                <div class="filter"></div>
+                            </th>
+                            <th th:if="${not pmInterface.active}" index=0>زمان اتمام
                                 <div class="filter"></div>
                             </th>
                             <th>جزئیات</th>
@@ -107,10 +110,10 @@
                         </thead>
                         <tbody>
 
-                        <tr th:each="task, iter : ${activeTaskList}">
+                        <tr th:each="pm, iter : ${pmInterfacePmList}">
 
                             <td th:text="${iter.count}"/>
-                            <td th:text="${task.getId}"/>
+                            <td th:text="${pm.getId}"/>
                             <td th:text="${task.salon.name}"/>
                             <td th:text="${task.persianDueDate}"/>
 

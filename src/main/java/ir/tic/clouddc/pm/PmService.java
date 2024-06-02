@@ -9,20 +9,20 @@ import java.util.List;
 public interface PmService {
 
     void updateTodayTasks(DailyReport todayReport);
-    List<Task> getAllActiveTaskList();
-    List<Pm> getPmList();
-    List<Task> getPmTaskList(int pmId, boolean active);
+    List<Pm> getAllActiveTaskList();
+    List<PmInterface> getPmList();
+    Model getPmInterfacePmListModel(Model model, int pmInterfaceId, boolean active);
 
-    Model pmEditFormData(Model model, int pmId);
+    Model pmInterfaceEditFormData(Model model, int pmId);
     Model PmTypeOverview(Model model);
-    Model getPmFormData(Model model);
+    Model getPmInterfaceFormData(Model model);
     Model modelForTaskController(Model model);
     Model getTaskDetailList(Model model, Long taskId);
     Model getPersonTaskList(Model model);
 
     Model prepareAssignForm(Model model, Task task, String ownerUsername);
 
-    void pmRegister(PmRegisterForm pmRegisterForm) throws IOException;
+    void pmInterfaceRegister(pmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
     void updateTaskDetail(AssignForm assignForm, Task task, String ownerUsername) throws IOException;
 
