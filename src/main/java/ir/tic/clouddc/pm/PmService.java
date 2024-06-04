@@ -10,21 +10,20 @@ public interface PmService {
 
     void updateTodayTasks(DailyReport todayReport);
     List<Pm> getAllActiveTaskList();
-    List<PmInterface> getPmList();
-    Model getPmInterfacePmListModel(Model model, int pmInterfaceId, boolean active);
-
+    List<PmInterface> getPmInterfaceList();
+    Model getPmInterfacePmListModel(Model model, short pmInterfaceId, boolean active, int locationId);
     Model pmInterfaceEditFormData(Model model, int pmId);
     Model PmTypeOverview(Model model);
     Model getPmInterfaceFormData(Model model);
     Model modelForTaskController(Model model);
-    Model getTaskDetailList(Model model, Long taskId);
+    Model getPmDetailList(Model model, int pmId);
     Model getPersonTaskList(Model model);
 
-    Model prepareAssignForm(Model model, Task task, String ownerUsername);
+    Model getPmUpdateForm(Model model, Pm pm, String ownerUsername);
 
     void pmInterfaceRegister(pmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
-    void updateTaskDetail(AssignForm assignForm, Task task, String ownerUsername) throws IOException;
+    void updatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 
     long getFinishedTaskCount();
 
@@ -36,9 +35,9 @@ public interface PmService {
 
     int getActiveDelayedPercentage();
 
-    String getOwnerUsername(Long taskId);
+    String getOwnerUsername(int taskId);
 
-    Task getTask(long taskId);
+    Pm getPm(int taskId);
 
 
 }

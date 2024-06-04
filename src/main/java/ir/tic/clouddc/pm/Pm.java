@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.center.Location;
 import jakarta.persistence.*;
 
 import java.time.LocalDate;
@@ -37,6 +38,10 @@ public abstract class Pm {    // new Task style
     @JoinColumn(name = "pmInterface_id")
     private PmInterface pmInterface;
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "location_id")  // Pm locate: Salon, Rack, Room
+    private Location location;
+
     @Transient
     private String persianDueDate;
 
@@ -49,6 +54,13 @@ public abstract class Pm {    // new Task style
     @Transient
     private String activePersonName;
 
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
 
     public String getPersianFinishedDayTime() {
         return persianFinishedDayTime;

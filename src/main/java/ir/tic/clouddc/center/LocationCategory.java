@@ -1,21 +1,17 @@
-package ir.tic.clouddc.event;
+package ir.tic.clouddc.center;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class EventCategory {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private short id;
+public class LocationCategory {
 
-    @Column
-    @Nationalized
-    private String name;
+    private short id;  // 1 - 2 - 3
+
+    private String name; /// Salon - Rack - Room
 
     public short getId() {
         return id;

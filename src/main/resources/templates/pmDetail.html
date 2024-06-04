@@ -56,7 +56,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">جزئیات وظیفه</li>
+                        <li class="breadcrumb-item active" aria-current="page">جزئیات گردش Pm</li>
                     </ol>
                 </nav>
             </div>
@@ -74,12 +74,13 @@
                             <i class="lni lni-chevron-left"></i>
                         </div>
                         <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${task.pm.type.name}"></strong></h6>
-                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${task.pm.name}"></strong></h6>
-                            <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${task.id}"></p>
-                            <p class="mb-1" th:text=" 'مرکز: ' + ${task.salon.name}"></p>
-                            <p class="mb-1" th:text=" 'سررسید: ' + ${task.persianDueDate}"></p>
-                            <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${task.delay}"></p>
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.pmCategory.name}"></strong>
+                            </h6>
+                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
+                            <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
+                            <p class="mb-1" th:text=" 'محل اجرا: ' + ${pm.location.name}"></p>
+                            <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
+                            <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
                         </div>
                     </div>
                 </div>
@@ -88,7 +89,7 @@
 
         <hr/>
 
-        <div th:if="${not task.active}" class="col">
+        <div th:if="${not pm.active}" class="col">
             <div class="card bg-success text-white">
                 <div class="card-body">
                     <p class="card-text">وظیفه قبلا انجام شده است.</p>
@@ -96,11 +97,11 @@
             </div>
         </div>
 
-        <div th:if="${task.active} and ${permission}" class="col">
+        <div th:if="${pm.active} and ${permission}" class="col">
             <div class="card bg-primary text-white">
                 <div class="card-body">
                     <input type="hidden" th:value="${otpUid}" name="username"/>
-                    <a th:href="@{/pm/task/{taskId}/form (taskId=${task.id})}" class="btn btn-danger">بروزرسانی وظیفه</a>
+                    <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn btn-danger">بروزرسانی وظیفه</a>
                 </div>
             </div>
         </div>
@@ -124,17 +125,28 @@
                         <th>زمان انتساب گردش کار</th>
                         <th>زمان اتمام گردش کار</th>
                         <th>کارتابل</th>
+                        <th th:if="${pmInterface.temperaturePm}" th:text="${pm.TEMPERATURE_FIELD_NAME}"></th>
                         <th>توضیحات</th>
                     </tr>
                     </thead>
                     <tbody>
 
-                    <tr th:each="detail, iter : ${generalPmDetailList}">
+                    <tr th:each="detail, iter : ${pmDetailList}">
 
                         <td th:text="${iter.count}"></td>
-                        <td th:text="${detail.persianRegisterDate}"></td>
-                        <td th:text="${detail.persianFinishedDate}"></td>
-                        <td th:text="${detail.personName}"></td>
+
+                        <td th:text="${detail.persianRegisterDate}" data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            th:title="${pm.persianRegisterDayTime}" dir="rtl"></td>
+
+                        <td th:if="${detail.active}" >اقدام نشده</td>
+                        <td th:if="${not detail.active}" th:text="${detail.persianFinishedDate}" data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            th:title="${detail.persianFinishedDayTime}" dir="rtl"></td>
+
+
+                        <td th:text="${detail.persistence.person.name}"></td>
+                        <td th:if="${pmInterface.temperaturePm}" th:text="${detail.temperatureValue}"></td>
                         <td th:text="${detail.description}"></td>
 
                     </tr>

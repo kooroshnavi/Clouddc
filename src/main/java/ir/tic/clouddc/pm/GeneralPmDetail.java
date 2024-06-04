@@ -8,16 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class GeneralPmDetail extends PmDetail {
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pm_id")
-    private Pm generalPm;
-
-    public Pm getGeneralPm() {
-        return generalPm;
-    }
-
-    public void setGeneralPm(Pm generalPm) {
-        this.generalPm = generalPm;
-    }
 }
 

@@ -28,7 +28,7 @@ public abstract class Location {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_type_id")
-    private LocationType locationType;
+    private LocationCategory locationCategory;
 
     @OneToMany(mappedBy = "location")
     private List<Event> eventList;
@@ -40,20 +40,28 @@ public abstract class Location {
     @ElementCollection
     @CollectionTable(name = "Pm_Due_mapping",
             joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "pmInterfaceId_id")
+    @MapKeyColumn(name = "pmInterface_id")
     @Column(name = "due_date")
-    private Map<Integer, LocalDate> pmDueMap;    /// <pmInterfaceId, DueDate>
+    private Map<Short, LocalDate> pmDueMap;    /// <pmInterfaceId, DueDate>
 
     public Center getCenter() {
         return center;
     }
 
-    public Map<Integer, LocalDate> getPmDueMap() {
+    public Map<Short, LocalDate> getPmDueMap() {
         return pmDueMap;
     }
 
-    public void setPmDueMap(Map<Integer, LocalDate> pmDueMap) {
+    public void setPmDueMap(Map<Short, LocalDate> pmDueMap) {
         this.pmDueMap = pmDueMap;
+    }
+
+    public LocationCategory getLocationCategory() {
+        return locationCategory;
+    }
+
+    public void setLocationCategory(LocationCategory locationCategory) {
+        this.locationCategory = locationCategory;
     }
 
     public void setCenter(Center center) {
@@ -93,11 +101,11 @@ public abstract class Location {
         this.name = name;
     }
 
-    public LocationType getLocationType() {
-        return locationType;
+    public LocationCategory getLocationType() {
+        return locationCategory;
     }
 
-    public void setLocationType(LocationType locationType) {
-        this.locationType = locationType;
+    public void setLocationType(LocationCategory locationCategory) {
+        this.locationCategory = locationCategory;
     }
 }

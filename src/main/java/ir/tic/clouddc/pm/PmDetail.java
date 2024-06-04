@@ -3,12 +3,12 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.log.Workflow;
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class PmDetail extends Workflow {  // Common fields in Pm-related details
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "pm_id")
     private Pm pm;
@@ -17,19 +17,44 @@ public abstract class PmDetail extends Workflow {  // Common fields in Pm-relate
     private boolean active;
 
     @Column
-    private LocalDateTime finishedDateTime;
+    private LocalDate finishedDate;
+
+    @Column
+    private LocalTime finishedTime;
 
     @Column
     private int delay;
 
     @Transient
-    private String persianRegisterDate;
-
-    @Transient
     private String persianFinishedDate;
 
     @Transient
-    private String assignedPerson;
+    private String persianFinishedDayTime;
+
+
+    public String getPersianFinishedDayTime() {
+        return persianFinishedDayTime;
+    }
+
+    public void setPersianFinishedDayTime(String persianFinishedDayTime) {
+        this.persianFinishedDayTime = persianFinishedDayTime;
+    }
+
+    public LocalDate getFinishedDate() {
+        return finishedDate;
+    }
+
+    public void setFinishedDate(LocalDate finishedDate) {
+        this.finishedDate = finishedDate;
+    }
+
+    public LocalTime getFinishedTime() {
+        return finishedTime;
+    }
+
+    public void setFinishedTime(LocalTime finishedTime) {
+        this.finishedTime = finishedTime;
+    }
 
     public boolean isActive() {
         return active;
@@ -39,13 +64,6 @@ public abstract class PmDetail extends Workflow {  // Common fields in Pm-relate
         this.active = active;
     }
 
-    public LocalDateTime getFinishedDateTime() {
-        return finishedDateTime;
-    }
-
-    public void setFinishedDateTime(LocalDateTime finishedDateTime) {
-        this.finishedDateTime = finishedDateTime;
-    }
 
     public int getDelay() {
         return delay;
@@ -53,14 +71,6 @@ public abstract class PmDetail extends Workflow {  // Common fields in Pm-relate
 
     public void setDelay(int delay) {
         this.delay = delay;
-    }
-
-    public String getPersianRegisterDate() {
-        return persianRegisterDate;
-    }
-
-    public void setPersianRegisterDate(String persianRegisterDate) {
-        this.persianRegisterDate = persianRegisterDate;
     }
 
     public String getPersianFinishedDate() {
@@ -71,13 +81,6 @@ public abstract class PmDetail extends Workflow {  // Common fields in Pm-relate
         this.persianFinishedDate = persianFinishedDate;
     }
 
-    public String getAssignedPerson() {
-        return assignedPerson;
-    }
-
-    public void setAssignedPerson(String assignedPerson) {
-        this.assignedPerson = assignedPerson;
-    }
 
     public Pm getPm() {
         return pm;

@@ -15,10 +15,10 @@ public abstract class Workflow {
     private int id;
 
     @Column
-    private LocalDate date;  // Register or assign date
+    private LocalDate registerDate;  // Register or assign registerDate
 
     @Column
-    private LocalTime time;    // Register or assign time
+    private LocalTime registerTime;    // Register or assign registerTime
 
     @Column
     private String description;
@@ -26,6 +26,29 @@ public abstract class Workflow {
     @OneToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+    @Transient
+    private String persianRegisterDate;
+
+    @Transient
+    private String persianRegisterDayTime;
+
+
+    public String getPersianRegisterDate() {
+        return persianRegisterDate;
+    }
+
+    public void setPersianRegisterDate(String persianRegisterDate) {
+        this.persianRegisterDate = persianRegisterDate;
+    }
+
+    public String getPersianRegisterDayTime() {
+        return persianRegisterDayTime;
+    }
+
+    public void setPersianRegisterDayTime(String persianRegisterDayTime) {
+        this.persianRegisterDayTime = persianRegisterDayTime;
+    }
 
     public int getId() {
         return id;
@@ -43,20 +66,20 @@ public abstract class Workflow {
         this.description = description;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getRegisterDate() {
+        return registerDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setRegisterDate(LocalDate registerDate) {
+        this.registerDate = registerDate;
     }
 
-    public LocalTime getTime() {
-        return time;
+    public LocalTime getRegisterTime() {
+        return registerTime;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public void setRegisterTime(LocalTime registerTime) {
+        this.registerTime = registerTime;
     }
 
     public Persistence getPersistence() {

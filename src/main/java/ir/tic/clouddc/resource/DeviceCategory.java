@@ -13,13 +13,13 @@ public class DeviceCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private short id;
 
     @Column
-    private String type;  // server - switch - firewall
+    private String name;  // server - switch - firewall
 
     @Column
-    private String vendor; // hpe - cisco - Fortigate
+    private String vendor; // hpe - cisco
 
     @Column
     private String model;   //
@@ -27,20 +27,20 @@ public class DeviceCategory {
     @OneToMany(mappedBy = "deviceCategory")
     private List<Device> deviceList;
 
-    public int getId() {
+    public short getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(short id) {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getName() {
+        return name;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getVendor() {

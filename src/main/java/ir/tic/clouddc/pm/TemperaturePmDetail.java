@@ -8,27 +8,15 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class TemperaturePmDetail extends PmDetail {
 
-    @ManyToOne
-    @JoinColumn(name = "pm_id")
-    private Pm temperaturePm;
-
     @Column
-    private float value;    /// Specific for TemperaturePmDetail
+    private float temperatureValue;    /// Specific for TemperaturePmDetail
 
-    public Pm getTemperaturePm() {
-        return temperaturePm;
+    public float getTemperatureValue() {
+        return temperatureValue;
     }
 
-    public void setTemperaturePm(Pm temperaturePm) {
-        this.temperaturePm = temperaturePm;
-    }
-
-    public float getValue() {
-        return value;
-    }
-
-    public void setValue(float value) {
-        this.value = value;
+    public void setTemperatureValue(float temperatureValue) {
+        this.temperatureValue = temperatureValue;
     }
 
 

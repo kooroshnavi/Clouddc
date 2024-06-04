@@ -115,16 +115,17 @@
                                 </div>
 
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmInterfaceId}/active/taskList(pmInterfaceId=${pmInterface.id})}"
+                                    <a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${true})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
                                 </div>
 
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmId}/archive/taskList(pmId=${pm.id})}"
+                                    <a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${false})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف آرشیو</a>
+                                       data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
                                 </div>
+
                             </td>
 
                         </tr>

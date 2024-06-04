@@ -18,7 +18,7 @@ public final class UtilService {
 
     private static LocalDate DATE;
 
-    private static int TODAY_REPORT_ID ;
+    private static int TODAY_REPORT_ID;
 
 
     public static final Map<String, String> persianDay = Map.ofEntries(
@@ -55,14 +55,21 @@ public final class UtilService {
         return LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
     }
 
-    public static String getFormattedPersianDate(LocalDate date){
+    public static String getFormattedPersianDate(LocalDate date) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         return dateFormatter.format(PersianDate.fromGregorian(date));
     }
 
-    public static String getFormattedPersianDateTime(LocalDateTime dateTime){
+    public static String getFormattedPersianDateTime(LocalDateTime dateTime) {
         DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         return dateTimeFormatter.format(PersianDateTime.fromGregorian(dateTime));
+
+    }
+    public static String getFormattedPersianDayTime(LocalDate localDate, LocalTime localTime) {
+        return UtilService
+                .persianDay
+                .get(localDate.getDayOfWeek()
+                        .getDisplayName(TextStyle.SHORT, Locale.getDefault()) + " - " + localTime);
 
     }
 

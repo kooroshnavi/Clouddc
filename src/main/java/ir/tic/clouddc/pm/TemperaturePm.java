@@ -1,30 +1,22 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.Location;
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
 public class TemperaturePm extends Pm {
-
+    @Transient
+    private final String TEMPERATURE_FIELD_NAME = "دما";
     @Column
     private float averageDailyValue;
 
-    @ManyToOne
-    @JoinColumn(name = "location_id")  // Pm locate: Salon, Rack, Room
-    private Location location;
-
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
+    public String getTEMPERATURE_FIELD_NAME() {
+        return TEMPERATURE_FIELD_NAME;
     }
 
     public float getAverageDailyValue() {
@@ -33,14 +25,6 @@ public class TemperaturePm extends Pm {
 
     public void setAverageDailyValue(float averageDailyValue) {
         this.averageDailyValue = averageDailyValue;
-    }
-
-    public List<TemperaturePmDetail> getTemperaturePmDetailList() {
-        return temperaturePmDetailList;
-    }
-
-    public void setTemperaturePmDetailList(List<TemperaturePmDetail> temperaturePmDetailList) {
-        this.temperaturePmDetailList = temperaturePmDetailList;
     }
 
 }

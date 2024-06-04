@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
-public class AssignForm {
+public class PmUpdateForm {
 
-    private Long id;
+    private int pmId;
 
     @NotBlank(message = "Description is obligatory")
     @Size(min = 5, max = 1000)
@@ -17,9 +17,19 @@ public class AssignForm {
     @NotBlank
     private int actionType;
 
+    private float temperatureValue;
+
     private MultipartFile file;
 
-    public AssignForm(String description, int actionType) {
+    public float getTemperatureValue() {
+        return temperatureValue;
+    }
+
+    public void setTemperatureValue(float temperatureValue) {
+        this.temperatureValue = temperatureValue;
+    }
+
+    public PmUpdateForm(String description, int actionType) {
         this.description = description;
         this.actionType = actionType;
     }
@@ -32,12 +42,12 @@ public class AssignForm {
         this.file = file;
     }
 
-    public Long getId() {
-        return id;
+    public int getPmId() {
+        return pmId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setPmId(int pmId) {
+        this.pmId = pmId;
     }
 
     public void setDescription(String description) {
@@ -59,7 +69,7 @@ public class AssignForm {
     @Override
     public String toString() {
         return "AssignForm{" +
-                "id=" + id +
+                "pmId=" + pmId +
                 ", description='" + description + '\'' +
                 ", actionType=" + actionType +
                 '}';

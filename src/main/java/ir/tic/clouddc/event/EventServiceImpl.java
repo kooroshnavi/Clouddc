@@ -147,8 +147,8 @@ public class EventServiceImpl implements EventService {
         fileService.checkAttachment(eventForm.getFile(), persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
-        eventDetail.setDate(UtilService.getDATE());
-        eventDetail.setTime(UtilService.getTime());
+        eventDetail.setRegisterDate(UtilService.getDATE());
+        eventDetail.setRegisterTime(UtilService.getTime());
         eventDetail.setEvent(event);
 
         reportService.findActive(true).get().getEventList().add(event);
@@ -230,8 +230,8 @@ public class EventServiceImpl implements EventService {
     }
 
     private void loadEventDetailTransients(EventDetail eventDetail) {
-        eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getDate()));
-        eventDetail.setPersianDay(UtilService.persianDay.get(eventDetail.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+        eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
+        eventDetail.setPersianDay(UtilService.persianDay.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
     }
 
 
@@ -276,7 +276,7 @@ public class EventServiceImpl implements EventService {
                             .fromGregorian
                                     (date)));
             eventDetail.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
-            eventDetail.setTime(timeFormatter.format(eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
+            eventDetail.setRegisterTime(timeFormatter.format(eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
         }
 
         return event.getEventDetailList()

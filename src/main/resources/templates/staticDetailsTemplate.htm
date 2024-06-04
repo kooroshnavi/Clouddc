@@ -97,8 +97,7 @@
                     <td th:text="${event.id}"></td>
                     <td th:text="${event.eventCategory.name}"></td>
 
-                    <td
-                            th:text="${event.name}">
+                    <td th:text="${event.name}">
                         <div class="col">
                             <a th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
                                class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
@@ -110,7 +109,8 @@
 
                     <td class="clock">
                         <span th:if="${event.active}" class="badge bg-light-danger text-danger w-100">فعال - در حال پیگیری</span>
-                        <span th:if="${not event.active}" class="badge bg-light-success text-success w-100">پایان رخداد</span>
+                        <span th:if="${not event.active}"
+                              class="badge bg-light-success text-success w-100">پایان رخداد</span>
                     </td>
 
                 </tr>

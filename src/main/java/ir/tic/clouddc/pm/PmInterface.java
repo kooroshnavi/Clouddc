@@ -15,7 +15,7 @@ public class PmInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private short id;
 
     @Column
     @Nationalized
@@ -31,7 +31,13 @@ public class PmInterface {
     private boolean enabled;
 
     @Column
-    private boolean general;
+    private boolean statelessRecurring;
+
+    @Column
+    private boolean generalPm;
+
+    @Column
+    private boolean temperaturePm;
 
     @Column
     @Nationalized
@@ -48,6 +54,21 @@ public class PmInterface {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+    public boolean isTemperaturePm() {
+        return temperaturePm;
+    }
+
+    public void setTemperaturePm(boolean temperaturePm) {
+        this.temperaturePm = temperaturePm;
+    }
+
+    public boolean isStatelessRecurring() {
+        return statelessRecurring;
+    }
+
+    public void setStatelessRecurring(boolean statelessRecurring) {
+        this.statelessRecurring = statelessRecurring;
+    }
 
     public String getDescription() {
         return description;
@@ -57,11 +78,11 @@ public class PmInterface {
         this.description = description;
     }
 
-    public int getId() {
+    public short getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(short id) {
         this.id = id;
     }
 
@@ -97,12 +118,12 @@ public class PmInterface {
         this.enabled = enabled;
     }
 
-    public boolean isGeneral() {
-        return general;
+    public boolean isGeneralPm() {
+        return generalPm;
     }
 
-    public void setGeneral(boolean general) {
-        this.general = general;
+    public void setGeneralPm(boolean generalPm) {
+        this.generalPm = generalPm;
     }
 
     public List<Pm> getPmList() {
