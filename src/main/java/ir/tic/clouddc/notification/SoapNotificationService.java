@@ -68,7 +68,7 @@ public class SoapNotificationService implements NotificationService {
 
     @Override
     public void sendActiveTaskAssignedMessage(String address, String taskTitle, int delay, LocalDateTime originDatetime) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
         switch (delay) {
             case 0: {

@@ -72,9 +72,9 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>شماره وظیفه</th>
-                            <th>عنوان Pm وظیفه</th>
-                            <th>سالن</th>
+                            <th>شماره Pm</th>
+                            <th>عنوان Pm</th>
+                            <th>مکان</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
                             <th>جزئیات</th>
@@ -82,29 +82,30 @@
                         </thead>
                         <tbody>
 
-                        <tr th:each="task, iter : ${activePersonTaskList}">
+                        <tr th:each="pm, iter : ${activePersonPmList}">
 
-                            <td th:text="${iter.count}"/>
+                            <td th:text="${iter.count}"></td>
 
-                            <td th:text="${task.id}"/>
+                            <td th:text="${pm.id}"></td>
 
                             <td>
-                                <strong th:text="${task.pm.name}"></strong>
+                                <strong th:text="${pm.name}"></strong>
                             </td>
 
-                            <td th:text="${task.salon.name}"/>
+                            <td th:text="${pm.location.name}"></td>
 
-                            <td th:text="${task.persianDueDate}"/>
+                            <td th:text="${pm.persianDueDate}"></td>
 
                             <td>
-                                <span th:if="${task.getDelay} > 0" th:text="${task.getDelay}"
+                                <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
                                       class="badge bg-light-danger text-danger w-100"></span>
-                                <span th:if="${task.getDelay} == 0" class="badge bg-light-success text-success w-100">ندارد</span>
+                                <span th:if="${pm.delay} == 0"
+                                      class="badge bg-light-success text-success w-100">ندارد</span>
                             </td>
 
                             <td>
                                 <div class="table-actions d-flex align-items-salon gap-3 fs-6">
-                                    <a th:href="@{/pm/task/{taskId}/detailList (taskId=${task.id})}"
+                                    <a th:href="@{/pm/{pmId}/detailList (pmId=${pm.id})}"
                                        class="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom"
                                        title="گردش کار"><i class="bi bi-eye-fill"></i></a>
                                 </div>

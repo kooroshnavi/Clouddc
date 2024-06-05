@@ -28,4 +28,36 @@ public class PmCategory {
     @JoinColumn(name = "persistent_id")
     private Persistence persistence;
 
+
+    public short getId() {
+        return id;
+    }
+
+    public void setId(short id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<PmInterface> getPmInterfaceList() {
+        return pmInterfaceList;
+    }
+
+    public void setPmInterfaceList(List<PmInterface> pmInterfaceList) {
+        this.pmInterfaceList = pmInterfaceList;
+    }
+
+    public Persistence getPersistence() {
+        return persistence;
+    }
+
+    public void setPersistence(Persistence persistence) {
+        this.persistence = persistence;
+    }
 }

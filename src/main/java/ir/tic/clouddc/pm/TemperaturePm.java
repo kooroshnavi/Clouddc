@@ -10,8 +10,10 @@ import lombok.NoArgsConstructor;
 @Table(schema = "Pm")
 @NoArgsConstructor
 public class TemperaturePm extends Pm {
+
     @Transient
     private final String TEMPERATURE_FIELD_NAME = "دما";
+
     @Column
     private float averageDailyValue;
 

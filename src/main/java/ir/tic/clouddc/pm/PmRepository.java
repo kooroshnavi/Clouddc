@@ -16,6 +16,6 @@ public interface PmRepository extends JpaRepository<Pm, Integer> {
 
     List<Pm> findAllByActive(boolean active);
 
-    List<Pm> findAllByPmInterfaceIdAndActiveAndLocationId(short pmInterfaceId, boolean active, @Nullable Integer locationId);
+    List<? extends Pm> findAllByPmInterfaceAndActiveAndLocationId(PmInterface pmInterface, boolean active, @Nullable Integer locationId);
 
 }

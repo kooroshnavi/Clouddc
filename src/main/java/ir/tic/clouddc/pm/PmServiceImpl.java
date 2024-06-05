@@ -2,12 +2,10 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.center.Salon;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.log.Workflow;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -78,9 +76,9 @@ public class PmServiceImpl implements PmService {
         final List<Location> locationList = centerService.getLocationList();
         final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
         List<Pm> activePmList = pmRepository.findAllByActive(true);
-        List<Workflow> workflowList = new ArrayList<>();
+        List<PmDetail> pmDetailList = new ArrayList<>();
 
-        delayCalculation(activePmList, workflowList);
+        delayCalculation(activePmList, pmDetailList);
 
         for (Location location : locationList) {
             Set<Short> pmInterfaceIdSet = location.getPmDueMap().keySet();
@@ -88,7 +86,7 @@ public class PmServiceImpl implements PmService {
                 for (Short pmInterfaceId : pmInterfaceIdSet) {
                     if (location.getPmDueMap().get(pmInterfaceId) == UtilService.getDATE()) {
                         PmInterface pmInterface = pmInterfaceRepository.findById(pmInterfaceId).get();
-                        pmSetup(location, pmInterface, workflowList, defaultPerson);
+                        pmSetup(location, pmInterface, pmDetailList, defaultPerson);
                         if (pmInterface.isStatelessRecurring()) {
                             var nextDue = validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod()));
                             location.getPmDueMap().put(pmInterfaceId, nextDue);
@@ -98,22 +96,21 @@ public class PmServiceImpl implements PmService {
             }
         }
 
-        logService.saveWorkFlow(workflowList);
+        pmDetailRepository.saveAll(pmDetailList);
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
     }
 
-    private LocalDate validateNextDue(LocalDate localDate) {
-        if (localDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-            return localDate.plusDays(2);
-        } else if (localDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-            return localDate.plusDays(1);
+    private LocalDate validateNextDue(LocalDate nextDue) {
+        if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+            return nextDue.plusDays(2);
+        } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+            return nextDue.plusDays(1);
         } else {
-            return localDate;
+            return nextDue;
         }
     }
 
-
-    private void delayCalculation(List<Pm> currentPmList, List<Workflow> workflowList) {
+    private void delayCalculation(List<Pm> currentPmList, List<PmDetail> pmDetailList) {
         if (!currentPmList.isEmpty()) {
             for (Pm pm : currentPmList
             ) {
@@ -123,12 +120,12 @@ public class PmServiceImpl implements PmService {
                 var activeTaskDetail = pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get();
                 LocalDateTime assignedDateTime = LocalDateTime.of(activeTaskDetail.getRegisterDate(), activeTaskDetail.getRegisterTime());
                 activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDateTime));
-                workflowList.add(activeTaskDetail);
+                pmDetailList.add(activeTaskDetail);
             }
         }
     }
 
-    private void pmSetup(Location location, PmInterface pmInterface, List<Workflow> workflowList, Person defaultPerson) {
+    private void pmSetup(Location location, PmInterface pmInterface, List<PmDetail> pmDetailList, Person defaultPerson) {
         if (pmInterface.isGeneralPm()) {
             GeneralPm todayGeneralPm = new GeneralPm();
             todayGeneralPm.setActive(true);
@@ -137,7 +134,7 @@ public class PmServiceImpl implements PmService {
             todayGeneralPm.setPmInterface(pmInterface);
             todayGeneralPm.setLocation(location);
 
-            pmDetailSetup(todayGeneralPm, workflowList, pmInterface.isGeneralPm(), defaultPerson);
+            pmDetailSetup(todayGeneralPm, pmDetailList, pmInterface.isGeneralPm(), defaultPerson);
 
         } else {
             TemperaturePm todayTemperaturePm = new TemperaturePm();
@@ -147,29 +144,29 @@ public class PmServiceImpl implements PmService {
             todayTemperaturePm.setPmInterface(pmInterface);
             todayTemperaturePm.setLocation(location);
 
-            pmDetailSetup(todayTemperaturePm, workflowList, pmInterface.isGeneralPm(), defaultPerson);
+            pmDetailSetup(todayTemperaturePm, pmDetailList, pmInterface.isGeneralPm(), defaultPerson);
         }
     }
 
-    private void pmDetailSetup(Pm todayPm, List<Workflow> workflowList, boolean isGeneral, Person defaultPerson) {
+    private void pmDetailSetup(Pm todayPm, List<PmDetail> pmDetailList, boolean isGeneral, Person defaultPerson) {
         if (isGeneral) {
             GeneralPmDetail generalPmDetail = new GeneralPmDetail();
-            generalPmDetail.setGeneralPm(todayPm);
+            generalPmDetail.setPm(todayPm);
             generalPmDetail.setActive(true);
             generalPmDetail.setDelay(0);
             generalPmDetail.setRegisterDate(UtilService.getDATE());
             generalPmDetail.setRegisterTime(UtilService.getTime());
             generalPmDetail.setPersistence(logService.persistenceSetup(defaultPerson));
-            workflowList.add(generalPmDetail);
+            pmDetailList.add(generalPmDetail);
         } else {
             TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
-            temperaturePmDetail.setTemperaturePm(todayPm);
+            temperaturePmDetail.setPm(todayPm);
             temperaturePmDetail.setActive(true);
             temperaturePmDetail.setDelay(0);
             temperaturePmDetail.setRegisterDate(UtilService.getDATE());
             temperaturePmDetail.setRegisterTime(UtilService.getTime());
             temperaturePmDetail.setPersistence(logService.persistenceSetup(defaultPerson));
-            workflowList.add(temperaturePmDetail);
+            pmDetailList.add(temperaturePmDetail);
         }
     }
 
@@ -185,26 +182,22 @@ public class PmServiceImpl implements PmService {
         var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
         if (optionalPmInterface.isPresent()) {
             pmInterface = optionalPmInterface.get();
-            model.addAttribute("pmInterface", pmInterface);
         } else {
             throw new NoSuchElementException();
         }
 
-        List<? extends Pm> basePmList = pmRepository.findAllByPmInterfaceIdAndActiveAndLocationId(pmInterfaceId, active, locationId);
+        List<? extends Pm> basePmList = pmRepository.findAllByPmInterfaceAndActiveAndLocationId(pmInterface, active, locationId);
 
-        for (Pm pm : basePmList) {
-            pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
-            if (active) {
-                pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findAny().get().getPersistence().getPerson().getName());
-            } else {
-                pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
-                pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
-            }
-        }
+        setPmTransients(basePmList);
 
-        model.addAttribute("pmList", basePmList);
+        var orderedPmList = basePmList
+                .stream()
+                .sorted(Comparator.comparing(Pm::getDueDate).reversed())
+                .toList();
+
+        model.addAttribute("pmInterface", pmInterface);
+        model.addAttribute("pmList", orderedPmList);
         model.addAttribute("active", active);
-
 
         return model;
     }
@@ -229,39 +222,23 @@ public class PmServiceImpl implements PmService {
 
 
     private Pm endPm(Pm pm) {
+        pm.setFinishedDate(UtilService.getDATE());
         pm.setFinishedTime(UtilService.getTime());
         pm.setActive(false);
-        pm.setDailyReport(new DailyReport(UtilService.getTodayReportId()));
 
-        Pm pm = pm.getGeneralPm();
-        var salon = pm.getSalon();
-        var nextDue = UtilService.getDATE().plusDays(pm.getPeriod());
+        var pmInterface = pm.getPmInterface();
+        if (!pmInterface.isStatelessRecurring()) {
+            var location = pm.getLocation();
+            location.getPmDueMap().put(pmInterface.getId(), validateNextDue(pm.getFinishedDate().plusDays(pmInterface.getPeriod())));
+        }
 
-
-        if (pm.getTaskList().stream().noneMatch(pm::isActive)) {
-            pm.setActive(false);    // pm is inactive til next due
+        if (pmInterface.getPmList().stream().noneMatch(Pm::isActive)) {
+            pmInterface.setActive(false);   // pmInterface is inactive til next due
         }
 
         return pmRepository.saveAndFlush(pm);
     }
 
-
-    @Override
-    public List<Task> getAllActiveTaskList() {
-        List<Task> taskList = taskRepository.findByActive(true);
-        for (Task task : taskList) {
-            task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
-            task.setName(task.getGeneralPm().getName());
-            task.setCurrentAssignedPerson(
-                    task
-                            .getGeneralPmDetailList().stream()
-                            .filter(GeneralPmDetail::isActive)
-                            .findFirst().get()
-                            .getPersistence()
-                            .getPerson().getName());
-        }
-        return taskList;
-    }
 
     @Override
     public Model getPmDetailList(Model model, int pmId) {
@@ -290,8 +267,10 @@ public class PmServiceImpl implements PmService {
                 .sorted(Comparator.comparing(PmDetail::getId).reversed())
                 .toList();
         setPmDetailTransients(orderedPmDetailList);
+
         List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
         List<GeneralPmDetail> generalPmDetailList = new ArrayList<>();
+
         for (PmDetail pmDetail : orderedPmDetailList) {
             if (pmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
                 temperaturePmDetailList.add(temperaturePmDetail);
@@ -320,12 +299,17 @@ public class PmServiceImpl implements PmService {
         return model;
     }
 
-    private void setPmTransients(List<Pm> basePm) {
+    private void setPmTransients(List<? extends Pm> basePm) {
         for (Pm pm : basePm) {
             pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
             if (!pm.isActive()) {
                 pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
                 pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
+            } else {
+                pm.setActivePersonName(pm.getPmDetailList()
+                        .stream()
+                        .filter(PmDetail::isActive).findFirst().get()
+                        .getPersistence().getPerson().getName());
             }
         }
     }
@@ -360,7 +344,7 @@ public class PmServiceImpl implements PmService {
         pmDetail.setRegisterDate(UtilService.getDATE());
         pmDetail.setRegisterTime(UtilService.getTime());
         pmDetail.setDelay(0);
-        Persistence persistence = logService.persistenceSetup(new Person(personId));
+        Persistence persistence = logService.persistenceSetup(personService.getPerson(personId));
 
         if (active) {
             pmDetail.setActive(true);
@@ -373,7 +357,8 @@ public class PmServiceImpl implements PmService {
 
         pmDetail.setPersistence(persistence);
         pmDetailRepository.save(pmDetail);
-        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), pmDetail.getTask().getName(), pmDetail.getTask().getDelay(), pmDetail.getAssignedTime());
+        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), pmDetail.getRegisterTime());
+
         return pmDetail;
     }
 
@@ -402,16 +387,17 @@ public class PmServiceImpl implements PmService {
 
         if (pmUpdateForm.getActionType() == 0) {  //  End Pm
             endPm(pm);
-
-
-
         } else { //  Assign new PmDetail
-            GeneralPmDetail generalPmDetail = new GeneralPmDetail();
-            generalPmDetail.setTask(task);
-            assignNewTaskDetail(generalPmDetail, pmUpdateForm.getActionType(), '0', true);
+            if (pm.getPmInterface().isGeneralPm()) {
+                GeneralPmDetail generalPmDetail = new GeneralPmDetail();
+                generalPmDetail.setPm(pm);
+                assignNewTaskDetail(generalPmDetail, pmUpdateForm.getActionType(), '0', true);
+            } else if (pm.getPmInterface().isTemperaturePm()) {
+                TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
+                temperaturePmDetail.setPm(pm);
+                assignNewTaskDetail(temperaturePmDetail, pmUpdateForm.getActionType(), '0', true);
+            }
         }
-
-
 
     }
 
@@ -470,8 +456,8 @@ public class PmServiceImpl implements PmService {
 
 
     @Override
-    public String getOwnerUsername(int pmId) {
-        return pmDetailRepository.fetchOwnerUsername(pmId, true);
+    public String getPmOwnerUsername(int pmId) {
+        return pmDetailRepository.fetchPmOwnerUsername(pmId, true);
     }
 
     @Override
@@ -485,25 +471,19 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model getPersonTaskList(Model model) {
-        List<Task> activePersonTaskList = pmDetailRepository.fetchActivePersonTaskList(personService.getCurrentUsername(), true);
-
-        if (!activePersonTaskList.isEmpty()) {
-            for (Task task : activePersonTaskList
-            ) {
-                task.setPersianDueDate(UtilService.getFormattedPersianDate(task.getDueDate()));
-                task.setName(task.getGeneralPm().getName());
-            }
-            var sortedPersonTaskList = activePersonTaskList
+    public Model getPersonActivePmList(Model model) {
+        List<? extends Pm> activePersonPmList = pmDetailRepository.fetchActivePersonPmList(personService.getCurrentUsername(), true);
+        if (!activePersonPmList.isEmpty()) {
+            setPmTransients(activePersonPmList);
+            var sortedPersonTaskList = activePersonPmList
                     .stream()
-                    .sorted(Comparator.comparing(Task::getDelay).reversed())
+                    .sorted(Comparator.comparing(Pm::getDelay).reversed())
                     .toList();
-
-            model.addAttribute("activePersonTaskList", sortedPersonTaskList);
+            model.addAttribute("activePersonPmList", sortedPersonTaskList);
 
             return model;
         }
-        return null;
+        return model;
     }
 
     @Override
@@ -533,13 +513,8 @@ public class PmServiceImpl implements PmService {
         pmInterface.setGeneralPm(true);
         fileService.checkAttachment(pmInterfaceRegisterForm.getFile(), persistence);
 
-        var registeredPmInterface = pmInterfaceRepository.saveAndFlush(pmInterface);
-
-        for (int id : pmInterfaceRegisterForm.getLocationIdList()) {
-            centerService.getLocation(id).getPmDueMap().put(registeredPmInterface.getId(), pmInterfaceRegisterForm.getPersianFirstDueDate().toGregorian());
-        }
+        pmInterfaceRepository.saveAndFlush(pmInterface);
     }
-
 
     @Override
     public Model modelForTaskController(Model model) {
@@ -554,13 +529,6 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model PmTypeOverview(Model model) {
-        List<PmCategory> pmCategoryList = pmCategoryRepository.findAll();
-        model.addAttribute("pmTypeList", pmCategoryList);
-        return model;
-    }
-
-    @Override
     public Model getPmInterfaceFormData(Model model) {
         model.addAttribute("salonList", centerService.getSalonList());
         model.addAttribute("pmCategoryList", pmCategoryRepository.findAll(Sort.by("name")));
@@ -569,35 +537,25 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model pmInterfaceEditFormData(Model model, int pmId) {
-        var pm = pmRepository.findById(pmId);
+    public Model pmInterfaceEditFormData(Model model, short pmInterfaceId) {
+        var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
 
-        if (pm.isPresent()) {
-            var selectedPm = pm.get();
-            pmInterfaceRegisterForm pmForm = new pmInterfaceRegisterForm();
-            pmForm.setName(selectedPm.getName());
-            pmForm.setDescription(selectedPm.getDescription());
-            pmForm.setPeriod(selectedPm.getPeriod());
-            pmForm.setId(selectedPm.getId());
-            pmForm.setCategoryId(selectedPm.getCategory().getId());
+        if (optionalPmInterface.isPresent()) {
+            var pmInterface = optionalPmInterface.get();
+            pmInterfaceRegisterForm pmInterfaceRegisterForm = new pmInterfaceRegisterForm();
+            pmInterfaceRegisterForm.setName(pmInterface.getName());
+            pmInterfaceRegisterForm.setDescription(pmInterface.getDescription());
+            pmInterfaceRegisterForm.setPeriod(pmInterface.getPeriod());
+            pmInterfaceRegisterForm.setId(pmInterfaceId);
+            pmInterfaceRegisterForm.setCategoryId(pmInterface.getPmCategory().getId());
 
-            List<Long> salonIdList = new ArrayList<>();
-            for (Salon salon : centerService.getSalonList()) {
-                if (salon.getPmDueMap().containsKey(pmId)) {
-                    salonIdList.add(salon.getId());
-                }
-            }
-            pmForm.setLocationIdList(salonIdList);
-
-            List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(selectedPm.getPersistence().getId()));
+            List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(pmInterface.getPersistence().getId()));
             if (!metaDataList.isEmpty()) {
                 model.addAttribute("metaDataList", metaDataList);
             }
-            model.addAttribute("pmForm", pmForm);
-            model.addAttribute("taskSize", selectedPm.getTaskList().size());
-            model.addAttribute("pm", selectedPm);
-            model.addAttribute("salonList", centerService.getSalonList());
-            model.addAttribute("pmTypeList", pmCategoryRepository.findAll(Sort.by("name")));
+            model.addAttribute("pmInterfaceRegisterForm", pmInterfaceRegisterForm);
+            model.addAttribute("pmSize", pmInterface.getPmList().size());
+            model.addAttribute("pmCategoryList", pmCategoryRepository.findAll(Sort.by("name")));
 
             return model;
         }
@@ -605,7 +563,7 @@ public class PmServiceImpl implements PmService {
         return null;
     }
 
-
+/*
     @Override
     public long getFinishedTaskCount() {
         return taskRepository.getTaskCountByActivation(false);
@@ -639,5 +597,5 @@ public class PmServiceImpl implements PmService {
         var formatted = decimalFormat.format(percent);
         return Integer.parseInt(formatted);
     }
-
+*/
 }

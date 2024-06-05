@@ -17,7 +17,6 @@ import java.util.List;
 @RequestMapping(value = {"/"})
 public class PmController {
 
-
     private final PmService pmService;
 
     @Autowired
@@ -25,29 +24,24 @@ public class PmController {
         this.pmService = taskService;
     }
 
-    @GetMapping("/type")
-    public String showPmTypeList(Model model) {
-        pmService.PmTypeOverview(model);
-        return "pmTypeView";
-    }
 
     @GetMapping("/list")
     public String showPmInterfaceList(Model model) {
         List<PmInterface> pmInterfaceList = pmService.getPmInterfaceList();
         model.addAttribute("pmInterfaceList", pmInterfaceList);
-        return "pmListView";
+        return "pmInterfaceList";
     }
 
     @GetMapping("/register/form")    /// General Pm only
-    public String showPmForm(Model model) {
+    public String showPmInterfaceRegisterForm(Model model) {
         pmService.getPmInterfaceFormData(model);
-        return "pmRegisterView";
+        return "pmInterfaceRegister";
     }
 
     @GetMapping("/{pmInterfaceId}/edit/form")
-    public String showEditForm(@RequestParam int pmInterfaceId, Model model) {
+    public String showPmInterfaceEditForm(@RequestParam short pmInterfaceId, Model model) {
         pmService.pmInterfaceEditFormData(model, pmInterfaceId);
-        return "pmEditView";
+        return "pmInterfaceRegister";
     }
 
     @PostMapping("/register")  /// General Pm only
@@ -59,7 +53,7 @@ public class PmController {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
-            return showPmForm(model);
+            return showPmInterfaceRegisterForm(model);
         }
 
         if (!file.isEmpty()) {
@@ -70,11 +64,11 @@ public class PmController {
         return "pmList";
     }
 
-    @GetMapping("/{pmInterfaceId}/active/{active}/{locationId}")
+    @GetMapping("/{pmInterfaceId}/active/{active}/location/{locationId}")
     public String showPmInterfacePmTaskList(@RequestParam short pmInterfaceId,
-                                        @RequestParam boolean active,
-                                        @RequestParam(required = false) int locationId,
-                                        Model model) {
+                                            @RequestParam boolean active,
+                                            @RequestParam(required = false) int locationId,
+                                            Model model) {
 
         pmService.getPmInterfacePmListModel(model, pmInterfaceId, active, locationId);
         return "pmInterfacePmList";
@@ -82,38 +76,38 @@ public class PmController {
 
 
     @GetMapping("/{pmId}/detailList")
-    public String showPmDetailPage(@RequestParam int pmId, Model model) {
+    public String showPmDetailPage(@RequestParam("pmId") int pmId, Model model) {
         pmService.getPmDetailList(model, pmId);
         return "pmDetail";
     }
 
     @GetMapping("/{pmId}/form")
-    public String showPmUpdateForm(@RequestParam("taskId") int pmId,
-                                     Model model) {
-        pmService.getPmUpdateForm(model, pmService.getPm(pmId), pmService.getOwnerUsername(pmId));
+    public String showPmUpdateForm(@RequestParam("pmId") int pmId,
+                                   Model model) {
+        pmService.getPmUpdateForm(model, pmService.getPm(pmId), pmService.getPmOwnerUsername(pmId));
 
         return "pmUpdateForm";
     }
 
     @PostMapping("/update")
     public String updatePm(Model model,
-                             @RequestParam("attachment") MultipartFile file,
-                             @ModelAttribute("assignForm") PmUpdateForm pmUpdateForm) throws IOException {
+                           @RequestParam("attachment") MultipartFile file,
+                           @ModelAttribute("assignForm") PmUpdateForm pmUpdateForm) throws IOException {
         if (!file.isEmpty()) {
             pmUpdateForm.setFile(file);
         }
 
-        pmService.updatePm(pmUpdateForm, pmService.getPm(pmUpdateForm.getPmId()), pmService.getOwnerUsername(pmUpdateForm.getPmId()));
+        pmService.updatePm(pmUpdateForm, pmService.getPm(pmUpdateForm.getPmId()), pmService.getPmOwnerUsername(pmUpdateForm.getPmId()));
         // pmService.modelForActivePersonTaskList(model);
-        return "redirect:activePersonTaskList";
+        return "redirect:activePersonPmList";
     }
 
-    @GetMapping("/myTask")
-    private String showPersonTaskList(Model model) {
+    @GetMapping("/myList")
+    private String showPersonActivePmList(Model model) {
 
-        pmService.getPersonTaskList(model);
+        pmService.getPersonActivePmList(model);
 
-        return "activePersonTaskList";
+        return "activePersonPmList";
     }
 
     @ModelAttribute

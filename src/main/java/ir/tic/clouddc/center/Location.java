@@ -5,9 +5,7 @@ import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -33,27 +31,23 @@ public abstract class Location {
     @OneToMany(mappedBy = "location")
     private List<Event> eventList;
 
+    @OneToMany(mappedBy = "location")
+    private List<LocationPmCatalog> locationPmCatalogList;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
-    @ElementCollection
-    @CollectionTable(name = "Pm_Due_mapping",
-            joinColumns = {@JoinColumn(name = "location_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "pmInterface_id")
-    @Column(name = "due_date")
-    private Map<Short, LocalDate> pmDueMap;    /// <pmInterfaceId, DueDate>
+    public List<LocationPmCatalog> getLocationPmCatalogList() {
+        return locationPmCatalogList;
+    }
+
+    public void setLocationPmCatalogList(List<LocationPmCatalog> locationPmCatalogList) {
+        this.locationPmCatalogList = locationPmCatalogList;
+    }
 
     public Center getCenter() {
         return center;
-    }
-
-    public Map<Short, LocalDate> getPmDueMap() {
-        return pmDueMap;
-    }
-
-    public void setPmDueMap(Map<Short, LocalDate> pmDueMap) {
-        this.pmDueMap = pmDueMap;
     }
 
     public LocationCategory getLocationCategory() {

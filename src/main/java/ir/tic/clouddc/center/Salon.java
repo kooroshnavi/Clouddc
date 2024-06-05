@@ -13,12 +13,6 @@ import java.util.Map;
 public class Salon extends Location {
 
     @OneToMany(mappedBy = "salon")
-    private List<Task> taskList;
-
-    @OneToMany(mappedBy = "location")
-    private List<Temperature> temperatureList;
-
-    @OneToMany(mappedBy = "salon")
     private List<Rack> rackList;
 
     @ElementCollection
@@ -29,30 +23,12 @@ public class Salon extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
-
-
     public List<Rack> getRackList() {
         return rackList;
     }
 
     public void setRackList(List<Rack> rackList) {
         this.rackList = rackList;
-    }
-
-    public List<Temperature> getTemperatureList() {
-        return temperatureList;
-    }
-
-    public void setTemperatureList(List<Temperature> temperatureList) {
-        this.temperatureList = temperatureList;
-    }
-
-    public List<Task> getTaskList() {
-        return taskList;
-    }
-
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
     }
 
     public Map<LocalDate, Float> getAverageTemperature() {
