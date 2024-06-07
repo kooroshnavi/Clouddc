@@ -17,31 +17,40 @@ public abstract class Device {
     private int id;
 
     @Column
-    private String serialNumber;
+    private String serialNumber;   /// DeviceForm
 
     @Column
-    private boolean dualPower;
+    private String name;    /// DeviceForm
 
     @Column
-    private boolean failure;
+    private boolean dualPower;   /// DeviceFailureEvent
 
     @Column
-    private boolean active;
+    private boolean powerOn;    /// DeviceFailureEvent
 
     @Column
-    private String name;
+    private boolean fanOk;
+
+    @Column
+    private boolean connectivityOk;
+
+    @Column
+    private boolean greenStat; /// DeviceFailureEvent
+
+    @Column
+    private boolean priorityDevice;    /// DeviceForm
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "device_category_id")
-    private DeviceCategory deviceCategory;
+    private DeviceCategory deviceCategory;   /// DeviceForm
 
     @ManyToOne
     @JoinColumn(name = "utilizer_id")
-    private Utilizer utilizer;
+    private Utilizer utilizer;    /// DeviceUtilizerEvent
 
     @ManyToOne
     @JoinColumn(name = "location_id")
-    private Location location;
+    private Location location;   /// DeviceMovementEvent
 
     @OneToMany(mappedBy = "device")
     private List<Event> eventList;
@@ -49,6 +58,31 @@ public abstract class Device {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+
+    public boolean isFanOk() {
+        return fanOk;
+    }
+
+    public void setFanOk(boolean fanOk) {
+        this.fanOk = fanOk;
+    }
+
+    public boolean isConnectivityOk() {
+        return connectivityOk;
+    }
+
+    public void setConnectivityOk(boolean connectivityOk) {
+        this.connectivityOk = connectivityOk;
+    }
+
+    public boolean isPriorityDevice() {
+        return priorityDevice;
+    }
+
+    public void setPriorityDevice(boolean priorityDevice) {
+        this.priorityDevice = priorityDevice;
+    }
 
     public Persistence getPersistence() {
         return persistence;
@@ -58,12 +92,12 @@ public abstract class Device {
         this.persistence = persistence;
     }
 
-    public boolean isActive() {
-        return active;
+    public boolean isPowerOn() {
+        return powerOn;
     }
 
-    public void setActive(boolean active) {
-        this.active = active;
+    public void setPowerOn(boolean powerOn) {
+        this.powerOn = powerOn;
     }
 
     public String getName() {
@@ -82,8 +116,8 @@ public abstract class Device {
         this.deviceCategory = deviceCategory;
     }
 
-    public boolean isFailure() {
-        return failure;
+    public boolean isGreenStat() {
+        return greenStat;
     }
 
 
@@ -95,8 +129,8 @@ public abstract class Device {
         this.location = location;
     }
 
-    public void setFailure(boolean failure) {
-        this.failure = failure;
+    public void setGreenStat(boolean greenStat) {
+        this.greenStat = greenStat;
     }
 
     public Utilizer getUtilizer() {

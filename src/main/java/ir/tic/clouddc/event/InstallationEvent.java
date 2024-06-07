@@ -1,6 +1,6 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.resource.Device;
 import jakarta.persistence.*;
 
@@ -17,8 +17,8 @@ public class InstallationEvent extends Event {
     private List<Device> deviceList;
 
     @ManyToOne
-    @JoinColumn(name = "rack_id")
-    private Rack location;
+    @JoinColumn(name = "location_id")
+    private Location location;
 
 
     public String getEVENT_TYPE() {
@@ -33,11 +33,26 @@ public class InstallationEvent extends Event {
         this.deviceList = deviceList;
     }
 
-    public Rack getLocation() {
+    public Location getLocation() {
         return location;
     }
 
-    public void setLocation(Rack location) {
+    public void setLocation(Location location) {
         this.location = location;
+    }
+
+    @Override
+    public void registerEvent() {
+
+    }
+
+    @Override
+    public void updateEvent() {
+
+    }
+
+    @Override
+    public void endEvent() {
+
     }
 }

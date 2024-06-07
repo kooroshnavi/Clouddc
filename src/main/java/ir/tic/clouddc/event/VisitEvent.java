@@ -20,4 +20,19 @@ public class VisitEvent extends Event {
     public void setCenter(Center center) {
         this.center = center;
     }
+
+    @Override
+    public void registerEvent() {
+
+    }
+
+    @Override
+    public void updateEvent() {
+
+    }
+
+    @Override
+    public void endEvent() {
+
+    }
 }

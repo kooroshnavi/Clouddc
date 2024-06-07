@@ -111,19 +111,20 @@
                                 <div class="col">
                                     <a th:href="@{/pm/{pmInterfaceId}/edit/form(pmInterfaceId=${pmInterface.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="بروزرسانی">ویرایش Pm</a>
+                                       data-bs-placement="bottom" title="تغییرات در نام، دسته بندی و دوره تکرار">ویرایش
+                                        Pm</a>
                                 </div>
 
                                 <div class="col">
                                     <a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${true})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
+                                       data-bs-placement="bottom" title="مشاهده لیست">لیست فعال</a>
                                 </div>
 
                                 <div class="col">
                                     <a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${false})}"
                                        class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده لیست">لیست وظایف فعال</a>
+                                       data-bs-placement="bottom" title="مشاهده لیست">لیست آرشیو</a>
                                 </div>
 
                             </td>
@@ -136,6 +137,7 @@
                     </table>
                 </div>
             </div>
+
         </div>
     </main>
     <!--end page main-->
@@ -284,6 +286,7 @@ $.fn.ddTableFilter.defaultOptions = {
 })(jQuery);
 
 $('table').ddTableFilter();
+
 
 </script>
 <!-- Bootstrap bundle JS -->

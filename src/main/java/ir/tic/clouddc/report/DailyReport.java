@@ -1,6 +1,5 @@
 package ir.tic.clouddc.report;
 
-import ir.tic.clouddc.center.Temperature;
 import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;

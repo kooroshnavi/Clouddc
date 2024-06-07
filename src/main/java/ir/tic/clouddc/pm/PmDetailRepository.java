@@ -1,6 +1,7 @@
 package ir.tic.clouddc.pm;
 
 
+import jakarta.annotation.Nullable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,7 +17,7 @@ public interface PmDetailRepository extends JpaRepository<PmDetail, Integer> {
     List<GeneralPmDetail> findByTaskId(long taskId);
 
     @Query("SELECT p.pm FROM PmDetail p WHERE p.persistence.person.username = :username AND p.active = :active")
-    List<? extends Pm> fetchActivePersonPmList(@Param("username") String username, @Param("active") boolean active);
+    List<? extends Pm> fetchActivePersonPmList(@Param("username") @Nullable String username, @Param("active") boolean active);
 
     @Query("SELECT P.persistence.id FROM PmDetail P WHERE P.pm.id = :pmId")
     List<Long> getPersistenceIdList(@Param("pmId") int pmId);

@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Event {
+public abstract class Event implements EventAction {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -20,10 +20,10 @@ public abstract class Event {
     private boolean active;
 
     @Column
-    private LocalDate date;
+    private LocalDate registerDate;
 
     @Column
-    private LocalTime time;
+    private LocalTime registerTime;
 
     @Column
     private String title;
@@ -36,10 +36,10 @@ public abstract class Event {
     private List<EventDetail> eventDetailList;
 
     @Transient
-    private String persianWeekday;
+    private String persianRegisterDate;
 
     @Transient
-    private String persianDate;
+    private String persianRegisterDayTime;
 
     public int getId() {
         return id;
@@ -69,40 +69,40 @@ public abstract class Event {
         this.eventDetailList = eventDetailList;
     }
 
-    public String getPersianDate() {
-        return persianDate;
+    public String getPersianRegisterDayTime() {
+        return persianRegisterDayTime;
     }
 
-    public void setPersianDate(String persianDate) {
-        this.persianDate = persianDate;
+    public void setPersianRegisterDayTime(String persianRegisterDayTime) {
+        this.persianRegisterDayTime = persianRegisterDayTime;
     }
 
-    public LocalDate getDate() {
-        return date;
+    public LocalDate getRegisterDate() {
+        return registerDate;
     }
 
-    public void setDate(LocalDate date) {
-        this.date = date;
+    public void setRegisterDate(LocalDate registerDate) {
+        this.registerDate = registerDate;
     }
 
-    public LocalTime getTime() {
-        return time;
+    public LocalTime getRegisterTime() {
+        return registerTime;
     }
 
-    public void setTime(LocalTime time) {
-        this.time = time;
+    public void setRegisterTime(LocalTime registerTime) {
+        this.registerTime = registerTime;
     }
 
     public List<EventDetail> getEventDetailList() {
         return eventDetailList;
     }
 
-    public String getPersianWeekday() {
-        return persianWeekday;
+    public String getPersianRegisterDate() {
+        return persianRegisterDate;
     }
 
-    public void setPersianWeekday(String persianWeekday) {
-        this.persianWeekday = persianWeekday;
+    public void setPersianRegisterDate(String persianRegisterDate) {
+        this.persianRegisterDate = persianRegisterDate;
     }
 
     public void setActive(boolean active) {

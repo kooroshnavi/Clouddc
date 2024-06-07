@@ -29,4 +29,18 @@ public class TemperaturePm extends Pm {
         this.averageDailyValue = averageDailyValue;
     }
 
+    @Override
+    public void registerPm() {
+
+    }
+
+    @Override
+    public void assignPm() {
+
+    }
+
+    @Override
+    public void endPm() {
+
+    }
 }

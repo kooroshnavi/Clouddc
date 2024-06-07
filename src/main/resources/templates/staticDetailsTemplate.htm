@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org">
 
+<!--attachment table-->
 <div class="card" align="center" th:fragment="attachment">
     <div class="card-body">
         <h6 class="mb-0 text-uppercase" align="center">
@@ -72,7 +73,7 @@
         </div>
     </div>
 </div>
-
+<!--attachment table-->
 
 <!--Event table-->
 <div class="card" th:fragment="eventTable">
@@ -122,5 +123,57 @@
     </div>
 </div>
 <!--Event table-->
+
+
+<!--Pm table-->
+<div class="card" th:fragment="pmTable">
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table mb-0 table-dark table-striped">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>دسته بندی</th>
+                    <th>عنوان Pm</th>
+                    <th>جزئیات آخرین اقدام</th>
+                    <th>سررسید بعدی</th>
+                    <th>کارتابل پیش فرض</th>
+                    <th>جزئیات</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="pmCatalog, iter : ${locationPmCatalogList}">
+
+                    <td th:text="${iter.count}"></td>
+                    <td th:text="${pmCatalog.pmInterface.pmCategory.name}"></td>
+                    <td th:text="${pmCatalog.pmInterface.name}"></td>
+
+                    <td th:text="${pmCatalog.lastFinishedPm.persianFinishedDate}">
+                        <div class="col">
+                            <a th:href="@{/pm/{pmId}/detailList(pmId=${pmCatalog.lastFinishedPm.id})}"
+                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" th:text="${pmCatalog.lastFinishedPm.persianFinishedDayTime}"></a>
+                        </div>
+                    </td>
+
+                    <td th:text="${event.persianDate}"></td>
+
+                    <td class="clock">
+                        <span th:if="${event.active}" class="badge bg-light-danger text-danger w-100">فعال - در حال پیگیری</span>
+                        <span th:if="${not event.active}"
+                              class="badge bg-light-success text-success w-100">پایان رخداد</span>
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<!--Pm table-->
 
 

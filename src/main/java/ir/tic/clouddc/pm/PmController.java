@@ -99,15 +99,23 @@ public class PmController {
 
         pmService.updatePm(pmUpdateForm, pmService.getPm(pmUpdateForm.getPmId()), pmService.getPmOwnerUsername(pmUpdateForm.getPmId()));
         // pmService.modelForActivePersonTaskList(model);
-        return "redirect:activePersonPmList";
+        return "redirect:activePmList";
     }
 
-    @GetMapping("/myList")
-    private String showPersonActivePmList(Model model) {
+    @GetMapping("/workspace")
+    private String showWorkspace(Model model) {
 
-        pmService.getPersonActivePmList(model);
+        pmService.getActivePmList(model, true, true);
 
-        return "activePersonPmList";
+        return "activePmList";
+    }
+
+    @GetMapping("/list")
+    private String showActivePmList(Model model) {
+
+        pmService.getActivePmList(model, true, false);
+
+        return "activePmList";
     }
 
     @ModelAttribute

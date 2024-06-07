@@ -104,9 +104,9 @@ public class EventServiceImpl implements EventService {
         FailureDeviceEvent event = new FailureDeviceEvent();
         event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
         Device device = resourceService.validateFormDevice(eventForm);
-        device.setFailure(eventForm.isActive());
-        event.setDate(UtilService.getDATE());
-        event.setTime(UtilService.getTime());
+        device.setGreenStat(eventForm.isActive());
+        event.setRegisterDate(UtilService.getDATE());
+        event.setRegisterTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
         event.setTitle(eventForm.getTitle());
         event.setFailedDevice(device);
@@ -117,8 +117,8 @@ public class EventServiceImpl implements EventService {
     private void visitEventSetup(EventForm eventForm) throws IOException {
         VisitEvent event = new VisitEvent();
         event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
-        event.setDate(UtilService.getDATE());
-        event.setTime(UtilService.getTime());
+        event.setRegisterDate(UtilService.getDATE());
+        event.setRegisterTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
         event.setTitle(eventForm.getTitle());
         event.setCenter(centerService.getCenter(eventForm.getCenterId()));
@@ -129,8 +129,8 @@ public class EventServiceImpl implements EventService {
     private void salonEventSetup(EventForm eventForm) throws IOException {
         SalonEvent event = new SalonEvent();
         event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
-        event.setDate(UtilService.getDATE());
-        event.setTime(UtilService.getTime());
+        event.setRegisterDate(UtilService.getDATE());
+        event.setRegisterTime(UtilService.getTime());
         event.setActive(eventForm.isActive());
         event.setTitle(eventForm.getTitle());
         event.setLocation(centerService.getSalon(eventForm.getLocationId()));
@@ -159,8 +159,8 @@ public class EventServiceImpl implements EventService {
     public Model getEventListModel(Model model) {
         List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
         for (Event event : eventList) {
-            event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
-            event.setPersianWeekday(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
+            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDate(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
         }
         model.addAttribute("eventList", eventList);
         return model;
@@ -173,8 +173,8 @@ public class EventServiceImpl implements EventService {
             var category = optionalEventCategory.get();
             List<Event> eventList = eventRepository.findAllByCategory(category);
             for (Event event : eventList) {
-                event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
-                event.setPersianWeekday(UtilService.persianDay.get(event.getDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getTime());
+                event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+                event.setPersianRegisterDate(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
             }
             model.addAttribute("eventList", eventList);
         }
@@ -239,7 +239,7 @@ public class EventServiceImpl implements EventService {
     public Event getEvent(Long eventId) {
         DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         Event event = eventRepository.findById(eventId).get();
-        event.setPersianDate(dateTime.format(PersianDate.fromGregorian(event
+        event.setPersianRegisterDayTime(dateTime.format(PersianDate.fromGregorian(event
                 .getEventDetailList().stream().findFirst().get()
                 .getPersistence()
                 .getLogHistoryList().stream().findFirst().get()

@@ -1,6 +1,7 @@
 package ir.tic.clouddc.person;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -37,10 +38,25 @@ public class Person {
     @OneToMany(mappedBy = "person")
     private List<Persistence> persistenceList;
 
+    @OneToMany(mappedBy = "defaultPerson")
+    private List<LocationPmCatalog> locationPmCatalogList;
+
     @OneToOne
     @PrimaryKeyJoinColumn
     private Address address;
 
+
+    public void setPersistenceList(List<Persistence> persistenceList) {
+        this.persistenceList = persistenceList;
+    }
+
+    public List<LocationPmCatalog> getLocationPmCatalogList() {
+        return locationPmCatalogList;
+    }
+
+    public void setLocationPmCatalogList(List<LocationPmCatalog> locationPmCatalogList) {
+        this.locationPmCatalogList = locationPmCatalogList;
+    }
 
     public List<Persistence> getPersistenceList() {
         return persistenceList;

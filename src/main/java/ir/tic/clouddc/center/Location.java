@@ -26,7 +26,7 @@ public abstract class Location {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_type_id")
-    private LocationCategory locationCategory;
+    private LocationCategory locationCategory;  // Salon - Rack - Room
 
     @OneToMany(mappedBy = "location")
     private List<Event> eventList;
@@ -37,6 +37,8 @@ public abstract class Location {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+
 
     public List<LocationPmCatalog> getLocationPmCatalogList() {
         return locationPmCatalogList;

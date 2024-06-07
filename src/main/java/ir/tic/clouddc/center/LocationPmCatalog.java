@@ -1,5 +1,7 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.pm.Pm;
 import ir.tic.clouddc.pm.PmInterface;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -24,14 +26,21 @@ public class LocationPmCatalog {
     @JoinColumn(name = "pmInterface_id")
     private PmInterface pmInterface;
 
+    @ManyToOne
+    @JoinColumn(name = "default_workspace_id")
+    private Person defaultPerson;
+
     @Column
-    private LocalDate lastFinishedDate;
+    private Pm lastFinishedPm;
 
     @Column
     private LocalDate nextDueDate;
 
     @Transient
     private String persianFinishedDate;
+
+    @Transient
+    private String persianFinishedDayTime;
 
     @Transient
     private String persianNextDue;
@@ -61,12 +70,20 @@ public class LocationPmCatalog {
         this.pmInterface = pmInterface;
     }
 
-    public LocalDate getLastFinishedDate() {
-        return lastFinishedDate;
+    public Pm getLastFinishedPm() {
+        return lastFinishedPm;
     }
 
-    public void setLastFinishedDate(LocalDate lastFinishedDate) {
-        this.lastFinishedDate = lastFinishedDate;
+    public void setLastFinishedPm(Pm lastFinishedPm) {
+        this.lastFinishedPm = lastFinishedPm;
+    }
+
+    public Person getDefaultPerson() {
+        return defaultPerson;
+    }
+
+    public void setDefaultPerson(Person defaultPerson) {
+        this.defaultPerson = defaultPerson;
     }
 
     public LocalDate getNextDueDate() {
@@ -85,6 +102,14 @@ public class LocationPmCatalog {
         this.persianFinishedDate = persianFinishedDate;
     }
 
+    public String getPersianFinishedDayTime() {
+        return persianFinishedDayTime;
+    }
+
+    public void setPersianFinishedDayTime(String persianFinishedDayTime) {
+        this.persianFinishedDayTime = persianFinishedDayTime;
+    }
+
     public String getPersianNextDue() {
         return persianNextDue;
     }
@@ -92,4 +117,6 @@ public class LocationPmCatalog {
     public void setPersianNextDue(String persianNextDue) {
         this.persianNextDue = persianNextDue;
     }
+
+
 }

@@ -14,10 +14,10 @@ public class Server extends Device {
     private String remoteAddress;
 
     @Column
-    private String formFactor;
+    private String formFactor;   //LFF
 
     @Column
-    private int factorSize;
+    private int factorSize;  // 8
 
     public String getRemoteAddress() {
         return remoteAddress;

@@ -20,4 +20,19 @@ public class SalonEvent extends Event {
     public void setLocation(Salon location) {
         this.location = location;
     }
+
+    @Override
+    public void registerEvent() {
+
+    }
+
+    @Override
+    public void updateEvent() {
+
+    }
+
+    @Override
+    public void endEvent() {
+
+    }
 }

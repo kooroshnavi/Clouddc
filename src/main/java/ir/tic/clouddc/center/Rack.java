@@ -25,9 +25,6 @@ public class Rack extends Location {
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
 
-    @OneToMany(mappedBy = "location")
-    private List<Temperature> temperatureList;
-
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
             schema = "Center",
@@ -36,14 +33,6 @@ public class Rack extends Location {
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
 
-
-    public List<Temperature> getTemperatureList() {
-        return temperatureList;
-    }
-
-    public void setTemperatureList(List<Temperature> temperatureList) {
-        this.temperatureList = temperatureList;
-    }
 
     public Salon getSalon() {
         return salon;

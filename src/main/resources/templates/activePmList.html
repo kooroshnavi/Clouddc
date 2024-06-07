@@ -30,7 +30,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>کارتابل من</title>
+    <title>گردش های فعال</title>
 </head>
 
 <body>
@@ -50,20 +50,22 @@
     <main class="page-content">
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
-            <div class="breadcrumb-title pe-3">وظایف</div>
+            <div class="breadcrumb-title pe-3">Pm</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:;"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">کارتابل</li>
+                        <li class="breadcrumb-item active" aria-current="page">Active</li>
                     </ol>
                 </nav>
             </div>
         </div>
         <!--end breadcrumb-->
 
-        <h6 class="mb-0 text-uppercase" align="salon">کارتابل من</h6>
+        <h6 th:if="${workspace}" class="mb-0 text-uppercase" align="salon">کارتابل من</h6>
+        <h6 th:if="${not workspace}" class="mb-0 text-uppercase" align="salon">لیست Pm های فعال</h6>
+
         <hr/>
         <div class="card">
             <div class="card-body">
@@ -77,12 +79,13 @@
                             <th>مکان</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
+                            <th th:if="${not workspace}">کارتابل</th>
                             <th>جزئیات</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="pm, iter : ${activePersonPmList}">
+                        <tr th:each="pm, iter : ${activePmList}">
 
                             <td th:text="${iter.count}"></td>
 
@@ -101,6 +104,11 @@
                                       class="badge bg-light-danger text-danger w-100"></span>
                                 <span th:if="${pm.delay} == 0"
                                       class="badge bg-light-success text-success w-100">ندارد</span>
+                            </td>
+
+                            <td th:if="${not workspace}">
+                                <span th:text="${pm.activePersonName}"
+                                      class="badge bg-light-warning text-warning w-100"></span>
                             </td>
 
                             <td>

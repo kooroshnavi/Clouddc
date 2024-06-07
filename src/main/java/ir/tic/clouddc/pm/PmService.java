@@ -15,7 +15,7 @@ public interface PmService {
     Model getPmInterfaceFormData(Model model);
     Model modelForTaskController(Model model);
     Model getPmDetailList(Model model, int pmId);
-    Model getPersonActivePmList(Model model);
+    Model getActivePmList(Model model, boolean active, boolean workspace);
     Model getPmUpdateForm(Model model, Pm pm, String ownerUsername);
 
     void pmInterfaceRegister(pmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;

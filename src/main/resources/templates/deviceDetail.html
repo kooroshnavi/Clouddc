@@ -101,9 +101,9 @@
                         </td>
 
                         <td
-                            th:text="${location.utilizer.name}">
+                            th:text="${device.utilizer.name}">
                             <div class="col">
-                                <a th:href="@{/resource/utilizer/detail(utilizerId=${location.utilizer.id})}"
+                                <a th:href="@{/resource/utilizer/{utilizerId}/detail(utilizerId=${device.utilizer.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
@@ -126,6 +126,9 @@
         </div>
 
         <!--Pm table-->
+        <h6 class="mb-0 text-uppercase">لیست Pm</h6>
+        <hr/>
+        <div class="card" th:replace="~{staticDetailsTemplate :: pmTable}"></div>
         <!--Pm table-->
 
         <!--Event table-->

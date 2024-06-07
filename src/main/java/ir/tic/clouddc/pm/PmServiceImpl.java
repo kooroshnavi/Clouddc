@@ -13,6 +13,7 @@ import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -471,15 +472,23 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model getPersonActivePmList(Model model) {
-        List<? extends Pm> activePersonPmList = pmDetailRepository.fetchActivePersonPmList(personService.getCurrentUsername(), true);
-        if (!activePersonPmList.isEmpty()) {
-            setPmTransients(activePersonPmList);
-            var sortedPersonTaskList = activePersonPmList
+    public Model getActivePmList(Model model, boolean active, boolean workspace) {
+        List<? extends Pm> activePmList;
+        if (workspace) {
+            activePmList = pmDetailRepository.fetchActivePersonPmList(personService.getCurrentUsername(), active);
+
+        } else {
+            activePmList = pmDetailRepository.fetchActivePersonPmList(null, active);
+        }
+
+        if (!activePmList.isEmpty()) {
+            setPmTransients(activePmList);
+            var sortedActiveList = activePmList
                     .stream()
                     .sorted(Comparator.comparing(Pm::getDelay).reversed())
                     .toList();
-            model.addAttribute("activePersonPmList", sortedPersonTaskList);
+            model.addAttribute("activePmList", sortedActiveList);
+            model.addAttribute("workspace", workspace);
 
             return model;
         }

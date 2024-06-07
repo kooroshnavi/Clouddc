@@ -56,7 +56,7 @@ public class ResourceServiceImpl implements ResourceService {
             }
 
             for (Event event : deviceEventList) {
-                event.setPersianDate(UtilService.getFormattedPersianDate(event.getDate()));
+                event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             }
             model.addAttribute("deviceEventList", deviceEventList);
 

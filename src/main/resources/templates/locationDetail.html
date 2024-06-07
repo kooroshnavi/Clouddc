@@ -68,6 +68,13 @@
         <!--Salon/Rack/Room overview table-->
         <h6 class="mb-0 text-uppercase">مشخصات</h6>
         <hr/>
+
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <a type="button" th:href="@{/center/location/{locationId}/edit/form (locationId=${location.id})}"
+               class="btn btn-warning px-5" data-bs-toggle="tooltip"
+               data-bs-placement="top" title="ویرایش و بروزرسانی اطلاعات این مکان">ویرایش مکان</a>
+        </div>
+
         <div class="card">
             <div class="card-body">
                 <table class="table mb-0">
@@ -94,7 +101,7 @@
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
-                        <td  th:text="${location.center.name}"></td>
+                        <td th:text="${location.center.name}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -198,7 +205,7 @@
 
                             <td th:text="${rack.name}">
                                 <div class="col">
-                                    <a th:href="@{/center/location/{locationId}/detail(locationId=${rack.id})}"
+                                    <a th:href="@{/center/location/{locationId}/detail (locationId=${rack.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="جزئیات رک"></a>
                                 </div>
@@ -218,6 +225,9 @@
         <!--Rack table (Salon)-->
 
         <!--Pm table-->
+        <h6 class="mb-0 text-uppercase">لیست Pm</h6>
+        <hr/>
+        <div class="card" th:replace="~{staticDetailsTemplate :: pmTable}"></div>
         <!--Pm table-->
 
         <!--Event table-->
