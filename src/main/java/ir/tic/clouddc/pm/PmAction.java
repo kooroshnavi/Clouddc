@@ -1,10 +1,14 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.center.LocationPmCatalog;
+
 public interface PmAction {
 
-    public void registerPm();
+    public PmDetail registerPm(LocationPmCatalog catalog);
 
-    public void assignPm();
+    public PmDetail updatePmDetail(PmDetail pmDetail, PmUpdateForm pmUpdateForm);
 
-    public void endPm();
+    public PmDetail registerPmDetail();
+
+    public Pm endPm(Pm pm);
 }

@@ -1,7 +1,7 @@
 package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
@@ -13,7 +13,6 @@ import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.transaction.Transactional;
-import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -26,8 +25,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
-import java.math.RoundingMode;
-import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.TextStyle;
@@ -50,8 +47,6 @@ public class PmServiceImpl implements PmService {
     private final NotificationService notificationService;
     private final LogService logService;
     private final FileService fileService;
-    private static final int DEFAULT_ASSIGNEE_ID = 7;
-    private final GeneralPmRepository generalPmRepository;
 
     @Autowired
     PmServiceImpl(PmRepository pmRepository,
@@ -59,7 +54,7 @@ public class PmServiceImpl implements PmService {
                   PmCategoryRepository pmCategoryRepository, CenterService centerService,
                   PersonService personService,
                   NotificationService notificationService,
-                  LogService logService, FileService fileService, GeneralPmRepository generalPmRepository) {
+                  LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.pmInterfaceRepository = pmInterfaceRepository;
         this.pmDetailRepository = pmDetailRepository;
@@ -69,32 +64,27 @@ public class PmServiceImpl implements PmService {
         this.notificationService = notificationService;
         this.logService = logService;
         this.fileService = fileService;
-        this.generalPmRepository = generalPmRepository;
 
     }
 
-    public void updateTodayTasks(DailyReport todayReport) {
-        final List<Location> locationList = centerService.getLocationList();
-        final Person defaultPerson = personService.getPerson(DEFAULT_ASSIGNEE_ID);
+    public void updateTodayPmList(DailyReport todayReport) {
+        final List<LocationPmCatalog> todayCatalogList = centerService.getTodayCatalogList(UtilService.getDATE());
         List<Pm> activePmList = pmRepository.findAllByActive(true);
         List<PmDetail> pmDetailList = new ArrayList<>();
 
         delayCalculation(activePmList, pmDetailList);
 
-        for (Location location : locationList) {
-            Set<Short> pmInterfaceIdSet = location.getPmDueMap().keySet();
-            if (!pmInterfaceIdSet.isEmpty()) {
-                for (Short pmInterfaceId : pmInterfaceIdSet) {
-                    if (location.getPmDueMap().get(pmInterfaceId) == UtilService.getDATE()) {
-                        PmInterface pmInterface = pmInterfaceRepository.findById(pmInterfaceId).get();
-                        pmSetup(location, pmInterface, pmDetailList, defaultPerson);
-                        if (pmInterface.isStatelessRecurring()) {
-                            var nextDue = validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod()));
-                            location.getPmDueMap().put(pmInterfaceId, nextDue);
-                        }
-                    }
-                }
+        for (LocationPmCatalog catalog : todayCatalogList) {
+            PmDetail pmDetail;
+            if (catalog.getPmInterface().isGeneralPm()) {
+                GeneralPm generalPm = new GeneralPm();
+                pmDetail = generalPm.registerPm(catalog);
+            } else {
+                TemperaturePm temperaturePm = new TemperaturePm();
+                pmDetail = temperaturePm.registerPm(catalog);
             }
+            pmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
+            pmDetailList.add(pmDetail);
         }
 
         pmDetailRepository.saveAll(pmDetailList);
@@ -123,51 +113,6 @@ public class PmServiceImpl implements PmService {
                 activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDateTime));
                 pmDetailList.add(activeTaskDetail);
             }
-        }
-    }
-
-    private void pmSetup(Location location, PmInterface pmInterface, List<PmDetail> pmDetailList, Person defaultPerson) {
-        if (pmInterface.isGeneralPm()) {
-            GeneralPm todayGeneralPm = new GeneralPm();
-            todayGeneralPm.setActive(true);
-            todayGeneralPm.setDelay(0);
-            todayGeneralPm.setDueDate(location.getPmDueMap().get(pmInterface.getId()));
-            todayGeneralPm.setPmInterface(pmInterface);
-            todayGeneralPm.setLocation(location);
-
-            pmDetailSetup(todayGeneralPm, pmDetailList, pmInterface.isGeneralPm(), defaultPerson);
-
-        } else {
-            TemperaturePm todayTemperaturePm = new TemperaturePm();
-            todayTemperaturePm.setActive(true);
-            todayTemperaturePm.setDelay(0);
-            todayTemperaturePm.setDueDate(location.getPmDueMap().get(pmInterface.getId()));
-            todayTemperaturePm.setPmInterface(pmInterface);
-            todayTemperaturePm.setLocation(location);
-
-            pmDetailSetup(todayTemperaturePm, pmDetailList, pmInterface.isGeneralPm(), defaultPerson);
-        }
-    }
-
-    private void pmDetailSetup(Pm todayPm, List<PmDetail> pmDetailList, boolean isGeneral, Person defaultPerson) {
-        if (isGeneral) {
-            GeneralPmDetail generalPmDetail = new GeneralPmDetail();
-            generalPmDetail.setPm(todayPm);
-            generalPmDetail.setActive(true);
-            generalPmDetail.setDelay(0);
-            generalPmDetail.setRegisterDate(UtilService.getDATE());
-            generalPmDetail.setRegisterTime(UtilService.getTime());
-            generalPmDetail.setPersistence(logService.persistenceSetup(defaultPerson));
-            pmDetailList.add(generalPmDetail);
-        } else {
-            TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
-            temperaturePmDetail.setPm(todayPm);
-            temperaturePmDetail.setActive(true);
-            temperaturePmDetail.setDelay(0);
-            temperaturePmDetail.setRegisterDate(UtilService.getDATE());
-            temperaturePmDetail.setRegisterTime(UtilService.getTime());
-            temperaturePmDetail.setPersistence(logService.persistenceSetup(defaultPerson));
-            pmDetailList.add(temperaturePmDetail);
         }
     }
 
@@ -201,43 +146,6 @@ public class PmServiceImpl implements PmService {
         model.addAttribute("active", active);
 
         return model;
-    }
-
-    private Model getRelatedPmList(List<Pm> basePmList, Model model) {
-        List<GeneralPm> generalPmList = new ArrayList<>();
-        List<TemperaturePm> temperaturePmList = new ArrayList<>();
-        for (Pm pm : basePmList) {
-            if (pm instanceof GeneralPm generalPm) {
-                generalPmList.add(generalPm);
-            } else if (pm instanceof TemperaturePm temperaturePm) {
-                temperaturePmList.add(temperaturePm);
-            }
-        }
-        if (!generalPmList.isEmpty()) {
-            model.addAttribute("pmList", generalPmList);
-        } else {
-            model.addAttribute("pmList", temperaturePmList);
-        }
-        return model;
-    }
-
-
-    private Pm endPm(Pm pm) {
-        pm.setFinishedDate(UtilService.getDATE());
-        pm.setFinishedTime(UtilService.getTime());
-        pm.setActive(false);
-
-        var pmInterface = pm.getPmInterface();
-        if (!pmInterface.isStatelessRecurring()) {
-            var location = pm.getLocation();
-            location.getPmDueMap().put(pmInterface.getId(), validateNextDue(pm.getFinishedDate().plusDays(pmInterface.getPeriod())));
-        }
-
-        if (pmInterface.getPmList().stream().noneMatch(Pm::isActive)) {
-            pmInterface.setActive(false);   // pmInterface is inactive til next due
-        }
-
-        return pmRepository.saveAndFlush(pm);
     }
 
 
@@ -341,31 +249,10 @@ public class PmServiceImpl implements PmService {
         } else return currentPmDetailUsername.equals(personService.getCurrentUsername());
     }
 
-    private PmDetail assignNewTaskDetail(PmDetail pmDetail, int personId, char actionCode, boolean active) {
-        pmDetail.setRegisterDate(UtilService.getDATE());
-        pmDetail.setRegisterTime(UtilService.getTime());
-        pmDetail.setDelay(0);
-        Persistence persistence = logService.persistenceSetup(personService.getPerson(personId));
-
-        if (active) {
-            pmDetail.setActive(true);
-        } else {
-            pmDetail.setActive(false);
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, new Person(personId), persistence);
-            pmDetail.setFinishedDate(pmDetail.getRegisterDate());
-            pmDetail.setFinishedTime(pmDetail.getRegisterTime());
-        }
-
-        pmDetail.setPersistence(persistence);
-        pmDetailRepository.save(pmDetail);
-        notificationService.sendActiveTaskAssignedMessage(personService.getPerson(personId).getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), pmDetail.getRegisterTime());
-
-        return pmDetail;
-    }
 
     @Override
     @PreAuthorize(" pm.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
-    public void updatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException {
+    public void updatePmDetail(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException {
         PmDetail basePmDetail;
         var optionalPmDetail = pm.getPmDetailList().stream().filter(PmDetail::isActive).findAny();
         if (optionalPmDetail.isPresent()) {
@@ -376,62 +263,102 @@ public class PmServiceImpl implements PmService {
 
         Persistence currentPmDetailPersistence = basePmDetail.getPersistence();
         var currentUsername = personService.getCurrentUsername();
-        basePmDetail.setFinishedDate(UtilService.getDATE());
-        basePmDetail.setFinishedTime(UtilService.getTime());
-        basePmDetail.setActive(false);
-
         if (ownerUsername.equals(currentUsername)) {
-            routineOperation(basePmDetail, currentPmDetailPersistence, pmUpdateForm);
+            basePmDetail.setDescription(pmUpdateForm.getDescription());
+            routineOperation(pm, basePmDetail, currentPmDetailPersistence, pmUpdateForm);
+
         } else {
             supervisorOperation(basePmDetail, currentPmDetailPersistence, pmUpdateForm, personService.getCurrentPerson());
         }
 
+        pmDetailRepository.save(basePmDetail);
+
         if (pmUpdateForm.getActionType() == 0) {  //  End Pm
             endPm(pm);
+
         } else { //  Assign new PmDetail
-            if (pm.getPmInterface().isGeneralPm()) {
-                GeneralPmDetail generalPmDetail = new GeneralPmDetail();
-                generalPmDetail.setPm(pm);
-                assignNewTaskDetail(generalPmDetail, pmUpdateForm.getActionType(), '0', true);
-            } else if (pm.getPmInterface().isTemperaturePm()) {
-                TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
-                temperaturePmDetail.setPm(pm);
-                assignNewTaskDetail(temperaturePmDetail, pmUpdateForm.getActionType(), '0', true);
+
+            if (pm instanceof GeneralPm generalPm) {
+                var pmDetail = generalPm.registerPmDetail();
+                assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), '0', true);
+
+            } else if (pm instanceof TemperaturePm temperaturePm) {
+                var pmDetail = temperaturePm.registerPmDetail();
+                assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), '0', true);
             }
         }
-
     }
 
-    private void routineOperation(PmDetail basePmDetail, Persistence currentTaskDetailPersistence, PmUpdateForm pmUpdateForm) throws IOException {
-        basePmDetail.setDescription(pmUpdateForm.getDescription());
-        if (basePmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
-            temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
+    private PmDetail assignNewPmDetail(PmDetail pmDetail, int personId, char actionCode, boolean active) {
+        var assigneePerson = personService.getPerson(personId);
+        Persistence persistence = logService.persistenceSetup(assigneePerson);
+
+        if (active) {
+            pmDetail.setActive(true);
+        } else {
+            pmDetail.setActive(false);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, assigneePerson, persistence);
+            pmDetail.setFinishedDate(pmDetail.getRegisterDate());
+            pmDetail.setFinishedTime(pmDetail.getRegisterTime());
         }
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentTaskDetailPersistence.getPerson(), currentTaskDetailPersistence);
-        fileService.checkAttachment(pmUpdateForm.getFile(), currentTaskDetailPersistence);
+
+        pmDetail.setPersistence(persistence);
+        pmDetailRepository.save(pmDetail);
+        notificationService.sendActiveTaskAssignedMessage(assigneePerson.getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), pmDetail.getRegisterTime());
+
+        return pmDetail;
     }
 
-    private void supervisorOperation(PmDetail basePmDetail, Persistence currentTaskDetailPersistence, PmUpdateForm pmUpdateForm, Person currentPerson) throws IOException {
-        basePmDetail.setDescription("Terminated by supervisor");
+    private void routineOperation(Pm pm, PmDetail basePmDetail, Persistence currentPmDetailPersistence, PmUpdateForm pmUpdateForm) throws IOException {
+        if (pm instanceof GeneralPm generalPm) {
+            generalPm.updatePmDetail(basePmDetail, pmUpdateForm);
+        } else if (pm instanceof TemperaturePm temperaturePm) {
+            temperaturePm.updatePmDetail(basePmDetail, pmUpdateForm);
+        }
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPmDetailPersistence.getPerson(), currentPmDetailPersistence);
+        fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
+    }
+
+    private void supervisorOperation(PmDetail pmDetail, Persistence currentTaskDetailPersistence, PmUpdateForm pmUpdateForm, Person currentPerson) throws IOException {
+        pmDetail.setDescription("Terminated by supervisor");
+        pmDetail.setFinishedDate(UtilService.getDATE());
+        pmDetail.setFinishedTime(UtilService.getTime());
+        pmDetail.setActive(false);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentTaskDetailPersistence);
 
-        if (basePmDetail.getPm().getPmInterface().isGeneralPm()) {
-            GeneralPmDetail supervisorGeneralPmDetail = new GeneralPmDetail();
-            supervisorGeneralPmDetail.setPm(basePmDetail.getPm());
+        if (pmDetail.getPm() instanceof GeneralPm generalPm) {
+            var supervisorGeneralPmDetail = generalPm.registerPmDetail();
             supervisorGeneralPmDetail.setDescription(pmUpdateForm.getDescription());
-            assignNewTaskDetail(supervisorGeneralPmDetail, currentPerson.getId(), '3', false);
+            assignNewPmDetail(supervisorGeneralPmDetail, currentPerson.getId(), '3', false);
             fileService.checkAttachment(pmUpdateForm.getFile(), supervisorGeneralPmDetail.getPersistence());
 
-        } else if (basePmDetail.getPm().getPmInterface().isTemperaturePm()) {
-            TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
-            temperaturePmDetail.setPm(basePmDetail.getPm());
+        } else if (pmDetail.getPm() instanceof TemperaturePm temperaturePm) {
+            TemperaturePmDetail temperaturePmDetail = (TemperaturePmDetail) temperaturePm.registerPmDetail();
             temperaturePmDetail.setDescription(pmUpdateForm.getDescription());
             temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
-            assignNewTaskDetail(temperaturePmDetail, currentPerson.getId(), '3', false);
+            assignNewPmDetail(temperaturePmDetail, currentPerson.getId(), '3', false);
             fileService.checkAttachment(pmUpdateForm.getFile(), temperaturePmDetail.getPersistence());
         }
     }
 
+
+    private Pm endPm(Pm pm) {
+        if (pm instanceof GeneralPm generalPm) {
+            generalPm.endPm(generalPm);
+
+        } else if (pm instanceof TemperaturePm temperaturePm) {
+            temperaturePm.endPm(temperaturePm);
+        }
+
+        var persistedPm = pmRepository.save(pm);
+
+        var pmInterface = persistedPm.getPmInterface();
+        if (pmInterface.getPmList().stream().noneMatch(Pm::isActive)) {
+            pmInterface.setActive(false);
+            pmInterfaceRepository.save(pmInterface);
+        }
+        return persistedPm;
+    }
 
     @Override
     @PreAuthorize(" pm.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")

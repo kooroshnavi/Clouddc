@@ -5,6 +5,8 @@ import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.pm.PmCategoryRepository;
+import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -17,8 +19,8 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -26,8 +28,6 @@ import java.util.stream.Collectors;
 public class CenterServiceImpl implements CenterService {
 
     private final CenterRepository centerRepository;
-
-    private final TemperatureRepository temperatureRepository;
 
     private final PersonService personService;
 
@@ -37,16 +37,17 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationRepository locationRepository;
 
+    private final LocationPmCatalogRepository locationPmCatalogRepository;
 
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, PmCategoryRepository pmCategoryRepository, LocationPmCatalogRepository locationPmCatalogRepository) {
         this.centerRepository = centerRepository;
-        this.temperatureRepository = temperatureRepository;
         this.personService = personService;
         this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
+        this.locationPmCatalogRepository = locationPmCatalogRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -104,6 +105,30 @@ public class CenterServiceImpl implements CenterService {
         model.addAttribute("center2SalonList", center2SalonList);
         model.addAttribute("center2RoomList", center2RoomList);
         return model;
+    }
+
+    @Override
+    public List<LocationPmCatalog> getTodayCatalogList(LocalDate date) {
+        return locationPmCatalogRepository.findAllByNextDueDate(date);
+    }
+
+    @Override
+    public void updateCatalogDueDate(PmInterface pmInterface, Location location) {
+        var catalog = locationPmCatalogRepository.findByPmInterfaceAndLocation(pmInterface, location);
+        if (catalog.isPresent()) {
+            catalog.get().setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod())));
+            locationPmCatalogRepository.save(catalog.get());
+        }
+    }
+
+    private LocalDate validateNextDue(LocalDate nextDue) {
+        if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+            return nextDue.plusDays(2);
+        } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+            return nextDue.plusDays(1);
+        } else {
+            return nextDue;
+        }
     }
 
     @Override

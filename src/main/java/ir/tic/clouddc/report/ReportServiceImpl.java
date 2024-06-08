@@ -37,7 +37,7 @@ class ReportServiceImpl implements ReportService {
     public void startMidnightScheduling() {
         UtilService.setDate();
         var todayReport = setCurrentReport();
-        pmService.updateTodayTasks(todayReport);
+        pmService.updateTodayPmList(todayReport);
         centerService.setDailyTemperatureReport(findActive(true).get());
 
     }

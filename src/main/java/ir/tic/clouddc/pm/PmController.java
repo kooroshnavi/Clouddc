@@ -97,7 +97,7 @@ public class PmController {
             pmUpdateForm.setFile(file);
         }
 
-        pmService.updatePm(pmUpdateForm, pmService.getPm(pmUpdateForm.getPmId()), pmService.getPmOwnerUsername(pmUpdateForm.getPmId()));
+        pmService.updatePmDetail(pmUpdateForm, pmService.getPm(pmUpdateForm.getPmId()), pmService.getPmOwnerUsername(pmUpdateForm.getPmId()));
         // pmService.modelForActivePersonTaskList(model);
         return "redirect:activePmList";
     }

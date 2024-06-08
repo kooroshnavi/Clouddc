@@ -37,7 +37,7 @@ public class LogServiceImpl implements LogService {
         List<LogHistory> logHistoryList = new ArrayList<>();
         LogHistory logHistory = new LogHistory(date, time, person, persistence, new LogMessage(logMessageId), true);
         logHistoryList.add(logHistory);
-        Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findFirst();
+        Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findAny();
         if (currentHistory.isPresent()) {
             currentHistory.get().setLast(false);
             logHistoryList.add(currentHistory.get());

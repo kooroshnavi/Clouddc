@@ -17,6 +17,7 @@ public class PmUpdateForm {
     @NotBlank
     private int actionType;
 
+
     private float temperatureValue;
 
     private MultipartFile file;

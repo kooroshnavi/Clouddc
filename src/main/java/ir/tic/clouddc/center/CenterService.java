@@ -1,15 +1,18 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface CenterService {
 
     Model getCenterLandingPageModel(Model model);
-
+    List<LocationPmCatalog> getTodayCatalogList(LocalDate date);
+    void updateCatalogDueDate(PmInterface pmInterface, Location location);
     List<Location> getLocationList();
     Salon getSalon(int salonId);
     Location getLocation(int locationId);
