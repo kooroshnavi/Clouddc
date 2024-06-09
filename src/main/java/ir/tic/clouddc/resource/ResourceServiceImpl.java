@@ -2,7 +2,7 @@ package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.Event;
-import ir.tic.clouddc.event.EventForm;
+import ir.tic.clouddc.event.EventRegisterForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
@@ -36,9 +36,9 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Device validateFormDevice(EventForm eventForm) {
-        Optional<Device> currentDevice = getDeviceBySerialNumber(eventForm.getSerialNumber());
-        return currentDevice.orElseGet(() -> registerNewDevice(eventForm));
+    public Device validateFormDevice(EventRegisterForm eventRegisterForm) {
+        Optional<Device> currentDevice = getDeviceBySerialNumber(eventRegisterForm.getSerialNumber());
+        return currentDevice.orElseGet(() -> registerNewDevice(eventRegisterForm));
     }
 
     @Override
@@ -71,23 +71,23 @@ public class ResourceServiceImpl implements ResourceService {
         return optionalUtilizer.orElse(null);
     }
 
-    private Device registerNewDevice(EventForm eventForm) {
+    private Device registerNewDevice(EventRegisterForm eventRegisterForm) {
 
-        switch (eventForm.getDeviceType()) {
+        switch (eventRegisterForm.getDeviceType()) {
             case 1 -> {   /// Server
                 Server srv = new Server();
-                srv.setSerialNumber(eventForm.getSerialNumber());
-                srv.setLocation(centerService.getLocation(eventForm.getLocationId()));
-                srv.setUtilizer(getUtilizer(eventForm.getUtilizerId()));
+                srv.setSerialNumber(eventRegisterForm.getSerialNumber());
+                srv.setLocation(centerService.getLocation(eventRegisterForm.getLocationId()));
+                srv.setUtilizer(getUtilizer(eventRegisterForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 srv.setPersistence(persistence);
                 return deviceRepository.save(srv);
             }
             case 2 -> { /// Switch
                 Switch sw = new Switch();
-                sw.setSerialNumber(eventForm.getSerialNumber());
-                sw.setLocation(centerService.getLocation(eventForm.getLocationId()));
-                sw.setUtilizer(getUtilizer(eventForm.getUtilizerId()));
+                sw.setSerialNumber(eventRegisterForm.getSerialNumber());
+                sw.setLocation(centerService.getLocation(eventRegisterForm.getLocationId()));
+                sw.setUtilizer(getUtilizer(eventRegisterForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 sw.setPersistence(persistence);
                 return deviceRepository.save(sw);
@@ -95,9 +95,9 @@ public class ResourceServiceImpl implements ResourceService {
 
             case 3 -> { /// Firewall
                 Firewall fw = new Firewall();
-                fw.setSerialNumber(eventForm.getSerialNumber());
-                fw.setLocation(centerService.getLocation(eventForm.getLocationId()));
-                fw.setUtilizer(getUtilizer(eventForm.getUtilizerId()));
+                fw.setSerialNumber(eventRegisterForm.getSerialNumber());
+                fw.setLocation(centerService.getLocation(eventRegisterForm.getLocationId()));
+                fw.setUtilizer(getUtilizer(eventRegisterForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 fw.setPersistence(persistence);
                 return deviceRepository.save(fw);

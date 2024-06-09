@@ -1,35 +1,41 @@
 package ir.tic.clouddc.event;
 
-import jakarta.validation.constraints.NotBlank;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
-public class EventForm {
+public class EventRegisterForm {
 
-    @NotBlank
     private int categoryId;
 
-    @NotBlank
     private String description;
-
-    private int eventId;
 
     private boolean active;
 
-    private MultipartFile file;
+    // to update active event
+    private int eventId;
 
     private int locationId;
 
+    // visit event
     private int centerId;
 
+    // device event
     private int deviceType;
-
+    // device event
     private int utilizerId;
-
+    // device event
     private String serialNumber;
+    // device event
+    private boolean dualPower;
+    // device event
+    private boolean fan;
+    // device event
+    private boolean connectivity;
 
     private String title;
+
+    private MultipartFile file;
 
     public int getLocationId() {
         return locationId;

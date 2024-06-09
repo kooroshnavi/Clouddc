@@ -1,4 +1,4 @@
-<!doctype html>
+\<!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
@@ -86,7 +86,8 @@
                                                         <h5 class="card-title">خرابی تجهیز</h5>
                                                     </div>
                                                     <p class="card-text">خرابی یک تجهیز شامل سرور، سوییچ و ...</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(0).id)}" class="btn btn-primary">برو یه جایی</a>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(0).id)}"
+                                                       class="btn btn-primary">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -98,7 +99,8 @@
                                                         <h5 class="card-title">مشکل سالن</h5>
                                                     </div>
                                                     <p class="card-text">رخداد مرتبط با سالن</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(1).id)}" class="btn btn-danger">برو یه جایی</a>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(1).id)}"
+                                                       class="btn btn-danger">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -107,10 +109,12 @@
                                             <div class="card">
                                                 <div class="card-body text-center">
                                                     <div>
-                                                        <h5 class="card-title">نصب</h5>
+                                                        <h5 class="card-title">جابجایی</h5>
                                                     </div>
-                                                    <p class="card-text">نصب تعدادی تجهیز (سرور، سوئیچ، ...) در یک رک مشخص</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(2).id)}" class="btn btn-dark">برو یه جایی</a>
+                                                    <p class="card-text">نصب تعدادی تجهیز (سرور، سوئیچ، ...) در یک رک
+                                                        مشخص</p>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(2).id)}"
+                                                       class="btn btn-dark">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
@@ -122,18 +126,22 @@
                                                         <h5 class="card-title">بازدید</h5>
                                                     </div>
                                                     <p class="card-text">بازدید مرکز</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(3).id)}" class="btn btn-dark">برو یه جایی</a>
+                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(3).id)}"
+                                                       class="btn btn-dark">برو یه جایی</a>
                                                 </div>
                                             </div>
                                         </div>
 
 
+
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
+                    </div><!--end row-->
                 </div>
             </div>
-        </div><!--end row-->
-
+        </div>
     </main>
     <!--end page main-->
 
@@ -154,7 +162,7 @@
 <!--end wrapper-->
 
 
-<!-- Bootstrap bundle JS -->
+<!-- Bootstrap bundle JS --
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
 <script src="/panel/assets/js/jquery.min.js"></script>
@@ -164,7 +172,6 @@
 <script src="/panel/assets/js/app.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <!--app-->
-
 
 
 </body>

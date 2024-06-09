@@ -9,7 +9,7 @@ import java.util.List;
 public interface EventService {
 
 
-    void eventRegister(EventForm eventForm) throws IOException;
+    void eventRegister(EventRegisterForm eventRegisterForm) throws IOException;
 
     Event getEvent(Long eventId);
 
@@ -25,7 +25,7 @@ public interface EventService {
 
     Model getEventListByCategoryModel(Model model, int categoryId);
 
-    void updateEvent(EventForm eventForm, Event event) throws IOException;
+    void updateEvent(EventRegisterForm eventRegisterForm, Event event) throws IOException;
 
     List<Event> getPendingEventList();
 

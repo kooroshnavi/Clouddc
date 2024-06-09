@@ -68,85 +68,81 @@ public class EventServiceImpl implements EventService {
     @Override
     @PreAuthorize("id >= 1 && id <= 4")
     public Model getEventRegisterFormModel(Model model, int categoryId) {
-        EventForm eventForm = new EventForm();
-        eventForm.setCategoryId(categoryId);
+        EventRegisterForm eventRegisterForm = new EventRegisterForm();
+        eventRegisterForm.setCategoryId(categoryId);
         switch (categoryId) {
-            case 1 -> {  //// prepare deviceFailureForm model
+
+            case 3 -> {  //// prepare centerVisitForm model
+                model.addAttribute("dataCenterList", centerService.getCenterList());
+            }
+
+            case 4 -> {  //// prepare salonEventForm model
+                model.addAttribute("dataCenterList", centerService.getCenterList());
+                model.addAttribute("salonList", centerService.getSalonList());
+            }
+
+            default -> {  //// prepare deviceFailure or movement Form model
                 model.addAttribute("dataCenterList", centerService.getCenterList());
                 model.addAttribute("salonList", centerService.getSalonList());
                 model.addAttribute("rackList", centerService.getRackList());
-                model.addAttribute("utilizerList", personService.getUtilizerList());
+                model.addAttribute("roomList", centerService.getRoomList());
             }
-            case 2 -> {  //// prepare centerVisitForm model
-                model.addAttribute("dataCenterList", centerService.getCenterList());
-            }
-            case 3 -> {  //// prepare salonEventForm model
-                model.addAttribute("salonList", centerService.getSalonList());
-            }
+
         }
 
-        model.addAttribute("eventForm", eventForm);
+        model.addAttribute("eventForm", eventRegisterForm);
         return model;
     }
 
 
     @Override
-    public void eventRegister(EventForm eventForm) throws IOException {
+    public void eventRegister(EventRegisterForm eventRegisterForm) throws IOException {
 
-        switch (eventForm.getCategoryId()) {
-            case 1 -> failureDeviceEventSetup(eventForm);
-            case 2 -> visitEventSetup(eventForm);
-            case 3 -> salonEventSetup(eventForm);
+        switch (eventRegisterForm.getCategoryId()) {
+            case 1 -> {
+                FailureDeviceEvent failureDeviceEvent = new FailureDeviceEvent();
+                failureDeviceEvent.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategoryId()).get());
+                failureDeviceEvent.registerEvent(eventRegisterForm);
+            }
+            case 2 -> visitEventSetup(eventRegisterForm);
+            case 3 -> salonEventSetup(eventRegisterForm);
         }
     }
 
-    private void failureDeviceEventSetup(EventForm eventForm) throws IOException {
-        FailureDeviceEvent event = new FailureDeviceEvent();
-        event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
-        Device device = resourceService.validateFormDevice(eventForm);
-        device.setGreenStat(eventForm.isActive());
-        event.setRegisterDate(UtilService.getDATE());
-        event.setRegisterTime(UtilService.getTime());
-        event.setActive(eventForm.isActive());
-        event.setTitle(eventForm.getTitle());
-        event.setFailedDevice(device);
 
-        eventDetailRegister(eventForm, event);
-    }
-
-    private void visitEventSetup(EventForm eventForm) throws IOException {
+    private void visitEventSetup(EventRegisterForm eventRegisterForm) throws IOException {
         VisitEvent event = new VisitEvent();
-        event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
+        event.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategoryId()).get());
         event.setRegisterDate(UtilService.getDATE());
         event.setRegisterTime(UtilService.getTime());
-        event.setActive(eventForm.isActive());
-        event.setTitle(eventForm.getTitle());
-        event.setCenter(centerService.getCenter(eventForm.getCenterId()));
+        event.setActive(eventRegisterForm.isActive());
+        event.setTitle(eventRegisterForm.getTitle());
+        event.setCenter(centerService.getCenter(eventRegisterForm.getCenterId()));
 
-        eventDetailRegister(eventForm, event);
+        eventDetailRegister(eventRegisterForm, event);
     }
 
-    private void salonEventSetup(EventForm eventForm) throws IOException {
+    private void salonEventSetup(EventRegisterForm eventRegisterForm) throws IOException {
         SalonEvent event = new SalonEvent();
-        event.setEventCategory(eventCategoryRepository.findById(eventForm.getCategoryId()).get());
+        event.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategoryId()).get());
         event.setRegisterDate(UtilService.getDATE());
         event.setRegisterTime(UtilService.getTime());
-        event.setActive(eventForm.isActive());
-        event.setTitle(eventForm.getTitle());
-        event.setLocation(centerService.getSalon(eventForm.getLocationId()));
+        event.setActive(eventRegisterForm.isActive());
+        event.setTitle(eventRegisterForm.getTitle());
+        event.setLocation(centerService.getSalon(eventRegisterForm.getLocationId()));
 
-        eventDetailRegister(eventForm, event);
+        eventDetailRegister(eventRegisterForm, event);
     }
 
 
-    private void eventDetailRegister(EventForm eventForm, Event event) throws IOException {
+    private void eventDetailRegister(EventRegisterForm eventRegisterForm, Event event) throws IOException {
         EventDetail eventDetail = new EventDetail();
         var currentPerson = personService.getCurrentPerson();
         var persistence = logService.persistenceSetup(currentPerson);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), 5, currentPerson, persistence);
-        fileService.checkAttachment(eventForm.getFile(), persistence);
+        fileService.checkAttachment(eventRegisterForm.getFile(), persistence);
         eventDetail.setPersistence(persistence);
-        eventDetail.setDescription(eventForm.getDescription());
+        eventDetail.setDescription(eventRegisterForm.getDescription());
         eventDetail.setRegisterDate(UtilService.getDATE());
         eventDetail.setRegisterTime(UtilService.getTime());
         eventDetail.setEvent(event);
@@ -218,7 +214,7 @@ public class EventServiceImpl implements EventService {
                     .sorted(Comparator.comparing(EventDetail::getId).reversed())
                     .toList();
 
-            var eventForm = new EventForm();
+            var eventForm = new EventRegisterForm();
             eventForm.setEventId(eventId);
 
             model.addAttribute("eventDetailList", sortedEventDetail);
@@ -288,11 +284,11 @@ public class EventServiceImpl implements EventService {
 
     @Override
     @PreAuthorize("event.active == true")
-    public void updateEvent(EventForm eventForm, Event event) throws IOException {
-        if (!eventForm.isActive()) {
+    public void updateEvent(EventRegisterForm eventRegisterForm, Event event) throws IOException {
+        if (!eventRegisterForm.isActive()) {
             event.setActive(false);
         }
-        eventDetailRegister(eventForm, event);
+        eventDetailRegister(eventRegisterForm, event);
     }
 
     @Override

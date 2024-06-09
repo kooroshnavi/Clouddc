@@ -29,7 +29,6 @@ public class GeneralPm extends Pm {
         generalPmDetail.setRegisterTime(UtilService.getTime());
 
         return generalPmDetail;
-
     }
 
     @Override

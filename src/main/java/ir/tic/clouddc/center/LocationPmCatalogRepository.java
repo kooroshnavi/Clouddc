@@ -14,5 +14,7 @@ public interface LocationPmCatalogRepository extends JpaRepository<LocationPmCat
 
     List<LocationPmCatalog> findAllByNextDueDate(@Nullable LocalDate date);
 
-    Optional<LocationPmCatalog> findByPmInterfaceAndLocation(PmInterface pmInterface, Location location);
+    Optional<LocationPmCatalog> findByPmInterfaceAndLocation(@Nullable PmInterface pmInterface, @Nullable Location location);
+
+    List<LocationPmCatalog> findAllByPmInterface(PmInterface pmInterface);
 }

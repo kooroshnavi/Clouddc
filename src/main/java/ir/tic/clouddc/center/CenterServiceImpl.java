@@ -121,6 +121,20 @@ public class CenterServiceImpl implements CenterService {
         }
     }
 
+    @Override
+    public void updateNewlyEnabledCatalog(PmInterface pmInterface) {
+        List<LocationPmCatalog> locationPmCatalogList = locationPmCatalogRepository.findAllByPmInterface(pmInterface);
+        if (!locationPmCatalogList.isEmpty()) {
+            for (LocationPmCatalog catalog : locationPmCatalogList) {
+                var dueDate = catalog.getNextDueDate();
+                if (dueDate.isBefore(UtilService.getDATE()) || dueDate.equals(UtilService.getDATE())) {  // expired due date
+                    catalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
+                }
+            }
+            locationPmCatalogRepository.saveAll(locationPmCatalogList);
+        }
+    }
+
     private LocalDate validateNextDue(LocalDate nextDue) {
         if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
             return nextDue.plusDays(2);
@@ -247,6 +261,11 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public List<Rack> getRackList() {
         return locationRepository.findAllByRack();
+    }
+
+    @Override
+    public List<Room> getRoomList() {
+        return locationRepository.findAllByRoom();
     }
 
 }

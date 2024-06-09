@@ -15,7 +15,7 @@ public class Utilizer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private short id;
 
     @Column
     @Nationalized
@@ -38,12 +38,11 @@ public class Utilizer {
     @Column(name = "delivery_date")
     private Map<Integer, LocalDate> deviceLocalDateMap;
 
-
-    public int getId() {
+    public short getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(short id) {
         this.id = id;
     }
 

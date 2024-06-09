@@ -26,13 +26,13 @@ public class EventController {
     }
 
     @GetMapping("/category/{categoryId}/form")
-    public String showEventForm(Model model, @RequestParam("categoryId") int categoryId) {
+    public String showEventForm(Model model, @RequestParam("categoryId") short categoryId) {
         eventService.getEventRegisterFormModel(model, categoryId);
         return "eventRegister";
     }
 
     @GetMapping("/category/{categoryId}/list")
-    public String showCategoryEventList(Model model, @RequestParam("categoryId") int categoryId) {
+    public String showCategoryEventList(Model model, @RequestParam("categoryId") short categoryId) {
         eventService.getEventListByCategoryModel(model, categoryId);
         return "eventListView";
     }
@@ -46,13 +46,13 @@ public class EventController {
     @PostMapping("/register")
     public String eventPost(
             Model model
-            , @ModelAttribute("eventForm") EventForm eventForm
+            , @ModelAttribute("eventForm") EventRegisterForm eventRegisterForm
             , @RequestParam("attachment") MultipartFile file) throws IOException {
 
         if (!file.isEmpty()) {
-            eventForm.setFile(file);
+            eventRegisterForm.setFile(file);
         }
-        eventService.eventRegister(eventForm);
+        eventService.eventRegister(eventRegisterForm);
         eventService.getEventListModel(model);
         return "redirect:eventListView";
     }
@@ -66,15 +66,15 @@ public class EventController {
 
     @PostMapping("/update")
     public String updateEvent(Model model
-            , @ModelAttribute("eventForm") EventForm eventForm
+            , @ModelAttribute("eventForm") EventRegisterForm eventRegisterForm
             , @RequestParam("attachment") MultipartFile file)
             throws IOException {
 
         if (!file.isEmpty()) {
-            eventForm.setFile(file);
+            eventRegisterForm.setFile(file);
         }
-        Event event = eventService.getEvent(eventForm.getEventId());
-        eventService.updateEvent(eventForm, event);
+        Event event = eventService.getEvent(eventRegisterForm.getEventId());
+        eventService.updateEvent(eventRegisterForm, event);
         eventService.getEventListModel(model);
         return "redirect:eventListView";
     }

@@ -6,13 +6,13 @@ import org.springframework.ui.Model;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 public interface CenterService {
 
     Model getCenterLandingPageModel(Model model);
     List<LocationPmCatalog> getTodayCatalogList(LocalDate date);
     void updateCatalogDueDate(PmInterface pmInterface, Location location);
+    void updateNewlyEnabledCatalog(PmInterface pmInterface);
     List<Location> getLocationList();
     Salon getSalon(int salonId);
     Location getLocation(int locationId);
@@ -21,9 +21,8 @@ public interface CenterService {
     List<Salon> getSalonList();
     List<Center> getCenterList();
     Model modelForCenterController(Model model);
-    List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport);
     void setDailyTemperatureReport(DailyReport currentReport);
-    List<Temperature> getTemperatureHistoryList();
     List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
     List<Rack> getRackList();
+    List<Room> getRoomList();
 }

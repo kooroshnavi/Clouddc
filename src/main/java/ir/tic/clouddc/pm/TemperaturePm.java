@@ -83,6 +83,7 @@ public class TemperaturePm extends Pm {
         pm.setFinishedDate(UtilService.getDATE());
         pm.setFinishedTime(UtilService.getTime());
         pm.setActive(false);
+
         TemperaturePm temperaturePm = (TemperaturePm) pm;
         List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
         for (PmDetail pmDetail : temperaturePm.getPmDetailList()) {
@@ -90,7 +91,7 @@ public class TemperaturePm extends Pm {
         }
         float sum = (float) temperaturePmDetailList.stream().filter(temperaturePmDetail -> temperaturePmDetail.getTemperatureValue() > 0.0f).mapToDouble(TemperaturePmDetail::getTemperatureValue).sum();
         int reportedTemperatures = (int) temperaturePmDetailList.stream().filter(temperaturePmDetail -> temperaturePmDetail.getTemperatureValue() > 0.0f).count();
-        temperaturePm.setAverageDailyValue(sum / reportedTemperatures);
+        temperaturePm.setAverageDailyValue(sum / (float) reportedTemperatures);
 
         return temperaturePm;
     }

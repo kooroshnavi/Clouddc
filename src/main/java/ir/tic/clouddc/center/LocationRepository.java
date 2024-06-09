@@ -15,5 +15,6 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
 
     List<Rack> findAllByRack();
 
+    List<Room> findAllByRoom();
 
 }

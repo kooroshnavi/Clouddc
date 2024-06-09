@@ -25,18 +25,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
 @EnableScheduling
 @Transactional
 public class PmServiceImpl implements PmService {
-
 
     private final PmRepository pmRepository;
     private final PmInterfaceRepository pmInterfaceRepository;
@@ -76,29 +76,25 @@ public class PmServiceImpl implements PmService {
 
         for (LocationPmCatalog catalog : todayCatalogList) {
             PmDetail pmDetail;
-            if (catalog.getPmInterface().isGeneralPm()) {
-                GeneralPm generalPm = new GeneralPm();
-                pmDetail = generalPm.registerPm(catalog);
-            } else {
-                TemperaturePm temperaturePm = new TemperaturePm();
-                pmDetail = temperaturePm.registerPm(catalog);
+            var pmInterface = catalog.getPmInterface();
+            if (pmInterface.isEnabled()) {
+                if (catalog.getPmInterface().isGeneralPm()) {
+                    GeneralPm generalPm = new GeneralPm();
+                    pmDetail = generalPm.registerPm(catalog);
+                } else {
+                    TemperaturePm temperaturePm = new TemperaturePm();
+                    pmDetail = temperaturePm.registerPm(catalog);
+                }
+                if (!pmInterface.isActive()) {
+                    pmInterface.setActive(true);
+                }
+                pmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
+                pmDetailList.add(pmDetail);
             }
-            pmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
-            pmDetailList.add(pmDetail);
         }
 
         pmDetailRepository.saveAll(pmDetailList);
         notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
-    }
-
-    private LocalDate validateNextDue(LocalDate nextDue) {
-        if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-            return nextDue.plusDays(2);
-        } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-            return nextDue.plusDays(1);
-        } else {
-            return nextDue;
-        }
     }
 
     private void delayCalculation(List<Pm> currentPmList, List<PmDetail> pmDetailList) {
@@ -304,7 +300,7 @@ public class PmServiceImpl implements PmService {
 
         pmDetail.setPersistence(persistence);
         pmDetailRepository.save(pmDetail);
-        notificationService.sendActiveTaskAssignedMessage(assigneePerson.getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), pmDetail.getRegisterTime());
+        notificationService.sendActiveTaskAssignedMessage(assigneePerson.getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), LocalDateTime.of(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
 
         return pmDetail;
     }
@@ -340,7 +336,6 @@ public class PmServiceImpl implements PmService {
             fileService.checkAttachment(pmUpdateForm.getFile(), temperaturePmDetail.getPersistence());
         }
     }
-
 
     private Pm endPm(Pm pm) {
         if (pm instanceof GeneralPm generalPm) {
@@ -433,6 +428,14 @@ public class PmServiceImpl implements PmService {
             pmInterface = pmInterfaceRepository.findById(pmInterfaceRegisterForm.getId()).get();
             persistence = pmInterface.getPersistence();
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '7', currentPerson, persistence);
+            if (!pmInterface.isEnabled()) {
+                pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
+                if (pmInterface.isEnabled()) {
+                    centerService.updateNewlyEnabledCatalog(pmInterface);
+                }
+            } else {
+                pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
+            }
         } else {  //// New Pm
             pmInterface = new PmInterface();
             pmInterface.setActive(false);
@@ -444,7 +447,6 @@ public class PmServiceImpl implements PmService {
         pmInterface.setName(pmInterfaceRegisterForm.getName());
         pmInterface.setPeriod(pmInterfaceRegisterForm.getPeriod());
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
-        pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
         pmInterface.setPmCategory(pmCategoryRepository.findById(pmInterfaceRegisterForm.getCategoryId()).get());
         pmInterface.setGeneralPm(true);
         fileService.checkAttachment(pmInterfaceRegisterForm.getFile(), persistence);

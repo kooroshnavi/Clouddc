@@ -74,14 +74,15 @@
                         <div class="border p-3 rounded">
 
                             <form class="row g-3" th:action="@{/event/register}" enctype="multipart/form-data"
-                                  th:object="${eventForm}" method="POST">
+                                  th:object="${eventRegisterForm}" method="POST">
 
                                 <div class="col-12">
                                     <label class="form-label">عنوان</label>
-                                    <input type="text" th:field="*{title}" class="form-control" placeholder="عنوان در لیست رخدادها نمایش داده می شود">
+                                    <input type="text" th:field="*{title}" class="form-control"
+                                           placeholder="عنوان در لیست رخدادها نمایش داده می شود">
                                 </div>
 
-                                <div th:if="${(eventForm.categoryId == 1) || (eventForm.categoryId == 2)}" class="col-12 col-md-6">
+                                <div class="col-12 col-md-6">
                                     <label class="form-label">مرکز</label>
                                     <select class="form-select" name="subject" th:field="*{centerId}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -90,7 +91,8 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${(eventForm.categoryId == 1) || (eventForm.categoryId == 3)}" class="col-12 col-md-6">
+                                <div th:if="${(eventRegisterForm.categoryId == 1) || (eventRegisterForm.categoryId == 2 || (eventRegisterForm.categoryId == 4)}"
+                                     class="col-12 col-md-6">
                                     <label class="form-label">سالن</label>
                                     <select class="form-select" name="subject" th:field="*{salonId}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -99,7 +101,7 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${(eventForm.categoryId == 1)}" class="col-12 col-md-6">
+                                <div th:if="${(eventRegisterForm.categoryId == 1) || (eventRegisterForm.categoryId == 2}" class="col-12 col-md-6">
                                     <label class="form-label">رک</label>
                                     <select class="form-select" name="subject" th:field="*{rackId}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -108,7 +110,16 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${(eventForm.categoryId == 1)}" class="col-12 col-md-6">
+                                <div th:if="${(eventRegisterForm.categoryId == 1) || (eventRegisterForm.categoryId == 2}" class="col-12 col-md-6">
+                                    <label class="form-label">اتاق</label>
+                                    <select class="form-select" name="subject" th:field="*{rackId}">
+                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
+                                        <option th:each="rack : ${rackList}" th:value="${rack.id}"
+                                                th:text="${rack.name}"></option>
+                                    </select>
+                                </div>
+
+                                <div th:if="${(eventRegisterForm.categoryId == 1)}" class="col-12 col-md-6">
                                     <label class="form-label">بهره بردار</label>
                                     <select class="form-select" name="subject" th:field="*{utilizerId}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -117,7 +128,7 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${(eventForm.categoryId == 1)}" class="col-12 col-md-6">
+                                <div th:if="${(eventRegisterForm.categoryId == 1)}" class="col-12 col-md-6">
                                     <label class="form-label">نوع تجهیز</label>
                                     <select class="form-select" name="subject" th:field="*{deviceType}">
                                         <option th:value="1">سرور</option>
@@ -126,8 +137,11 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${(eventForm.categoryId == 1)}" class="input-group input-group-lg"> <span class="input-group-text" id="inputGroup-sizing-lg">شماره سریال</span>
-                                    <input type="text" th:field="*{serialNumber}" required="required" dir="rtl" autocapitalize="characters" class="form-control" aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
+                                <div th:if="${(eventRegisterForm.categoryId == 1)}" class="input-group input-group-lg">
+                                    <span class="input-group-text" id="inputGroup-sizing-lg">شماره سریال</span>
+                                    <input type="text" th:field="*{serialNumber}" required="required" dir="rtl"
+                                           autocapitalize="characters" class="form-control"
+                                           aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
                                 </div>
 
                                 <div class="col-12">
