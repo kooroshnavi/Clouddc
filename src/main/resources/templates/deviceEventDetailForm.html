@@ -73,6 +73,52 @@
                     <div class="card-body">
                         <div class="border p-3 rounded">
 
+                            <form class="was-validated">
+                                <div class="mb-3">
+                                    <label for="validationTextarea" class="form-label">Textarea</label>
+                                    <textarea class="form-control is-invalid" id="validationTextarea" placeholder="Required example textarea" required></textarea>
+                                    <div class="invalid-feedback">لطفاً یک پیام در قسمت متن وارد کنید.</div>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="validationFormCheck1" required>
+                                    <label class="form-check-label" for="validationFormCheck1">این کادر را علامت بزنید</label>
+                                    <div class="invalid-feedback">مثال متن بازخورد نامعتبر</div>
+                                </div>
+                                <div class="form-check">
+                                    <input type="radio" class="form-check-input" id="validationFormCheck2" name="radio-stacked" required>
+                                    <label class="form-check-label" for="validationFormCheck2">این رادیو را روشن کنید</label>
+                                </div>
+                                <div class="form-check mb-3">
+                                    <input type="radio" class="form-check-input" id="validationFormCheck3" name="radio-stacked" required>
+                                    <label class="form-check-label" for="validationFormCheck3">یا این رادیو دیگر را تغییر دهید</label>
+                                    <div class="invalid-feedback">نمونه بیشتر متن بازخورد نامعتبر</div>
+                                </div>
+                                <div class="mb-3">
+                                    <select class="form-select" required aria-label="select example">
+                                        <option value="">این منوی انتخاب را باز کنید</option>
+                                        <option value="1">یکی</option>
+                                        <option value="2">دو</option>
+                                        <option value="3">سه</option>
+                                    </select>
+                                    <div class="invalid-feedback">مثال بازخورد انتخاب نامعتبر</div>
+                                </div>
+                                <div class="mb-3">
+                                    <input type="file" class="form-control" aria-label="file example" required>
+                                    <div class="invalid-feedback">نمونه بازخورد فایل فرم نامعتبر</div>
+                                </div>
+                                <div class="mb-3">
+                                    <button class="btn btn-primary" type="submit" disabled>ارسال فرم</button>
+                                </div>
+                            </form>
+
+
+
+
+
+
+
+
+
                             <form class="row g-3" th:action="@{/event/register}" enctype="multipart/form-data"
                                   th:object="${eventRegisterForm}" method="POST">
 
@@ -185,7 +231,8 @@
                                                     <button type="button" class="btn btn-secondary"
                                                             data-bs-dismiss="modal">لغو
                                                     </button>
-
+                                                    <button type="submit" class="btn btn-primary">ثبت رخداد جدید
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

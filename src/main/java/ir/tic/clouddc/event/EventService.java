@@ -1,9 +1,10 @@
 package ir.tic.clouddc.event;
 
+import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 
 public interface EventService {
@@ -15,7 +16,7 @@ public interface EventService {
 
     List<EventCategory> getEventCategoryList();
 
-    Model getEventRegisterFormModel(Model model, int eventCategory);
+    Model getDeviceEventEntryForm(Model model);
 
     Model modelForEventController(Model model);
 
@@ -27,11 +28,9 @@ public interface EventService {
 
     void updateEvent(EventRegisterForm eventRegisterForm, Event event) throws IOException;
 
+    Model getRelatedDeviceEventModel(Model model, @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
+            , @Nullable EventRegisterForm fromImportantDevicePmForm);
     List<Event> getPendingEventList();
-
-    static LocalDate getTime() {
-        return LocalDate.now();
-    }
 
     long getEventCount();
 

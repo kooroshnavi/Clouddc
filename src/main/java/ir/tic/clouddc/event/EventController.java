@@ -1,5 +1,6 @@
 package ir.tic.clouddc.event;
 
+import jakarta.annotation.Nullable;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,10 +26,21 @@ public class EventController {
         return "eventLandingPage";
     }
 
-    @GetMapping("/category/{categoryId}/form")
-    public String showEventForm(Model model, @RequestParam("categoryId") short categoryId) {
-        eventService.getEventRegisterFormModel(model, categoryId);
-        return "eventRegister";
+    @GetMapping("/device/landingForm")
+    public String showDeviceEventForm(Model model) {
+        eventService.getDeviceEventEntryForm(model);
+        return "deviceEventLandingForm";
+    }
+
+    @PostMapping("/device/detail")
+    public String showDeviceEventDetailForm(Model model
+            , @Nullable @ModelAttribute("eventEntryForm") EventRegisterForm eventRegisterForm
+            , @Nullable EventRegisterForm fromImportantDevicePmForm) {
+
+        eventService.getRelatedDeviceEventModel(model, eventRegisterForm, fromImportantDevicePmForm);
+
+        return "deviceEventDetailForm";
+
     }
 
     @GetMapping("/category/{categoryId}/list")

@@ -11,15 +11,12 @@ public class EventRegisterForm {
     private String description;
 
     private boolean active;
-
     // to update active event
     private int eventId;
 
     private int locationId;
-
     // visit event
     private int centerId;
-
     // device event
     private int deviceType;
     // device event
@@ -27,12 +24,6 @@ public class EventRegisterForm {
     // device event
     private String serialNumber;
     // device event
-    private boolean dualPower;
-    // device event
-    private boolean fan;
-    // device event
-    private boolean connectivity;
-
     private String title;
 
     private MultipartFile file;

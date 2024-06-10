@@ -1,7 +1,6 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 
@@ -23,22 +22,10 @@ public abstract class Device {
     private String name;    /// DeviceForm
 
     @Column
-    private boolean dualPower;   /// DeviceFailureEvent
-
-    @Column
-    private boolean powerOn;    /// DeviceFailureEvent
-
-    @Column
-    private boolean fanOk;
-
-    @Column
-    private boolean connectivityOk;
-
-    @Column
-    private boolean greenStat; /// DeviceFailureEvent
-
-    @Column
     private boolean priorityDevice;    /// DeviceForm
+
+    @OneToMany(mappedBy = "device")
+    private List<DeviceStatus> deviceStatusList;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "device_category_id")
@@ -52,28 +39,17 @@ public abstract class Device {
     @JoinColumn(name = "location_id")
     private Location location;   /// DeviceMovementEvent
 
-    @OneToMany(mappedBy = "device")
-    private List<Event> eventList;
-
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
 
-    public boolean isFanOk() {
-        return fanOk;
+    public List<DeviceStatus> getDeviceStatusList() {
+        return deviceStatusList;
     }
 
-    public void setFanOk(boolean fanOk) {
-        this.fanOk = fanOk;
-    }
-
-    public boolean isConnectivityOk() {
-        return connectivityOk;
-    }
-
-    public void setConnectivityOk(boolean connectivityOk) {
-        this.connectivityOk = connectivityOk;
+    public void setDeviceStatusList(List<DeviceStatus> deviceStatusList) {
+        this.deviceStatusList = deviceStatusList;
     }
 
     public boolean isPriorityDevice() {
@@ -92,14 +68,6 @@ public abstract class Device {
         this.persistence = persistence;
     }
 
-    public boolean isPowerOn() {
-        return powerOn;
-    }
-
-    public void setPowerOn(boolean powerOn) {
-        this.powerOn = powerOn;
-    }
-
     public String getName() {
         return name;
     }
@@ -116,11 +84,6 @@ public abstract class Device {
         this.deviceCategory = deviceCategory;
     }
 
-    public boolean isGreenStat() {
-        return greenStat;
-    }
-
-
     public Location getLocation() {
         return location;
     }
@@ -129,24 +92,12 @@ public abstract class Device {
         this.location = location;
     }
 
-    public void setGreenStat(boolean greenStat) {
-        this.greenStat = greenStat;
-    }
-
     public Utilizer getUtilizer() {
         return utilizer;
     }
 
     public void setUtilizer(Utilizer utilizer) {
         this.utilizer = utilizer;
-    }
-
-    public List<Event> getEventList() {
-        return eventList;
-    }
-
-    public void setEventList(List<Event> eventList) {
-        this.eventList = eventList;
     }
 
     public int getId() {
@@ -163,13 +114,5 @@ public abstract class Device {
 
     public void setSerialNumber(String serialNumber) {
         this.serialNumber = serialNumber;
-    }
-
-    public boolean isDualPower() {
-        return dualPower;
-    }
-
-    public void setDualPower(boolean dualPower) {
-        this.dualPower = dualPower;
     }
 }

@@ -8,9 +8,10 @@ import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.DeviceStatus;
 import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -66,31 +67,9 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    @PreAuthorize("id >= 1 && id <= 4")
-    public Model getEventRegisterFormModel(Model model, int categoryId) {
-        EventRegisterForm eventRegisterForm = new EventRegisterForm();
-        eventRegisterForm.setCategoryId(categoryId);
-        switch (categoryId) {
-
-            case 3 -> {  //// prepare centerVisitForm model
-                model.addAttribute("dataCenterList", centerService.getCenterList());
-            }
-
-            case 4 -> {  //// prepare salonEventForm model
-                model.addAttribute("dataCenterList", centerService.getCenterList());
-                model.addAttribute("salonList", centerService.getSalonList());
-            }
-
-            default -> {  //// prepare deviceFailure or movement Form model
-                model.addAttribute("dataCenterList", centerService.getCenterList());
-                model.addAttribute("salonList", centerService.getSalonList());
-                model.addAttribute("rackList", centerService.getRackList());
-                model.addAttribute("roomList", centerService.getRoomList());
-            }
-
-        }
-
-        model.addAttribute("eventForm", eventRegisterForm);
+    public Model getDeviceEventEntryForm(Model model) {
+        EventRegisterForm eventEntryForm = new EventRegisterForm();
+        model.addAttribute("eventEntryForm", eventEntryForm);
         return model;
     }
 
@@ -100,9 +79,9 @@ public class EventServiceImpl implements EventService {
 
         switch (eventRegisterForm.getCategoryId()) {
             case 1 -> {
-                FailureDeviceEvent failureDeviceEvent = new FailureDeviceEvent();
-                failureDeviceEvent.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategoryId()).get());
-                failureDeviceEvent.registerEvent(eventRegisterForm);
+                DeviceCheckListEvent deviceCheckListEvent = new DeviceCheckListEvent();
+                deviceCheckListEvent.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategoryId()).get());
+                deviceCheckListEvent.registerEvent(eventRegisterForm);
             }
             case 2 -> visitEventSetup(eventRegisterForm);
             case 3 -> salonEventSetup(eventRegisterForm);
@@ -187,7 +166,7 @@ public class EventServiceImpl implements EventService {
             var baseEvent = optionalEvent.get();
             eventDetailList = baseEvent.getEventDetailList();
 
-            if (baseEvent instanceof FailureDeviceEvent event) {
+            if (baseEvent instanceof DeviceCheckListEvent event) {
 
                 model.addAttribute("event", event);
 
@@ -290,6 +269,39 @@ public class EventServiceImpl implements EventService {
         }
         eventDetailRegister(eventRegisterForm, event);
     }
+
+    @Override
+    public Model getRelatedDeviceEventModel(Model model, @Nullable EventRegisterForm eventRegisterForm, @Nullable EventRegisterForm fromImportantDevicePmForm) {
+
+        if (!Objects.isNull(eventRegisterForm)) {
+            var device = resourceService.getDevice(eventRegisterForm.getSerialNumber());
+            var category = eventRegisterForm.getCategoryId();
+            model.addAttribute("category", category);
+
+            if (device.isPresent()) {
+                model.addAttribute("device", device.get());
+                switch (category) {
+                    case 5:
+                        model.addAttribute("eventRegisterForm", eventRegisterForm);
+                        model.addAttribute("utilizerList", resourceService.getUtilizerList());
+
+                    case 6:
+                        model.addAttribute("eventRegisterForm", eventRegisterForm);
+                        model.addAttribute("centerList", centerService.getCenterList());
+                        model.addAttribute("salonList", centerService.getSalonList());
+
+                    case 7:
+                        DeviceCheckListForm deviceCheckListForm = new DeviceCheckListForm();
+                        model.addAttribute("currentCheckList", device.get().getDeviceStatusList().stream().filter(DeviceStatus::isCurrent).findFirst().get());
+                        model.addAttribute("deviceCheckListForm", deviceCheckListForm);
+                }
+
+
+            }
+        }
+        return model;
+    }
+
 
     @Override
     public List<Event> getPendingEventList() {

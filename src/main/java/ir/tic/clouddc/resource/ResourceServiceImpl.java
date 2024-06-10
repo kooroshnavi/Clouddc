@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -26,13 +27,16 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final PersonService personService;
 
+    private final DeviceHealthStatusRepository deviceHealthStatusRepository;
+
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, DeviceHealthStatusRepository deviceHealthStatusRepository) {
         this.deviceRepository = deviceRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
+        this.deviceHealthStatusRepository = deviceHealthStatusRepository;
     }
 
     @Override
@@ -69,6 +73,21 @@ public class ResourceServiceImpl implements ResourceService {
     public Utilizer getUtilizer(int utilizerId) {
         Optional<Utilizer> optionalUtilizer = utilizerRepository.findById(utilizerId);
         return optionalUtilizer.orElse(null);
+    }
+
+    @Override
+    public List<Utilizer> getUtilizerList() {
+        return utilizerRepository.findAll();
+    }
+
+    @Override
+    public Optional<DeviceStatus> getCurrentDeviceHealthStatus() {
+        return deviceHealthStatusRepository.findByCurrent(true);
+    }
+
+    @Override
+    public Optional<Device> getDevice(String serialNumber) {
+        return deviceRepository.findBySerialNumber(serialNumber);
     }
 
     private Device registerNewDevice(EventRegisterForm eventRegisterForm) {
