@@ -9,7 +9,7 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public abstract class Event implements EventAction {
+public abstract class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -24,9 +24,6 @@ public abstract class Event implements EventAction {
 
     @Column
     private LocalTime registerTime;
-
-    @Column
-    private String title;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "category_id")
@@ -47,14 +44,6 @@ public abstract class Event implements EventAction {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getTitle() {
-        return title;
-    }
-
-    public void setTitle(String title) {
-        this.title = title;
     }
 
     public EventCategory getEventCategory() {

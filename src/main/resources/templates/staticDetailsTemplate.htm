@@ -177,3 +177,15 @@
 <!--Pm table-->
 
 
+<div class="mb-3" th:fragment="formDescription">
+    <label for="validationTextarea" class="form-label">توضیحات</label>
+    <textarea class="form-control is-invalid" id="validationTextarea" placeholder="Required example textarea" required></textarea>
+    <div class="invalid-feedback">توضیحاتی که بعدا در یادآوری رخداد مفید است</div>
+</div>
+
+<div class="mb-3" th:fragment="formFile">
+    <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+    <input class="form-control" type="file" name="attachment" id="attachment">
+</div>
+
+

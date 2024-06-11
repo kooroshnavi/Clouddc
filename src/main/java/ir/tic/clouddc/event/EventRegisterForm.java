@@ -1,12 +1,13 @@
 package ir.tic.clouddc.event;
 
+import ir.tic.clouddc.resource.Device;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 public class EventRegisterForm {
 
-    private int categoryId;
+    private short category;
 
     private String description;
 
@@ -23,10 +24,21 @@ public class EventRegisterForm {
     private int utilizerId;
     // device event
     private String serialNumber;
+
+    private Device device;
     // device event
     private String title;
 
     private MultipartFile file;
+
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
 
     public int getLocationId() {
         return locationId;
@@ -44,12 +56,12 @@ public class EventRegisterForm {
         this.locationId = locationId;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public short getCategory() {
+        return category;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setCategory(short category) {
+        this.category = category;
     }
 
     public String getDescription() {

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Objects;
 
 @Controller
 @RequestMapping("/event")
@@ -43,9 +44,31 @@ public class EventController {
 
     }
 
+    @PostMapping("/register")
+    public String eventPost(
+            Model model
+            , @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
+            , @Nullable @ModelAttribute("deviceCheckListForm") DeviceStatusForm deviceStatusForm
+            , @RequestParam("attachment") MultipartFile file) throws IOException {
+
+        if (!file.isEmpty()) {
+            if (!Objects.isNull(eventRegisterForm)) {
+                eventRegisterForm.setFile(file);
+            } else {
+                assert deviceStatusForm != null;
+                deviceStatusForm.setFile(file);
+            }
+        }
+        eventService.eventRegister(eventRegisterForm, deviceStatusForm);
+        eventService.getEventListModel(model);
+        return "redirect:eventListView";
+    }
+
     @GetMapping("/category/{categoryId}/list")
-    public String showCategoryEventList(Model model, @RequestParam("categoryId") short categoryId) {
-        eventService.getEventListByCategoryModel(model, categoryId);
+    public String showCategoryEventList(Model model, @Nullable @RequestParam("categoryId") Short categoryId) {
+        if (categoryId != null) {
+            eventService.getEventListByCategoryModel(model, categoryId);
+        }
         return "eventListView";
     }
 
@@ -53,20 +76,6 @@ public class EventController {
     public String showEventList(Model model) {
         eventService.getEventListModel(model);
         return "eventListView";
-    }
-
-    @PostMapping("/register")
-    public String eventPost(
-            Model model
-            , @ModelAttribute("eventForm") EventRegisterForm eventRegisterForm
-            , @RequestParam("attachment") MultipartFile file) throws IOException {
-
-        if (!file.isEmpty()) {
-            eventRegisterForm.setFile(file);
-        }
-        eventService.eventRegister(eventRegisterForm);
-        eventService.getEventListModel(model);
-        return "redirect:eventListView";
     }
 
     @GetMapping("/{eventId}/detail")

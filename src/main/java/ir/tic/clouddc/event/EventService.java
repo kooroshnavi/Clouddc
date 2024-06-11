@@ -10,7 +10,8 @@ import java.util.List;
 public interface EventService {
 
 
-    void eventRegister(EventRegisterForm eventRegisterForm) throws IOException;
+    void eventRegister(@Nullable EventRegisterForm eventRegisterForm
+            , @Nullable DeviceStatusForm deviceStatusForm) throws IOException;
 
     Event getEvent(Long eventId);
 
@@ -30,6 +31,7 @@ public interface EventService {
 
     Model getRelatedDeviceEventModel(Model model, @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
             , @Nullable EventRegisterForm fromImportantDevicePmForm);
+
     List<Event> getPendingEventList();
 
     long getEventCount();

@@ -67,9 +67,11 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
+
                     <div class="card-header py-3 bg-transparent" align="salon">
                         <h5 class="mb-0">فرم ثبت رخداد</h5>
                     </div>
+
                     <div class="card-body">
                         <div class="border p-3 rounded">
 
@@ -87,8 +89,8 @@
 
                                 <div class="mb-3">
                                     <select class="form-select" required aria-label="select example"
-                                            th:field="*{categoryId}">
-                                        <option value="">انتخاب نوع رخداد</option>
+                                            th:field="*{category}">
+                                        <option value="0" disabled>انتخاب نوع رخداد</option>
                                         <option th:value="5">تغییر بهره بردار</option>
                                         <option th:value="6">جابجایی محل نصب</option>
                                         <option th:value="7">چک لیست وضعیت</option>
@@ -106,6 +108,7 @@
 
                         </div>
                     </div>
+
                 </div>
             </div>
         </div><!--end row-->

@@ -34,7 +34,7 @@ public class DeviceStatus extends Auditable {
     @Column
     private boolean current;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "device_id")
     private Device device;
 
@@ -48,6 +48,8 @@ public class DeviceStatus extends Auditable {
 
     @Transient
     private String persianCheckDayTime;
+
+
 
     public int getId() {
         return id;

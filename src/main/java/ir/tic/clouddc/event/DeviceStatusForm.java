@@ -1,6 +1,13 @@
 package ir.tic.clouddc.event;
 
-public class DeviceCheckListForm {
+import ir.tic.clouddc.resource.Device;
+import org.springframework.web.multipart.MultipartFile;
+
+public class DeviceStatusForm {
+
+    private short category;
+
+    private Device device;
 
     private boolean dualPower;  // order 0
 
@@ -14,6 +21,41 @@ public class DeviceCheckListForm {
 
     private boolean port; // order 5
 
+    private String description;
+
+    private MultipartFile file;
+
+    public Device getDevice() {
+        return device;
+    }
+
+    public void setDevice(Device device) {
+        this.device = device;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public MultipartFile getFile() {
+        return file;
+    }
+
+    public void setFile(MultipartFile file) {
+        this.file = file;
+    }
+
+    public short getCategory() {
+        return category;
+    }
+
+    public void setCategory(short category) {
+        this.category = category;
+    }
 
     public boolean isDualPower() {
         return dualPower;

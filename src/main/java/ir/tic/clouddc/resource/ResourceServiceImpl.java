@@ -1,8 +1,9 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.event.Event;
-import ir.tic.clouddc.event.EventRegisterForm;
+import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.center.Room;
+import ir.tic.clouddc.event.*;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,16 +29,17 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final PersonService personService;
 
-    private final DeviceHealthStatusRepository deviceHealthStatusRepository;
+    private final DeviceStatusRepository deviceStatusRepository;
+
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, DeviceHealthStatusRepository deviceHealthStatusRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, DeviceStatusRepository deviceStatusRepository) {
         this.deviceRepository = deviceRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
-        this.deviceHealthStatusRepository = deviceHealthStatusRepository;
+        this.deviceStatusRepository = deviceStatusRepository;
     }
 
     @Override
@@ -80,14 +83,55 @@ public class ResourceServiceImpl implements ResourceService {
         return utilizerRepository.findAll();
     }
 
-    @Override
-    public Optional<DeviceStatus> getCurrentDeviceHealthStatus() {
-        return deviceHealthStatusRepository.findByCurrent(true);
-    }
 
     @Override
     public Optional<Device> getDevice(String serialNumber) {
         return deviceRepository.findBySerialNumber(serialNumber);
+    }
+
+    @Override
+    public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event) {
+        List<DeviceStatus> deviceStatusList = new ArrayList<>();
+        var device = deviceStatusForm.getDevice();
+        var currentDeviceStatus = device.getDeviceStatusList().stream().filter(DeviceStatus::isCurrent).findFirst();
+        if (currentDeviceStatus.isPresent()) {
+            currentDeviceStatus.get().setCurrent(false);
+            deviceStatusList.add(currentDeviceStatus.get());
+        }
+
+        DeviceStatus newDeviceStatus = new DeviceStatus();
+        newDeviceStatus.setDevice(device);
+        newDeviceStatus.setEvent(event);
+        newDeviceStatus.setDualPower(deviceStatusForm.isDualPower());
+        newDeviceStatus.setSts(deviceStatusForm.isSts());
+        newDeviceStatus.setFan(deviceStatusForm.isFan());
+        newDeviceStatus.setModule(deviceStatusForm.isModule());
+        newDeviceStatus.setStorage(deviceStatusForm.isStorage());
+        newDeviceStatus.setPort(deviceStatusForm.isPort());
+        newDeviceStatus.setCurrent(true);
+
+        deviceStatusList.add(newDeviceStatus);
+
+        deviceStatusRepository.saveAllAndFlush(deviceStatusList);
+    }
+
+    @Override
+    public void updateDeviceUtilizer(DeviceUtilizerEvent event) {
+        var device = event.getDevice();
+        device.setUtilizer(event.getNewUtilizer());
+        deviceRepository.saveAndFlush(device);
+    }
+
+    @Override
+    public void updateDeviceLocation(DeviceMovementEvent event) {
+        var device = event.getDevice();
+        device.setLocation(event.getDestination());
+        if (device.getLocation() instanceof Rack rack) {
+            device.setUtilizer(rack.getUtilizer());
+        } else if (device.getLocation() instanceof Room room) {
+            device.setUtilizer(room.getUtilizer());
+        }
+        deviceRepository.saveAndFlush(device);
     }
 
     private Device registerNewDevice(EventRegisterForm eventRegisterForm) {

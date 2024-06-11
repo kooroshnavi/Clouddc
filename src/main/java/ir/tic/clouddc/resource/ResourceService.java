@@ -1,6 +1,6 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.event.EventRegisterForm;
+import ir.tic.clouddc.event.*;
 import org.springframework.ui.Model;
 
 import java.util.List;
@@ -15,9 +15,13 @@ public interface ResourceService {
     Utilizer getUtilizer(int utilizerId);
     List<Utilizer> getUtilizerList();
 
-    Optional<DeviceStatus> getCurrentDeviceHealthStatus();
-
     Optional<Device> getDevice(String serialNumber);
+
+    void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event);
+
+    void updateDeviceUtilizer(DeviceUtilizerEvent event);
+
+    void updateDeviceLocation(DeviceMovementEvent event);
 
 
 }

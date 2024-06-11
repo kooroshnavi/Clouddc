@@ -1,6 +1,7 @@
 package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -17,6 +18,19 @@ public class Room extends Location {
 
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
+
+    @ManyToOne
+    @JoinColumn(name = "utilizer_id")
+    private Utilizer utilizer;
+
+
+    public Utilizer getUtilizer() {
+        return utilizer;
+    }
+
+    public void setUtilizer(Utilizer utilizer) {
+        this.utilizer = utilizer;
+    }
 
     public Center getCenter() {
         return center;

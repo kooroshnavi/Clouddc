@@ -2,17 +2,13 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
-import ir.tic.clouddc.resource.ResourceService;
-import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-public class DeviceCheckListEvent extends Event {
-
-    private ResourceService resourceService;
+public class DeviceStatusEvent extends Event {
 
     @Column
     private boolean dualPowerChanged;  // order 0
@@ -33,20 +29,12 @@ public class DeviceCheckListEvent extends Event {
     private boolean portChanged; // order 5
 
     @OneToOne
-    @JoinColumn(name = "device_health_id")
+    @JoinColumn(name = "device_status_id")
     private DeviceStatus deviceStatus;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "device_id")
     private Device device;
-
-    public ResourceService getResourceService() {
-        return resourceService;
-    }
-
-    public void setResourceService(ResourceService resourceService) {
-        this.resourceService = resourceService;
-    }
 
     public boolean isDualPowerChanged() {
         return dualPowerChanged;
@@ -113,35 +101,34 @@ public class DeviceCheckListEvent extends Event {
     }
 
 
-    @Override
-    public void registerEvent(EventRegisterForm eventRegisterForm) {
-        Device device = resourceService.validateFormDevice(eventRegisterForm);
-        this.setRegisterDate(UtilService.getDATE());
-        this.setRegisterTime(UtilService.getTime());
+    public EventDetail registerEvent(DeviceStatusForm deviceStatusForm) {
+        var currentStatus = deviceStatusForm.getDevice().getDeviceStatusList().stream().filter(DeviceStatus::isCurrent).findFirst();
+        if (currentStatus.isPresent()) {
+            this.setDeviceStatus(currentStatus.get());
+            this.setDualPowerChanged(currentStatus.get().isDualPower() != deviceStatusForm.isDualPower());
+            this.setStsChanged(currentStatus.get().isSts() != deviceStatusForm.isSts());
+            this.setFanChanged(currentStatus.get().isFan() != deviceStatusForm.isFan());
+            this.setModuleChanged(currentStatus.get().isModule() != deviceStatusForm.isModule());
+            this.setStorageChanged(currentStatus.get().isStorage() != deviceStatusForm.isStorage());
+            this.setPortChanged(currentStatus.get().isPort() != deviceStatusForm.isPort());
+        } else {
+            this.setDualPowerChanged(!deviceStatusForm.isDualPower());
+            this.setStsChanged(!deviceStatusForm.isSts());
+            this.setFanChanged(!deviceStatusForm.isFan());
+            this.setModuleChanged(!deviceStatusForm.isModule());
+            this.setStorageChanged(!deviceStatusForm.isStorage());
+            this.setPortChanged(!deviceStatusForm.isPort());
+        }
+        this.setDevice(deviceStatusForm.getDevice());
         this.setActive(false);
-        this.setTitle(eventRegisterForm.getTitle());
-        this.setDevice(device);
 
-        var currentDeviceHealthStatus = resourceService.getCurrentDeviceHealthStatus();
-        if (currentDeviceHealthStatus.isPresent()) {
-            this.setDeviceStatus(currentDeviceHealthStatus.get());
-            DeviceCheckListForm deviceCheckListForm = new DeviceCheckListForm();
+        EventDetail eventDetail = new EventDetail();
+        eventDetail.setEvent(this);
+        eventDetail.setDescription(deviceStatusForm.getDescription());
+        eventDetail.setRegisterDate(this.getRegisterDate());
+        eventDetail.setRegisterTime(this.getRegisterTime());
 
-        }
-        else {
-
-        }
-
+        return eventDetail;
     }
 
-
-    @Override
-    public void updateEvent(EventRegisterForm eventRegisterForm) {
-
-    }
-
-    @Override
-    public void endEvent(EventRegisterForm eventRegisterForm) {
-
-    }
 }
