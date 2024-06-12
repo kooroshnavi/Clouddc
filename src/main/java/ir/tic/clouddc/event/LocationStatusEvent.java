@@ -1,6 +1,7 @@
 package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.LocationStatus;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -8,10 +9,6 @@ import lombok.NoArgsConstructor;
 @Table(schema = "Event")
 @NoArgsConstructor
 public class LocationStatusEvent extends Event {
-
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "location_id")
-    private Location location;
 
     @Column
     private boolean doorChanged;  // order 0
@@ -21,6 +18,22 @@ public class LocationStatusEvent extends Event {
 
     @Column
     private boolean powerChanged; // order 2
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "status_id")
+    private LocationStatus locationStatus;
+
+    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @JoinColumn(name = "location_id")
+    private Location location;
+
+    public LocationStatus getLocationStatus() {
+        return locationStatus;
+    }
+
+    public void setLocationStatus(LocationStatus locationStatus) {
+        this.locationStatus = locationStatus;
+    }
 
     public Location getLocation() {
         return location;
@@ -54,4 +67,28 @@ public class LocationStatusEvent extends Event {
         this.powerChanged = powerChanged;
     }
 
+    public EventDetail registerEvent(LocationStatusForm locationStatusForm) {
+        var currentStatus = locationStatusForm.getLocation().getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
+        if (currentStatus.isPresent()) {
+            this.setLocationStatus(currentStatus.get());
+            this.setDoorChanged(currentStatus.get().isDoor() != locationStatusForm.isDoor());
+            this.setVentilationChanged(currentStatus.get().isVentilation() != locationStatusForm.isVentilation());
+            this.setPowerChanged(currentStatus.get().isPower() != locationStatusForm.isPower());
+        } else {
+            this.setDoorChanged(!locationStatusForm.isDoor());
+            this.setVentilationChanged(!locationStatusForm.isVentilation());
+            this.setPowerChanged(!locationStatusForm.isPower());
+        }
+
+        this.setLocation(locationStatusForm.getLocation());
+        this.setActive(false);
+
+        EventDetail eventDetail = new EventDetail();
+        eventDetail.setEvent(this);
+        eventDetail.setDescription(locationStatusForm.getDescription());
+        eventDetail.setRegisterDate(this.getRegisterDate());
+        eventDetail.setRegisterTime(this.getRegisterTime());
+
+        return eventDetail;
+    }
 }

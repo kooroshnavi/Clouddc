@@ -1,6 +1,8 @@
 package ir.tic.clouddc.center;
 
 import com.github.mfathi91.time.PersianDate;
+import ir.tic.clouddc.event.LocationStatusEvent;
+import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
@@ -39,15 +41,18 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationPmCatalogRepository locationPmCatalogRepository;
 
+    private final LocationStatusRepository locationStatusRepository;
+
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, PmCategoryRepository pmCategoryRepository, LocationPmCatalogRepository locationPmCatalogRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, PmCategoryRepository pmCategoryRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
         this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
         this.locationPmCatalogRepository = locationPmCatalogRepository;
+        this.locationStatusRepository = locationStatusRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -108,6 +113,24 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
+    public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event) {
+        List<LocationStatus> locationStatusList = new ArrayList<>();
+        var currentStatus = locationStatusForm.getLocation().getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
+        if (currentStatus.isPresent()) {
+            currentStatus.get().setCurrent(false);
+            locationStatusList.add(currentStatus.get());
+        } else {
+            LocationStatus locationStatus = new LocationStatus();
+            locationStatus.setLocation(locationStatusForm.getLocation());
+            locationStatus.setEvent(event);
+            locationStatus.setCurrent(true);
+            locationStatus.setDoor(locationStatusForm.isDoor());
+            locationStatus.setVentilation(locationStatusForm.isVentilation());
+            locationStatus.setPower(locationStatusForm.isPower());
+        }
+    }
+
+    @Override
     public List<LocationPmCatalog> getTodayCatalogList(LocalDate date) {
         return locationPmCatalogRepository.findAllByNextDueDate(date);
     }
@@ -151,7 +174,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Salon getSalon(int salonId) {
+    public Hall getSalon(int salonId) {
         return null;
     }
 
@@ -167,7 +190,7 @@ public class CenterServiceImpl implements CenterService {
         if (optionalLocation.isPresent()) {
             var baseLocation = optionalLocation.get();
 
-            if (baseLocation instanceof Salon location) {
+            if (baseLocation instanceof Hall location) {
                 model.addAttribute("location", location);
                 model.addAttribute("rackList", location.getRackList());
 
@@ -190,7 +213,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public List<Salon> getSalonList() {
+    public List<Hall> getSalonList() {
         return null;
     }
 

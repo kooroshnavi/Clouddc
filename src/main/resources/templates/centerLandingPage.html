@@ -63,8 +63,8 @@
                                 <h5 class="card-title" th:text="${center1.name}"></h5>
                                 <p class="card-text">مرکز داده پیش فرض زیرساخت ابری و میزبان پیام رسان های بومی</p>
 
-                                <a th:each="salon: ${center1SalonList}" th:text="${salon.name}"
-                                   th:href="@{/center/location/{locationId}/detail(locationId=${salon.id})}"
+                                <a th:each="hall: ${center1SalonList}" th:text="${hall.name}"
+                                   th:href="@{/center/location/{locationId}/detail(locationId=${hall.id})}"
                                    class="btn btn-primary"></a>
 
                                 <a th:each="room: ${center1RoomList}" th:text="${room.name}"
@@ -81,8 +81,8 @@
                                 <h5 class="card-title" th:text="${center2.name}"></h5>
                                 <p class="card-text">مرکز داده بورس در حال حاضر به عنوان مرکز پشتیبان زیرساخت ابر فعال است.</p>
 
-                                <a th:each="salon: ${center2SalonList}" th:text="${salon.name}"
-                                   th:href="@{/center/location/{locationId}/detail(locationId=${salon.id})}"
+                                <a th:each="hall: ${center2SalonList}" th:text="${hall.name}"
+                                   th:href="@{/center/location/{locationId}/detail(locationId=${hall.id})}"
                                    class="btn btn-primary"></a>
 
                                 <a th:each="room: ${center2RoomList}" th:text="${room.name}"

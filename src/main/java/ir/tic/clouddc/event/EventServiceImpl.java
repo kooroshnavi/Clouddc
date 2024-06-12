@@ -124,23 +124,42 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void eventRegister(@Nullable EventRegisterForm eventRegisterForm
-            , @Nullable DeviceStatusForm deviceStatusForm) throws IOException {
+            , @Nullable DeviceStatusForm deviceStatusForm
+            , @Nullable LocationStatusForm locationStatusForm) throws IOException {
 
         EventDetail eventDetail;
 
-        if (!Objects.isNull(deviceStatusForm)) {    ////   7. Device status event
-            DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
-            deviceStatusEvent.setRegisterDate(UtilService.getDATE());
-            deviceStatusEvent.setRegisterTime(UtilService.getTime());
-            deviceStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getCategory()).get());
-            eventDetail = deviceStatusEvent.registerEvent(deviceStatusForm);
-            eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
-            fileService.checkAttachment(deviceStatusForm.getFile(), eventDetail.getPersistence());
+        if (!Objects.isNull(deviceStatusForm)) {
 
-            var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
+            if (deviceStatusForm.getCategory() == 7) {//   7. Device status event
+                DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
+                deviceStatusEvent.setRegisterDate(UtilService.getDATE());
+                deviceStatusEvent.setRegisterTime(UtilService.getTime());
+                deviceStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getCategory()).get());
+                eventDetail = deviceStatusEvent.registerEvent(deviceStatusForm);
+                eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
+                fileService.checkAttachment(deviceStatusForm.getFile(), eventDetail.getPersistence());
 
-            resourceService.updateDeviceStatus(deviceStatusForm, (DeviceStatusEvent) persistedEventDetail.getEvent());
+                var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
 
+                resourceService.updateDeviceStatus(deviceStatusForm, (DeviceStatusEvent) persistedEventDetail.getEvent());
+            }
+
+
+        } else if (!Objects.isNull(locationStatusForm)) {
+            if (locationStatusForm.getCategory() == 2) {    //   2. Location status event
+                LocationStatusEvent locationStatusEvent = new LocationStatusEvent();
+                locationStatusEvent.setRegisterDate(UtilService.getDATE());
+                locationStatusEvent.setRegisterTime(UtilService.getTime());
+                locationStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getCategory()).get());
+                eventDetail = locationStatusEvent.registerEvent(locationStatusForm);
+                eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
+                fileService.checkAttachment(deviceStatusForm.getFile(), eventDetail.getPersistence());
+
+                var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
+
+                centerService.updateLocationStatus(locationStatusForm, (LocationStatusEvent) persistedEventDetail.getEvent());
+            }
         } else if (!Objects.isNull(eventRegisterForm)) {
             switch (eventRegisterForm.getCategory()) {
                 case 1 -> {
@@ -158,13 +177,11 @@ public class EventServiceImpl implements EventService {
                     eventDetail.setDescription(eventRegisterForm.getDescription());
                     eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
                     fileService.checkAttachment(eventRegisterForm.getFile(), eventDetail.getPersistence());
+
                     eventDetailRepository.saveAndFlush(eventDetail);
 
                 }
 
-                case 2 -> {
-
-                }
                 case 5 -> {      //// Device utilizer event
                     DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
                     deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());

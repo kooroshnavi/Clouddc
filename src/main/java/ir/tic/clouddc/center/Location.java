@@ -32,6 +32,9 @@ public abstract class Location {
     private List<Event> eventList;
 
     @OneToMany(mappedBy = "location")
+    private List<LocationStatus> locationStatusList;
+
+    @OneToMany(mappedBy = "location")
     private List<LocationPmCatalog> locationPmCatalogList;
 
     @OneToOne(cascade = CascadeType.ALL)
@@ -39,6 +42,13 @@ public abstract class Location {
     private Persistence persistence;
 
 
+    public List<LocationStatus> getLocationStatusList() {
+        return locationStatusList;
+    }
+
+    public void setLocationStatusList(List<LocationStatus> locationStatusList) {
+        this.locationStatusList = locationStatusList;
+    }
 
     public List<LocationPmCatalog> getLocationPmCatalogList() {
         return locationPmCatalogList;

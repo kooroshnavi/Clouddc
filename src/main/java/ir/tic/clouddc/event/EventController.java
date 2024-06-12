@@ -48,7 +48,8 @@ public class EventController {
     public String eventPost(
             Model model
             , @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
-            , @Nullable @ModelAttribute("deviceCheckListForm") DeviceStatusForm deviceStatusForm
+            , @Nullable @ModelAttribute("deviceStatusForm") DeviceStatusForm deviceStatusForm
+            , @Nullable @ModelAttribute("locationStatusForm") LocationStatusForm locationStatusForm
             , @RequestParam("attachment") MultipartFile file) throws IOException {
 
         if (!file.isEmpty()) {
@@ -59,7 +60,7 @@ public class EventController {
                 deviceStatusForm.setFile(file);
             }
         }
-        eventService.eventRegister(eventRegisterForm, deviceStatusForm);
+        eventService.eventRegister(eventRegisterForm, deviceStatusForm, locationStatusForm);
         eventService.getEventListModel(model);
         return "redirect:eventListView";
     }

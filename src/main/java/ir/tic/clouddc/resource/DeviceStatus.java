@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 public class DeviceStatus extends Auditable {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private int id;
 
     @Column
@@ -39,7 +41,6 @@ public class DeviceStatus extends Auditable {
     private Device device;
 
     @OneToOne(cascade = {CascadeType.ALL})
-    @MapsId
     @JoinColumn(name = "event_id")
     private Event event;
 

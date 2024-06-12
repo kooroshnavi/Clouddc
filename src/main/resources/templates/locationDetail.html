@@ -92,7 +92,7 @@
                     <tr>
                         <td th:text="${location.type}"></td>
                         <td th:text="${location.name}"></td>
-                        <td th:if="${location.locationCategory.type == 2}" th:text="${location.salon.name}"></td>
+                        <td th:if="${location.locationCategory.type == 2}" th:text="${location.hall.name}"></td>
                         <td th:if="${location.locationCategory.type == 2}"
                             th:text="${location.utilizer.name}">
                             <div class="col">

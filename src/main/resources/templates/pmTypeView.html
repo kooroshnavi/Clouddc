@@ -53,7 +53,7 @@
                data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">ثبت وظیفه جدید</a>
         </div>
         <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-salon mb-3">
+        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
             <div class="breadcrumb-title pe-3">وظایف</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
@@ -129,7 +129,7 @@
                                 <div th:if="${status.period == 0}">بایگانی شد.</div>
                             </td>
                             <td>
-                                <div class="table-actions d-flex align-items-salon gap-3 fs-6">
+                                <div class="table-actions d-flex align-items-hall gap-3 fs-6">
                                     <a th:href="@{/pm/task/list(id=${status.id})}" class="text-primary" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="تاریخچه"><i class="bi bi-eye-fill"></i></a>
                                     <a sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" th:href="@{/pm/edit(id=${status.id})}" class="text-warning"

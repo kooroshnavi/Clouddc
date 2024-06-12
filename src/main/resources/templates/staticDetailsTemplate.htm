@@ -7,7 +7,7 @@
         <h6 class="mb-0 text-uppercase" align="center">
             <strong>لیست پیوست</strong>
         </h6>
-        <div class="d-flex align-items-salon">
+        <div class="d-flex align-items-hall">
 
         </div>
         <div class="card-body">
@@ -26,27 +26,27 @@
                     <td th:text="${iter.count}"></td>
                     <td>
 
-                        <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-salon">
+                        <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
                             <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
                             <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
                         </div>
 
                         <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
-                             class="d-flex align-items-salon">
+                             class="d-flex align-items-hall">
                             <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
                             <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                class="font-weight-bold text-success" th:text="${metadata.name}"></a>
                         </div>
 
                         <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
-                             class="d-flex align-items-salon">
+                             class="d-flex align-items-hall">
                             <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                             <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                         </div>
 
-                        <div class="d-flex align-items-salon gap-2"
+                        <div class="d-flex align-items-hall gap-2"
                              th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
                             <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
                             <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"

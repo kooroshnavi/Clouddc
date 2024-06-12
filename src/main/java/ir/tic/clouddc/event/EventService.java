@@ -11,7 +11,8 @@ public interface EventService {
 
 
     void eventRegister(@Nullable EventRegisterForm eventRegisterForm
-            , @Nullable DeviceStatusForm deviceStatusForm) throws IOException;
+            , @Nullable DeviceStatusForm deviceStatusForm
+            , @Nullable LocationStatusForm locationStatusForm) throws IOException;
 
     Event getEvent(Long eventId);
 

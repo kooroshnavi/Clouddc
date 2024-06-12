@@ -16,7 +16,7 @@ public class Rack extends Location {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "salon_id")
-    private Salon salon;
+    private Hall hall;
 
     @ManyToOne
     @JoinColumn(name = "utilizer_id")
@@ -34,12 +34,12 @@ public class Rack extends Location {
     private Map<LocalDate, Float> averageTemperature;
 
 
-    public Salon getSalon() {
-        return salon;
+    public Hall getHall() {
+        return hall;
     }
 
-    public void setSalon(Salon salon) {
-        this.salon = salon;
+    public void setHall(Hall hall) {
+        this.hall = hall;
     }
 
     public List<Device> getDeviceList() {

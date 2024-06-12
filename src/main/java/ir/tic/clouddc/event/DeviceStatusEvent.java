@@ -28,8 +28,8 @@ public class DeviceStatusEvent extends Event {
     @Column
     private boolean portChanged; // order 5
 
-    @OneToOne
-    @JoinColumn(name = "device_status_id")
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "related_status_id")
     private DeviceStatus deviceStatus;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
