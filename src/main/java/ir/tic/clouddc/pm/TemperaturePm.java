@@ -1,6 +1,5 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.Column;
@@ -15,9 +14,7 @@ import java.util.List;
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-public class TemperaturePm extends Pm {
-
-    private CenterService centerService;
+public final class TemperaturePm extends Pm {
 
     @Transient
     private final String TEMPERATURE_FIELD_NAME = "دما";
@@ -51,8 +48,6 @@ public class TemperaturePm extends Pm {
         temperaturePmDetail.setActive(true);
         temperaturePmDetail.setRegisterDate(UtilService.getDATE());
         temperaturePmDetail.setRegisterTime(UtilService.getTime());
-
-        centerService.updateCatalogDueDate(catalog.getPmInterface(), catalog.getLocation());
 
         return temperaturePmDetail;
     }

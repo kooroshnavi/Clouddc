@@ -10,7 +10,7 @@ import java.util.Map;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Hall extends Location {
+public final class Hall extends Location {
 
     @OneToMany(mappedBy = "salon")
     private List<Rack> rackList;

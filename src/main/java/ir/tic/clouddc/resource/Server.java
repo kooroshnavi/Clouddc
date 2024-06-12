@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-public class Server extends Device {
+public final class Server extends Device {
 
     @Column
     private String remoteAddress;

@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-public class DeviceStatusEvent extends Event {
+public final class DeviceStatusEvent extends Event {
 
     @Column
     private boolean dualPowerChanged;  // order 0

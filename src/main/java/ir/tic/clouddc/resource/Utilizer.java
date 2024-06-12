@@ -10,7 +10,7 @@ import java.util.Map;
 @Entity
 @Table(schema = "Person")
 @NoArgsConstructor
-public class Utilizer {
+public final class Utilizer {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

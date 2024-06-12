@@ -17,10 +17,21 @@ public class EventCategory {
     @Nationalized
     private String name;
 
+    @Column
+    private short target;   //  1.Location - 2.Device
+
+
+    public short getTarget() {
+        return target;
+    }
+
+    public void setTarget(short target) {
+        this.target = target;
+    }
+
     public short getId() {
         return id;
     }
-
     public void setId(short id) {
         this.id = id;
     }

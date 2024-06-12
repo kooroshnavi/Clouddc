@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class DeviceMovementEvent extends Event {
+public final class DeviceMovementEvent extends Event {
 
     @OneToOne
     @JoinColumn(name = "source_location_id")

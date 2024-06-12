@@ -10,7 +10,7 @@ import java.util.List;
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-public class PmInterface {
+public final class PmInterface {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

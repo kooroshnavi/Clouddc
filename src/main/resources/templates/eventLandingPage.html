@@ -79,45 +79,7 @@
                                     <div class="my-3 border-top"></div>
                                     <div class="row row-cols-1 row-cols-lg-3 justify-content-center g-lg-5">
 
-                                        <div class="col">
-                                            <div class="card">
-                                                <div class="card-body text-center">
-                                                    <div>
-                                                        <h5 class="card-title">خرابی تجهیز</h5>
-                                                    </div>
-                                                    <p class="card-text">خرابی یک تجهیز شامل سرور، سوییچ و ...</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(0).id)}"
-                                                       class="btn btn-primary">برو یه جایی</a>
-                                                </div>
-                                            </div>
-                                        </div>
 
-                                        <div class="col">
-                                            <div class="card">
-                                                <div class="card-body text-center">
-                                                    <div>
-                                                        <h5 class="card-title">مشکل سالن</h5>
-                                                    </div>
-                                                    <p class="card-text">رخداد مرتبط با سالن</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(1).id)}"
-                                                       class="btn btn-danger">برو یه جایی</a>
-                                                </div>
-                                            </div>
-                                        </div>
-
-                                        <div class="col">
-                                            <div class="card">
-                                                <div class="card-body text-center">
-                                                    <div>
-                                                        <h5 class="card-title">جابجایی</h5>
-                                                    </div>
-                                                    <p class="card-text">نصب تعدادی تجهیز (سرور، سوئیچ، ...) در یک رک
-                                                        مشخص</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(2).id)}"
-                                                       class="btn btn-dark">برو یه جایی</a>
-                                                </div>
-                                            </div>
-                                        </div>
 
                                         <div class="col">
                                             <div class="card">
@@ -125,12 +87,49 @@
                                                     <div>
                                                         <h5 class="card-title">بازدید</h5>
                                                     </div>
-                                                    <p class="card-text">بازدید مرکز</p>
-                                                    <a th:href="@{/event/category/{categoryId}/form (categoryId=eventCategoryList.get(3).id)}"
-                                                       class="btn btn-dark">برو یه جایی</a>
+                                                    <p class="card-text">گزارش بازدید از مرکز</p>
+                                                    <a th:href="@{/event/category/target/{target}/form (target=1)}"
+                                                       class="btn btn-dark">ثبت رخداد بازدید</a>
+
+                                                    <a th:href="@{/event/category/target/{target}/form (target=1)}"
+                                                       class="btn btn-dark">آرشیو بازدیدهای گذشته</a>
                                                 </div>
                                             </div>
                                         </div>
+
+                                        <div class="col">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <div>
+                                                        <h5 class="card-title">رخدادهای مرکز</h5>
+                                                    </div>
+                                                    <p class="card-text">گزارشات وضعیت سالن، رک ها، اتاق ها و ...</p>
+                                                    <a th:href="@{/event/category/target/{target}/form (target=2)}"
+                                                       class="btn btn-danger">ثبت رخداد</a>
+
+                                                    <a th:href="@{/event/category/target/{target}/form (target=2)}"
+                                                       class="btn btn-danger">آرشیو رخدادهای گذشته</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col">
+                                            <div class="card">
+                                                <div class="card-body text-center">
+                                                    <div>
+                                                        <h5 class="card-title">رخدادهای تجهیز</h5>
+                                                    </div>
+                                                    <p class="card-text">مستندات خرابی و رفع آن، جابجایی و ...</p>
+                                                    <a th:href="@{/event/category/target/{target}/form (target=3)}"
+                                                       class="btn btn-primary">ثبت رخداد تجهیز</a>
+
+                                                    <a th:href="@{/event/category/target/{target}/form (target=3)}"
+                                                       class="btn btn-primary">آرشیو رخداد تجهیزات</a>
+                                                </div>
+                                            </div>
+                                        </div>
+
+
 
 
 

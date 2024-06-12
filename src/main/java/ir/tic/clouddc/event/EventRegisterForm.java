@@ -9,6 +9,8 @@ public class EventRegisterForm {
 
     private short category;
 
+    private short target;
+
     private String description;
 
     private boolean active;
@@ -31,6 +33,14 @@ public class EventRegisterForm {
 
     private MultipartFile file;
 
+
+    public short getTarget() {
+        return target;
+    }
+
+    public void setTarget(short target) {
+        this.target = target;
+    }
 
     public Device getDevice() {
         return device;

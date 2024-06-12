@@ -12,7 +12,7 @@ import java.util.Map;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Rack extends Location {
+public final class Rack extends Location {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "salon_id")

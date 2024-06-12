@@ -44,6 +44,8 @@ public class CenterServiceImpl implements CenterService {
     private final LocationStatusRepository locationStatusRepository;
 
 
+
+
     @Autowired
     CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, PmCategoryRepository pmCategoryRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
         this.centerRepository = centerRepository;
@@ -72,6 +74,11 @@ public class CenterServiceImpl implements CenterService {
             }
         }
     }*/
+
+    @Override
+    public List<Location> getTCustomizedLocationList(List<Short> locationCategoryTypeList) {
+        return locationRepository.fetchCustomizedLocationList(locationCategoryTypeList);
+    }
 
     @Override
     public Model getCenterLandingPageModel(Model model) {
@@ -113,21 +120,30 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
+    public List<CenterIdNameProjection> getCenterIdAndNameList() {
+        return centerRepository.fetchCenterIdNameList();
+    }
+
+    @Override
     public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event) {
         List<LocationStatus> locationStatusList = new ArrayList<>();
-        var currentStatus = locationStatusForm.getLocation().getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
+        var location = locationStatusForm.getLocation();
+        var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
         if (currentStatus.isPresent()) {
             currentStatus.get().setCurrent(false);
             locationStatusList.add(currentStatus.get());
-        } else {
-            LocationStatus locationStatus = new LocationStatus();
-            locationStatus.setLocation(locationStatusForm.getLocation());
-            locationStatus.setEvent(event);
-            locationStatus.setCurrent(true);
-            locationStatus.setDoor(locationStatusForm.isDoor());
-            locationStatus.setVentilation(locationStatusForm.isVentilation());
-            locationStatus.setPower(locationStatusForm.isPower());
         }
+        LocationStatus locationStatus = new LocationStatus();
+        locationStatus.setLocation(locationStatusForm.getLocation());
+        locationStatus.setEvent(event);
+        locationStatus.setDoor(locationStatusForm.isDoor());
+        locationStatus.setVentilation(locationStatusForm.isVentilation());
+        locationStatus.setPower(locationStatusForm.isPower());
+        locationStatus.setCurrent(true);
+
+        locationStatusList.add(locationStatus);
+
+        locationStatusRepository.saveAllAndFlush(locationStatusList);
     }
 
     @Override
@@ -168,20 +184,16 @@ public class CenterServiceImpl implements CenterService {
         }
     }
 
-    @Override
-    public List<Location> getLocationList() {
-        return locationRepository.findAll();
-    }
 
     @Override
-    public Hall getSalon(int salonId) {
+    public Hall getHall(int hallId) {
         return null;
     }
 
 
     @Override
-    public Location getLocation(int locationId) {
-        return locationRepository.findById(locationId).get();
+    public Optional<Location> getLocation(int locationId) {
+        return locationRepository.findById(locationId);
     }
 
     @Override
@@ -263,7 +275,7 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
-        var center = getSalon(centerId);
+        var center = getHall(centerId);
         List<Float> weeklyTemperature = new ArrayList<>();
         for (LocalDate date : weeklyDateList) {
             weeklyTemperature.add(center.getAverageTemperature().get(date));

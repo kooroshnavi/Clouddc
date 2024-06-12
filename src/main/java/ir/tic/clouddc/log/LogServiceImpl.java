@@ -13,7 +13,7 @@ import java.util.Optional;
 
 @Service
 @Slf4j
-public class LogServiceImpl implements LogService {
+public final class LogServiceImpl implements LogService {
 
     private final PersistenceRepository persistenceRepository;
     private final LogHistoryRepository logHistoryRepository;

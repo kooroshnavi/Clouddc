@@ -27,9 +27,11 @@ public class EventController {
         return "eventLandingPage";
     }
 
-    @GetMapping("/device/landingForm")
-    public String showDeviceEventForm(Model model) {
-        eventService.getDeviceEventEntryForm(model);
+    @GetMapping("/category/target/{target}/form")
+    public String showDeviceEventForm(Model model, @RequestParam("target") short target) {
+
+        eventService.getDeviceEventEntryForm(model , target);
+
         return "deviceEventLandingForm";
     }
 
@@ -38,7 +40,7 @@ public class EventController {
             , @Nullable @ModelAttribute("eventEntryForm") EventRegisterForm eventRegisterForm
             , @Nullable EventRegisterForm fromImportantDevicePmForm) {
 
-        eventService.getRelatedDeviceEventModel(model, eventRegisterForm, fromImportantDevicePmForm);
+        eventService.getRelatedEventViewModel(model, eventRegisterForm, fromImportantDevicePmForm);
 
         return "deviceEventDetailForm";
 
@@ -47,9 +49,9 @@ public class EventController {
     @PostMapping("/register")
     public String eventPost(
             Model model
-            , @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
-            , @Nullable @ModelAttribute("deviceStatusForm") DeviceStatusForm deviceStatusForm
-            , @Nullable @ModelAttribute("locationStatusForm") LocationStatusForm locationStatusForm
+            , @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm   /// general event
+            , @Nullable @ModelAttribute("deviceStatusForm") DeviceStatusForm deviceStatusForm   /// device status event
+            , @Nullable @ModelAttribute("locationStatusForm") LocationStatusForm locationStatusForm /// location status event
             , @RequestParam("attachment") MultipartFile file) throws IOException {
 
         if (!file.isEmpty()) {

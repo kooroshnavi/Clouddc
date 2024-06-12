@@ -10,12 +10,12 @@ import java.util.List;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Center {
+public final class Center {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private short id;
 
     @Column
     @Nationalized
@@ -36,16 +36,16 @@ public class Center {
     @JoinTable(name = "persistence_id")
     private Persistence persistence;
 
+    public void setId(short id) {
+        this.id = id;
+    }
+
     public Persistence getPersistence() {
         return persistence;
     }
 
     public void setPersistence(Persistence persistence) {
         this.persistence = persistence;
-    }
-
-    public Center(int id) {
-        this.id = id;
     }
 
     public List<Location> getLocationList() {
@@ -58,10 +58,6 @@ public class Center {
 
     public int getId() {
         return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public String getName() {

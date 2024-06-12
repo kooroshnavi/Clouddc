@@ -6,7 +6,6 @@ import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.resource.DeviceStatus;
 import ir.tic.clouddc.resource.ResourceService;
@@ -30,7 +29,7 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-public class EventServiceImpl implements EventService {
+public final class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
     private final EventDetailRepository eventDetailRepository;
@@ -38,11 +37,9 @@ public class EventServiceImpl implements EventService {
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
-    private final PmService pmService;
     private final FileService fileService;
     private final LogService logService;
     private final ResourceService resourceService;
-    private final FailureDeviceEventRepository failureDeviceEventRepository;
 
 
     @Autowired
@@ -51,54 +48,64 @@ public class EventServiceImpl implements EventService {
             , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
-            , PmService pmService
-            , FileService fileService, LogService logService, ResourceService resourceService, FailureDeviceEventRepository failureDeviceEventRepository) {
+            , FileService fileService, LogService logService, ResourceService resourceService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
-        this.pmService = pmService;
         this.resourceService = resourceService;
         this.fileService = fileService;
         this.logService = logService;
-        this.failureDeviceEventRepository = failureDeviceEventRepository;
     }
 
     @Override
-    public Model getDeviceEventEntryForm(Model model) {
+    public Model getDeviceEventEntryForm(Model model, short target) {
         EventRegisterForm eventEntryForm = new EventRegisterForm();
         model.addAttribute("eventEntryForm", eventEntryForm);
+
+        if (target == 1) {  // 1. CenterList for visit event entry form
+            List<CenterService.CenterIdNameProjection> centerList = centerService.getCenterIdAndNameList();
+        }
+        else if (target == 2) {  // 2. LocationList for Location status event entry form
+            short salonType = 1;
+            short roomType = 3;
+            List<Short> locationCategoryList = List.of(salonType,roomType);
+            List<Location> salonRoomLocationList = centerService.getTCustomizedLocationList(locationCategoryList);
+            model.addAttribute("salonRoomLocationList", salonRoomLocationList);
+        }
+
         return model;
     }
 
     @Override
-    public Model getRelatedDeviceEventModel(Model model, @Nullable EventRegisterForm eventRegisterForm, @Nullable EventRegisterForm fromImportantDevicePmForm) {
+    public Model getRelatedEventViewModel(Model model, @Nullable EventRegisterForm eventRegisterForm, @Nullable EventRegisterForm fromDevicePmForm) {
 
         if (!Objects.isNull(eventRegisterForm)) {
-            var device = resourceService.getDevice(eventRegisterForm.getSerialNumber());
             var category = eventRegisterForm.getCategory();
+            var device = resourceService.getDevice(eventRegisterForm.getSerialNumber());
+            var location = centerService.getLocation(eventRegisterForm.getLocationId());
             model.addAttribute("category", category);
 
             if (device.isPresent()) {
                 model.addAttribute("device", device.get());
                 switch (category) {
-                    case 5:
+                    case 5:  // 5. Device utilizer form
                         eventRegisterForm.setDevice(device.get());
-                        model.addAttribute("eventRegisterForm", eventRegisterForm);
+                        model.addAttribute("eventForm", eventRegisterForm);
                         model.addAttribute("utilizerList", resourceService.getUtilizerList());
 
-                    case 6:  ////
-                        model.addAttribute("eventRegisterForm", eventRegisterForm);
+                    case 6:  // 6. Device movement form
+                        model.addAttribute("eventForm", eventRegisterForm);
                         model.addAttribute("centerList", centerService.getCenterList());
                         model.addAttribute("salonList", centerService.getSalonList());
 
-                    case 7:
+                    case 7:  // 7. Device status form
                         DeviceStatusForm deviceStatusForm = new DeviceStatusForm();
                         deviceStatusForm.setCategory(category);
                         deviceStatusForm.setDevice(device.get());
-                        model.addAttribute("deviceStatusForm", deviceStatusForm);
+                        model.addAttribute("eventForm", deviceStatusForm);
 
                         var currentStatus = device.get().getDeviceStatusList().stream().filter(DeviceStatus::isCurrent).findFirst();
                         if (currentStatus.isPresent()) {
@@ -114,24 +121,39 @@ public class EventServiceImpl implements EventService {
                             model.addAttribute("currentStatus", defaultDeviceStatus);
                         }
                 }
-            } else {
+            } else if (location.isPresent()) {
+                if (category == 2) {  // 2. Location status form
+                    LocationStatusForm locationStatusForm = new LocationStatusForm();
+                    locationStatusForm.setCategory(category);
+                    locationStatusForm.setLocation(location.get());
+                    model.addAttribute("eventForm", locationStatusForm);
+
+                    var currentStatus = location.get().getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
+                    if (currentStatus.isPresent()) {
+                        model.addAttribute("currentStatus", currentStatus.get());
+                    } else {
+                        LocationStatus defaultLocationStatus = new LocationStatus();
+                        defaultLocationStatus.setDoor(true);
+                        defaultLocationStatus.setVentilation(true);
+                        defaultLocationStatus.setPower(true);
+                        model.addAttribute("currentStatus", defaultLocationStatus);
+                    }
+                }
 
             }
         }
         return model;
     }
 
-
     @Override
     public void eventRegister(@Nullable EventRegisterForm eventRegisterForm
             , @Nullable DeviceStatusForm deviceStatusForm
             , @Nullable LocationStatusForm locationStatusForm) throws IOException {
-
         EventDetail eventDetail;
 
         if (!Objects.isNull(deviceStatusForm)) {
 
-            if (deviceStatusForm.getCategory() == 7) {//   7. Device status event
+            if (deviceStatusForm.getCategory() == 7) {  //   7. Device status event
                 DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
                 deviceStatusEvent.setRegisterDate(UtilService.getDATE());
                 deviceStatusEvent.setRegisterTime(UtilService.getTime());
@@ -151,10 +173,10 @@ public class EventServiceImpl implements EventService {
                 LocationStatusEvent locationStatusEvent = new LocationStatusEvent();
                 locationStatusEvent.setRegisterDate(UtilService.getDATE());
                 locationStatusEvent.setRegisterTime(UtilService.getTime());
-                locationStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getCategory()).get());
+                locationStatusEvent.setEventCategory(eventCategoryRepository.findById(locationStatusForm.getCategory()).get());
                 eventDetail = locationStatusEvent.registerEvent(locationStatusForm);
                 eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
-                fileService.checkAttachment(deviceStatusForm.getFile(), eventDetail.getPersistence());
+                fileService.checkAttachment(locationStatusForm.getFile(), eventDetail.getPersistence());
 
                 var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
 
@@ -162,7 +184,7 @@ public class EventServiceImpl implements EventService {
             }
         } else if (!Objects.isNull(eventRegisterForm)) {
             switch (eventRegisterForm.getCategory()) {
-                case 1 -> {
+                case 1 -> {   // 1. visit event
                     VisitEvent visitEvent = new VisitEvent();
                     visitEvent.setRegisterDate(UtilService.getDATE());
                     visitEvent.setRegisterTime(UtilService.getTime());
@@ -179,10 +201,9 @@ public class EventServiceImpl implements EventService {
                     fileService.checkAttachment(eventRegisterForm.getFile(), eventDetail.getPersistence());
 
                     eventDetailRepository.saveAndFlush(eventDetail);
-
                 }
 
-                case 5 -> {      //// Device utilizer event
+                case 5 -> {      // 5. Device utilizer event
                     DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
                     deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
                     deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
@@ -196,13 +217,13 @@ public class EventServiceImpl implements EventService {
 
                     resourceService.updateDeviceUtilizer((DeviceUtilizerEvent) persistedEventDetail.getEvent());
                 }
-                case 6 -> { //// Device movement event
+                case 6 -> { // 6. Device movement event
                     DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
                     deviceMovementEvent.setRegisterDate(UtilService.getDATE());
                     deviceMovementEvent.setRegisterTime(UtilService.getTime());
                     deviceMovementEvent.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategory()).get());
-                    deviceMovementEvent.setDestination(centerService.getLocation(eventRegisterForm.getLocationId()));
-
+                    var destination = centerService.getLocation(eventRegisterForm.getLocationId());
+                    destination.ifPresent(deviceMovementEvent::setDestination);
                     eventDetail = deviceMovementEvent.registerEvent(eventRegisterForm);
                     eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
                     fileService.checkAttachment(eventRegisterForm.getFile(), eventDetail.getPersistence());
@@ -213,31 +234,6 @@ public class EventServiceImpl implements EventService {
                 }
             }
         }
-    }
-
-
-    private void visitEventSetup(EventRegisterForm eventRegisterForm) throws IOException {
-        VisitEvent event = new VisitEvent();
-        event.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategory()).get());
-        event.setRegisterDate(UtilService.getDATE());
-        event.setRegisterTime(UtilService.getTime());
-        event.setActive(eventRegisterForm.isActive());
-        event.setTitle(eventRegisterForm.getTitle());
-        event.setCenter(centerService.getCenter(eventRegisterForm.getCenterId()));
-
-        eventDetailRegister(eventRegisterForm, event);
-    }
-
-    private void salonEventSetup(EventRegisterForm eventRegisterForm) throws IOException {
-        LocationStatusEvent event = new LocationStatusEvent();
-        event.setEventCategory(eventCategoryRepository.findById(eventRegisterForm.getCategory()).get());
-        event.setRegisterDate(UtilService.getDATE());
-        event.setRegisterTime(UtilService.getTime());
-        event.setActive(eventRegisterForm.isActive());
-        event.setTitle(eventRegisterForm.getTitle());
-        event.setLocation(centerService.getSalon(eventRegisterForm.getLocationId()));
-
-        eventDetailRegister(eventRegisterForm, event);
     }
 
 
@@ -269,16 +265,18 @@ public class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Model getEventListByCategoryModel(Model model, int categoryId) {
-        var optionalEventCategory = eventCategoryRepository.findById(categoryId);
-        if (optionalEventCategory.isPresent()) {
-            var category = optionalEventCategory.get();
-            List<Event> eventList = eventRepository.findAllByCategory(category);
-            for (Event event : eventList) {
-                event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-                event.setPersianRegisterDate(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+    public Model getEventListByCategoryModel(Model model, @Nullable Short categoryId) {
+        if (categoryId != null) {
+            var optionalEventCategory = eventCategoryRepository.findById(categoryId);
+            if (optionalEventCategory.isPresent()) {
+                var category = optionalEventCategory.get();
+                List<Event> eventList = eventRepository.findAllByCategory(category);
+                for (Event event : eventList) {
+                    event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+                    event.setPersianRegisterDate(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+                }
+                model.addAttribute("eventList", eventList);
             }
-            model.addAttribute("eventList", eventList);
         }
 
         return model;

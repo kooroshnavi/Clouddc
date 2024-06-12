@@ -10,11 +10,7 @@ import java.util.List;
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class Room extends Location {
-
-    @ManyToOne
-    @JoinColumn(name = "datacenter_id")
-    private Center center;
+public final class Room extends Location {
 
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
@@ -23,21 +19,12 @@ public class Room extends Location {
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
 
-
     public Utilizer getUtilizer() {
         return utilizer;
     }
 
     public void setUtilizer(Utilizer utilizer) {
         this.utilizer = utilizer;
-    }
-
-    public Center getCenter() {
-        return center;
-    }
-
-    public void setCenter(Center center) {
-        this.center = center;
     }
 
     public List<Device> getDeviceList() {

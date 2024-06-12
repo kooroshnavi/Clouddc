@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-public class GeneralPm extends Pm {
+public final class GeneralPm extends Pm {
 
     private CenterService centerService;
 

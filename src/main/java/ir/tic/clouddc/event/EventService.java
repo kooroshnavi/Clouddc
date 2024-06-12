@@ -18,7 +18,7 @@ public interface EventService {
 
     List<EventCategory> getEventCategoryList();
 
-    Model getDeviceEventEntryForm(Model model);
+    Model getDeviceEventEntryForm(Model model, short target);
 
     Model modelForEventController(Model model);
 
@@ -26,11 +26,11 @@ public interface EventService {
 
     Model getEventListModel(Model model);
 
-    Model getEventListByCategoryModel(Model model, int categoryId);
+    Model getEventListByCategoryModel(Model model, @Nullable Short categoryId);
 
     void updateEvent(EventRegisterForm eventRegisterForm, Event event) throws IOException;
 
-    Model getRelatedDeviceEventModel(Model model, @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
+    Model getRelatedEventViewModel(Model model, @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
             , @Nullable EventRegisterForm fromImportantDevicePmForm);
 
     List<Event> getPendingEventList();

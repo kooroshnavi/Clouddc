@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 @Service
-public class FileServiceImpl implements FileService {
+public final class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
 

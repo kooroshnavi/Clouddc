@@ -84,6 +84,7 @@ public class PmServiceImpl implements PmService {
                 } else {
                     TemperaturePm temperaturePm = new TemperaturePm();
                     pmDetail = temperaturePm.registerPm(catalog);
+                    centerService.updateCatalogDueDate(catalog.getPmInterface(), catalog.getLocation());
                 }
                 if (!pmInterface.isActive()) {
                     pmInterface.setActive(true);
