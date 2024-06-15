@@ -8,6 +8,7 @@ import org.hibernate.annotations.Nationalized;
 @Table(schema = "Center")
 @NoArgsConstructor
 public class EventCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -18,8 +19,7 @@ public class EventCategory {
     private String name;
 
     @Column
-    private short target;   //  1.Location - 2.Device
-
+    private short target;   //  1.Center - 2.Location  - 3. Device
 
     public short getTarget() {
         return target;

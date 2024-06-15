@@ -87,7 +87,7 @@
                                            aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
                                 </div>
 
-                                <div class="mb-3">
+                                <div th:if="${(eventRegisterForm.categoryId == 1)}" class="mb-3">
                                     <select class="form-select" required aria-label="select example"
                                             th:field="*{category}">
                                         <option value="0" disabled>انتخاب نوع رخداد</option>

@@ -61,18 +61,20 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Model getDeviceEventEntryForm(Model model, short target) {
+    public Model getEventLandingForm(Model model, short target) {
         EventRegisterForm eventEntryForm = new EventRegisterForm();
         model.addAttribute("eventEntryForm", eventEntryForm);
 
-        if (target == 1) {  // 1. CenterList for visit event entry form
+        if (target == 1) {  // 1. CenterList for visit entry form
             List<CenterService.CenterIdNameProjection> centerList = centerService.getCenterIdAndNameList();
+
         }
-        else if (target == 2) {  // 2. LocationList for Location status event entry form
+        else if (target == 2) {  // 2. LocationList for Location status entry form
+            // Location Type = Salon - Rack - Room
             short salonType = 1;
             short roomType = 3;
             List<Short> locationCategoryList = List.of(salonType,roomType);
-            List<Location> salonRoomLocationList = centerService.getTCustomizedLocationList(locationCategoryList);
+            List<Location> salonRoomLocationList = centerService.getCustomizedLocationList(locationCategoryList);
             model.addAttribute("salonRoomLocationList", salonRoomLocationList);
         }
 
@@ -80,7 +82,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Model getRelatedEventViewModel(Model model, @Nullable EventRegisterForm eventRegisterForm, @Nullable EventRegisterForm fromDevicePmForm) {
+    public Model getEventStatusModel(Model model, @Nullable EventRegisterForm eventRegisterForm, @Nullable EventRegisterForm fromDevicePmForm) {
 
         if (!Objects.isNull(eventRegisterForm)) {
             var category = eventRegisterForm.getCategory();

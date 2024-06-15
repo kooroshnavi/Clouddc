@@ -24,30 +24,30 @@ public class EventController {
     @GetMapping("/category")
     public String eventForm(Model model) {
         model.addAttribute("eventCategoryList", eventService.getEventCategoryList());
-        return "eventLandingPage";
+        return "eventLandingPage";   /// 1. Category Selection
     }
 
     @GetMapping("/category/target/{target}/form")
     public String showDeviceEventForm(Model model, @RequestParam("target") short target) {
 
-        eventService.getDeviceEventEntryForm(model , target);
+        eventService.getEventLandingForm(model , target);
 
-        return "deviceEventLandingForm";
+        return "eventLandingForm";    /// 2.  Input desired serial number (device) OR choose location for status OR center for visit
     }
 
     @PostMapping("/device/detail")
-    public String showDeviceEventDetailForm(Model model
+    public String showEventStatusModel(Model model
             , @Nullable @ModelAttribute("eventEntryForm") EventRegisterForm eventRegisterForm
             , @Nullable EventRegisterForm fromImportantDevicePmForm) {
 
-        eventService.getRelatedEventViewModel(model, eventRegisterForm, fromImportantDevicePmForm);
+        eventService.getEventStatusModel(model, eventRegisterForm, fromImportantDevicePmForm);
 
-        return "deviceEventDetailForm";
+        return "eventStatusForm";   /// 3.    update status
 
     }
 
     @PostMapping("/register")
-    public String eventPost(
+    public String eventPost(     ///    4.  Event register
             Model model
             , @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm   /// general event
             , @Nullable @ModelAttribute("deviceStatusForm") DeviceStatusForm deviceStatusForm   /// device status event
@@ -58,7 +58,7 @@ public class EventController {
             if (!Objects.isNull(eventRegisterForm)) {
                 eventRegisterForm.setFile(file);
             } else {
-                assert deviceStatusForm != null;
+            //    assert deviceStatusForm != null;
                 deviceStatusForm.setFile(file);
             }
         }

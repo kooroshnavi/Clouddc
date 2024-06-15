@@ -25,7 +25,7 @@ public interface CenterService {
     }
 
 
-    List<Location> getTCustomizedLocationList(List<Short> locationCategoryTypeList);
+    List<Location> getCustomizedLocationList(List<Short> locationCategoryTypeList);
 
     Model getCenterLandingPageModel(Model model);
 

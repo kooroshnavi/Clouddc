@@ -1,16 +1,21 @@
 package ir.tic.clouddc.center;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Nationalized;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
 public class LocationCategory {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private short id;  // 1 - 2 - 3
 
+    @Column
+    @Nationalized
     private String name; /// Salon - Rack - Room
 
     public short getId() {

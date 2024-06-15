@@ -76,7 +76,7 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public List<Location> getTCustomizedLocationList(List<Short> locationCategoryTypeList) {
+    public List<Location> getCustomizedLocationList(List<Short> locationCategoryTypeList) {
         return locationRepository.fetchCustomizedLocationList(locationCategoryTypeList);
     }
 
