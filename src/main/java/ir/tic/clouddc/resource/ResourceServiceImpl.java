@@ -43,9 +43,9 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Device validateFormDevice(EventRegisterForm eventRegisterForm) {
-        Optional<Device> currentDevice = getDeviceBySerialNumber(eventRegisterForm.getSerialNumber());
-        return currentDevice.orElseGet(() -> registerNewDevice(eventRegisterForm));
+    public Device validateFormDevice(EventLandingForm eventLandingForm) {
+        Optional<Device> currentDevice = getDeviceBySerialNumber(eventLandingForm.getSerialNumber());
+        return currentDevice.orElseGet(() -> registerNewDevice(eventLandingForm));
     }
 
     @Override
@@ -92,12 +92,10 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event) {
         List<DeviceStatus> deviceStatusList = new ArrayList<>();
-        var device = deviceStatusForm.getDevice();
-        var currentDeviceStatus = device.getDeviceStatusList().stream().filter(DeviceStatus::isCurrent).findFirst();
-        if (currentDeviceStatus.isPresent()) {
-            currentDeviceStatus.get().setCurrent(false);
-            deviceStatusList.add(currentDeviceStatus.get());
-        }
+        var device = event.getDevice();
+        var currentDeviceStatus = getCurrentDeviceStatus(device);
+        currentDeviceStatus.setCurrent(false);
+        deviceStatusList.add(currentDeviceStatus);
 
         DeviceStatus newDeviceStatus = new DeviceStatus();
         newDeviceStatus.setDevice(device);
@@ -134,23 +132,45 @@ public class ResourceServiceImpl implements ResourceService {
         deviceRepository.saveAndFlush(device);
     }
 
-    private Device registerNewDevice(EventRegisterForm eventRegisterForm) {
+    @Override
+    public List<Utilizer> getUtilizerListExcept(Utilizer utilizer) {
+        return utilizerRepository.findAllNotIn(List.of(utilizer));
+    }
 
-        switch (eventRegisterForm.getDeviceType()) {
+    @Override
+    public DeviceStatus getCurrentDeviceStatus(Device device) {
+        var currentStatus = deviceStatusRepository.findByDeviceAndCurrent(device, true);
+        if (currentStatus.isPresent()) {
+            return currentStatus.get();
+        } else {
+            DeviceStatus defaultDeviceStatus = new DeviceStatus();
+            defaultDeviceStatus.setDualPower(true);
+            defaultDeviceStatus.setSts(true);
+            defaultDeviceStatus.setFan(true);
+            defaultDeviceStatus.setModule(true);
+            defaultDeviceStatus.setStorage(true);
+            defaultDeviceStatus.setPort(true);
+            return defaultDeviceStatus;
+        }
+    }
+
+    private Device registerNewDevice(EventLandingForm eventLandingForm) {
+
+        switch (eventLandingForm.getDeviceType()) {
             case 1 -> {   /// Server
                 Server srv = new Server();
-                srv.setSerialNumber(eventRegisterForm.getSerialNumber());
-                srv.setLocation(centerService.getLocation(eventRegisterForm.getLocationId()));
-                srv.setUtilizer(getUtilizer(eventRegisterForm.getUtilizerId()));
+                srv.setSerialNumber(eventLandingForm.getSerialNumber());
+                srv.setLocation(centerService.getLocation(eventLandingForm.getLocationId()));
+                srv.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 srv.setPersistence(persistence);
                 return deviceRepository.save(srv);
             }
             case 2 -> { /// Switch
                 Switch sw = new Switch();
-                sw.setSerialNumber(eventRegisterForm.getSerialNumber());
-                sw.setLocation(centerService.getLocation(eventRegisterForm.getLocationId()));
-                sw.setUtilizer(getUtilizer(eventRegisterForm.getUtilizerId()));
+                sw.setSerialNumber(eventLandingForm.getSerialNumber());
+                sw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()));
+                sw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 sw.setPersistence(persistence);
                 return deviceRepository.save(sw);
@@ -158,9 +178,9 @@ public class ResourceServiceImpl implements ResourceService {
 
             case 3 -> { /// Firewall
                 Firewall fw = new Firewall();
-                fw.setSerialNumber(eventRegisterForm.getSerialNumber());
-                fw.setLocation(centerService.getLocation(eventRegisterForm.getLocationId()));
-                fw.setUtilizer(getUtilizer(eventRegisterForm.getUtilizerId()));
+                fw.setSerialNumber(eventLandingForm.getSerialNumber());
+                fw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()));
+                fw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 fw.setPersistence(persistence);
                 return deviceRepository.save(fw);

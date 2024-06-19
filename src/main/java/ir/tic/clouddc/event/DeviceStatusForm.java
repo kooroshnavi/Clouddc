@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class DeviceStatusForm {
 
-    private short category;
+    private short eventCategoryId = 5;
 
     private Device device;
 
@@ -49,12 +49,12 @@ public class DeviceStatusForm {
         this.file = file;
     }
 
-    public short getCategory() {
-        return category;
+    public short getEventCategoryId() {
+        return eventCategoryId;
     }
 
-    public void setCategory(short category) {
-        this.category = category;
+    public void setEventCategoryId(short eventCategoryId) {
+        this.eventCategoryId = eventCategoryId;
     }
 
     public boolean isDualPower() {

@@ -177,9 +177,9 @@
 <!--Pm table-->
 
 
-<div class="mb-3" th:fragment="formDescription">
+<div class="mb-3" th:fragment="formDescription(description)">
     <label for="validationTextarea" class="form-label">توضیحات</label>
-    <textarea class="form-control is-invalid" id="validationTextarea" placeholder="Required example textarea" required></textarea>
+    <textarea class="form-control is-invalid" id="validationTextarea"  placeholder="Required example textarea" required th:field="*{description}"></textarea>
     <div class="invalid-feedback">توضیحاتی که بعدا در یادآوری رخداد مفید است</div>
 </div>
 

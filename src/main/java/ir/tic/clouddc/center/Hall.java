@@ -15,6 +15,10 @@ public final class Hall extends Location {
     @OneToMany(mappedBy = "salon")
     private List<Rack> rackList;
 
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private Center center;
+
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
             schema = "Center",
@@ -22,6 +26,17 @@ public final class Hall extends Location {
     @MapKeyColumn(name = "date")
     @Column(name = "average_temperature")
     private Map<LocalDate, Float> averageTemperature;
+
+
+    @Override
+    public Center getCenter() {
+        return center;
+    }
+
+    @Override
+    public void setCenter(Center center) {
+        this.center = center;
+    }
 
     public List<Rack> getRackList() {
         return rackList;

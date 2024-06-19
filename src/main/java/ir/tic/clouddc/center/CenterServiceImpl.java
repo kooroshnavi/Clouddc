@@ -44,8 +44,6 @@ public class CenterServiceImpl implements CenterService {
     private final LocationStatusRepository locationStatusRepository;
 
 
-
-
     @Autowired
     CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, PmCategoryRepository pmCategoryRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
         this.centerRepository = centerRepository;
@@ -76,8 +74,22 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public List<Location> getCustomizedLocationList(List<Short> locationCategoryTypeList) {
-        return locationRepository.fetchCustomizedLocationList(locationCategoryTypeList);
+    public LocationStatus getCurrentLocationStatus(Location location) {
+       var locationStatus =  locationStatusRepository.findByLocationAndCurrent(location, true);
+        if (locationStatus.isPresent()) {
+            return locationStatus.get();
+        } else {
+            LocationStatus defaultLocationStatus = new LocationStatus();
+            defaultLocationStatus.setDoor(true);
+            defaultLocationStatus.setVentilation(true);
+            defaultLocationStatus.setPower(true);
+            return defaultLocationStatus;
+        }
+    }
+
+    @Override
+    public List<Location> getCustomizedLocationList(List<String> locationCategoryNameList) {
+        return locationRepository.fetchCustomizedLocationList(locationCategoryNameList);
     }
 
     @Override
@@ -219,9 +231,8 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Center getCenter(int centerId) {
-        centerRepository.findById(centerId);
-        return null;
+    public Optional<Center> getCenter(short centerId) {
+        return centerRepository.findById(centerId);
     }
 
     @Override

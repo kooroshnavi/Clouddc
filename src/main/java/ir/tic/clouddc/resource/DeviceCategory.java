@@ -16,7 +16,7 @@ public class DeviceCategory {
     private short id;
 
     @Column
-    private String name;  // server - switch - firewall
+    private String type;  // server - switch - firewall
 
     @Column
     private String vendor; // hpe - cisco
@@ -35,12 +35,12 @@ public class DeviceCategory {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String name) {
+        this.type = name;
     }
 
     public String getVendor() {

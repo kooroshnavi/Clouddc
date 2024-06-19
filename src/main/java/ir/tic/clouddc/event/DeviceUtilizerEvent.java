@@ -10,10 +10,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class DeviceUtilizerEvent extends Event {
 
-    @Column
+    @OneToOne
+    @JoinColumn(name = "old_utilize_id")
     private Utilizer oldUtilizer;
 
-    @Column
+    @OneToOne
+    @JoinColumn(name = "new_utilize_id")
     private Utilizer newUtilizer;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
@@ -45,15 +47,15 @@ public class DeviceUtilizerEvent extends Event {
     }
 
 
-    public EventDetail registerEvent(EventRegisterForm eventRegisterForm) {
-        this.setDevice(eventRegisterForm.getDevice());
-        this.setOldUtilizer(eventRegisterForm.getDevice().getUtilizer());
+    public EventDetail registerEvent(EventLandingForm eventLandingForm) {
+        this.setDevice(eventLandingForm.getDevice());
+        this.setOldUtilizer(eventLandingForm.getDevice().getUtilizer());
         this.setActive(false);
 
 
         EventDetail eventDetail = new EventDetail();
         eventDetail.setEvent(this);
-        eventDetail.setDescription(eventRegisterForm.getDescription());
+        eventDetail.setDescription(eventLandingForm.getDescription());
         eventDetail.setRegisterDate(this.getRegisterDate());
         eventDetail.setRegisterTime(this.getRegisterTime());
 

@@ -46,14 +46,11 @@ public final class DeviceMovementEvent extends Event {
         this.device = device;
     }
 
-    public EventDetail registerEvent(EventRegisterForm eventRegisterForm) {
-        this.setDevice(eventRegisterForm.getDevice());
-        this.setSource(eventRegisterForm.getDevice().getLocation());
-        this.setActive(false);
+    public EventDetail registerEvent(EventLandingForm eventLandingForm) {
 
         EventDetail eventDetail = new EventDetail();
         eventDetail.setEvent(this);
-        eventDetail.setDescription(eventRegisterForm.getDescription());
+        eventDetail.setDescription(eventLandingForm.getDescription());
         eventDetail.setRegisterDate(this.getRegisterDate());
         eventDetail.setRegisterTime(this.getRegisterTime());
 

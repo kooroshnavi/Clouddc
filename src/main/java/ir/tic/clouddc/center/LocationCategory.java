@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.List;
+
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
@@ -16,7 +18,18 @@ public class LocationCategory {
 
     @Column
     @Nationalized
-    private String name; /// Salon - Rack - Room
+    private String type; /// Salon - Rack - Room
+
+    @OneToMany(mappedBy = "locationCategory")
+    private List<Location> locationList;
+
+    public List<Location> getLocationList() {
+        return locationList;
+    }
+
+    public void setLocationList(List<Location> locationList) {
+        this.locationList = locationList;
+    }
 
     public short getId() {
         return id;
@@ -26,11 +39,11 @@ public class LocationCategory {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public String getType() {
+        return type;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setType(String name) {
+        this.type = name;
     }
 }

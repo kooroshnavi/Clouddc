@@ -25,6 +25,17 @@ public final class Rack extends Location {
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
 
+    @Column
+    private int deviceListSize;
+
+    public int getDeviceListSize() {
+        return deviceListSize;
+    }
+
+    public void setDeviceListSize(int deviceListSize) {
+        this.deviceListSize = deviceListSize;
+    }
+
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
             schema = "Center",

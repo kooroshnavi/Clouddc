@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
+import java.util.List;
+
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
@@ -19,14 +21,18 @@ public class EventCategory {
     private String name;
 
     @Column
-    private short target;   //  1.Center - 2.Location  - 3. Device
+    private String target;  /// Center - Location - Device
 
-    public short getTarget() {
-        return target;
+    @OneToMany(mappedBy = "eventCategory")
+    private List<Event> eventList;
+
+
+    public List<Event> getEventList() {
+        return eventList;
     }
 
-    public void setTarget(short target) {
-        this.target = target;
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
     }
 
     public short getId() {

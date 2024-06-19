@@ -69,17 +69,38 @@
                 <div class="card">
 
                     <div class="card-header py-3 bg-transparent" align="hall">
-                        <h5 class="mb-0">فرم ثبت رخداد</h5>
+                        <h5 class="mb-0">مشخصات محل رخداد</h5>
                     </div>
 
                     <div class="card-body">
                         <div class="border p-3 rounded">
 
-                            <form class="was-validated" class="row g-3" th:action="@{/event/device/detail}"
+                            <form class="was-validated" th:action="@{/event/form/detail}"
                                   enctype="multipart/form-data"
-                                  th:object="${eventEntryForm}" method="post">
+                                  th:object="${eventLandingForm}" method="post">
 
-                                <div th:if="${(eventRegisterForm.categoryId == 1)}" class="input-group input-group-lg">
+                                <div th:if="${(eventLandingForm.target.equals('Center'))}" class="mb-3">
+                                    <select class="form-select" required aria-label="select example"
+                                            th:field="*{centerId}">
+                                        <option value="0" disabled>انتخاب مرکز</option>
+                                        <option th:each="center : ${centerIdAndNameList}" th:value="${center.id}"
+                                                th:text="${center.name}"></option>
+                                    </select>
+                                    <div class="invalid-feedback">مرکز انتخاب نشده است.</div>
+                                </div>
+
+                                <div th:if="${(eventLandingForm.target.equals('Location'))}" class="mb-3">
+                                    <select class="form-select" required aria-label="select example"
+                                            th:field="*{locationId}">
+                                        <option value="0" disabled>انتخاب محل رخداد</option>
+                                        <option th:each="center : ${centerList}" th:value="${center.id}"
+                                                th:text="${center.name}"></option>
+                                    </select>
+                                    <div class="invalid-feedback">مکان انتخاب نشده است</div>
+                                </div>
+
+                                <div th:if="${(eventLandingForm.target.equals('Device'))}"
+                                     class="input-group input-group-lg">
                                     <span class="input-group-text" id="inputGroup-sizing-lg">شماره سریال تجهیز</span>
                                     <input type="text" id="serialNumber" th:field="*{serialNumber}" required="required"
                                            dir="rtl"
@@ -87,13 +108,13 @@
                                            aria-label="Sizing example input" aria-describedby="inputGroup-sizing-lg">
                                 </div>
 
-                                <div th:if="${(eventRegisterForm.categoryId == 1)}" class="mb-3">
+                                <div th:if="${(eventLandingForm.target.equals('Device'))}" class="mb-3">
                                     <select class="form-select" required aria-label="select example"
-                                            th:field="*{category}">
+                                            th:field="*{eventCategoryId}">
                                         <option value="0" disabled>انتخاب نوع رخداد</option>
-                                        <option th:value="5">تغییر بهره بردار</option>
-                                        <option th:value="6">جابجایی محل نصب</option>
-                                        <option th:value="7">چک لیست وضعیت</option>
+                                        <option th:value="3">تغییر بهره بردار</option>
+                                        <option th:value="4">جابجایی محل نصب</option>
+                                        <option th:value="5">چک لیست وضعیت</option>
                                     </select>
                                     <div class="invalid-feedback">نوع رخداد تجهیز مشخص نشده است.</div>
                                 </div>
@@ -137,19 +158,18 @@
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
 <script>
-    $(function(){
-    $("#serialNumber").keypress(function(event){
-        var ew = event.which;
-        if(48 <= ew && ew <= 57)
-            return true;
-        if(65 <= ew && ew <= 90)
-            return true;
-        if(97 <= ew && ew <= 122)
-            return true;
-        return false;
+    $(function () {
+        $("#serialNumber").keypress(function (event) {
+            const ew = event.which;
+            if (48 <= ew && ew <= 57)
+                return true;
+            if (65 <= ew && ew <= 90)
+                return true;
+            if (97 <= ew && ew <= 122)
+                return true;
+            return false;
+        });
     });
-});
-
 
 
 </script>

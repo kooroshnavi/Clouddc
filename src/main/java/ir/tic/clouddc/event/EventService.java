@@ -1,16 +1,23 @@
 package ir.tic.clouddc.event;
 
+import ir.tic.clouddc.center.Center;
+import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.LocationStatus;
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.DeviceStatus;
+import ir.tic.clouddc.resource.Utilizer;
 import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface EventService {
 
 
-    void eventRegister(@Nullable EventRegisterForm eventRegisterForm
+    void eventSetup(EventLandingForm eventLandingForm
             , @Nullable DeviceStatusForm deviceStatusForm
             , @Nullable LocationStatusForm locationStatusForm) throws IOException;
 
@@ -18,7 +25,7 @@ public interface EventService {
 
     List<EventCategory> getEventCategoryList();
 
-    Model getEventLandingForm(Model model, short target);
+    List<CenterService.CenterIdNameProjection> getCenterIdAndNameList();
 
     Model modelForEventController(Model model);
 
@@ -28,12 +35,14 @@ public interface EventService {
 
     Model getEventListByCategoryModel(Model model, @Nullable Short categoryId);
 
-    void updateEvent(EventRegisterForm eventRegisterForm, Event event) throws IOException;
-
-    Model getEventStatusModel(Model model, @Nullable @ModelAttribute("eventRegisterForm") EventRegisterForm eventRegisterForm
-            , @Nullable EventRegisterForm fromImportantDevicePmForm);
+    void updateEvent(EventLandingForm eventLandingForm, Event event) throws IOException;
 
     List<Event> getPendingEventList();
+
+    Optional<Center> getCenter(short centerId);
+
+    Optional<Location> getLocation(int locationId);
+    Optional<Device> getDevice(String serialNumber);
 
     long getEventCount();
 
@@ -45,4 +54,15 @@ public interface EventService {
 
     int getActiveEventPercentage();
 
+    LocationStatusForm getLocationStatusForm(Location location);
+
+    LocationStatus getCurrentLocationStatus(Location location);
+
+    List<Utilizer> deviceUtilizerEventData(Utilizer utilizer);
+
+    List<Center> getCenterList();
+
+    DeviceStatusForm getDeviceStatusForm(Device device);
+
+    DeviceStatus getCurrentDeviceStatus(Device device);
 }

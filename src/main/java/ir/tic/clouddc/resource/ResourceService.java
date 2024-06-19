@@ -8,7 +8,7 @@ import java.util.Optional;
 
 public interface ResourceService {
 
-    Device validateFormDevice(EventRegisterForm eventRegisterForm);
+    Device validateFormDevice(EventLandingForm eventLandingForm);
 
     Model getDeviceDetailModel(Model model, long deviceId);
 
@@ -23,5 +23,7 @@ public interface ResourceService {
 
     void updateDeviceLocation(DeviceMovementEvent event);
 
+    List<Utilizer> getUtilizerListExcept(Utilizer utilizer);
 
+    DeviceStatus getCurrentDeviceStatus(Device device);
 }

@@ -25,7 +25,9 @@ public interface CenterService {
     }
 
 
-    List<Location> getCustomizedLocationList(List<Short> locationCategoryTypeList);
+    LocationStatus getCurrentLocationStatus(Location location);
+
+    List<Location> getCustomizedLocationList(List<String> locationCategoryNameList);
 
     Model getCenterLandingPageModel(Model model);
 
@@ -45,7 +47,7 @@ public interface CenterService {
 
     Model getLocationDetailModel(int locationId, Model model);
 
-    Center getCenter(int centerId);
+    Optional<Center> getCenter(short centerId);
 
     List<Hall> getSalonList();
 

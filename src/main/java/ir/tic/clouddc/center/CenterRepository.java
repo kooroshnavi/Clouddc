@@ -10,7 +10,7 @@ import java.util.List;
 public interface CenterRepository extends JpaRepository<Center, Short> {
     List<Center> findAllByIdIn(List<Long> ids);
 
-    @Query("SELECT C.id AND C.name FROM Center C")
+    @Query("SELECT C.id, C.name FROM Center C")
     List<CenterService.CenterIdNameProjection> fetchCenterIdNameList();
 
 

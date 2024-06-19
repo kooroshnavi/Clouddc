@@ -111,22 +111,9 @@ public final class DeviceStatusEvent extends Event {
             this.setModuleChanged(currentStatus.get().isModule() != deviceStatusForm.isModule());
             this.setStorageChanged(currentStatus.get().isStorage() != deviceStatusForm.isStorage());
             this.setPortChanged(currentStatus.get().isPort() != deviceStatusForm.isPort());
-        } else {
-            this.setDualPowerChanged(!deviceStatusForm.isDualPower());
-            this.setStsChanged(!deviceStatusForm.isSts());
-            this.setFanChanged(!deviceStatusForm.isFan());
-            this.setModuleChanged(!deviceStatusForm.isModule());
-            this.setStorageChanged(!deviceStatusForm.isStorage());
-            this.setPortChanged(!deviceStatusForm.isPort());
         }
         this.setDevice(deviceStatusForm.getDevice());
         this.setActive(false);
-
-        EventDetail eventDetail = new EventDetail();
-        eventDetail.setEvent(this);
-        eventDetail.setDescription(deviceStatusForm.getDescription());
-        eventDetail.setRegisterDate(this.getRegisterDate());
-        eventDetail.setRegisterTime(this.getRegisterTime());
 
         return eventDetail;
     }

@@ -19,6 +19,20 @@ public final class Room extends Location {
     @JoinColumn(name = "utilizer_id")
     private Utilizer utilizer;
 
+    @ManyToOne
+    @JoinColumn(name = "center_id")
+    private Center center;
+
+    @Override
+    public Center getCenter() {
+        return center;
+    }
+
+    @Override
+    public void setCenter(Center center) {
+        this.center = center;
+    }
+
     public Utilizer getUtilizer() {
         return utilizer;
     }

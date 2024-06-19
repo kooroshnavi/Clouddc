@@ -20,10 +20,6 @@ public abstract class Location {
     @Nationalized
     private String name;
 
-    @ManyToOne
-    @JoinColumn(name = "center_id")
-    private Center center;
-
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_type_id")
     private LocationCategory locationCategory;  // Salon - Rack - Room

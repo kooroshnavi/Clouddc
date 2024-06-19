@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class LocationStatusForm {
 
-    private short category;
+    private short eventCategoryId = 2;
 
     private Location location;
 
@@ -19,12 +19,12 @@ public class LocationStatusForm {
 
     private MultipartFile file;
 
-    public short getCategory() {
-        return category;
+    public short getEventCategoryId() {
+        return eventCategoryId;
     }
 
-    public void setCategory(short category) {
-        this.category = category;
+    public void setEventCategoryId(short eventCategoryId) {
+        this.eventCategoryId = eventCategoryId;
     }
 
     public Location getLocation() {
