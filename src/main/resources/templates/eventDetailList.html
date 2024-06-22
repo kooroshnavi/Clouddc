@@ -74,60 +74,68 @@
                             <table class="table mb-0">
                                 <thead>
                                 <tr>
-                                    <th scope="col">شماره رخداد</th>
-                                    <th scope="col">عنوان</th>
+                                    <th scope="col">شناسه رخداد</th>
                                     <th scope="col">دسته بندی</th>
                                     <th scope="col">تاریخ ثبت</th>
-                                    <th scope="col">ساعت ثبت</th>
 
-                                    <th th:if="${event.eventCategory.id == 1}" scope="col">سریال تجهیز</th>
-                                    <th th:if="${event.eventCategory.id == 1}" scope="col">نوع تجهیز</th>
-                                    <th th:if="${event.eventCategory.id == 1}" scope="col">بهره بردار</th>
-                                    <th th:if="${event.eventCategory.id == 1}" scope="col">آدرس نصب</th>
+                                    <th th:if="${baseEvent.eventCategory.target == 'Device'}" scope="col">سریال تجهیز
+                                    </th>
 
-                                    <th th:if="(${event.eventCategory.id == 2}"
+                                    <th th:if="${baseEvent.eventCategory.target == 'Center'}"
                                         scope="col">مرکز
                                     </th>
 
-                                    <th th:if="${event.eventCategory.id == 3}" scope="col">مرکز</th>
-                                    <th th:if="${event.eventCategory.id == 3}" scope="col">سالن</th>
+                                    <th th:if="${baseEvent.eventCategory.target == 'Location'} && (${locationStatusEvent.location.locationType.target == 'Salon'} || ${locationStatusEvent.location.locationType.target == 'Room'}) "
+                                        scope="col">مرکز
+                                    </th>
+                                    <th th:if="${baseEvent.eventCategory.target == 'Location'} && (${locationStatusEvent.location.locationType.target == 'Salon'} || ${locationStatusEvent.location.locationType.target == 'Rack'}) "
+                                        scope="col">سالن
+                                    </th>
+                                    <th th:if="${baseEvent.eventCategory.target == 'Location'} &&  ${locationStatusEvent.location.locationType.target == 'Rack'} "
+                                        scope="col">رک
+                                    </th>
 
                                 </tr>
                                 </thead>
 
                                 <tbody>
                                 <tr>
-                                    <td th:text="${event.id}"/>
-                                    <td th:text="${event.title}"/>
-                                    <td th:text="${event.eventCategory.name}"/>
-                                    <td th:text="${event.persianDate}" data-bs-toggle="tooltip" data-bs-placement="top"
-                                        th:title="${event.persianWeekday}" dir="rtl"/>
-                                    <td th:text="${event.time}"/>
+                                    <td th:text="${baseEvent.id}"/>
+                                    <td th:text="${baseEvent.eventCategory.name}"/>
+                                    <td th:text="${baseEvent.persianRegisterDate}" data-bs-toggle="tooltip"
+                                        data-bs-placement="top"
+                                        th:title="${baseEvent.persianRegisterDayTime}" dir="rtl"/>
 
-                                    <td th:if="${event.eventCategory.id == 1}"
-                                        th:text="${event.failedDevice.serialNumber}">
+                                    <td th:if="${baseEvent.eventCategory.id == 3}"
+                                        th:text="${deviceUtilizerEvent.device.serialNumber}">
                                         <div class="col">
-                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${event.failedDevice.id})}"
+                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${deviceUtilizerEvent.device.id})}"
+                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                               data-bs-placement="bottom" title="جزئیات تجهیز"></a>
+                                        </div>
+                                    </td>
+                                    <td th:if="${baseEvent.eventCategory.id == 4}"
+                                        th:text="${deviceMovementEvent.device.serialNumber}">
+                                        <div class="col">
+                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${deviceMovementEvent.device.id})}"
+                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                               data-bs-placement="bottom" title="جزئیات تجهیز"></a>
+                                        </div>
+                                    </td>
+                                    <td th:if="${baseEvent.eventCategory.id == 5}"
+                                        th:text="${deviceStatusEvent.device.serialNumber}">
+                                        <div class="col">
+                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${deviceStatusEvent.device.id})}"
                                                class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                                data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                         </div>
                                     </td>
 
-                                    <td th:if="${event.eventCategory.id == 1}" th:text="${event.failedDevice.type}"/>
-                                    <td th:if="${event.eventCategory.id == 1}" th:text="${event.failedDevice.utilizer.name}"/>
 
-                                    <td th:if="${event.eventCategory.id == 1}"
-                                        th:text="${event.failedDevice.location.name}">
-                                        <div class="col">
-                                            <a th:href="@{/center/location/{locationId}/detail(locationId=${event.failedDevice.location.id})}"
-                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                               data-bs-placement="bottom" title="جزئیات محل نصب تجهیز"></a>
-                                        </div>
-                                    </td>
+                                    <td th:if="${baseEvent.eventCategory.target == 'Center'}" th:text="${visitEvent.center.name}"/>
 
-                                    <td th:if="(${event.eventCategory.id == 2}" th:text="${event.center.name}"/>
-
-                                    <td th:if="(${event.eventCategory.id == 3}" th:text="${event.hall.center.name}"/>
+                                    <td th:if="${baseEvent.eventCategory.target == 'Location'} && (${locationStatusEvent.location.locationType.target == 'Salon'} || ${locationStatusEvent.location.locationType.target == 'Room'}) " th:text="${locationStatusEvent.location.center.name}"/>
+                                    <td th:if="${baseEvent.eventCategory.target == 'Location'} && (${locationStatusEvent.location.locationType.target == 'Salon'} || ${locationStatusEvent.location.locationType.target == 'Rack'}) " th:text="${locationStatusEvent.location.name}"/>
                                     <td th:if="(${event.eventCategory.id == 3}" th:text="${event.hall.name}"/>
 
                                 </tr>
@@ -176,7 +184,7 @@
                         <tr th:each="detail, iter : ${eventDetailList}">
 
                             <td th:text="${iter.count}"/>
-                            <td th:text="${detail.persianDate}"data-bs-toggle="tooltip" data-bs-placement="top"
+                            <td th:text="${detail.persianDate}" data-bs-toggle="tooltip" data-bs-placement="top"
                                 th:title="${detail.persianDay}" dir="rtl"/>
                             <td th:text="${detail.time} "/>
                             <td th:text="${detail.persistence.person.name}"/>
@@ -208,7 +216,8 @@
                                     <div class="card-body">
 
                                         <form class="row g-3" th:action="@{/event/update}"
-                                              enctype="multipart/form-data" th:object="${eventLandingForm}" method="POST">
+                                              enctype="multipart/form-data" th:object="${eventLandingForm}"
+                                              method="POST">
 
                                             <div class="col-12">
                                                 <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>

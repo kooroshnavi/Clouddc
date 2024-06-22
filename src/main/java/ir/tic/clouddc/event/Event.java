@@ -29,14 +29,23 @@ public abstract class Event {
     @JoinColumn(name = "category_id")
     private EventCategory eventCategory;
 
-    @OneToMany(mappedBy = "event")
-    private List<EventDetail> eventDetailList;
+    @OneToOne
+    @JoinColumn(name = "eventDetail_id")
+    private EventDetail eventDetail;
 
     @Transient
     private String persianRegisterDate;
 
     @Transient
     private String persianRegisterDayTime;
+
+    public EventDetail getEventDetail() {
+        return eventDetail;
+    }
+
+    public void setEventDetail(EventDetail eventDetail) {
+        this.eventDetail = eventDetail;
+    }
 
     public int getId() {
         return id;
@@ -52,10 +61,6 @@ public abstract class Event {
 
     public void setEventCategory(EventCategory eventCategory) {
         this.eventCategory = eventCategory;
-    }
-
-    public void setEventDetailList(List<EventDetail> eventDetailList) {
-        this.eventDetailList = eventDetailList;
     }
 
     public String getPersianRegisterDayTime() {
@@ -80,10 +85,6 @@ public abstract class Event {
 
     public void setRegisterTime(LocalTime registerTime) {
         this.registerTime = registerTime;
-    }
-
-    public List<EventDetail> getEventDetailList() {
-        return eventDetailList;
     }
 
     public String getPersianRegisterDate() {

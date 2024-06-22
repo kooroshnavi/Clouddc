@@ -1,5 +1,6 @@
 package ir.tic.clouddc.event;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -10,7 +11,7 @@ import java.util.List;
 @Repository
 public interface EventRepository extends JpaRepository<Event, Integer> {
     List<Event> findAllByActive(boolean active);
-    List<Event> findAllByCategory(EventCategory eventCategory);
+    List<Event> findAllByCategory(EventCategory eventCategory, Sort sort);
     @Query("SELECT COUNT(e) FROM Event e WHERE e.active = :active")
     long getActiveEventCount(@Param("active") boolean active);
 

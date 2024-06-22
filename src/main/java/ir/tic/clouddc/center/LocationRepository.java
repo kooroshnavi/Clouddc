@@ -13,7 +13,7 @@ public interface LocationRepository extends JpaRepository<Location, Integer> {
     @Query("SELECT L.name FROM Location L WHERE L.type = :type")
     List<String> getNameList(@Param("type") String type);
 
-    @Query("SELECT L FROM Location L WHERE L.locationCategory.type IN :locationCategoryNameList")
+    @Query("SELECT L FROM Location L WHERE L.locationCategory.target IN :locationCategoryNameList")
     List<Location> fetchCustomizedLocationList(List<String> locationCategoryNameList);
 
     List<Rack> findAllByRack();

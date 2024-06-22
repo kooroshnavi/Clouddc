@@ -18,7 +18,7 @@ public class LocationCategory {
 
     @Column
     @Nationalized
-    private String type; /// Salon - Rack - Room
+    private String target; /// Salon - Rack - Room
 
     @OneToMany(mappedBy = "locationCategory")
     private List<Location> locationList;
@@ -39,11 +39,11 @@ public class LocationCategory {
         this.id = id;
     }
 
-    public String getType() {
-        return type;
+    public String getTarget() {
+        return target;
     }
 
-    public void setType(String name) {
-        this.type = name;
+    public void setTarget(String name) {
+        this.target = name;
     }
 }

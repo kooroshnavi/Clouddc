@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 
@@ -43,6 +44,17 @@ public abstract class Device {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+    @OneToMany(mappedBy = "device")
+    private List<Event> eventList;
+
+
+    public List<Event> getEventList() {
+        return eventList;
+    }
+
+    public void setEventList(List<Event> eventList) {
+        this.eventList = eventList;
+    }
 
     public List<DeviceStatus> getDeviceStatusList() {
         return deviceStatusList;

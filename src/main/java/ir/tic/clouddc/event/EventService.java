@@ -4,6 +4,7 @@ import ir.tic.clouddc.center.Center;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationStatus;
+import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
 import ir.tic.clouddc.resource.Utilizer;
@@ -29,11 +30,11 @@ public interface EventService {
 
     Model modelForEventController(Model model);
 
-    Model getEventDetailModel(Model model, Long eventId);
+    Event getEventHistory(int eventId);
 
-    Model getEventListModel(Model model);
+    MetaData getRelatedMetadata(long persistenceId);
 
-    Model getEventListByCategoryModel(Model model, @Nullable Short categoryId);
+    List<Event> getEventList(@Nullable Short categoryId);
 
     void updateEvent(EventLandingForm eventLandingForm, Event event) throws IOException;
 

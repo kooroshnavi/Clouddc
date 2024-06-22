@@ -77,13 +77,13 @@
                                 <th th:if="${eventLandingForm.target} == 'Center'" scope="col">شهر</th>
                                 <th th:if="${eventLandingForm.target} == 'Center'" scope="col">استان</th>
 
-                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.type} == 'Hall' "
+                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.target} == 'Hall' "
                                     scope="col">نام سالن
                                 </th>
-                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.type} == 'Rack' "
+                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.target} == 'Rack' "
                                     scope="col">نام رک
                                 </th>
-                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.type} == 'Room' "
+                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.target} == 'Room' "
                                     scope="col">نام اتاق
                                 </th>
 

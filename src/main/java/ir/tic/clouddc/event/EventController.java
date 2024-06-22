@@ -135,28 +135,47 @@ public class EventController {
             }
         }
         eventService.eventSetup(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
-        eventService.getEventListModel(model);
+        eventService.getEventList(null);
         return "redirect:eventListView";
     }
 
     @GetMapping("/category/{categoryId}/list")
-    public String showCategoryEventList(Model model, @Nullable @RequestParam("categoryId") Short categoryId) {
-        if (categoryId != null) {
-            eventService.getEventListByCategoryModel(model, categoryId);
-        }
+    public String showCategoryEventList(Model model, @PathVariable short categoryId) {
+        List<Event> eventList = eventService.getEventList(categoryId);
+        model.addAttribute("eventList", eventList);
         return "eventListView";
     }
 
     @GetMapping("/list")
     public String showEventList(Model model) {
-        eventService.getEventListModel(model);
+        List<Event> eventList = eventService.getEventList(null);
+        model.addAttribute("eventList", eventList);
         return "eventListView";
     }
 
     @GetMapping("/{eventId}/detail")
-    public String viewEventDetail(@RequestParam Long eventId,
-                                  Model model) {
-        eventService.getEventDetailModel(model, eventId);
+    public String viewEventDetail(Model model, @PathVariable int eventId) {
+        Event baseEvent = eventService.getEventHistory(eventId);
+        model.addAttribute("metaData", List.of(eventService.getRelatedMetadata(baseEvent.getEventDetail().getPersistence().getId())));
+
+        model.addAttribute("baseEvent", baseEvent);
+
+        if (baseEvent instanceof VisitEvent event) {
+            model.addAttribute("visitEvent", event);
+        }
+        if (baseEvent instanceof LocationStatusEvent event) {
+            model.addAttribute("locationStatusEvent", event);
+        }
+        if (baseEvent instanceof DeviceUtilizerEvent event) {
+            model.addAttribute("deviceUtilizerEvent", event);
+        }
+        if (baseEvent instanceof DeviceMovementEvent event) {
+            model.addAttribute("deviceMovementEvent", event);
+        }
+        if (baseEvent instanceof DeviceStatusEvent event) {
+            model.addAttribute("deviceStatusEvent", event);
+        }
+
         return "eventDetailList";
     }
 

@@ -99,23 +99,4 @@ public final class DeviceStatusEvent extends Event {
     public void setDevice(Device device) {
         this.device = device;
     }
-
-
-    public EventDetail registerEvent(DeviceStatusForm deviceStatusForm) {
-        var currentStatus = deviceStatusForm.getDevice().getDeviceStatusList().stream().filter(DeviceStatus::isCurrent).findFirst();
-        if (currentStatus.isPresent()) {
-            this.setDeviceStatus(currentStatus.get());
-            this.setDualPowerChanged(currentStatus.get().isDualPower() != deviceStatusForm.isDualPower());
-            this.setStsChanged(currentStatus.get().isSts() != deviceStatusForm.isSts());
-            this.setFanChanged(currentStatus.get().isFan() != deviceStatusForm.isFan());
-            this.setModuleChanged(currentStatus.get().isModule() != deviceStatusForm.isModule());
-            this.setStorageChanged(currentStatus.get().isStorage() != deviceStatusForm.isStorage());
-            this.setPortChanged(currentStatus.get().isPort() != deviceStatusForm.isPort());
-        }
-        this.setDevice(deviceStatusForm.getDevice());
-        this.setActive(false);
-
-        return eventDetail;
-    }
-
 }

@@ -17,7 +17,7 @@ public class EventDetail extends Workflow {
     private String persianDate;
 
     @Transient
-    private String persianDay;
+    private String persianDayTime;
 
     public Event getEvent() {
         return event;
@@ -35,11 +35,11 @@ public class EventDetail extends Workflow {
         this.persianDate = persianDate;
     }
 
-    public String getPersianDay() {
-        return persianDay;
+    public String getPersianDayTime() {
+        return persianDayTime;
     }
 
-    public void setPersianDay(String persianDay) {
-        this.persianDay = persianDay;
+    public void setPersianDayTime(String persianDayTime) {
+        this.persianDayTime = persianDayTime;
     }
 }

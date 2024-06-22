@@ -26,6 +26,13 @@ public class EventCategory {
     @OneToMany(mappedBy = "eventCategory")
     private List<Event> eventList;
 
+    public String getTarget() {
+        return target;
+    }
+
+    public void setTarget(String target) {
+        this.target = target;
+    }
 
     public List<Event> getEventList() {
         return eventList;

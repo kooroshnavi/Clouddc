@@ -3,6 +3,7 @@ package ir.tic.clouddc.event;
 import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
+import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
@@ -205,7 +206,6 @@ public final class EventServiceImpl implements EventService {
         return deviceStatusEvent;
     }
 
-
     private EventDetail eventDetailRegister(Event event, MultipartFile file, String description) throws IOException {
         EventDetail eventDetail = new EventDetail();
         eventDetail.setRegisterDate(event.getRegisterDate());
@@ -222,86 +222,49 @@ public final class EventServiceImpl implements EventService {
 
     }
 
-
     @Override
-    public Model getEventListModel(Model model) {
-        List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
+    public List<Event> getEventList(@Nullable Short categoryId) {
+        List<Event> eventList = new ArrayList<>();
+        if (!Objects.isNull(categoryId)) {
+            var category = eventCategoryRepository.findById(categoryId);
+            if (category.isPresent()) {
+                eventList = eventRepository.findAllByCategory(category.get(), Sort.by("registerDate"));
+            }
+        } else {
+            eventList = eventRepository.findAll(Sort.by("registerDate").descending());
+        }
         for (Event event : eventList) {
-            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            event.setPersianRegisterDate(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDayTime(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
         }
-        model.addAttribute("eventList", eventList);
-        return model;
+        return eventList;
     }
 
     @Override
-    public Model getEventListByCategoryModel(Model model, @Nullable Short categoryId) {
-        if (categoryId != null) {
-            var optionalEventCategory = eventCategoryRepository.findById(categoryId);
-            if (optionalEventCategory.isPresent()) {
-                var category = optionalEventCategory.get();
-                List<Event> eventList = eventRepository.findAllByCategory(category);
-                for (Event event : eventList) {
-                    event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-                    event.setPersianRegisterDate(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
-                }
-                model.addAttribute("eventList", eventList);
-            }
-        }
-
-        return model;
-    }
-
-    @Override
-    public Model getEventDetailModel(Model model, Long eventId) {
+    public Event getEventHistory(int eventId) {
         var optionalEvent = eventRepository.findById(eventId);
-        List<EventDetail> eventDetailList;
-
+        Event event;
         if (optionalEvent.isPresent()) {
-            var baseEvent = optionalEvent.get();
-            eventDetailList = baseEvent.getEventDetailList();
+            event = optionalEvent.get();
+            loadEventDetailTransients(event.getEventDetail());
 
-            if (baseEvent instanceof DeviceStatusEvent event) {
-
-                model.addAttribute("event", event);
-
-            } else if (baseEvent instanceof VisitEvent event) {
-
-                model.addAttribute("event", event);
-
-            } else if (baseEvent instanceof LocationStatusEvent event) {
-
-                model.addAttribute("event", event);
-
-            } else {
-                return model;
-            }
-
-            List<Long> persistenceIdList = new ArrayList<>();
-            for (EventDetail eventDetail : eventDetailList) {
-                loadEventDetailTransients(eventDetail);
-                persistenceIdList.add(eventDetail.getPersistence().getId());
-            }
-
-            var sortedEventDetail = eventDetailList
-                    .stream()
-                    .sorted(Comparator.comparing(EventDetail::getId).reversed())
-                    .toList();
-
-            var eventForm = new EventLandingForm();
-            eventForm.setEventId(eventId);
-
-            model.addAttribute("eventDetailList", sortedEventDetail);
-            model.addAttribute("eventForm", eventForm);
-            model.addAttribute("metaDataList", fileService.getRelatedMetadataList(persistenceIdList));
-
+            return event;
         }
-        return model;
+        return null;
+    }
+
+    @Override
+    public MetaData getRelatedMetadata(long persistenceId) {
+        var metadata = fileService.getRelatedMetadataList(List.of(persistenceId));
+        if (!metadata.isEmpty()){
+            return metadata.get(0);
+        }
+        return null;
     }
 
     private void loadEventDetailTransients(EventDetail eventDetail) {
         eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
-        eventDetail.setPersianDay(UtilService.persianDay.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+        eventDetail.setPersianDayTime(UtilService.persianDay.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
     }
 
 
@@ -350,7 +313,7 @@ public final class EventServiceImpl implements EventService {
                     (PersianDate
                             .fromGregorian
                                     (date)));
-            eventDetail.setPersianDay(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+            eventDetail.setPersianDayTime(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
             eventDetail.setRegisterTime(timeFormatter.format(eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
         }
 
