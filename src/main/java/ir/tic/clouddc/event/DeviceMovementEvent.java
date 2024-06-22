@@ -45,15 +45,4 @@ public final class DeviceMovementEvent extends Event {
     public void setDevice(Device device) {
         this.device = device;
     }
-
-    public EventDetail registerEvent(EventLandingForm eventLandingForm) {
-
-        EventDetail eventDetail = new EventDetail();
-        eventDetail.setEvent(this);
-        eventDetail.setDescription(eventLandingForm.getDescription());
-        eventDetail.setRegisterDate(this.getRegisterDate());
-        eventDetail.setRegisterTime(this.getRegisterTime());
-
-        return eventDetail;
-    }
 }

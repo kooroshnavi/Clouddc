@@ -74,6 +74,7 @@ public class EventController {
 
                         LocationStatusForm locationStatusForm = eventService.getLocationStatusForm(location.get());
                         LocationStatus locationStatus = eventService.getCurrentLocationStatus(location.get());
+                        locationStatusForm.setCurrentLocationStatus(locationStatus);
                         model.addAttribute("locationStatusForm", locationStatusForm);
                         model.addAttribute("locationStatus", locationStatus);
                     } else {

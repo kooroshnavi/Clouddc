@@ -45,7 +45,7 @@ public final class EventServiceImpl implements EventService {
     private final ResourceService resourceService;
 
     private static final short VISIT_EVENT_CATEGORY_ID = 1;
-    private static final short LOCATION_EVENT_CATEGORY_ID = 2;
+    private static final short LOCATION_STATUS_EVENT_CATEGORY_ID = 2;
     private static final short DEVICE_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final short DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final short DEVICE_STATUS_EVENT_CATEGORY_ID = 5;
@@ -112,144 +112,110 @@ public final class EventServiceImpl implements EventService {
 
         switch (eventLandingForm.getEventCategoryId()) {
             case VISIT_EVENT_CATEGORY_ID -> {
-
+                var event = visitEventRegister_1(eventLandingForm);
+                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
             }
-            case LOCATION_EVENT_CATEGORY_ID -> {
-
+            case LOCATION_STATUS_EVENT_CATEGORY_ID -> {
+                if (!Objects.isNull(locationStatusForm)) {
+                    var event = locationStatusEventRegister_2(locationStatusForm);
+                    eventDetail = eventDetailRegister(event, locationStatusForm.getFile(), locationStatusForm.getDescription());
+                    centerService.updateLocationStatus(locationStatusForm, (LocationStatusEvent) eventDetail.getEvent());
+                }
             }
             case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
-
+                var event = deviceUtilizerEventRegister_3(eventLandingForm);
+                eventDetail = eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                resourceService.updateDeviceUtilizer((DeviceUtilizerEvent) eventDetail.getEvent());
             }
             case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
-
+                var event = deviceMovementEventRegister_4(eventLandingForm);
+                eventDetail = eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                resourceService.updateDeviceLocation((DeviceMovementEvent) eventDetail.getEvent());
             }
             case DEVICE_STATUS_EVENT_CATEGORY_ID -> {
                 if (!Objects.isNull(deviceStatusForm)) {
-                    eventLandingForm.setFile(deviceStatusForm.getFile());
-                    eventLandingForm.setDescription(deviceStatusForm.getDescription());
-                    eventLandingForm.setDevice(deviceStatusForm.getDevice());
-                }
-                DeviceStatusEvent event = eventRegister(eventLandingForm);
-                resourceService.updateDeviceStatus(deviceStatusForm, event);
-            }
-        }
-
-        if (!Objects.isNull(deviceStatusForm)) {    //  5. Device status event
-
-
-        } else if (!Objects.isNull(locationStatusForm)) {
-            //   2. Location status event
-
-
-            eventDetail = locationStatusEvent.registerEvent(locationStatusForm);
-            eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
-            fileService.checkAttachment(locationStatusForm.getFile(), eventDetail.getPersistence());
-
-            var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
-
-            centerService.updateLocationStatus(locationStatusForm, (LocationStatusEvent) persistedEventDetail.getEvent());
-
-        } else {
-            switch (eventLandingForm.getEventCategoryId()) {
-                case 1 -> {   // 1. visit event
-                    VisitEvent visitEvent = new VisitEvent();
-                    visitEvent.setRegisterDate(UtilService.getDATE());
-                    visitEvent.setRegisterTime(UtilService.getTime());
-                    visitEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-                    visitEvent.setCenter(eventLandingForm.getCenter());
-                    visitEvent.setActive(false);
-
-                    eventDetail = new EventDetail();
-                    eventDetail.setEvent(visitEvent);
-                    eventDetail.setRegisterDate(visitEvent.getRegisterDate());
-                    eventDetail.setRegisterTime(visitEvent.getRegisterTime());
-                    eventDetail.setDescription(eventLandingForm.getDescription());
-                    eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
-                    fileService.checkAttachment(eventLandingForm.getFile(), eventDetail.getPersistence());
-
-                    eventDetailRepository.saveAndFlush(eventDetail);
-                }
-
-                case 3 -> {      // 3. Device utilizer event
-
-                    eventDetail = deviceUtilizerEvent.registerEvent(eventLandingForm);
-                    eventDetail.setPersistence(logService.persistenceSetup(personService.getCurrentPerson()));
-
-                    fileService.checkAttachment(eventLandingForm.getFile(), eventDetail.getPersistence());
-                    var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
-
-                    resourceService.updateDeviceUtilizer((DeviceUtilizerEvent) persistedEventDetail.getEvent());
-                }
-                case 4 -> { // 4. Device movement event
-
-                    var persistedEventDetail = eventDetailRepository.saveAndFlush(eventDetail);
-
-                    resourceService.updateDeviceLocation((DeviceMovementEvent) persistedEventDetail.getEvent());
+                    var event = deviceStatusEventRegister_5(deviceStatusForm);
+                    eventDetail = eventDetailRegister(event, deviceStatusForm.getFile(), deviceStatusForm.getDescription());
+                    resourceService.updateDeviceStatus(deviceStatusForm, (DeviceStatusEvent) eventDetail.getEvent());
                 }
             }
         }
+
     }
 
-    private Event eventRegister(EventLandingForm eventLandingForm) throws IOException {
-        EventDetail persistedEventDetail;
-        switch (eventLandingForm.getEventCategoryId()) {
-            case VISIT_EVENT_CATEGORY_ID -> {
+    private VisitEvent visitEventRegister_1(EventLandingForm eventLandingForm) {
+        VisitEvent visitEvent = new VisitEvent();
+        visitEvent.setRegisterDate(UtilService.getDATE());
+        visitEvent.setRegisterTime(UtilService.getTime());
+        visitEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+        visitEvent.setCenter(eventLandingForm.getCenter());
+        visitEvent.setActive(false);
 
-            }
-            case LOCATION_EVENT_CATEGORY_ID -> {
-                LocationStatusEvent locationStatusEvent = new LocationStatusEvent();
-                locationStatusEvent.setRegisterDate(UtilService.getDATE());
-                locationStatusEvent.setRegisterTime(UtilService.getTime());
-                locationStatusEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-            }
-            case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
-                DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
-                deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
-                deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
-                deviceUtilizerEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-                deviceUtilizerEvent.setNewUtilizer(resourceService.getUtilizer(eventLandingForm.getUtilizerId()));
-                deviceUtilizerEvent.setOldUtilizer(eventLandingForm.getDevice().getUtilizer());
-                deviceUtilizerEvent.setDevice(eventLandingForm.getDevice());
-                deviceUtilizerEvent.setActive(false);
-                persistedEventDetail = eventDetailRegister(deviceUtilizerEvent, eventLandingForm.getFile(), eventLandingForm.getDescription());
-            }
-            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
-                DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
-                deviceMovementEvent.setRegisterDate(UtilService.getDATE());
-                deviceMovementEvent.setRegisterTime(UtilService.getTime());
-                deviceMovementEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-                var destination = centerService.getLocation(eventLandingForm.getLocationId());
-                destination.ifPresent(deviceMovementEvent::setDestination);
-                deviceMovementEvent.setSource(eventLandingForm.getDevice().getLocation());
-                deviceMovementEvent.setDevice(eventLandingForm.getDevice());
-                deviceMovementEvent.setActive(false);
-                persistedEventDetail = eventDetailRegister(deviceMovementEvent, eventLandingForm.getFile(), eventLandingForm.getDescription());
-            }
-            case DEVICE_STATUS_EVENT_CATEGORY_ID -> {
-                DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
-                deviceStatusEvent.setRegisterDate(UtilService.getDATE());
-                deviceStatusEvent.setRegisterTime(UtilService.getTime());
-                deviceStatusEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-                deviceStatusEvent.setDevice(eventLandingForm.getDevice());
-                deviceStatusEvent.setActive(false);
-                persistedEventDetail = eventDetailRegister(deviceStatusEvent, eventLandingForm.getFile(), eventLandingForm.getDescription());
-            }
-
-        }
-
-
+        return visitEvent;
     }
+
+    private LocationStatusEvent locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
+        var currentStatus = locationStatusForm.getCurrentLocationStatus();
+        LocationStatusEvent locationStatusEvent = new LocationStatusEvent();
+        locationStatusEvent.setLocationStatus(currentStatus);
+        locationStatusEvent.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
+        locationStatusEvent.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
+        locationStatusEvent.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
+        locationStatusEvent.setLocation(locationStatusForm.getLocation());
+        locationStatusEvent.setActive(false);
+
+        return locationStatusEvent;
+    }
+
+    private DeviceUtilizerEvent deviceUtilizerEventRegister_3(EventLandingForm eventLandingForm) {
+        DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
+        deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
+        deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
+        deviceUtilizerEvent.setOldUtilizer(eventLandingForm.getDevice().getUtilizer());
+        deviceUtilizerEvent.setNewUtilizer(resourceService.getUtilizer(eventLandingForm.getUtilizerId()));
+        deviceUtilizerEvent.setDevice(eventLandingForm.getDevice());
+        deviceUtilizerEvent.setActive(false);
+        deviceUtilizerEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+
+        return deviceUtilizerEvent;
+    }
+
+    private DeviceMovementEvent deviceMovementEventRegister_4(EventLandingForm eventLandingForm) {
+        DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
+        deviceMovementEvent.setRegisterDate(UtilService.getDATE());
+        deviceMovementEvent.setRegisterTime(UtilService.getTime());
+        deviceMovementEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+        var destination = centerService.getLocation(eventLandingForm.getLocationId());
+        destination.ifPresent(deviceMovementEvent::setDestination);
+        deviceMovementEvent.setSource(eventLandingForm.getDevice().getLocation());
+        deviceMovementEvent.setDevice(eventLandingForm.getDevice());
+        deviceMovementEvent.setActive(false);
+
+        return deviceMovementEvent;
+    }
+
+    private DeviceStatusEvent deviceStatusEventRegister_5(DeviceStatusForm deviceStatusForm) {
+        DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
+        deviceStatusEvent.setRegisterDate(UtilService.getDATE());
+        deviceStatusEvent.setRegisterTime(UtilService.getTime());
+        deviceStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getEventCategoryId()).get());
+        deviceStatusEvent.setDevice(deviceStatusForm.getDevice());
+        deviceStatusEvent.setActive(false);
+
+        return deviceStatusEvent;
+    }
+
 
     private EventDetail eventDetailRegister(Event event, MultipartFile file, String description) throws IOException {
         EventDetail eventDetail = new EventDetail();
+        eventDetail.setRegisterDate(event.getRegisterDate());
+        eventDetail.setRegisterTime(event.getRegisterTime());
         var currentPerson = personService.getCurrentPerson();
         var persistence = logService.persistenceSetup(currentPerson);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), 5, currentPerson, persistence);
         fileService.checkAttachment(file, persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(description);
-        eventDetail.setRegisterDate(event.getRegisterDate());
-        eventDetail.setRegisterTime(event.getRegisterTime());
         eventDetail.setEvent(event);
 
         return eventDetailRepository.save(eventDetail);

@@ -1,6 +1,7 @@
 package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.LocationStatus;
 import org.springframework.web.multipart.MultipartFile;
 
 public class LocationStatusForm {
@@ -18,6 +19,16 @@ public class LocationStatusForm {
     private String description;
 
     private MultipartFile file;
+
+    private LocationStatus currentLocationStatus;
+
+    public LocationStatus getCurrentLocationStatus() {
+        return currentLocationStatus;
+    }
+
+    public void setCurrentLocationStatus(LocationStatus currentLocationStatus) {
+        this.currentLocationStatus = currentLocationStatus;
+    }
 
     public short getEventCategoryId() {
         return eventCategoryId;

@@ -45,21 +45,4 @@ public class DeviceUtilizerEvent extends Event {
     public void setNewUtilizer(Utilizer newUtilizer) {
         this.newUtilizer = newUtilizer;
     }
-
-
-    public EventDetail registerEvent(EventLandingForm eventLandingForm) {
-        this.setDevice(eventLandingForm.getDevice());
-        this.setOldUtilizer(eventLandingForm.getDevice().getUtilizer());
-        this.setActive(false);
-
-
-        EventDetail eventDetail = new EventDetail();
-        eventDetail.setEvent(this);
-        eventDetail.setDescription(eventLandingForm.getDescription());
-        eventDetail.setRegisterDate(this.getRegisterDate());
-        eventDetail.setRegisterTime(this.getRegisterTime());
-
-        return eventDetail;
-
-    }
 }

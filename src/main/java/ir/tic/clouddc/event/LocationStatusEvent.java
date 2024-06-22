@@ -66,29 +66,4 @@ public class LocationStatusEvent extends Event {
     public void setPowerChanged(boolean powerChanged) {
         this.powerChanged = powerChanged;
     }
-
-    public EventDetail registerEvent(LocationStatusForm locationStatusForm) {
-        var currentStatus = locationStatusForm.getLocation().getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
-        if (currentStatus.isPresent()) {
-            this.setLocationStatus(currentStatus.get());
-            this.setDoorChanged(currentStatus.get().isDoor() != locationStatusForm.isDoor());
-            this.setVentilationChanged(currentStatus.get().isVentilation() != locationStatusForm.isVentilation());
-            this.setPowerChanged(currentStatus.get().isPower() != locationStatusForm.isPower());
-        } else {
-            this.setDoorChanged(!locationStatusForm.isDoor());
-            this.setVentilationChanged(!locationStatusForm.isVentilation());
-            this.setPowerChanged(!locationStatusForm.isPower());
-        }
-
-        this.setLocation(locationStatusForm.getLocation());
-        this.setActive(false);
-
-        EventDetail eventDetail = new EventDetail();
-        eventDetail.setEvent(this);
-        eventDetail.setDescription(locationStatusForm.getDescription());
-        eventDetail.setRegisterDate(this.getRegisterDate());
-        eventDetail.setRegisterTime(this.getRegisterTime());
-
-        return eventDetail;
-    }
 }
