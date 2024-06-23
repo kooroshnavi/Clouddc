@@ -179,10 +179,8 @@ public class EventController {
         return "eventDetailList";
     }
 
-
     @ModelAttribute
     public void addAttributes(Model model) {
         eventService.modelForEventController(model);
     }
-
 }

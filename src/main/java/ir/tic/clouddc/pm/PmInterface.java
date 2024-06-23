@@ -31,13 +31,7 @@ public final class PmInterface {
     private boolean enabled;
 
     @Column
-    private boolean statelessRecurring;
-
-    @Column
     private boolean generalPm;
-
-    @Column
-    private boolean temperaturePm;
 
     @Column
     @Nationalized
@@ -53,22 +47,6 @@ public final class PmInterface {
     @OneToOne
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
-
-    public boolean isTemperaturePm() {
-        return temperaturePm;
-    }
-
-    public void setTemperaturePm(boolean temperaturePm) {
-        this.temperaturePm = temperaturePm;
-    }
-
-    public boolean isStatelessRecurring() {
-        return statelessRecurring;
-    }
-
-    public void setStatelessRecurring(boolean statelessRecurring) {
-        this.statelessRecurring = statelessRecurring;
-    }
 
     public String getDescription() {
         return description;

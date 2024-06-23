@@ -77,7 +77,7 @@
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pmInterface.period}"></p>
-                            <p class="mb-1" th:if="${pmInterface.description not null}"
+                            <p class="mb-1" th:if="${pmInterface.description != null}"
                                th:text=" 'توضیحات پیرامون این Pm: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
@@ -119,11 +119,15 @@
 
                             <td th:text="${iter.count}"></td>
                             <td th:text="${pm.id}"></td>
-                            <td th:text="${pm.location.name}"></td>
+
+                            <td th:text="${pm.location.name}" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                th:title="${pm.location.locationCategory.target}" dir="rtl"></td>
+
                             <td th:text="${pm.persianDueDate}"></td>
 
                             <td class="clock">
-                                <span th:if="${pm.delay} > 0" th:text="${task.delay}"
+                                <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
                                       class="badge bg-light-danger text-danger w-100"></span>
                                 <span th:if="${pm.delay} == 0"
                                       class="badge bg-light-success text-success w-100">ندارد</span>

@@ -280,11 +280,7 @@ public final class EventServiceImpl implements EventService {
 
     @Override
     public Model modelForEventController(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
-        model.addAttribute("person", person);
-        model.addAttribute("role", authenticated.getAuthorities());
+        model.addAttribute("person", personService.getCurrentPerson());
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
     }

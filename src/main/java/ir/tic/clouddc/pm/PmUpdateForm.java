@@ -7,20 +7,16 @@ import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 public class PmUpdateForm {
-
-    private int pmId;
-
+    private Pm pm;
     @NotBlank(message = "Description is obligatory")
     @Size(min = 5, max = 1000)
     private String description;
-
     @NotBlank
     private int actionType;
-
-
     private float temperatureValue;
-
     private MultipartFile file;
+
+
 
     public float getTemperatureValue() {
         return temperatureValue;
@@ -43,14 +39,6 @@ public class PmUpdateForm {
         this.file = file;
     }
 
-    public int getPmId() {
-        return pmId;
-    }
-
-    public void setPmId(int pmId) {
-        this.pmId = pmId;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -67,12 +55,11 @@ public class PmUpdateForm {
         return actionType;
     }
 
-    @Override
-    public String toString() {
-        return "AssignForm{" +
-                "pmId=" + pmId +
-                ", description='" + description + '\'' +
-                ", actionType=" + actionType +
-                '}';
+    public Pm getPm() {
+        return pm;
+    }
+
+    public void setPm(Pm pm) {
+        this.pm = pm;
     }
 }

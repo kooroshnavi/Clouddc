@@ -31,35 +31,4 @@ public final class GeneralPm extends Pm {
         return generalPmDetail;
     }
 
-    @Override
-    public PmDetail updatePmDetail(PmDetail pmDetail, PmUpdateForm pmUpdateForm) {
-        GeneralPmDetail generalPmDetail = (GeneralPmDetail) pmDetail;
-        generalPmDetail.setFinishedDate(UtilService.getDATE());
-        generalPmDetail.setFinishedTime(UtilService.getTime());
-        generalPmDetail.setActive(false);
-
-        return generalPmDetail;
-    }
-
-    @Override
-    public PmDetail registerPmDetail() {
-        GeneralPmDetail pmDetail = new GeneralPmDetail();
-        pmDetail.setRegisterDate(UtilService.getDATE());
-        pmDetail.setRegisterTime(UtilService.getTime());
-        pmDetail.setDelay(0);
-        pmDetail.setPm(this);
-        return pmDetail;
-    }
-
-    @Override
-    public Pm endPm(Pm pm) {
-        pm.setFinishedDate(UtilService.getDATE());
-        pm.setFinishedTime(UtilService.getTime());
-        pm.setActive(false);
-        centerService.updateCatalogDueDate(pm.getPmInterface(), pm.getLocation());
-
-        return pm;
-    }
-
-
 }

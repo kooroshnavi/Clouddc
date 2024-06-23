@@ -52,42 +52,5 @@ public final class TemperaturePm extends Pm {
         return temperaturePmDetail;
     }
 
-    @Override
-    public PmDetail updatePmDetail(PmDetail pmDetail, PmUpdateForm pmUpdateForm) {
-        TemperaturePmDetail temperaturePmDetail = (TemperaturePmDetail) pmDetail;
-        temperaturePmDetail.setFinishedDate(UtilService.getDATE());
-        temperaturePmDetail.setFinishedTime(UtilService.getTime());
-        temperaturePmDetail.setActive(false);
-        temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
 
-        return temperaturePmDetail;
-    }
-
-    @Override
-    public PmDetail registerPmDetail() {
-        TemperaturePmDetail pmDetail = new TemperaturePmDetail();
-        pmDetail.setRegisterDate(UtilService.getDATE());
-        pmDetail.setRegisterTime(UtilService.getTime());
-        pmDetail.setDelay(0);
-        pmDetail.setPm(this);
-        return pmDetail;
-    }
-
-    @Override
-    public Pm endPm(Pm pm) {
-        pm.setFinishedDate(UtilService.getDATE());
-        pm.setFinishedTime(UtilService.getTime());
-        pm.setActive(false);
-
-        TemperaturePm temperaturePm = (TemperaturePm) pm;
-        List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
-        for (PmDetail pmDetail : temperaturePm.getPmDetailList()) {
-            temperaturePmDetailList.add((TemperaturePmDetail) pmDetail);
-        }
-        float sum = (float) temperaturePmDetailList.stream().filter(temperaturePmDetail -> temperaturePmDetail.getTemperatureValue() > 0.0f).mapToDouble(TemperaturePmDetail::getTemperatureValue).sum();
-        int reportedTemperatures = (int) temperaturePmDetailList.stream().filter(temperaturePmDetail -> temperaturePmDetail.getTemperatureValue() > 0.0f).count();
-        temperaturePm.setAverageDailyValue(sum / (float) reportedTemperatures);
-
-        return temperaturePm;
-    }
 }
