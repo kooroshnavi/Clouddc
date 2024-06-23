@@ -54,20 +54,12 @@ public abstract class Location {
         this.locationPmCatalogList = locationPmCatalogList;
     }
 
-    public Center getCenter() {
-        return center;
-    }
-
     public LocationCategory getLocationCategory() {
         return locationCategory;
     }
 
     public void setLocationCategory(LocationCategory locationCategory) {
         this.locationCategory = locationCategory;
-    }
-
-    public void setCenter(Center center) {
-        this.center = center;
     }
 
     public Persistence getPersistence() {
