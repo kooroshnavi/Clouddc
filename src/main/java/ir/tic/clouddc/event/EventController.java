@@ -179,20 +179,6 @@ public class EventController {
         return "eventDetailList";
     }
 
-    @PostMapping("/update")
-    public String updateEvent(Model model
-            , @ModelAttribute("eventForm") EventLandingForm eventLandingForm
-            , @RequestParam("attachment") MultipartFile file)
-            throws IOException {
-
-        if (!file.isEmpty()) {
-            eventLandingForm.setFile(file);
-        }
-        Event event = eventService.getEvent(eventLandingForm.getEventId());
-        eventService.updateEvent(eventLandingForm, event);
-        eventService.getEventListModel(model);
-        return "redirect:eventListView";
-    }
 
     @ModelAttribute
     public void addAttributes(Model model) {

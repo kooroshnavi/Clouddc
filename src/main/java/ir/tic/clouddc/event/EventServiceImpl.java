@@ -109,35 +109,37 @@ public final class EventServiceImpl implements EventService {
     public void eventSetup(EventLandingForm eventLandingForm
             , @Nullable DeviceStatusForm deviceStatusForm
             , @Nullable LocationStatusForm locationStatusForm) throws IOException {
-        EventDetail eventDetail;
 
         switch (eventLandingForm.getEventCategoryId()) {
             case VISIT_EVENT_CATEGORY_ID -> {
                 var event = visitEventRegister_1(eventLandingForm);
                 eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                eventRepository.save(event);
             }
             case LOCATION_STATUS_EVENT_CATEGORY_ID -> {
                 if (!Objects.isNull(locationStatusForm)) {
                     var event = locationStatusEventRegister_2(locationStatusForm);
-                    eventDetail = eventDetailRegister(event, locationStatusForm.getFile(), locationStatusForm.getDescription());
-                    centerService.updateLocationStatus(locationStatusForm, (LocationStatusEvent) eventDetail.getEvent());
+                    eventDetailRegister(event, locationStatusForm.getFile(), locationStatusForm.getDescription());
+                    centerService.updateLocationStatus(locationStatusForm, event);
                 }
             }
             case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
                 var event = deviceUtilizerEventRegister_3(eventLandingForm);
-                eventDetail = eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
-                resourceService.updateDeviceUtilizer((DeviceUtilizerEvent) eventDetail.getEvent());
+                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                eventRepository.save(event);
+                resourceService.updateDeviceUtilizer(event);
             }
             case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
                 var event = deviceMovementEventRegister_4(eventLandingForm);
-                eventDetail = eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
-                resourceService.updateDeviceLocation((DeviceMovementEvent) eventDetail.getEvent());
+                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                eventRepository.save(event);
+                resourceService.updateDeviceLocation(event);
             }
             case DEVICE_STATUS_EVENT_CATEGORY_ID -> {
                 if (!Objects.isNull(deviceStatusForm)) {
                     var event = deviceStatusEventRegister_5(deviceStatusForm);
-                    eventDetail = eventDetailRegister(event, deviceStatusForm.getFile(), deviceStatusForm.getDescription());
-                    resourceService.updateDeviceStatus(deviceStatusForm, (DeviceStatusEvent) eventDetail.getEvent());
+                    eventDetailRegister(event, deviceStatusForm.getFile(), deviceStatusForm.getDescription());
+                    resourceService.updateDeviceStatus(deviceStatusForm, event);
                 }
             }
         }
@@ -206,7 +208,7 @@ public final class EventServiceImpl implements EventService {
         return deviceStatusEvent;
     }
 
-    private EventDetail eventDetailRegister(Event event, MultipartFile file, String description) throws IOException {
+    private void eventDetailRegister(Event event, MultipartFile file, String description) throws IOException {
         EventDetail eventDetail = new EventDetail();
         eventDetail.setRegisterDate(event.getRegisterDate());
         eventDetail.setRegisterTime(event.getRegisterTime());
@@ -217,9 +219,6 @@ public final class EventServiceImpl implements EventService {
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(description);
         eventDetail.setEvent(event);
-
-        return eventDetailRepository.save(eventDetail);
-
     }
 
     @Override
@@ -246,6 +245,8 @@ public final class EventServiceImpl implements EventService {
         Event event;
         if (optionalEvent.isPresent()) {
             event = optionalEvent.get();
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDayTime(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
             loadEventDetailTransients(event.getEventDetail());
 
             return event;
@@ -256,7 +257,7 @@ public final class EventServiceImpl implements EventService {
     @Override
     public MetaData getRelatedMetadata(long persistenceId) {
         var metadata = fileService.getRelatedMetadataList(List.of(persistenceId));
-        if (!metadata.isEmpty()){
+        if (!metadata.isEmpty()) {
             return metadata.get(0);
         }
         return null;
@@ -265,19 +266,6 @@ public final class EventServiceImpl implements EventService {
     private void loadEventDetailTransients(EventDetail eventDetail) {
         eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
         eventDetail.setPersianDayTime(UtilService.persianDay.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
-    }
-
-
-    @Override
-    public Event getEvent(Long eventId) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        Event event = eventRepository.findById(eventId).get();
-        event.setPersianRegisterDayTime(dateTime.format(PersianDate.fromGregorian(event
-                .getEventDetailList().stream().findFirst().get()
-                .getPersistence()
-                .getLogHistoryList().stream().findFirst().get()
-                .getDate())));
-        return event;
     }
 
     @Override
@@ -290,7 +278,6 @@ public final class EventServiceImpl implements EventService {
         return centerService.getCenterIdAndNameList();
     }
 
-
     @Override
     public Model modelForEventController(Model model) {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
@@ -300,43 +287,6 @@ public final class EventServiceImpl implements EventService {
         model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
-    }
-
-
-    private List<EventDetail> getEventDetailList(Event event) {
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
-        for (EventDetail eventDetail : event.getEventDetailList()
-        ) {
-            var date = eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getDate();
-            eventDetail.setPersianDate(dateFormatter.format
-                    (PersianDate
-                            .fromGregorian
-                                    (date)));
-            eventDetail.setPersianDayTime(UtilService.persianDay.get(date.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
-            eventDetail.setRegisterTime(timeFormatter.format(eventDetail.getPersistence().getLogHistoryList().stream().findFirst().get().getTime()));
-        }
-
-        return event.getEventDetailList()
-                .stream()
-                .sorted(Comparator.comparing(EventDetail::getId).reversed())
-                .collect(Collectors.toList());
-    }
-
-
-    @Override
-    @PreAuthorize("event.active == true")
-    public void updateEvent(EventLandingForm eventLandingForm, Event event) throws IOException {
-        if (!eventLandingForm.isActive()) {
-            event.setActive(false);
-        }
-        eventDetailRegister(eventLandingForm, event);
-    }
-
-
-    @Override
-    public List<Event> getPendingEventList() {
-        return eventRepository.findAllByActive(true);
     }
 
     @Override
@@ -366,8 +316,7 @@ public final class EventServiceImpl implements EventService {
 
     @Override
     public List<Long> getEventTypeCount() {
-        log.info(eventRepository.getEventTypeCount().toString());
-        return eventRepository.getEventTypeCount();
+        return null;
     }
 
     @Override
@@ -388,7 +337,5 @@ public final class EventServiceImpl implements EventService {
         var formatted = decimalFormat.format(percent);
         return Integer.parseInt(formatted);
     }
-
-
 }
 

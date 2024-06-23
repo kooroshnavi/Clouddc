@@ -215,9 +215,8 @@
                         <thead>
                         <tr>
                             <th th:if="${locationStatusEvent.isDoorChanged()}">وضعیت درب و قفل ها</th>
-                            <th th:if="${locationStatusEvent.isVentilationChanged()}">شرایط تهویه</th>
+                            <th th:if="${locationStatusEvent.isVentilationChanged()}">شرایط تهویه و دما</th>
                             <th th:if="${locationStatusEvent.isPowerChanged()}">وضعیت برق</th>
-
                         </tr>
                         </thead>
                         <tbody>
@@ -227,14 +226,71 @@
                             <td th:if="${locationStatusEvent.isDoorChanged()} && ${not locationStatusEvent.locationStatus.isDoor()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${locationStatusEvent.isVentilationChanged()} && ${locationStatusEvent.locationStatus.isVentilation()()}"
+                            <td th:if="${locationStatusEvent.isVentilationChanged()} && ${locationStatusEvent.locationStatus.isVentilation()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${locationStatusEvent.isVentilationChanged()} && ${not locationStatusEvent.locationStatus.isVentilation()()}"
+                            <td th:if="${locationStatusEvent.isVentilationChanged()} && ${not locationStatusEvent.locationStatus.isVentilation()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${locationStatusEvent.isPowerChanged()} && ${locationStatusEvent.locationStatus.isPower()()}"
+                            <td th:if="${locationStatusEvent.isPowerChanged()} && ${locationStatusEvent.locationStatus.isPower()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${locationStatusEvent.isPowerChanged()} && ${not locationStatusEvent.locationStatus.isPower()()}"
+                            <td th:if="${locationStatusEvent.isPowerChanged()} && ${not locationStatusEvent.locationStatus.isPower()}"
+                                th:text="اعلام رفع خرابی"/>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${baseEvent.eventCategory.id == 5}" class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table mb-0 table-dark table-striped">
+                        <thead>
+                        <tr>
+                            <th th:if="${deviceStatusEvent.isDualPowerChanged()}">اتصال تجهیز به دو (2) منبع نیرو</th>
+                            <th th:if="${deviceStatusEvent.isStsChanged()}">چراغ وضعیت تجهیز (STS یا Power)</th>
+                            <th th:if="${deviceStatusEvent.isFanChanged()}">عملکرد فن های تجهیز</th>
+                            <th th:if="${deviceStatusEvent.isModuleChanged()}">سلامت ماژول های متصل</th>
+                            <th th:if="${deviceStatusEvent.isStorageChanged()}">سلامت استوریج ها (چراغ باکس) HDD و SSD
+                            </th>
+                            <th th:if="${deviceStatusEvent.isPortChanged()}">اتصال پورت های غیرخالی و برقراری آپ لینک
+                                ها
+                            </th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td th:if="${deviceStatusEvent.isDualPowerChanged()} && ${deviceStatusEvent.deviceStatus.isDualPower()}"
+                                th:text="اعلام خرابی"/>
+                            <td th:if="${deviceStatusEvent.isDualPowerChanged()} && ${not deviceStatusEvent.deviceStatus.isDualPower()}"
+                                th:text="اعلام رفع خرابی"/>
+
+                            <td th:if="${deviceStatusEvent.isStsChanged()} && ${deviceStatusEvent.deviceStatus.isSts()}"
+                                th:text="اعلام خرابی"/>
+                            <td th:if="${deviceStatusEvent.isStsChanged()} && ${not deviceStatusEvent.deviceStatus.isSts()}"
+                                th:text="اعلام رفع خرابی"/>
+
+                            <td th:if="${deviceStatusEvent.isFanChanged()} && ${deviceStatusEvent.deviceStatus.isFan()}"
+                                th:text="اعلام خرابی"/>
+                            <td th:if="${deviceStatusEvent.isFanChanged()} && ${not deviceStatusEvent.deviceStatus.isFan()}"
+                                th:text="اعلام رفع خرابی"/>
+
+                            <td th:if="${deviceStatusEvent.isModuleChanged()} && ${deviceStatusEvent.deviceStatus.isModule()}"
+                                th:text="اعلام خرابی"/>
+                            <td th:if="${deviceStatusEvent.isModuleChanged()} && ${not deviceStatusEvent.deviceStatus.isModule()}"
+                                th:text="اعلام رفع خرابی"/>
+
+                            <td th:if="${deviceStatusEvent.isStorageChanged()} && ${deviceStatusEvent.deviceStatus.isStorage()}"
+                                th:text="اعلام خرابی"/>
+                            <td th:if="${deviceStatusEvent.isStorageChanged()} && ${not deviceStatusEvent.deviceStatus.isStorage()}"
+                                th:text="اعلام رفع خرابی"/>
+
+                            <td th:if="${deviceStatusEvent.isPortChanged()} && ${deviceStatusEvent.deviceStatus.isPort()}"
+                                th:text="اعلام خرابی"/>
+                            <td th:if="${deviceStatusEvent.isPortChanged()} && ${not deviceStatusEvent.deviceStatus.isPort()}"
                                 th:text="اعلام رفع خرابی"/>
 
                         </tr>
@@ -248,95 +304,6 @@
 
 
         <hr/>
-
-        <h6 class="mb-0 text-uppercase" th:if="${event.active}" align="hall">
-            <strong>فرم بروزرسانی وضعیت رخداد</strong>
-        </h6>
-
-        <div class="row" th:if="${event.active}" align="hall" dir="rtl">
-            <div class="col-lg-12 mx-auto">
-                <div class="card">
-
-                    <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-12 col-lg-8">
-                                <div class="card shadow-none bg-light border">
-                                    <div class="card-body">
-
-                                        <form class="row g-3" th:action="@{/event/update}"
-                                              enctype="multipart/form-data" th:object="${eventLandingForm}"
-                                              method="POST">
-
-                                            <div class="col-12">
-                                                <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
-                                                <input class="form-control" type="file" name="attachment"
-                                                       id="attachment">
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label">اقدامات انجام شده</label>
-                                                <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4"
-                                                          th:field="*{description}" required="required" dir="rtl"
-                                                          maxlength="1000"></textarea>
-                                            </div>
-
-                                            <div class="col-12">
-                                                <label class="form-label">وضعیت فعلی</label>
-                                                <select class="form-select" th:field="*{active}">
-                                                    <option th:value="1" selected="selected">فعال - در حال پیگیری
-                                                    </option>
-                                                    <option th:value="0">خاتمه رخداد</option>
-                                                </select>
-                                            </div>
-
-                                            <div class="col">
-                                                <!-- Button trigger modal -->
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#exampleLargeModal">ثبت
-                                                </button>
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="exampleLargeModal" tabindex="-1"
-                                                     aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content bg-warning">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">همکار گرامی</h5>
-                                                                <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"
-                                                                        aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">لطفا قبل از تایید، از صحت اطلاعات
-                                                                ورودی مطمئن شوید. داده ها در آینده ممکن است مورد رجوع و
-                                                                استناد قرار گیرند.
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                        data-bs-dismiss="modal">لغو
-                                                                </button>
-                                                                <button type="submit" class="btn btn-primary">بروزرسانی
-                                                                    رخداد
-                                                                </button>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </form>
-
-                                    </div>
-
-                                </div>
-
-                            </div>
-
-
-                        </div>
-                    </div>
-
-
-                </div><!--end row-->
-            </div>
-        </div>
 
         <!--attachment table-->
         <div class="card" align="center" th:replace="~{staticDetailsTemplate :: attachment}"></div>

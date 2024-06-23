@@ -50,8 +50,6 @@ public class DeviceStatus extends Auditable {
     @Transient
     private String persianCheckDayTime;
 
-
-
     public int getId() {
         return id;
     }

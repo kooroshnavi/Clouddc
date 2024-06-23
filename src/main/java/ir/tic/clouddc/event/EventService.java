@@ -22,7 +22,6 @@ public interface EventService {
             , @Nullable DeviceStatusForm deviceStatusForm
             , @Nullable LocationStatusForm locationStatusForm) throws IOException;
 
-    Event getEvent(Long eventId);
 
     List<EventCategory> getEventCategoryList();
 
@@ -35,10 +34,6 @@ public interface EventService {
     MetaData getRelatedMetadata(long persistenceId);
 
     List<Event> getEventList(@Nullable Short categoryId);
-
-    void updateEvent(EventLandingForm eventLandingForm, Event event) throws IOException;
-
-    List<Event> getPendingEventList();
 
     Optional<Center> getCenter(short centerId);
 
