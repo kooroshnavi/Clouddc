@@ -1,6 +1,8 @@
 package ir.tic.clouddc.pm;
 
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -26,7 +28,7 @@ public class PmController {
     }
 
 
-    @GetMapping("/list")
+    @GetMapping("/interface/list")
     public String showPmInterfaceList(Model model) {
         List<PmInterface> pmInterfaceList = pmService.getPmInterfaceList();
         model.addAttribute("pmInterfaceList", pmInterfaceList);
@@ -62,11 +64,14 @@ public class PmController {
         }
 
         pmService.pmInterfaceRegister(pmInterfaceRegisterForm);
-        return "pmList";
+        return "redirect:\\pmInterfaceList";
     }
 
     @GetMapping("/{pmInterfaceId}/active/{active}/location/{locationId}")
-    public String showPmInterfacePmTaskList(Model model, @PathVariable boolean active, @PathVariable(required = false) int locationId, @PathVariable short pmInterfaceId) {
+    public String showPmInterfacePmList(Model model
+            , @PathVariable boolean active
+            , @PathVariable short pmInterfaceId
+            , @Nullable @PathVariable(required = false) Integer locationId) {
         var pmList = pmService.getPmInterfacePmList(pmInterfaceId, active, locationId);
         model.addAttribute("pmList", pmList);
         model.addAttribute("pmInterface", pmList.get(0).getPmInterface());
@@ -74,7 +79,6 @@ public class PmController {
 
         return "pmInterfacePmList";
     }
-
 
     @GetMapping("/{pmId}/detailList")
     public String showPmDetailPage(Model model, @PathVariable int pmId) {
@@ -93,19 +97,18 @@ public class PmController {
             for (PmDetail pmDetail : pmDetailList) {
                 generalPmDetailList.add((GeneralPmDetail) pmDetail);
             }
-            model.addAttribute("pmDetailList", generalPmDetailList);
+            model.addAttribute("generalPmDetailList", generalPmDetailList);
         } else if (pm instanceof TemperaturePm) {
             List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
             for (PmDetail pmDetail : pmDetailList) {
                 temperaturePmDetailList.add((TemperaturePmDetail) pmDetail);
             }
-            model.addAttribute("pmDetailList", temperaturePmDetailList);
+            model.addAttribute("temperaturePmDetailList", temperaturePmDetailList);
         }
 
         model.addAttribute("pmInterface", pm.getPmInterface());
         model.addAttribute("pm", pm);
         model.addAttribute("metadataList", metadataList);
-
 
         return "pmDetail";
     }
@@ -114,7 +117,7 @@ public class PmController {
     public String showPmUpdateForm(Model model, @PathVariable int pmId) {
         var pm = pmService.getPm(pmId);
         var pmOwnerUsername = pmService.getPmOwnerUsername(pmId);
-        var pmUpdateForm = pmService.getPmUpdateForm(model, pm, pmService.getPmOwnerUsername(pmId));
+        var pmUpdateForm = pmService.getPmUpdateForm(pm, pmOwnerUsername);
         var assignPersonList = pmService.getAssignPersonList(pmOwnerUsername);
 
         model.addAttribute("pmInterface", pm.getPmInterface());
@@ -132,7 +135,7 @@ public class PmController {
         if (!file.isEmpty()) {
             pmUpdateForm.setFile(file);
         }
-        pmService.updatePm(pmUpdateForm, pmUpdateForm.getPm(), pmService.getPmOwnerUsername(pmUpdateForm.getPm().getId()));
+        pmService.updatePm(pmUpdateForm, pmUpdateForm.getPm(), pmUpdateForm.getOwnerUsername());
         // pmService.modelForActivePersonTaskList(model);
         return "redirect:activePmList";
     }
@@ -140,15 +143,19 @@ public class PmController {
     @GetMapping("/workspace")
     private String showWorkspace(Model model) {
 
-        pmService.getActivePmList(model, true, true);
+        var activePmList = pmService.getActivePmList(true, true);
+        model.addAttribute("workspace", true);
+        model.addAttribute("activePmList", activePmList);
 
         return "activePmList";
     }
 
-    @GetMapping("/list")
+    @GetMapping("/active/list")
     private String showActivePmList(Model model) {
 
-        pmService.getActivePmList(model, true, false);
+        var activePmList = pmService.getActivePmList(true, false);
+        model.addAttribute("workspace", false);
+        model.addAttribute("activePmList", activePmList);
 
         return "activePmList";
     }

@@ -12,14 +12,12 @@ import java.util.Optional;
 
 @Repository
 public interface PmDetailRepository extends JpaRepository<PmDetail, Integer> {
-    Optional<GeneralPmDetail> findByTaskIdAndActive(long taskId, boolean active);
-
+    Optional<PmDetail> findByPmIdAndActive(int pmId, boolean active);
     List<GeneralPmDetail> findByTaskId(long taskId);
-
     @Query("SELECT p.pm FROM PmDetail p WHERE p.persistence.person.username = :username AND p.active = :active")
-    List<? extends Pm> fetchActivePersonPmList(@Param("username") @Nullable String username, @Param("active") boolean active);
+    List<Pm> fetchPmListByActiveAndPerson(@Param("username") @Nullable String username, @Param("active") boolean active);
 
-    @Query("SELECT P.persistence.id FROM PmDetail P WHERE P.pm.id = :pmId")
+    @Query("SELECT p.persistence.id FROM PmDetail p WHERE p.pm.id = :pmId")
     List<Long> getPersistenceIdList(@Param("pmId") int pmId);
 
     @Query("SELECT p.persistence.person.username FROM PmDetail p WHERE p.pm.id = :pmId AND p.active = :active")

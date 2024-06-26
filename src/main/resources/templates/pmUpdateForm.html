@@ -110,7 +110,7 @@
                                                 <div class="form-check form-switch">
                                                     <label class="form-label">میزان دما
                                                         <input type="number" th:field="*{temperatureValue}" dir="rtl"
-                                                               min="5" max="50" step="0.1"/>
+                                                               min="5" max="50" step="0.1" required="required"/>
                                                     </label>
                                                 </div>
                                             </div>
@@ -130,14 +130,16 @@
 
                                             <div class="col-12">
                                                 <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران</label>
-                                                <select class="form-select" th:field="*{actionType}">
-                                                    <option th:value="100" disabled="disabled" selected="selected">
-                                                        انتخاب
-                                                    </option>
-                                                    <option th:value="0">اتمام وظیفه</option>
-                                                    <option th:each="person : ${assignPersonList}"
-                                                            th:value="${person.id}" th:text="${person.name}"></option>
-                                                </select>
+                                                <label>
+                                                    <select class="form-select" th:field="*{actionType}">
+                                                        <option th:value="100" disabled="disabled" selected="selected">
+                                                            انتخاب
+                                                        </option>
+                                                        <option th:value="0">اتمام وظیفه</option>
+                                                        <option th:each="person : ${assignPersonList}"
+                                                                th:value="${person.id}" th:text="${person.name}"></option>
+                                                    </select>
+                                                </label>
                                             </div>
 
                                             <div class="col">

@@ -56,7 +56,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">جزئیات گردش Pm</li>
+                        <li class="breadcrumb-item active" aria-current="page">جزئیات گردش کار Pm</li>
                     </ol>
                 </nav>
             </div>
@@ -67,10 +67,10 @@
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
                     <div class="d-flex align-items-hall gap-3">
-                        <div th:if="${delay} == 0" class="icon-box bg-light-success border-0">
+                        <div th:if="${pm.delay} == 0" class="icon-box bg-light-success border-0">
                             <i class="lni lni-chevron-left"></i>
                         </div>
-                        <div th:if="${delay} > 0" class="icon-box bg-light-danger border-0">
+                        <div th:if="${pm.delay} > 0" class="icon-box bg-light-danger border-0">
                             <i class="lni lni-chevron-left"></i>
                         </div>
                         <div class="info">
@@ -97,7 +97,7 @@
             </div>
         </div>
 
-        <div th:if="${pm.active} and ${permission}" class="col">
+        <div th:if="${pm.active} && ${permission}" class="col">
             <div class="card bg-primary text-white">
                 <div class="card-body">
                     <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn btn-danger">بروزرسانی وظیفه برای شخص منتسب و مسئول مدیریت وظایف امکان پذیر است.</a>
@@ -130,7 +130,7 @@
                     </thead>
                     <tbody>
 
-                    <tr th:if="${not pmInterface.id == 2}" th:each="detail, iter : ${pmDetailList}">
+                    <tr th:if="${not pmInterface.id == 2}" th:each="detail, iter : ${generalPmDetailList}">
 
                         <td th:text="${iter.count}"></td>
 
@@ -144,13 +144,12 @@
                             data-bs-placement="top"
                             th:title="${detail.persianFinishedDayTime}" dir="rtl"></td>
 
-
                         <td th:text="${detail.persistence.person.name}"></td>
                         <td th:text="${detail.description}"></td>
 
                     </tr>
 
-                    <tr th:if="${pmInterface.id == 2}" th:each="detail, iter : ${pmDetailList}">
+                    <tr th:if="${pmInterface.id == 2}" th:each="detail, iter : ${temperaturePmDetailList}">
 
                         <td th:text="${iter.count}"></td>
 

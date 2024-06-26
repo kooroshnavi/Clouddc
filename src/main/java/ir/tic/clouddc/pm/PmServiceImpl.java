@@ -12,6 +12,7 @@ import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -119,8 +120,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getPmInterfacePmList(short pmInterfaceId, boolean active, int locationId) {
-
+    public List<Pm> getPmInterfacePmList(short pmInterfaceId, boolean active, @Nullable Integer locationId) {
         PmInterface pmInterface;
         var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
         if (optionalPmInterface.isPresent()) {
@@ -148,7 +148,7 @@ public class PmServiceImpl implements PmService {
             setPmTransients(List.of(optionalPm.get()));
             return optionalPm.get();
         } else {
-            throw new NoSuchElementException();
+            throw new NoSuchElementException("The specified Pm does not exist.");
         }
     }
 
@@ -174,7 +174,7 @@ public class PmServiceImpl implements PmService {
         return pmDetailFormViewPermission(pmDetail.getPersistence().getPerson().getUsername());
     }
 
-    private void setPmTransients(List<? extends Pm> basePm) {
+    private void setPmTransients(List<Pm> basePm) {
         for (Pm pm : basePm) {
             pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
             if (!pm.isActive()) {
@@ -184,25 +184,22 @@ public class PmServiceImpl implements PmService {
                 pm.setActivePersonName(pm.getPmDetailList()
                         .stream()
                         .filter(PmDetail::isActive).findFirst().get()
-                        .getPersistence().getPerson().getName());
+                        .getPersistence()
+                        .getPerson().getName());
             }
         }
     }
 
     private void setPmDetailTransients(List<PmDetail> pmDetailList) {
         for (PmDetail pmDetail : pmDetailList) {
-            pmDetail
-                    .setPersianRegisterDate(UtilService.getFormattedPersianDate(pmDetail.getRegisterDate()));
-            pmDetail
-                    .setPersianRegisterDayTime(UtilService
-                            .getFormattedPersianDayTime(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
+            pmDetail.setPersianRegisterDate(UtilService.getFormattedPersianDate(pmDetail.getRegisterDate()));
+            pmDetail.setPersianRegisterDayTime(UtilService
+                    .getFormattedPersianDayTime(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
             if (!pmDetail.isActive()) {
-                pmDetail
-                        .setPersianFinishedDate(UtilService
-                                .getFormattedPersianDate(pmDetail.getFinishedDate()));
-                pmDetail
-                        .setPersianFinishedDayTime(UtilService
-                                .getFormattedPersianDayTime(pmDetail.getFinishedDate(), pmDetail.getFinishedTime()));
+                pmDetail.setPersianFinishedDate(UtilService
+                        .getFormattedPersianDate(pmDetail.getFinishedDate()));
+                pmDetail.setPersianFinishedDayTime(UtilService
+                        .getFormattedPersianDayTime(pmDetail.getFinishedDate(), pmDetail.getFinishedTime()));
             }
         }
     }
@@ -218,8 +215,9 @@ public class PmServiceImpl implements PmService {
     @Override
     @PreAuthorize(" pm.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
     public void updatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException {
+        // PART 1. Update current PmDetail
         PmDetail basePmDetail;
-        var optionalPmDetail = pm.getPmDetailList().stream().filter(PmDetail::isActive).findAny();
+        var optionalPmDetail = pmDetailRepository.findByPmIdAndActive(pm.getId(), true);
         if (optionalPmDetail.isPresent()) {
             basePmDetail = optionalPmDetail.get();
         } else {
@@ -230,24 +228,24 @@ public class PmServiceImpl implements PmService {
         basePmDetail.setFinishedTime(UtilService.getTime());
         basePmDetail.setActive(false);
         Persistence currentPmDetailPersistence = basePmDetail.getPersistence();
-        fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
 
         var currentPerson = personService.getCurrentPerson();
-        var currentUsername = personService.getCurrentUsername();
-        if (ownerUsername.equals(currentUsername)) {
+        if (ownerUsername.equals(currentPerson.getUsername())) {
             basePmDetail.setDescription(pmUpdateForm.getDescription());
+            fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPmDetailPersistence.getPerson(), currentPmDetailPersistence);
             if (basePmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
                 temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
             }
         } else {
-            basePmDetail.setDescription("Terminated by supervisor");
+            basePmDetail.setDescription("Terminated");
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentPmDetailPersistence);
-            supervisorOperation(basePmDetail, pmUpdateForm, currentPerson);
+            supervisorOperation(pmUpdateForm, currentPerson);
         }
-
         pmDetailRepository.save(basePmDetail);
 
+
+        // PART 2. Update Pm
         if (pmUpdateForm.getActionType() == 0) {  //  End Pm
             endPm(pm);
 
@@ -286,22 +284,23 @@ public class PmServiceImpl implements PmService {
         }
         pmDetail.setPersistence(persistence);
 
-        pmDetailRepository.save(pmDetail);
+        var persistedPmDetail = pmDetailRepository.save(pmDetail);
         notificationService.sendActiveTaskAssignedMessage(assigneePerson.getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), LocalDateTime.of(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
 
-        return pmDetail;
+        return persistedPmDetail;
     }
 
 
-    private void supervisorOperation(PmDetail pmDetail, PmUpdateForm pmUpdateForm, Person currentPerson) throws IOException {
-        if (pmDetail.getPm() instanceof GeneralPm generalPm) {
+    private void supervisorOperation(PmUpdateForm pmUpdateForm, Person currentPerson) throws IOException {
+        var pm = pmUpdateForm.getPm();
+        if (pm instanceof GeneralPm generalPm) {
             GeneralPmDetail supervisorGeneralPmDetail = new GeneralPmDetail();
             supervisorGeneralPmDetail.setDescription(pmUpdateForm.getDescription());
             supervisorGeneralPmDetail.setPm(generalPm);
             var persistedDetail = assignNewPmDetail(supervisorGeneralPmDetail, currentPerson.getId(), '3', false);
             fileService.checkAttachment(pmUpdateForm.getFile(), persistedDetail.getPersistence());
 
-        } else if (pmDetail.getPm() instanceof TemperaturePm temperaturePm) {
+        } else if (pm instanceof TemperaturePm temperaturePm) {
             TemperaturePmDetail supervisorTemperatureDetail = new TemperaturePmDetail();
             supervisorTemperatureDetail.setDescription(pmUpdateForm.getDescription());
             supervisorTemperatureDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
@@ -342,10 +341,11 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    @PreAuthorize(" pm.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
-    public PmUpdateForm getPmUpdateForm(Model model, Pm pm, String ownerUsername) {
+    @PreAuthorize(" pm.active == true AND (ownerUsername == authentication.name OR hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
+    public PmUpdateForm getPmUpdateForm(Pm pm, String ownerUsername) {
         PmUpdateForm pmUpdateForm = new PmUpdateForm();
         pmUpdateForm.setPm(pm);
+        pmUpdateForm.setOwnerUsername(ownerUsername);
 
         return pmUpdateForm;
     }
@@ -379,27 +379,24 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model getActivePmList(Model model, boolean active, boolean workspace) {
-        List<? extends Pm> activePmList;
+    public List<Pm> getActivePmList(boolean active, boolean workspace) {
+        List<Pm> activePmList;
         if (workspace) {
-            activePmList = pmDetailRepository.fetchActivePersonPmList(personService.getCurrentUsername(), active);
+            activePmList = pmDetailRepository.fetchPmListByActiveAndPerson(personService.getCurrentUsername(), active);
 
         } else {
-            activePmList = pmDetailRepository.fetchActivePersonPmList(null, active);
+            activePmList = pmDetailRepository.fetchPmListByActiveAndPerson(null, active);
         }
 
         if (!activePmList.isEmpty()) {
             setPmTransients(activePmList);
-            var sortedActiveList = activePmList
+
+            return activePmList
                     .stream()
                     .sorted(Comparator.comparing(Pm::getDelay).reversed())
                     .toList();
-            model.addAttribute("activePmList", sortedActiveList);
-            model.addAttribute("workspace", workspace);
-
-            return model;
         }
-        return model;
+        return activePmList;
     }
 
     @Override

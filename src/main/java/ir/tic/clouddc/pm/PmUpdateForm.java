@@ -11,12 +11,19 @@ public class PmUpdateForm {
     @NotBlank(message = "Description is obligatory")
     @Size(min = 5, max = 1000)
     private String description;
+    private String ownerUsername;
     @NotBlank
     private int actionType;
     private float temperatureValue;
     private MultipartFile file;
 
+    public String getOwnerUsername() {
+        return ownerUsername;
+    }
 
+    public void setOwnerUsername(String ownerUsername) {
+        this.ownerUsername = ownerUsername;
+    }
 
     public float getTemperatureValue() {
         return temperatureValue;
