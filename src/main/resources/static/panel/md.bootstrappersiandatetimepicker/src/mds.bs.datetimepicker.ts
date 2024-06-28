@@ -2303,7 +2303,7 @@ data-bs-toggle="dropdown" aria-expanded="false">
         if (!elementGuid)
           return null;
       }
-    };
+    }
     return MdsPersianDateTimePickerData.get(elementGuid);
   }
 

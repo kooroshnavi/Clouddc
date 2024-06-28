@@ -130,7 +130,7 @@
                     </thead>
                     <tbody>
 
-                    <tr th:if="${not pmInterface.id == 2}" th:each="detail, iter : ${generalPmDetailList}">
+                    <tr th:if="${pmInterface.isGeneralPm()}" th:each="detail, iter : ${pmDetailList}">
 
                         <td th:text="${iter.count}"></td>
 

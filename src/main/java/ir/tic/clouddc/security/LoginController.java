@@ -122,10 +122,7 @@ public class LoginController {
 
     private boolean userIsKnown(String address) {
         Optional<Address> personAddress = addressRepository.findByValue(address);
-        if (personAddress.isPresent()) {
-            return true;
-        }
-        return false;
+        return personAddress.isPresent();
     }
 
 }

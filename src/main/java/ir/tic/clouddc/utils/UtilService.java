@@ -40,7 +40,7 @@ public final class UtilService {
         dayName = persianDay.get(dayName);
 
 
-        return (dayName + "    " + day + "     " + month.toString());
+        return (dayName + "    " + day + "     " + month);
     }
 
     public static void setDate() {

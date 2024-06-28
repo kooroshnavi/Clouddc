@@ -1,1 +1,1 @@
-No Content: https://codervent.com/snacked/demo/rtl/assets/plugins/highcharts/js/export-data.src.js
+No https://codervent.com/snacked/demo/rtl/assets/plugins/highcharts/js/export-data.src.js

@@ -236,7 +236,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public List<Hall> getSalonList() {
+    public List<Hall> getHallList() {
         return null;
     }
 

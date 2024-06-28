@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface HallRepository extends JpaRepository<Hall, Integer> {
 
-    @Query("SELECT H.id AND H.name FROM Hall L")
-    List<CenterService.HallIdName> fetchHallIdNameList();
+    @Query("SELECT H.id, H.name FROM Hall H")
+    List<CenterService.HallIdNameProjection> fetchHallIdNameList();
 }

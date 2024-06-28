@@ -24,7 +24,7 @@ public class OtpServiceImpl implements OtpService {
 
     private static final long EXPIRE_HOUR = 12;
 
-    private LoadingCache<String, String> otpCache;
+    private final LoadingCache<String, String> otpCache;
 
     private final NotificationService notificationService;
 

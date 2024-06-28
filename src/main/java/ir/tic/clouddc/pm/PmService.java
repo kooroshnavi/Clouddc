@@ -36,7 +36,7 @@ public interface PmService {
 
     void pmInterfaceRegister(pmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
-    void updatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
+    void pmUpdate(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 
     String getPmOwnerUsername(int pmId);
 

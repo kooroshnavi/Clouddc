@@ -34,23 +34,4 @@ public final class TemperaturePm extends Pm {
         this.averageDailyValue = averageDailyValue;
     }
 
-    @Override
-    public PmDetail registerPm(LocationPmCatalog catalog) {
-        this.setLocation(catalog.getLocation());
-        this.setDueDate(UtilService.getDATE());
-        this.setPmInterface(catalog.getPmInterface());
-        this.setDelay(0);
-        this.setActive(true);
-
-        TemperaturePmDetail temperaturePmDetail = new TemperaturePmDetail();
-        temperaturePmDetail.setPm(this);
-        temperaturePmDetail.setDelay(0);
-        temperaturePmDetail.setActive(true);
-        temperaturePmDetail.setRegisterDate(UtilService.getDATE());
-        temperaturePmDetail.setRegisterTime(UtilService.getTime());
-
-        return temperaturePmDetail;
-    }
-
-
 }

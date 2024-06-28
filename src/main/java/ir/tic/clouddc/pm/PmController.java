@@ -2,7 +2,6 @@ package ir.tic.clouddc.pm;
 
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -92,18 +91,14 @@ public class PmController {
             model.addAttribute("permission", permission);
         }
 
-        if (pm instanceof GeneralPm) {
-            List<GeneralPmDetail> generalPmDetailList = new ArrayList<>();
-            for (PmDetail pmDetail : pmDetailList) {
-                generalPmDetailList.add((GeneralPmDetail) pmDetail);
-            }
-            model.addAttribute("generalPmDetailList", generalPmDetailList);
-        } else if (pm instanceof TemperaturePm) {
+        if (pm instanceof TemperaturePm) {
             List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
             for (PmDetail pmDetail : pmDetailList) {
                 temperaturePmDetailList.add((TemperaturePmDetail) pmDetail);
             }
             model.addAttribute("temperaturePmDetailList", temperaturePmDetailList);
+        } else {
+            model.addAttribute("pmDetailList", pmDetailList);
         }
 
         model.addAttribute("pmInterface", pm.getPmInterface());
@@ -135,14 +130,13 @@ public class PmController {
         if (!file.isEmpty()) {
             pmUpdateForm.setFile(file);
         }
-        pmService.updatePm(pmUpdateForm, pmUpdateForm.getPm(), pmUpdateForm.getOwnerUsername());
+        pmService.pmUpdate(pmUpdateForm, pmUpdateForm.getPm(), pmUpdateForm.getOwnerUsername());
         // pmService.modelForActivePersonTaskList(model);
         return "redirect:activePmList";
     }
 
     @GetMapping("/workspace")
     private String showWorkspace(Model model) {
-
         var activePmList = pmService.getActivePmList(true, true);
         model.addAttribute("workspace", true);
         model.addAttribute("activePmList", activePmList);
@@ -152,7 +146,6 @@ public class PmController {
 
     @GetMapping("/active/list")
     private String showActivePmList(Model model) {
-
         var activePmList = pmService.getActivePmList(true, false);
         model.addAttribute("workspace", false);
         model.addAttribute("activePmList", activePmList);

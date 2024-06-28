@@ -30,7 +30,8 @@ public class LocationPmCatalog {
     @JoinColumn(name = "default_workspace_id")
     private Person defaultPerson;
 
-    @Column
+    @OneToOne
+    @JoinColumn(name = "last_pm_id")
     private Pm lastFinishedPm;
 
     @Column

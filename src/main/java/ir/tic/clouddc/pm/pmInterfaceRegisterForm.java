@@ -19,10 +19,18 @@ public class pmInterfaceRegisterForm {
 
     private boolean enabled;
 
-    private int categoryId;
+    private PmCategory pmCategory;
 
     private MultipartFile file;
 
+
+    public PmCategory getPmCategory() {
+        return pmCategory;
+    }
+
+    public void setPmCategory(PmCategory pmCategory) {
+        this.pmCategory = pmCategory;
+    }
 
     public boolean isEnabled() {
         return enabled;
@@ -38,13 +46,6 @@ public class pmInterfaceRegisterForm {
 
     public void setId(short id) {
         this.id = id;
-    }
-    public int getCategoryId() {
-        return categoryId;
-    }
-
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
     }
 
     public String getName() {

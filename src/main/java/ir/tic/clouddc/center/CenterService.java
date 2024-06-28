@@ -18,7 +18,7 @@ public interface CenterService {
 
         String getName();
     }
-    interface HallIdName {
+    interface HallIdNameProjection {
         short getId();
 
         String getName();
@@ -49,7 +49,7 @@ public interface CenterService {
 
     Optional<Center> getCenter(short centerId);
 
-    List<Hall> getSalonList();
+    List<Hall> getHallList();
 
     List<Center> getCenterList();
 

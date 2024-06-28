@@ -12,23 +12,4 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class GeneralPm extends Pm {
 
-    private CenterService centerService;
-
-    @Override
-    public PmDetail registerPm(LocationPmCatalog catalog) {
-        this.setLocation(catalog.getLocation());
-        this.setDueDate(UtilService.getDATE());
-        this.setPmInterface(catalog.getPmInterface());
-        this.setDelay(0);
-        this.setActive(true);
-        GeneralPmDetail generalPmDetail = new GeneralPmDetail();
-        generalPmDetail.setPm(this);
-        generalPmDetail.setDelay(0);
-        generalPmDetail.setActive(true);
-        generalPmDetail.setRegisterDate(UtilService.getDATE());
-        generalPmDetail.setRegisterTime(UtilService.getTime());
-
-        return generalPmDetail;
-    }
-
 }

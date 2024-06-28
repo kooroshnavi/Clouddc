@@ -34,6 +34,9 @@ public final class PmInterface {
     private boolean generalPm;
 
     @Column
+    private boolean statelessRecurring;
+
+    @Column
     @Nationalized
     private String description;
 
@@ -47,6 +50,14 @@ public final class PmInterface {
     @OneToOne
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+    public boolean isStatelessRecurring() {
+        return statelessRecurring;
+    }
+
+    public void setStatelessRecurring(boolean statelessRecurring) {
+        this.statelessRecurring = statelessRecurring;
+    }
 
     public String getDescription() {
         return description;
