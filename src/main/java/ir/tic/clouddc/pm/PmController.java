@@ -26,7 +26,6 @@ public class PmController {
         this.pmService = taskService;
     }
 
-
     @GetMapping("/interface/list")
     public String showPmInterfaceList(Model model) {
         List<PmInterface> pmInterfaceList = pmService.getPmInterfaceList();
@@ -157,5 +156,4 @@ public class PmController {
     public void addAttributes(Model model) {
         pmService.modelForTaskController(model);
     }
-
 }

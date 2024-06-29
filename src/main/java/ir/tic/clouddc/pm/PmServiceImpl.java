@@ -476,7 +476,7 @@ public class PmServiceImpl implements PmService {
             pmInterfaceRegisterForm.setDescription(pmInterface.getDescription());
             pmInterfaceRegisterForm.setPeriod(pmInterface.getPeriod());
             pmInterfaceRegisterForm.setId(pmInterfaceId);
-            pmInterfaceRegisterForm.setCategoryId(pmInterface.getPmCategory().getId());
+            pmInterfaceRegisterForm.setPmCategory(pmInterface.getPmCategory());
 
             List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(pmInterface.getPersistence().getId()));
             if (!metaDataList.isEmpty()) {
