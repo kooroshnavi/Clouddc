@@ -33,28 +33,32 @@ public class PmController {
         return "pmInterfaceList";
     }
 
-    @GetMapping("/register/form")    /// General Pm only
-    public String showPmInterfaceRegisterForm(Model model) {
-        pmService.getPmInterfaceFormData(model);
-        return "pmInterfaceRegister";
-    }
+    @GetMapping("/{pmInterfaceId}/register/form")
+    public String showPmInterfaceForm(Model model, @Nullable @PathVariable Short pmInterfaceId) {
+        if (pmInterfaceId == null) {
+            var pmCategoryList = pmService.getPmInterfaceFormData();
+            model.addAttribute("pmCategoryList", pmCategoryList);
+            model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
+        } else {
+            var pmInterfaceForm = pmService.pmInterfaceEditFormData(pmInterfaceId);
+            var pmCategoryList = pmService.getPmInterfaceFormData();
+            model.addAttribute("pmCategoryList", pmCategoryList);
+            model.addAttribute("pmInterfaceRegisterForm", pmInterfaceForm);
+        }
 
-    @GetMapping("/{pmInterfaceId}/edit/form")
-    public String showPmInterfaceEditForm(@RequestParam short pmInterfaceId, Model model) {
-        pmService.pmInterfaceEditFormData(model, pmInterfaceId);
-        return "pmInterfaceRegister";
+        return "pmRegisterView";
     }
 
     @PostMapping("/register")  /// General Pm only
     public String pmInterfacePost(
             Model model,
-            @Valid @ModelAttribute("pmRegister") pmInterfaceRegisterForm pmInterfaceRegisterForm,
+            @Valid @ModelAttribute("pmInterfaceRegisterForm") PmInterfaceRegisterForm pmInterfaceRegisterForm,
             @RequestParam("attachment") MultipartFile file,
             Errors errors) throws IOException {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: " + errors);
-            return showPmInterfaceRegisterForm(model);
+            return "pmRegisterView";
         }
 
         if (!file.isEmpty()) {
@@ -125,7 +129,7 @@ public class PmController {
     @PostMapping("/update")
     public String updatePm(Model model,
                            @RequestParam("attachment") MultipartFile file,
-                           @ModelAttribute("assignForm") PmUpdateForm pmUpdateForm) throws IOException {
+                           @ModelAttribute("pmUpdateForm") PmUpdateForm pmUpdateForm) throws IOException {
         if (!file.isEmpty()) {
             pmUpdateForm.setFile(file);
         }

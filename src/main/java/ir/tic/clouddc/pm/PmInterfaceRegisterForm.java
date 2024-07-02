@@ -5,12 +5,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
-public class pmInterfaceRegisterForm {
+public class PmInterfaceRegisterForm {
 
-    private short id;
+    private PmInterface pmInterface;
 
     @NotBlank(message = "عنوان نباید خالی باشد")
-    private String name;
+    private String title;
 
     @NotBlank(message = "توضیحات نباید خالی باشد")
     private String description;
@@ -19,10 +19,19 @@ public class pmInterfaceRegisterForm {
 
     private boolean enabled;
 
+    private boolean statelessRecurring;
+
     private PmCategory pmCategory;
 
     private MultipartFile file;
 
+    public boolean isStatelessRecurring() {
+        return statelessRecurring;
+    }
+
+    public void setStatelessRecurring(boolean statelessRecurring) {
+        this.statelessRecurring = statelessRecurring;
+    }
 
     public PmCategory getPmCategory() {
         return pmCategory;
@@ -40,20 +49,20 @@ public class pmInterfaceRegisterForm {
         this.enabled = enabled;
     }
 
-    public short getId() {
-        return id;
+    public PmInterface getPmInterface() {
+        return pmInterface;
     }
 
-    public void setId(short id) {
-        this.id = id;
+    public void setPmInterface(PmInterface pmInterface) {
+        this.pmInterface = pmInterface;
     }
 
-    public String getName() {
-        return name;
+    public String getTitle() {
+        return title;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
     public String getDescription() {

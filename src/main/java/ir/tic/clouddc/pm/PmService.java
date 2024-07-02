@@ -16,9 +16,9 @@ public interface PmService {
 
     List<Pm> getPmInterfacePmList(short pmInterfaceId, boolean active, @Nullable Integer locationId);
 
-    Model pmInterfaceEditFormData(Model model, short pmInterfaceId);
+    PmInterfaceRegisterForm pmInterfaceEditFormData(short pmInterfaceId);
 
-    Model getPmInterfaceFormData(Model model);
+    List<PmCategory> getPmInterfaceFormData();
 
     Model modelForTaskController(Model model);
 
@@ -34,7 +34,7 @@ public interface PmService {
 
     PmUpdateForm getPmUpdateForm(Pm pm, String ownerUsername);
 
-    void pmInterfaceRegister(pmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
+    void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
     void pmUpdate(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 

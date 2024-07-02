@@ -168,8 +168,10 @@
                                 <td>درب مکان به درستی باز و بسته می شود.</td>
                                 <td>
                                     <div>
-                                        <input th:checked="${locationStatus.door}" th:field="*{door}"
-                                               type="checkbox"/>
+                                        <label>
+                                            <input th:checked="${locationStatus.door}" th:field="*{door}"
+                                                   type="checkbox"/>
+                                        </label>
                                         <span></span>
                                     </div>
                                 </td>

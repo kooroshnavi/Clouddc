@@ -410,13 +410,13 @@ public class PmServiceImpl implements PmService {
 
     @Override
     @ModifyProtection
-    public void pmInterfaceRegister(pmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException {
+    public void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException {
         PmInterface pmInterface;
         Persistence persistence;
         var currentPerson = personService.getCurrentPerson();
 
-        if (pmInterfaceRegisterForm.getId() > 0) {  ///// Modify Pm
-            pmInterface = pmInterfaceRepository.findById(pmInterfaceRegisterForm.getId()).get();
+        if (pmInterfaceRegisterForm.getPmInterface() != null) { ///// Modify Pm
+            pmInterface = pmInterfaceRegisterForm.getPmInterface();
             persistence = pmInterface.getPersistence();
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '7', currentPerson, persistence);
             if (!pmInterface.isEnabled() && pmInterfaceRegisterForm.isEnabled()) {
@@ -425,21 +425,22 @@ public class PmServiceImpl implements PmService {
             } else {
                 pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
             }
-            pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
-            pmInterface.setPeriod(pmInterfaceRegisterForm.getPeriod());
-        } else {  //// New Pm
+
+        } else {    // New Pm
             pmInterface = new PmInterface();
             pmInterface.setActive(false);
+            pmInterface.setGeneralPm(true);
+            pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
             persistence = logService.persistenceSetup(currentPerson);
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
             pmInterface.setPersistence(persistence);
         }
 
-        pmInterface.setName(pmInterfaceRegisterForm.getName());
+        pmInterface.setName(pmInterfaceRegisterForm.getTitle());
         pmInterface.setPeriod(pmInterfaceRegisterForm.getPeriod());
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
         pmInterface.setPmCategory(pmInterfaceRegisterForm.getPmCategory());
-        pmInterface.setGeneralPm(true);
+        pmInterface.setStatelessRecurring(pmInterfaceRegisterForm.isStatelessRecurring());
         fileService.checkAttachment(pmInterfaceRegisterForm.getFile(), persistence);
 
         pmInterfaceRepository.saveAndFlush(pmInterface);
@@ -458,35 +459,28 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Model getPmInterfaceFormData(Model model) {
-        model.addAttribute("salonList", centerService.getHallList());
-        model.addAttribute("pmCategoryList", pmCategoryRepository.findAll(Sort.by("name")));
-        model.addAttribute("pmRegisterForm", new pmInterfaceRegisterForm());
-        return model;
+    public List<PmCategory> getPmInterfaceFormData() {
+        return pmCategoryRepository.findAll(Sort.by("name"));
     }
 
     @Override
-    public Model pmInterfaceEditFormData(Model model, short pmInterfaceId) {
+    public PmInterfaceRegisterForm pmInterfaceEditFormData(short pmInterfaceId) {
         var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
 
         if (optionalPmInterface.isPresent()) {
             var pmInterface = optionalPmInterface.get();
-            pmInterfaceRegisterForm pmInterfaceRegisterForm = new pmInterfaceRegisterForm();
-            pmInterfaceRegisterForm.setName(pmInterface.getName());
+            PmInterfaceRegisterForm pmInterfaceRegisterForm = new PmInterfaceRegisterForm();
+            pmInterfaceRegisterForm.setTitle(pmInterface.getName());
             pmInterfaceRegisterForm.setDescription(pmInterface.getDescription());
             pmInterfaceRegisterForm.setPeriod(pmInterface.getPeriod());
-            pmInterfaceRegisterForm.setId(pmInterfaceId);
+            pmInterfaceRegisterForm.setPmInterface(pmInterface);
             pmInterfaceRegisterForm.setPmCategory(pmInterface.getPmCategory());
 
-            List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(pmInterface.getPersistence().getId()));
+         /*   List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(pmInterface.getPersistence().getId()));
             if (!metaDataList.isEmpty()) {
                 model.addAttribute("metaDataList", metaDataList);
-            }
-            model.addAttribute("pmInterfaceRegisterForm", pmInterfaceRegisterForm);
-            model.addAttribute("pmSize", pmInterface.getPmList().size());
-            model.addAttribute("pmCategoryList", pmCategoryRepository.findAll(Sort.by("name")));
-
-            return model;
+            }*/
+            return pmInterfaceRegisterForm;
         }
 
         return null;

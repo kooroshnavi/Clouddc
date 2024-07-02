@@ -47,7 +47,7 @@ public final class PmInterface {
     @OneToMany(mappedBy = "pmInterface")
     private List<Pm> pmList;
 
-    @OneToOne
+    @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
