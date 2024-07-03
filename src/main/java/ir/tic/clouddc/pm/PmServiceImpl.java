@@ -196,11 +196,11 @@ public class PmServiceImpl implements PmService {
     private void setPmTransients(List<Pm> basePm) {
         for (Pm pm : basePm) {
             pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
-            if (!pm.isActive()) {
+            if (pm.isActive()) {
+                pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get().getPersistence().getPerson().getName());
+            } else {
                 pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
                 pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
-            } else {
-                pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get().getPersistence().getPerson().getName());
             }
         }
     }
@@ -255,7 +255,6 @@ public class PmServiceImpl implements PmService {
             supervisorOperation(pmUpdateForm, currentPerson);
         }
         pmDetailRepository.save(basePmDetail);
-
 
         // PART 2. Pm Update
         if (pmUpdateForm.getActionType() == 0) {  //  End Pm
