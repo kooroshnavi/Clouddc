@@ -235,6 +235,10 @@ public class CenterServiceImpl implements CenterService {
     public Optional<Location> getLocation(int locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
+            for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
+                var finishedDate = locationPmCatalog.getLastFinishedPm().getFinishedDate();
+                locationPmCatalog.setPersianFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+            }
             return optionalLocation;
         }
         throw new NoSuchElementException();
