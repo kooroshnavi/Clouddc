@@ -36,28 +36,33 @@ public class CenterController {
 
     @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
     public String showLocationDetail(Model model, @PathVariable int locationId) {
-        var baseLocation = centerService.getLocationDetailModel(locationId);
-        model.addAttribute("location", baseLocation);
-        var catalog = baseLocation.getLocationPmCatalogList();
-        model.addAttribute("catalog", catalog);
-        var eventList = eventService.getLocationEventList(baseLocation);
-        model.addAttribute("eventList", eventList);
+        var optionalLocation = centerService.getLocation(locationId);
+        if (optionalLocation.isPresent()) {
+            var baseLocation = optionalLocation.get();
+            model.addAttribute("location", baseLocation);
+            var catalog = baseLocation.getLocationPmCatalogList();
+            model.addAttribute("catalog", catalog);
+            var eventList = eventService.getLocationEventList(baseLocation);
+            model.addAttribute("eventList", eventList);
 
-        CatalogForm catalogForm = new CatalogForm();
-        catalogForm.setLocation(baseLocation);
-        model.addAttribute("catalogForm", catalogForm);
+            CatalogForm catalogForm = new CatalogForm();
+            catalogForm.setLocation(baseLocation);
+            model.addAttribute("catalogForm", catalogForm);
 
-        if (baseLocation instanceof Hall location) {
-            model.addAttribute("hall", location);
-            model.addAttribute("rackList", location.getRackList());
-        } else if (baseLocation instanceof Rack location) {
-            model.addAttribute("rack", location);
-            model.addAttribute("rackDeviceList", location.getDeviceList());
-        } else if (baseLocation instanceof Room location) {
-            model.addAttribute("room", location);
-            model.addAttribute("roomDeviceList", location.getDeviceList());
+            if (baseLocation instanceof Hall location) {
+                model.addAttribute("hall", location);
+                model.addAttribute("rackList", location.getRackList());
+            } else if (baseLocation instanceof Rack location) {
+                model.addAttribute("rack", location);
+                model.addAttribute("rackDeviceList", location.getDeviceList());
+            } else if (baseLocation instanceof Room location) {
+                model.addAttribute("room", location);
+                model.addAttribute("roomDeviceList", location.getDeviceList());
+            }
+            return "locationDetail";
+        } else {
+            return "404";
         }
-        return "locationDetail";
     }
 
     @PostMapping("/location/catalog/register")

@@ -233,27 +233,9 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public Optional<Location> getLocation(int locationId) {
-        return locationRepository.findById(locationId);
-    }
-
-    @Override
-    public Location getLocationDetailModel(int locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
-            return optionalLocation.get();
-            var baseLocation = optionalLocation.get();
-
-            if (baseLocation instanceof Hall location) {
-                model.addAttribute("location", location);
-                model.addAttribute("rackList", location.getRackList());
-
-            } else if (baseLocation instanceof Rack location) {
-                model.addAttribute("location", location);
-                model.addAttribute("deviceList", location.getDeviceList());
-            } else if (baseLocation instanceof Room location) {
-                model.addAttribute("location", location);
-                model.addAttribute("deviceList", location.getDeviceList());
-            }
+            return optionalLocation;
         }
         throw new NoSuchElementException();
     }
@@ -284,33 +266,12 @@ public class CenterServiceImpl implements CenterService {
         return model;
     }
 
-    @Override
-    public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm, DailyReport dailyReport) {
-
-
-        return getTemperatureHistoryList();
-    }
 
     @Override
     public void setDailyTemperatureReport(DailyReport currentReport) {
 
     }
 
-    @Override
-    public List<Temperature> getTemperatureHistoryList() {
-        List<Temperature> temperatureList = temperatureRepository
-                .findAll()
-                .stream()
-                .sorted(Comparator.comparing(Temperature::getId).reversed())
-                .toList();
-
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        for (Temperature temperature : temperatureList) {
-            var origDate = temperature.getDailyReport().getDate();
-            temperature.getDailyReport().setPersianDate(date.format(PersianDate.fromGregorian(origDate)));
-        }
-        return temperatureList;
-    }
 
     @Override
     public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
@@ -322,15 +283,6 @@ public class CenterServiceImpl implements CenterService {
         return weeklyTemperature;
     }
 
-    @Override
-    public List<String> getAllDataCenterNameList() {
-        return dataCenterRepository.fetchAllIdNameMap();
-    }
-
-    @Override
-    public List<String> getSalonNameList() {
-        return locationRepository.getNameList("Salon");
-    }
 
     @Override
     public List<Rack> getRackList() {
