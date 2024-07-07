@@ -237,7 +237,7 @@ public class CenterServiceImpl implements CenterService {
         if (optionalLocation.isPresent()) {
             for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
                 var finishedDate = locationPmCatalog.getLastFinishedPm().getFinishedDate();
-                locationPmCatalog.setPersianFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+                locationPmCatalog.getLastFinishedPm().setPersianFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
             }
             return optionalLocation;
         }
