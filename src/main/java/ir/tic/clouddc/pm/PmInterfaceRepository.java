@@ -12,4 +12,6 @@ public interface PmInterfaceRepository extends JpaRepository<PmInterface, Short>
     @Query("SELECT p.id FROM PmInterface p WHERE p.type.id = :typeId")
     List<Pm> fetchRelatedPmList(@Param("typeId") int typeId);
 
+    @Query("select p from PmInterface p WHERE p.enabled = :enabled and p not in :pmCatalogList")
+    List<PmInterface> fetchPmInterfaceListNotInCatalogList(List<PmInterface> pmCatalogList, @Param("enabled") boolean enabled);
 }

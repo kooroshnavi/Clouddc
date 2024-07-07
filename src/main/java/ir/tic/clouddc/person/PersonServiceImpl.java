@@ -83,4 +83,9 @@ final class PersonServiceImpl implements PersonService {
         return utilizerRepository.findAll();
     }
 
+    @Override
+    public List<Person> getDefaultAssgineeList() {
+        return personRepository.findAllByAssignee(true);
+    }
+
 }

@@ -2,6 +2,7 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
+import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
@@ -11,6 +12,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CenterService {
+
+
+    void updateCatalog(CatalogForm catalogForm);
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {
@@ -24,6 +28,7 @@ public interface CenterService {
         String getName();
     }
 
+    List<LocationPmCatalog> getLocationCatalogList(Location baseLocation);
 
     LocationStatus getCurrentLocationStatus(Location location);
 
@@ -45,7 +50,7 @@ public interface CenterService {
 
     Optional<Location> getLocation(int locationId);
 
-    Model getLocationDetailModel(int locationId, Model model);
+    Location getLocationDetailModel(int locationId);
 
     Optional<Center> getCenter(short centerId);
 
@@ -62,4 +67,5 @@ public interface CenterService {
     List<Rack> getRackList();
 
     List<Room> getRoomList();
+
 }

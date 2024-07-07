@@ -1,7 +1,9 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.person.Person;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
+import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -16,7 +18,7 @@ import java.util.List;
 
 @Slf4j
 @Controller
-@RequestMapping(value = {"/"})
+@RequestMapping(value = {"/pm"})
 public class PmController {
 
     private final PmService pmService;
@@ -155,6 +157,32 @@ public class PmController {
 
         return "activePmList";
     }
+
+    @PostMapping("/catalog/{catalogId}/form")
+    public String showCatalogForm(Model model, @ModelAttribute("catalogForm") CatalogForm catalogForm,
+                                  @Nullable @PathVariable("catalogId") Integer catalogId) {
+        if (catalogId != null) {
+            var catalog = catalogForm.getLocation()
+                    .getLocationPmCatalogList()
+                    .stream()
+                    .filter(locationPmCatalog -> locationPmCatalog.getId() == catalogId)
+                    .findFirst();
+            catalog.ifPresent(catalogForm::setLocationPmCatalog);
+            model.addAttribute("update", true);
+
+        }
+        else {
+            model.addAttribute("update", false);
+        }
+        List<Person> defaultPersonList = pmService.getDefaultPersonList();
+        List<PmInterface> pmList = pmService.getNonCatalogedPmList(catalogForm.getLocation());
+        model.addAttribute("defaultPersonList", defaultPersonList);
+        model.addAttribute("pmInterfaceList", pmList);
+        model.addAttribute("catalogForm", catalogForm);
+
+        return "catalogForm";
+    }
+
 
     @ModelAttribute
     public void addAttributes(Model model) {

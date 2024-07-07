@@ -69,12 +69,6 @@
         <h6 class="mb-0 text-uppercase">مشخصات</h6>
         <hr/>
 
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <a type="button" th:href="@{/center/location/{locationId}/edit/form (locationId=${location.id})}"
-               class="btn btn-warning px-5" data-bs-toggle="tooltip"
-               data-bs-placement="top" title="ویرایش و بروزرسانی اطلاعات این مکان">ویرایش مکان</a>
-        </div>
-
         <div class="card">
             <div class="card-body">
                 <table class="table mb-0">
@@ -82,26 +76,38 @@
                     <tr>
                         <th scope="col">نوع</th>
                         <th scope="col">نام</th>
-                        <th th:if="${location.locationCategory.type == 2}" scope="col">نام سالن</th>
-                        <th th:if="${location.locationCategory.type == 2}" scope="col">بهره بردار</th>
-                        <th scope="col">نام مرکز</th>
+                        <th th:if="${location.locationCategory.target == 'Hall'} OR ${location.locationCategory.target == 'Room'}"
+                            scope="col">نام مرکز
+                        </th>
+                        <th th:if="${location.locationCategory.target == 'Rack'}" scope="col">نام سالن</th>
+                        <th th:if="${location.locationCategory.target == 'Rack'}" scope="col">بهره بردار</th>
+                        <th th:if="${location.locationCategory.target == 'Rack'} OR ${location.locationCategory.target == 'Room'}"
+                            scope="col">تعداد تجهیز
+                        </th>
                     </tr>
                     </thead>
 
                     <tbody>
                     <tr>
-                        <td th:text="${location.type}"></td>
+                        <td th:text="${location.locationCategory.target}"></td>
                         <td th:text="${location.name}"></td>
-                        <td th:if="${location.locationCategory.type == 2}" th:text="${location.hall.name}"></td>
-                        <td th:if="${location.locationCategory.type == 2}"
-                            th:text="${location.utilizer.name}">
+                        <td th:if="${location.locationCategory.target == 'Hall'}" th:text="${hall.center.name}"></td>
+                        <td th:if="${location.locationCategory.target == 'Room'}" th:text="${room.center.name}"></td>
+
+                        <td th:if="${location.locationCategory.target == 'Rack'}" th:text="${rack.hall.name}"></td>
+                        <td th:if="${location.locationCategory.target == 'Rack'}"
+                            th:text="${rack.utilizer.name}">
                             <div class="col">
-                                <a th:href="@{/resource/utilizer/detail(utilizerId=${location.utilizer.id})}"
+                                <a th:href="@{/resource/utilizer/detail(utilizerId=${rack.utilizer.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
-                        <td th:text="${location.center.name}"></td>
+
+                        <td th:if="${location.locationCategory.target == 'Rack'}"
+                            th:text="${rackDeviceList.size()}"></td>
+                        <td th:if="${location.locationCategory.target == 'Room'}"
+                            th:text="${roomDeviceList.size()}"></td>
                     </tr>
                     </tbody>
                 </table>
@@ -111,9 +117,9 @@
 
 
         <!--Device view (Rack)-->
-        <h6 th:if="${location.locationCategory.type == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
+        <h6 th:if="${location.locationCategory.target == 'Rack'}" class="mb-0 text-uppercase">آرایش رک</h6>
         <hr/>
-        <div th:if="${location.locationCategory.type == 2}" class='housing'>
+        <div th:if="${location.locationCategory.target == 'Rack'}" class='housing'>
             <div class='door'>
                 <div class='handle'></div>
             </div>
@@ -138,9 +144,9 @@
 
 
         <!--Device table (Room)-->
-        <h6 th:if="${location.locationCategory.type == 3}" class="mb-0 text-uppercase">لیست تجهیزات اتاق</h6>
+        <h6 th:if="${location.locationCategory.target == 'Room'}" class="mb-0 text-uppercase">لیست تجهیزات اتاق</h6>
         <hr/>
-        <div th:if="${location.locationCategory.type == 3}" class="card">
+        <div th:if="${location.locationCategory.target == 'Room'}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table mb-0 table-striped">
@@ -154,7 +160,7 @@
                         </thead>
                         <tbody>
 
-                        <tr th:each="device, iter : ${deviceList}">
+                        <tr th:each="device, iter : ${roomDeviceList}">
 
                             <td th:text="${iter.count}"></td>
                             <td th:text="${device.deviceCategory.type} "></td>
@@ -183,9 +189,9 @@
         <!--Module table (Room)-->
 
         <!--Rack table (Salon)-->
-        <h6 th:if="${location.locationCategory.type == 1}" class="mb-0 text-uppercase">رک های سالن</h6>
+        <h6 th:if="${location.locationCategory.target == 'Hall'}" class="mb-0 text-uppercase">رک های سالن</h6>
         <hr/>
-        <div th:if="${location.locationCategory.type == 1}" class="card">
+        <div th:if="${location.locationCategory.target == 'Hall'}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
@@ -227,13 +233,109 @@
         <!--Pm table-->
         <h6 class="mb-0 text-uppercase">لیست Pm</h6>
         <hr/>
-        <div class="card" th:replace="~{staticDetailsTemplate :: pmTable}"></div>
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <form class="row g-3" th:action="@{/pm/catalog/form}" th:object="${catalogForm}" method="POST">
+                <div class="d-grid">
+                    <button class="btn btn-primary">افزودن Pm به این مکان</button>
+                </div>
+            </form>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table mb-0 table-dark table-striped">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>دسته بندی</th>
+                            <th>عنوان Pm</th>
+                            <th>جزئیات آخرین اقدام</th>
+                            <th>سررسید بعدی</th>
+                            <th>کارتابل پیش فرض</th>
+                            <th>وضعیت</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="pmCatalog, iter : ${catalog}">
+
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${pmCatalog.pmInterface.pmCategory.name}"></td>
+
+                            <td th:text="${pmCatalog.pmInterface.name}">
+                                <div class="col">
+                                    <a th:href="@{/pm/catalog/{catalogId}/form (catalogId=${pmCatalog.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       title="ویرایش Pm روی این مکان"></a>
+                                </div>
+                            </td>
+
+                            <td th:text="${pmCatalog.lastFinishedPm.persianFinishedDate}">
+                                <div class="col">
+                                    <a th:href="@{/pm/{pmId}/detailList(pmId=${pmCatalog.lastFinishedPm.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom"
+                                       th:text="${pmCatalog.lastFinishedPm.persianFinishedDayTime}"></a>
+                                </div>
+                            </td>
+
+                            <td th:text="${pmCatalog.persianNextDue}"></td>
+                            <td th:text="${pmCatalog.defaultPerson}"></td>
+
+                            <td class="clock">
+                                <span th:if="${not pmCatalog.enabled}" class="badge bg-light-danger text-danger w-100">غیرفعال</span>
+                                <span th:if="${pmCatalog.enabled}"
+                                      class="badge bg-light-success text-success w-100">فعال</span>
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
         <!--Pm table-->
 
         <!--Event table-->
         <h6 class="mb-0 text-uppercase">رخدادها</h6>
         <hr/>
-        <div class="card" th:replace="~{staticDetailsTemplate :: eventTable}"></div>
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="example3" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>شناسه</th>
+                            <th>تاریخ ثبت</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="event, iter : ${eventList}">
+
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${event.id}"></td>
+
+                            <td th:text="${event.persianRegisterDate}">
+                                <div class="col">
+                                    <a th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" th:text="${event.persianRegisterDayTime}"></a>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
         <!--Event table-->
 
         <!--File attachment form -->

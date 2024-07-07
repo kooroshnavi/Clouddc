@@ -61,4 +61,7 @@ public interface EventService {
     DeviceStatusForm getDeviceStatusForm(Device device);
 
     DeviceStatus getCurrentDeviceStatus(Device device);
+
+    List<LocationStatusEvent> getLocationEventList(Location baseLocation);
+
 }

@@ -18,7 +18,7 @@ public class LocationCategory {
 
     @Column
     @Nationalized
-    private String target; /// Salon - Rack - Room
+    private String target; /// Hall - Rack - Room
 
     @OneToMany(mappedBy = "locationCategory")
     private List<Location> locationList;

@@ -16,7 +16,7 @@ public class LocationPmCatalog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private short id;
+    private int id;
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "location_id")
@@ -37,6 +37,9 @@ public class LocationPmCatalog {
     @Column
     private LocalDate nextDueDate;
 
+    @Column
+    private boolean enabled;
+
     @Transient
     private String persianFinishedDate;
 
@@ -47,11 +50,21 @@ public class LocationPmCatalog {
     private String persianNextDue;
 
 
-    public short getId() {
+    public boolean isEnabled() {
+        return enabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+
+
+    public int getId() {
         return id;
     }
 
-    public void setId(short id) {
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -1,12 +1,15 @@
 package ir.tic.clouddc.center;
 
 import com.github.mfathi91.time.PersianDate;
+import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.pm.CatalogForm;
+import ir.tic.clouddc.pm.Pm;
 import ir.tic.clouddc.pm.PmCategoryRepository;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
@@ -23,6 +26,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -74,8 +78,32 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
+    public void updateCatalog(CatalogForm catalogForm) {
+        LocationPmCatalog locationPmCatalog;
+        if (catalogForm.getLocationPmCatalog() != null) {
+            locationPmCatalog = catalogForm.getLocationPmCatalog();
+            locationPmCatalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
+            locationPmCatalog.setDefaultPerson(catalogForm.getDefaultPerson());
+            locationPmCatalog.setEnabled(catalogForm.isEnabled());
+        } else {
+            locationPmCatalog = new LocationPmCatalog();
+            locationPmCatalog.setEnabled(true);
+            locationPmCatalog.setLocation(catalogForm.getLocation());
+            locationPmCatalog.setDefaultPerson(catalogForm.getDefaultPerson());
+            locationPmCatalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
+            locationPmCatalog.setPmInterface(catalogForm.getPmInterface());
+        }
+        locationPmCatalogRepository.saveAndFlush(locationPmCatalog);
+    }
+
+    @Override
+    public List<LocationPmCatalog> getLocationCatalogList(Location baseLocation) {
+        return locationPmCatalogRepository.findAllByLocation(baseLocation);
+    }
+
+    @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
-       var locationStatus =  locationStatusRepository.findByLocationAndCurrent(location, true);
+        var locationStatus = locationStatusRepository.findByLocationAndCurrent(location, true);
         if (locationStatus.isPresent()) {
             return locationStatus.get();
         } else {
@@ -160,7 +188,7 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public List<LocationPmCatalog> getTodayCatalogList(LocalDate date) {
-        return locationPmCatalogRepository.findAllByNextDueDate(date);
+        return locationPmCatalogRepository.findAllByNextDueDateAndEnabled(date, true);
     }
 
     @Override
@@ -209,9 +237,10 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Model getLocationDetailModel(int locationId, Model model) {
+    public Location getLocationDetailModel(int locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
+            return optionalLocation.get();
             var baseLocation = optionalLocation.get();
 
             if (baseLocation instanceof Hall location) {
@@ -225,9 +254,8 @@ public class CenterServiceImpl implements CenterService {
                 model.addAttribute("location", location);
                 model.addAttribute("deviceList", location.getDeviceList());
             }
-            return model;
         }
-        return model;
+        throw new NoSuchElementException();
     }
 
     @Override

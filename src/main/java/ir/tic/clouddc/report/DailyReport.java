@@ -24,16 +24,9 @@ public class DailyReport {
     @Column
     private boolean active;
 
-    @OneToMany(mappedBy = "dailyReport")
-    private List<Task> taskList;
-
     @ManyToMany
     @JoinTable(name = "report_event", schema = "Report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
-
-    @OneToMany(mappedBy = "dailyReport")
-    private List<Temperature> temperatureList;
-
     @Transient
     private String persianDate;
 
@@ -73,10 +66,6 @@ public class DailyReport {
         this.active = active;
     }
 
-    public void setTaskList(List<Task> taskList) {
-        this.taskList = taskList;
-    }
-
     public void setEventList(Event event) {
         if (this.eventList == null) {
             this.eventList = new ArrayList<>();
@@ -87,23 +76,7 @@ public class DailyReport {
     public List<Event> getEventList() {
         return eventList;
     }
-
     public int getId() {
         return id;
-    }
-
-    public List<Task> getTaskList() {
-        return taskList;
-    }
-
-    @Override
-    public String toString() {
-        return "DailyReport{" +
-                "id=" + id +
-                ", date=" + date +
-                ", active=" + active +
-                ", taskList=" + taskList +
-                ", eventList=" + eventList +
-                '}';
     }
 }

@@ -156,30 +156,30 @@ public class ResourceServiceImpl implements ResourceService {
 
     private Device registerNewDevice(EventLandingForm eventLandingForm) {
 
-        switch (eventLandingForm.getDeviceType()) {
-            case 1 -> {   /// Server
+        switch (eventLandingForm.getDevice().getDeviceCategory().getType()) {
+            case "Server" -> {   /// Server
                 Server srv = new Server();
                 srv.setSerialNumber(eventLandingForm.getSerialNumber());
-                srv.setLocation(centerService.getLocation(eventLandingForm.getLocationId()));
+                srv.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
                 srv.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 srv.setPersistence(persistence);
                 return deviceRepository.save(srv);
             }
-            case 2 -> { /// Switch
+            case "Switch" -> { /// Switch
                 Switch sw = new Switch();
                 sw.setSerialNumber(eventLandingForm.getSerialNumber());
-                sw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()));
+                sw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
                 sw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 sw.setPersistence(persistence);
                 return deviceRepository.save(sw);
             }
 
-            case 3 -> { /// Firewall
+            case "Firewall" -> { /// Firewall
                 Firewall fw = new Firewall();
                 fw.setSerialNumber(eventLandingForm.getSerialNumber());
-                fw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()));
+                fw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
                 fw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 var persistence = registerDevicePersistence(4);
                 fw.setPersistence(persistence);

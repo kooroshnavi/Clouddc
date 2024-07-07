@@ -1,11 +1,9 @@
 package ir.tic.clouddc.event;
 
-import com.github.mfathi91.time.PersianDate;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.resource.Device;
@@ -17,8 +15,6 @@ import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.web.multipart.MultipartFile;
@@ -26,10 +22,8 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,6 +32,8 @@ public final class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventDetailRepository eventDetailRepository;
     private final EventCategoryRepository eventCategoryRepository;
+
+    private final LocationStatusEventRepository locationStatusEventRepository;
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
@@ -55,13 +51,15 @@ public final class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, ReportService reportService
+            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, LocationStatusEventRepository locationStatusEventRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
             , FileService fileService, LogService logService, ResourceService resourceService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
+        this.locationStatusEventRepository = locationStatusEventRepository;
+
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
@@ -88,6 +86,12 @@ public final class EventServiceImpl implements EventService {
     @Override
     public DeviceStatus getCurrentDeviceStatus(Device device) {
         return resourceService.getCurrentDeviceStatus(device);
+    }
+
+    @Override
+    public List<LocationStatusEvent> getLocationEventList(Location baseLocation) {
+
+        return locationStatusEventRepository.findAllByLocation(baseLocation);
     }
 
     @Override

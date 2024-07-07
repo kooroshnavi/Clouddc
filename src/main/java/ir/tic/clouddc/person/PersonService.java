@@ -22,4 +22,5 @@ public interface PersonService {
 
     List<Utilizer> getUtilizerList();
 
+    List<Person> getDefaultAssgineeList();
 }

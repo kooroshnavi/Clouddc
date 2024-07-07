@@ -1,5 +1,7 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.event.EventService;
+import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.report.ReportService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +16,14 @@ public class CenterController {
 
     private final CenterService centerService;
 
+    private final EventService eventService;
+
     private final ReportService reportService;
 
     @Autowired
-    public CenterController(CenterService centerService, ReportService reportService) {
+    public CenterController(CenterService centerService, EventService eventService, ReportService reportService) {
         this.centerService = centerService;
+        this.eventService = eventService;
         this.reportService = reportService;
     }
 
@@ -30,33 +35,36 @@ public class CenterController {
     }
 
     @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
-    public String showLocationDetail(Model model, @RequestParam("locationId") int locationId) {
-        centerService.getLocationDetailModel(locationId, model);
-        return "locationView";
+    public String showLocationDetail(Model model, @PathVariable int locationId) {
+        var baseLocation = centerService.getLocationDetailModel(locationId);
+        model.addAttribute("location", baseLocation);
+        var catalog = baseLocation.getLocationPmCatalogList();
+        model.addAttribute("catalog", catalog);
+        var eventList = eventService.getLocationEventList(baseLocation);
+        model.addAttribute("eventList", eventList);
+
+        CatalogForm catalogForm = new CatalogForm();
+        catalogForm.setLocation(baseLocation);
+        model.addAttribute("catalogForm", catalogForm);
+
+        if (baseLocation instanceof Hall location) {
+            model.addAttribute("hall", location);
+            model.addAttribute("rackList", location.getRackList());
+        } else if (baseLocation instanceof Rack location) {
+            model.addAttribute("rack", location);
+            model.addAttribute("rackDeviceList", location.getDeviceList());
+        } else if (baseLocation instanceof Room location) {
+            model.addAttribute("room", location);
+            model.addAttribute("roomDeviceList", location.getDeviceList());
+        }
+        return "locationDetail";
     }
 
-    @GetMapping("/temperature/history")
-    public String getTemperatureHistory(Model model) {
-        model.addAttribute("temperatureHistoryList", centerService.getTemperatureHistoryList());
-        return "temperatureHistoryView";
-    }
+    @PostMapping("/location/catalog/register")
+    public String registerCatalog(@ModelAttribute("catalogForm") CatalogForm catalogForm) {
+        centerService.updateCatalog(catalogForm);
 
-    @GetMapping("/temperature/salon/form")
-    public String showSalonTemperatureForm(Model model) {
-        model.addAttribute("temperatureForm", new TemperatureForm());
-        return "dailyTemperatureForm";
-    }
-
-    @GetMapping("/temperature/rack/form")
-    public String showRackTemperatureForm(Model model) {
-        model.addAttribute("temperatureForm", new TemperatureForm());
-        return "dailyTemperatureForm";
-    }
-
-    @PostMapping("/temperature/form")
-    public String submitTemperatureForm(Model model, @ModelAttribute("temperatureForm") TemperatureForm temperatureForm) {
-        model.addAttribute("temperatureHistoryList", centerService.saveDailyTemperature(temperatureForm, reportService.findActive(true).get()));
-        return "temperatureHistoryView";
+        return "redirect:locationDetail";
     }
 
     @ModelAttribute

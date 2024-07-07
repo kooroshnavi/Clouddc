@@ -12,9 +12,11 @@ import java.util.Optional;
 @Repository
 public interface LocationPmCatalogRepository extends JpaRepository<LocationPmCatalog, Short> {
 
-    List<LocationPmCatalog> findAllByNextDueDateAndEnabled(@Nullable LocalDate date);
+    List<LocationPmCatalog> findAllByNextDueDateAndEnabled(@Nullable LocalDate date, boolean enabled);
 
     Optional<LocationPmCatalog> findByPmInterfaceAndLocation(@Nullable PmInterface pmInterface, @Nullable Location location);
 
     List<LocationPmCatalog> findAllByPmInterface(PmInterface pmInterface);
+
+    List<LocationPmCatalog> findAllByLocation(Location location);
 }

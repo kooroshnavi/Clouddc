@@ -24,6 +24,10 @@ public abstract class Location {
     @JoinColumn(name = "location_type_id")
     private LocationCategory locationCategory;  // Salon - Rack - Room
 
+    @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "center_id")
+    private Center center;
+
     @OneToMany(mappedBy = "location")
     private List<Event> eventList;
 
@@ -37,6 +41,14 @@ public abstract class Location {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+
+    public Center getCenter() {
+        return center;
+    }
+
+    public void setCenter(Center center) {
+        this.center = center;
+    }
 
     public List<LocationStatus> getLocationStatusList() {
         return locationStatusList;

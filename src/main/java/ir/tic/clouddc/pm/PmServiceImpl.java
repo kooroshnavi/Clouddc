@@ -1,6 +1,7 @@
 package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
@@ -371,6 +372,22 @@ public class PmServiceImpl implements PmService {
             assignPersonList = personService.getPersonListExcept(List.of(pmOwnerUsername, currentUsername));
         }
         return assignPersonList;
+    }
+
+    @Override
+    public List<Person> getDefaultPersonList() {
+        return personService.getDefaultAssgineeList();
+    }
+
+    @Override
+    public List<PmInterface> getNonCatalogedPmList(Location location) {
+        List<PmInterface> pmCatalogList = location
+                .getLocationPmCatalogList()
+                .stream()
+                .map(LocationPmCatalog::getPmInterface)
+                .toList();
+
+        return pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(pmCatalogList, true);
     }
 
     @Override
