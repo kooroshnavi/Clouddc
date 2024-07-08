@@ -245,7 +245,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Optional<Center> getCenter(short centerId) {
+    public Optional<Center> getCenter(int centerId) {
         return centerRepository.findById(centerId);
     }
 

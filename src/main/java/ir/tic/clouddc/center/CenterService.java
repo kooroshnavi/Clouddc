@@ -50,7 +50,7 @@ public interface CenterService {
 
     Optional<Location> getLocation(int locationId);
 
-    Optional<Center> getCenter(short centerId);
+    Optional<Center> getCenter(int centerId);
 
     List<Hall> getHallList();
 

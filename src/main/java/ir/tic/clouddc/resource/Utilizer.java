@@ -15,7 +15,7 @@ public final class Utilizer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private short id;
+    private int id;
 
     @Column
     @Nationalized
@@ -24,25 +24,12 @@ public final class Utilizer {
     @Column
     private boolean messenger;
 
-    @ElementCollection
-    @CollectionTable(name = "Rack_DeliveryDate_mapping",
-            joinColumns = {@JoinColumn(name = "utilizer_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "rack_id")
-    @Column(name = "delivery_date")  /// DeliveryDate
-    private Map<Integer, LocalDate> rackLocalDateMap;
 
-    @ElementCollection
-    @CollectionTable(name = "device_DeliveryDate_mapping",
-            joinColumns = {@JoinColumn(name = "utilizer_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "device_id")
-    @Column(name = "delivery_date")
-    private Map<Integer, LocalDate> deviceLocalDateMap;
-
-    public short getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(short id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -62,19 +49,4 @@ public final class Utilizer {
         this.messenger = messenger;
     }
 
-    public Map<Integer, LocalDate> getRackLocalDateMap() {
-        return rackLocalDateMap;
-    }
-
-    public void setRackLocalDateMap(Map<Integer, LocalDate> rackLocalDateMap) {
-        this.rackLocalDateMap = rackLocalDateMap;
-    }
-
-    public Map<Integer, LocalDate> getDeviceLocalDateMap() {
-        return deviceLocalDateMap;
-    }
-
-    public void setDeviceLocalDateMap(Map<Integer, LocalDate> deviceLocalDateMap) {
-        this.deviceLocalDateMap = deviceLocalDateMap;
-    }
 }

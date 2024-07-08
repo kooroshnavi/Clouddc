@@ -148,7 +148,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getPmInterfacePmList(short pmInterfaceId, boolean active, @Nullable Integer locationId) {
+    public List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active, @Nullable Integer locationId) {
         PmInterface pmInterface;
         var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
         if (optionalPmInterface.isPresent()) {
@@ -480,7 +480,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public PmInterfaceRegisterForm pmInterfaceEditFormData(short pmInterfaceId) {
+    public PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId) {
         var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
 
         if (optionalPmInterface.isPresent()) {

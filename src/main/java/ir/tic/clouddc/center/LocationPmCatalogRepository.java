@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface LocationPmCatalogRepository extends JpaRepository<LocationPmCatalog, Short> {
+public interface LocationPmCatalogRepository extends JpaRepository<LocationPmCatalog, Integer> {
 
     List<LocationPmCatalog> findAllByNextDueDateAndEnabled(@Nullable LocalDate date, boolean enabled);
 

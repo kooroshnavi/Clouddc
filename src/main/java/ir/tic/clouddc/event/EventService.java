@@ -33,7 +33,7 @@ public interface EventService {
 
     MetaData getRelatedMetadata(long persistenceId);
 
-    List<Event> getEventList(@Nullable Short categoryId);
+    List<Event> getEventList(@Nullable Integer categoryId);
 
     Optional<Center> getCenter(short centerId);
 

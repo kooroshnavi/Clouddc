@@ -140,7 +140,7 @@ public class EventController {
     }
 
     @GetMapping("/category/{categoryId}/list")
-    public String showCategoryEventList(Model model, @PathVariable short categoryId) {
+    public String showCategoryEventList(Model model, @PathVariable int categoryId) {
         List<Event> eventList = eventService.getEventList(categoryId);
         model.addAttribute("eventList", eventList);
         return "eventListView";

@@ -20,7 +20,18 @@ public class ResourceController {
     }
 
     @GetMapping("/device/{deviceId}/detail")
-    public String showDeviceDetail(Model model, @RequestParam("deviceId") long deviceId){
+    public String showDeviceDetail(Model model, @RequestParam("deviceId") long deviceId) {
+
+        var device = resourceService.getDeviceDetailModel(deviceId);
+
+        if (device instanceof Server server) {
+            model.addAttribute("server", server);
+        } else if (device instanceof Switch sw) {
+            model.addAttribute("sw", sw);
+        } else if (device instanceof Firewall fw) {
+            model.addAttribute("fw", fw);
+        }
+        model.addAttribute("device", device);
 
         return "deviceDetail";
     }

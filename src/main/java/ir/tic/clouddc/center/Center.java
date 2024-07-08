@@ -8,14 +8,14 @@ import org.hibernate.annotations.Nationalized;
 import java.util.List;
 
 @Entity
-@Table(schema = "Center")
+@Table(schema = "Center", name = "Center")
 @NoArgsConstructor
 public final class Center {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private short id;
+    private int id;
 
     @Column
     @Nationalized
@@ -36,7 +36,11 @@ public final class Center {
     @JoinTable(name = "persistence_id")
     private Persistence persistence;
 
-    public void setId(short id) {
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -54,10 +58,6 @@ public final class Center {
 
     public void setLocationList(List<Location> locationList) {
         this.locationList = locationList;
-    }
-
-    public int getId() {
-        return id;
     }
 
     public String getName() {

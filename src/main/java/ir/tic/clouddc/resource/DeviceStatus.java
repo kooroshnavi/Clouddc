@@ -1,14 +1,13 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.event.Event;
-import ir.tic.clouddc.log.Auditable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-public class DeviceStatus extends Auditable {
+public class DeviceStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -8,7 +8,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 public class EventLandingForm {
-    private short eventCategoryId;
+    private int eventCategoryId;
     private String target;
     private int locationId;
     private Location location;
@@ -72,11 +72,12 @@ public class EventLandingForm {
         this.locationId = locationId;
     }
 
-    public short getEventCategoryId() {
+
+    public int getEventCategoryId() {
         return eventCategoryId;
     }
 
-    public void setEventCategoryId(short eventCategoryId) {
+    public void setEventCategoryId(int eventCategoryId) {
         this.eventCategoryId = eventCategoryId;
     }
 

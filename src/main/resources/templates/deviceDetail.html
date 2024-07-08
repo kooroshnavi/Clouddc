@@ -75,8 +75,6 @@
                         <th scope="col">مدل</th>
                         <th scope="col">شماره سریال</th>
                         <th th:if="${device.deviceCategory.type == 'Server'}" scope="col">فرم فاکتور شاسی سرور</th>
-                        <th scope="col">2 منبع برق</th>
-                        <th scope="col">وضعیت</th>
                         <th scope="col">بهره بردار</th>
                         <th scope="col">محل نصب</th>
                     </tr>
@@ -88,20 +86,11 @@
                         <td th:text="${device.deviceCategory.vendor}"></td>
                         <td th:text="${device.deviceCategory.model}"></td>
                         <td th:text="${device.serialNumber}"></td>
-                        <td th:if="${device.deviceCategory.type == 'Server'}" th:text="${device.factorSize} + '-' + ${device.formFactor}"></td>
-
-                        <td class="clock">
-                            <span th:if="${not device.dualPower}" class="badge bg-light-danger text-danger w-100">ندارد</span>
-                            <span th:if="${device.dualPower}" class="badge bg-light-success text-success w-100">دارد</span>
-                        </td>
-
-                        <td class="clock">
-                            <span th:if="${not device.active}" class="badge bg-light-danger text-danger w-100">غیرفعال</span>
-                            <span th:if="${device.dualPower}" class="badge bg-light-success text-success w-100">در حال بهره برداری</span>
-                        </td>
+                        <td th:if="${device.deviceCategory.type == 'Server'}"
+                            th:text="${server.factorSize} + '-' + ${server.formFactor}"></td>
 
                         <td
-                            th:text="${device.utilizer.name}">
+                                th:text="${device.utilizer.name}">
                             <div class="col">
                                 <a th:href="@{/resource/utilizer/{utilizerId}/detail(utilizerId=${device.utilizer.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
@@ -110,7 +99,7 @@
                         </td>
 
                         <td
-                            th:text="${device.location.name}">
+                                th:text="${device.location.name}">
                             <div class="col">
                                 <a th:href="@{/center/location/{locationId}/detail(locationId=${device.location.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"

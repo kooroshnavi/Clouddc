@@ -12,7 +12,7 @@ import java.util.Map;
 @NoArgsConstructor
 public final class Hall extends Location {
 
-    @OneToMany(mappedBy = "salon")
+    @OneToMany(mappedBy = "hall")
     private List<Rack> rackList;
 
     @ManyToOne

@@ -1,14 +1,13 @@
 package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.Event;
-import ir.tic.clouddc.log.Auditable;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-public class LocationStatus extends Auditable {
+public class LocationStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

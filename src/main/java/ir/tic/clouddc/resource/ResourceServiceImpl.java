@@ -14,6 +14,7 @@ import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -49,27 +50,26 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Model getDeviceDetailModel(Model model, long deviceId) {
+    public Device getDeviceDetailModel(long deviceId) {
         Optional<Device> optionalDevice = deviceRepository.findById(deviceId);
         if (optionalDevice.isPresent()) {
-            var baseDevice = optionalDevice.get();
-            var deviceEventList = baseDevice.getEventList();
-            if (baseDevice instanceof Server device) {
-                model.addAttribute("device", device);
-            } else if (baseDevice instanceof Switch device) {
-                model.addAttribute("device", device);
-            } else if (baseDevice instanceof Firewall device) {
-                model.addAttribute("device", device);
+            for (Event event : optionalDevice.get().getDeviceStatusEventList()) {
+                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             }
+            for (Event event : optionalDevice.get().getDeviceStatusEventList()) {
+                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
 
-            for (Event event : deviceEventList) {
-                event.setPersianRegisterDayTime(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             }
-            model.addAttribute("deviceEventList", deviceEventList);
-
-            return model;
+            for (Event event : optionalDevice.get().getDeviceUtilizerEventList()) {
+                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            }
+            for (Event event : optionalDevice.get().getDeviceMovementEventList()) {
+                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            }
+            return optionalDevice.get();
+        } else {
+            throw new NoSuchElementException();
         }
-        return null;
     }
 
     @Override

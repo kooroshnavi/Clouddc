@@ -15,9 +15,9 @@ public interface PmService {
 
     List<PmInterface> getPmInterfaceList();
 
-    List<Pm> getPmInterfacePmList(short pmInterfaceId, boolean active, @Nullable Integer locationId);
+    List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active, @Nullable Integer locationId);
 
-    PmInterfaceRegisterForm pmInterfaceEditFormData(short pmInterfaceId);
+    PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId);
 
     List<PmCategory> getPmInterfaceFormData();
 

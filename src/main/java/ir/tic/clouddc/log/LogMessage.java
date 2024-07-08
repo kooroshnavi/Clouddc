@@ -1,18 +1,23 @@
 package ir.tic.clouddc.log;
 
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "Log")
 @NoArgsConstructor
 public final class LogMessage {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column
     private int id;
 
+    @Column
     private String type;
 
+    @Column
     private String message;
 
     public LogMessage(int id) {

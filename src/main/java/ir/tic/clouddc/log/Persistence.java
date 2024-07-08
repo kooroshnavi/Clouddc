@@ -20,7 +20,6 @@ public class Persistence {
     @JoinColumn(name = "owner_id")
     private Person person;
 
-
     @OneToMany(mappedBy = "persistence")
     private List<LogHistory> logHistoryList;
 

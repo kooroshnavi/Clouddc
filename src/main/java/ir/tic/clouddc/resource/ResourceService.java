@@ -10,7 +10,7 @@ public interface ResourceService {
 
     Device validateFormDevice(EventLandingForm eventLandingForm);
 
-    Model getDeviceDetailModel(Model model, long deviceId);
+    Device getDeviceDetailModel(long deviceId);
 
     Utilizer getUtilizer(int utilizerId);
     List<Utilizer> getUtilizerList();

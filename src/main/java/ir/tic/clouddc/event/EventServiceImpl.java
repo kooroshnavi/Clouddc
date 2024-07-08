@@ -226,7 +226,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> getEventList(@Nullable Short categoryId) {
+    public List<Event> getEventList(@Nullable Integer categoryId) {
         List<Event> eventList = new ArrayList<>();
         if (!Objects.isNull(categoryId)) {
             var category = eventCategoryRepository.findById(categoryId);

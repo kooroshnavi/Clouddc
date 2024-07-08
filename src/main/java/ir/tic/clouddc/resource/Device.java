@@ -1,6 +1,9 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.event.DeviceMovementEvent;
+import ir.tic.clouddc.event.DeviceStatusEvent;
+import ir.tic.clouddc.event.DeviceUtilizerEvent;
 import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
@@ -45,15 +48,36 @@ public abstract class Device {
     private Persistence persistence;
 
     @OneToMany(mappedBy = "device")
-    private List<Event> eventList;
+    private List<DeviceMovementEvent> deviceMovementEventList;
 
+    @OneToMany(mappedBy = "device")
+    private List<DeviceUtilizerEvent> deviceUtilizerEventList;
 
-    public List<Event> getEventList() {
-        return eventList;
+    @OneToMany(mappedBy = "device")
+    private List<DeviceStatusEvent> deviceStatusEventList;
+
+    public List<DeviceMovementEvent> getDeviceMovementEventList() {
+        return deviceMovementEventList;
     }
 
-    public void setEventList(List<Event> eventList) {
-        this.eventList = eventList;
+    public void setDeviceMovementEventList(List<DeviceMovementEvent> deviceMovementEventList) {
+        this.deviceMovementEventList = deviceMovementEventList;
+    }
+
+    public List<DeviceUtilizerEvent> getDeviceUtilizerEventList() {
+        return deviceUtilizerEventList;
+    }
+
+    public void setDeviceUtilizerEventList(List<DeviceUtilizerEvent> deviceUtilizerEventList) {
+        this.deviceUtilizerEventList = deviceUtilizerEventList;
+    }
+
+    public List<DeviceStatusEvent> getDeviceStatusEventList() {
+        return deviceStatusEventList;
+    }
+
+    public void setDeviceStatusEventList(List<DeviceStatusEvent> deviceStatusEventList) {
+        this.deviceStatusEventList = deviceStatusEventList;
     }
 
     public List<DeviceStatus> getDeviceStatusList() {

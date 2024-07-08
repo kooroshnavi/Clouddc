@@ -14,7 +14,7 @@ public class LocationCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private short id;  // 1 - 2 - 3
+    private int id;  // 1 - 2 - 3
 
     @Column
     @Nationalized
@@ -31,11 +31,11 @@ public class LocationCategory {
         this.locationList = locationList;
     }
 
-    public short getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(short id) {
+    public void setId(int id) {
         this.id = id;
     }
 

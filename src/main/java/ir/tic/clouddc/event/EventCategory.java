@@ -14,7 +14,7 @@ public class EventCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private short id;
+    private int id;
 
     @Column
     @Nationalized
@@ -42,10 +42,11 @@ public class EventCategory {
         this.eventList = eventList;
     }
 
-    public short getId() {
+    public int getId() {
         return id;
     }
-    public void setId(short id) {
+
+    public void setId(int id) {
         this.id = id;
     }
 

@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface EventCategoryRepository extends CrudRepository<EventCategory, Short> {
+public interface EventCategoryRepository extends CrudRepository<EventCategory, Integer> {
 }

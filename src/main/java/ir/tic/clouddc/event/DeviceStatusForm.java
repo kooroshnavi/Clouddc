@@ -5,7 +5,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class DeviceStatusForm {
 
-    private short eventCategoryId = 5;
+    private int eventCategoryId = 5;
 
     private Device device;
 
@@ -49,11 +49,11 @@ public class DeviceStatusForm {
         this.file = file;
     }
 
-    public short getEventCategoryId() {
+    public int getEventCategoryId() {
         return eventCategoryId;
     }
 
-    public void setEventCategoryId(short eventCategoryId) {
+    public void setEventCategoryId(int eventCategoryId) {
         this.eventCategoryId = eventCategoryId;
     }
 
