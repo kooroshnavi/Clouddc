@@ -1,6 +1,5 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
@@ -8,7 +7,7 @@ import org.hibernate.annotations.Nationalized;
 import java.util.List;
 
 @Entity
-@Table(schema = "Center", name = "Center")
+@Table(schema = "Center")
 @NoArgsConstructor
 public final class Center {
 
@@ -32,24 +31,12 @@ public final class Center {
     @OneToMany(mappedBy = "center")
     private List<Location> locationList;
 
-    @OneToOne
-    @JoinTable(name = "persistence_id")
-    private Persistence persistence;
-
     public int getId() {
         return id;
     }
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
     }
 
     public List<Location> getLocationList() {

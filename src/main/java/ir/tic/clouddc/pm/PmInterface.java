@@ -41,7 +41,7 @@ public final class PmInterface {
     private String description;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pmCategory_id")
+    @JoinColumn(name = "pm_category_id")
     private PmCategory pmCategory;
 
     @OneToMany(mappedBy = "pmInterface")
