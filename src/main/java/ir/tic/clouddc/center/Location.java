@@ -22,7 +22,7 @@ public abstract class Location {
     private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_type_id")
+    @JoinColumn(name = "location_category_id")
     private LocationCategory locationCategory;  // Hall - Rack - Room
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -37,10 +37,6 @@ public abstract class Location {
 
     @OneToMany(mappedBy = "location")
     private List<LocationPmCatalog> locationPmCatalogList;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "persistence_id")
-    private Persistence persistence;
 
 
     public Center getCenter() {
@@ -73,14 +69,6 @@ public abstract class Location {
 
     public void setLocationCategory(LocationCategory locationCategory) {
         this.locationCategory = locationCategory;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
     }
 
     public void setId(int id) {

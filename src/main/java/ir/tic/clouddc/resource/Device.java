@@ -23,9 +23,6 @@ public abstract class Device {
     private String serialNumber;   /// DeviceForm
 
     @Column
-    private String name;    /// DeviceForm
-
-    @Column
     private boolean priorityDevice;    /// DeviceForm
 
     @OneToMany(mappedBy = "device")
@@ -43,9 +40,6 @@ public abstract class Device {
     @JoinColumn(name = "location_id")
     private Location location;   /// DeviceMovementEvent
 
-    @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "persistence_id")
-    private Persistence persistence;
 
     @OneToMany(mappedBy = "device")
     private List<DeviceMovementEvent> deviceMovementEventList;
@@ -94,22 +88,6 @@ public abstract class Device {
 
     public void setPriorityDevice(boolean priorityDevice) {
         this.priorityDevice = priorityDevice;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
     }
 
     public DeviceCategory getDeviceCategory() {

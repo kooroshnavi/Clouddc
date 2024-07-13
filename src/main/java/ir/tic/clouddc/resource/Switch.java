@@ -9,15 +9,4 @@ import lombok.NoArgsConstructor;
 @Table(schema = "Resource")
 @NoArgsConstructor
 public class Switch extends Device {
-
-    @Column
-    private int portNumber;
-
-    public int getPortNumber() {
-        return portNumber;
-    }
-
-    public void setPortNumber(int portNumber) {
-        this.portNumber = portNumber;
-    }
 }

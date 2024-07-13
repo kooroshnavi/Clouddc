@@ -24,9 +24,6 @@ public class PmCategory {
     @OneToMany(mappedBy = "pmCategory")
     private List<PmInterface> pmInterfaceList;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "persistent_id")
-    private Persistence persistence;
 
 
     public int getId() {
@@ -51,13 +48,5 @@ public class PmCategory {
 
     public void setPmInterfaceList(List<PmInterface> pmInterfaceList) {
         this.pmInterfaceList = pmInterfaceList;
-    }
-
-    public Persistence getPersistence() {
-        return persistence;
-    }
-
-    public void setPersistence(Persistence persistence) {
-        this.persistence = persistence;
     }
 }

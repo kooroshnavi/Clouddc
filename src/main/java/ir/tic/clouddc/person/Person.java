@@ -26,17 +26,11 @@ public class Person {
     @Nationalized
     private String name;
 
-    @Column(name = "last_login")
-    private LocalDateTime lastLogin;
-
     @Column
     private boolean assignee; // false for manager and viewer
 
     @Column
     private char role;
-
-    @OneToMany(mappedBy = "person")
-    private List<Persistence> persistenceList;
 
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
@@ -46,10 +40,6 @@ public class Person {
     private Address address;
 
 
-    public void setPersistenceList(List<Persistence> persistenceList) {
-        this.persistenceList = persistenceList;
-    }
-
     public List<LocationPmCatalog> getLocationPmCatalogList() {
         return locationPmCatalogList;
     }
@@ -58,14 +48,9 @@ public class Person {
         this.locationPmCatalogList = locationPmCatalogList;
     }
 
-    public List<Persistence> getPersistenceList() {
-        return persistenceList;
-    }
-
     public Person(int id) {
         this.id = id;
     }
-
 
     public char getRole() {
         return role;
@@ -91,21 +76,10 @@ public class Person {
         return assignee;
     }
 
-
     public void setUsername(String username) {
         this.username = username;
     }
 
-    @JsonIgnore
-    public LocalDateTime getLastLogin() {
-        return lastLogin;
-    }
-
-    public void setLastLogin(LocalDateTime lastLogin) {
-        this.lastLogin = lastLogin;
-    }
-
-    @JsonIgnore
     public int getId() {
         return id;
     }
