@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "Event")
+@Table(schema = "event")
 @NoArgsConstructor
 public class VisitEvent extends Event {
 

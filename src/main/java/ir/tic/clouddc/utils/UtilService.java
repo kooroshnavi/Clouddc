@@ -20,7 +20,6 @@ public final class UtilService {
 
     private static int TODAY_REPORT_ID;
 
-
     public static final Map<String, String> persianDay = Map.ofEntries(
             entry("Sat", "شنبه"),
             entry("Sun", "یکشنبه"),
@@ -31,14 +30,12 @@ public final class UtilService {
             entry("Fri", "جمعه")
     );
 
-
     public static String getCurrentDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
         dayName = persianDay.get(dayName);
-
 
         return (dayName + "    " + day + "     " + month);
     }

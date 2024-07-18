@@ -5,7 +5,7 @@ import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "Resource")
+@Table(schema = "resource")
 @NoArgsConstructor
 public class Firewall extends Device{
 

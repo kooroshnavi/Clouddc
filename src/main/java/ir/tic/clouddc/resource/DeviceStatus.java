@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "Resource")
+@Table(schema = "resource")
 @NoArgsConstructor
 public class DeviceStatus {
 

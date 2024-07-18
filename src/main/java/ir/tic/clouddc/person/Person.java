@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(schema = "Person")
+@Table(schema = "user")
 @NoArgsConstructor
 public class Person {
     @Id

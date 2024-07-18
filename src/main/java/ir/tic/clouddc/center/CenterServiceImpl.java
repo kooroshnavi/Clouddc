@@ -1,7 +1,5 @@
 package ir.tic.clouddc.center;
 
-import com.github.mfathi91.time.PersianDate;
-import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.log.LogService;
@@ -9,8 +7,6 @@ import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.pm.Pm;
-import ir.tic.clouddc.pm.PmCategoryRepository;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
@@ -23,10 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service

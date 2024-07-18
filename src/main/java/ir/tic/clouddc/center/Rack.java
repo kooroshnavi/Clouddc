@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@Table(schema = "Center")
+@Table(schema = "center")
 @NoArgsConstructor
 public final class Rack extends Location {
 

@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(schema = "Log")
+@Table(schema = "log")
 @NoArgsConstructor
 public class Persistence {
 

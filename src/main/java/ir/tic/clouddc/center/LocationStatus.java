@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "Center")
+@Table(schema = "center")
 @NoArgsConstructor
 public class LocationStatus {
 

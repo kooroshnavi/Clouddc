@@ -39,7 +39,6 @@ class ReportServiceImpl implements ReportService {
         var todayReport = setCurrentReport();
         pmService.updateTodayPmList(todayReport);
         centerService.setDailyTemperatureReport(findActive(true).get());
-
     }
 
     @Override
@@ -53,7 +52,6 @@ class ReportServiceImpl implements ReportService {
         List<DailyReport> dailyReportList = new ArrayList<>();
         Optional<DailyReport> yesterday = findActive(true);
         if (yesterday.isPresent()) {
-
             yesterday.get().setActive(false);
             dailyReportList.add(yesterday.get());
         }
@@ -91,6 +89,5 @@ class ReportServiceImpl implements ReportService {
         int weeklyOffsetReportId = activeReportId - 5;
         return reportRepository.findById(weeklyOffsetReportId).get().getDate();
     }
-
 
 }

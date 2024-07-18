@@ -7,7 +7,7 @@ import org.hibernate.annotations.Nationalized;
 import java.util.List;
 
 @Entity
-@Table(schema = "Center")
+@Table(schema = "center")
 @NoArgsConstructor
 public final class Center {
 

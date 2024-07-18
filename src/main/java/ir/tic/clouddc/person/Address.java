@@ -5,7 +5,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(schema = "Person")
+@Table(schema = "user")
 @NoArgsConstructor
 public class Address {
 
@@ -15,7 +15,6 @@ public class Address {
     private int id;
 
     @Column
-    @Nationalized // nvarchar
     private String value;
 
     public int getId() {

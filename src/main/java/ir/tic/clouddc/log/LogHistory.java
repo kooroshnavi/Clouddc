@@ -8,7 +8,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(schema = "Log", name = "history")
+@Table(schema = "log", name = "history")
 @NoArgsConstructor
 public class LogHistory {
 

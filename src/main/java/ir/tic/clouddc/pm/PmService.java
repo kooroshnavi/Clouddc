@@ -19,8 +19,6 @@ public interface PmService {
 
     PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId);
 
-    List<PmCategory> getPmInterfaceFormData();
-
     Model modelForTaskController(Model model);
 
     Pm getPmDetail_1(int pmId);

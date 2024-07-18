@@ -6,7 +6,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(schema = "Resource")
+@Table(schema = "resource")
 @NoArgsConstructor
 public class DeviceCategory {
 

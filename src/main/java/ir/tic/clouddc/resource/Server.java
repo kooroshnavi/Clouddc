@@ -6,7 +6,7 @@ import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "Resource")
+@Table(schema = "resource")
 @NoArgsConstructor
 public final class Server extends Device {
 

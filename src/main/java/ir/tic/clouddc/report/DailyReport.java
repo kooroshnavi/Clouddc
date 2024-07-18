@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(schema = "Report")
+@Table(schema = "report")
 @NoArgsConstructor
 public class DailyReport {
 
@@ -25,8 +25,9 @@ public class DailyReport {
     private boolean active;
 
     @ManyToMany
-    @JoinTable(name = "report_event", schema = "Report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
+    @JoinTable(name = "report_event", schema = "report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
     private List<Event> eventList;
+
     @Transient
     private String persianDate;
 

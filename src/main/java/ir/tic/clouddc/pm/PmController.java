@@ -38,13 +38,9 @@ public class PmController {
     @GetMapping("/{pmInterfaceId}/register/form")
     public String showPmInterfaceForm(Model model, @Nullable @PathVariable Short pmInterfaceId) {
         if (pmInterfaceId == null) {
-            var pmCategoryList = pmService.getPmInterfaceFormData();
-            model.addAttribute("pmCategoryList", pmCategoryList);
             model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
         } else {
             var pmInterfaceForm = pmService.pmInterfaceEditFormData(pmInterfaceId);
-            var pmCategoryList = pmService.getPmInterfaceFormData();
-            model.addAttribute("pmCategoryList", pmCategoryList);
             model.addAttribute("pmInterfaceRegisterForm", pmInterfaceForm);
         }
 

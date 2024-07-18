@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "Document")
+@Table(schema = "document")
 @NoArgsConstructor
 public class Attachment {
 

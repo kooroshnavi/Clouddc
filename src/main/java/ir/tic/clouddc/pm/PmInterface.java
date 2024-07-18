@@ -8,7 +8,7 @@ import org.hibernate.annotations.Nationalized;
 import java.util.List;
 
 @Entity
-@Table(schema = "Pm")
+@Table(schema = "pm")
 @NoArgsConstructor
 public final class PmInterface {
 
@@ -40,9 +40,8 @@ public final class PmInterface {
     @Nationalized
     private String description;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pm_category_id")
-    private PmCategory pmCategory;
+    @Column
+    private String category;
 
     @OneToMany(mappedBy = "pmInterface")
     private List<Pm> pmList;
@@ -123,12 +122,12 @@ public final class PmInterface {
         this.pmList = pmList;
     }
 
-    public PmCategory getPmCategory() {
-        return pmCategory;
+    public String getCategory() {
+        return category;
     }
 
-    public void setPmCategory(PmCategory pmCategory) {
-        this.pmCategory = pmCategory;
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public Persistence getPersistence() {

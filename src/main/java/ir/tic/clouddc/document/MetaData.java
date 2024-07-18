@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(schema = "Document")
+@Table(schema = "document")
 @NoArgsConstructor
 public class MetaData {
 

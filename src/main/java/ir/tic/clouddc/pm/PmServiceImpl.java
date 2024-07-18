@@ -43,7 +43,6 @@ public class PmServiceImpl implements PmService {
     private final PmRepository pmRepository;
     private final PmInterfaceRepository pmInterfaceRepository;
     private final PmDetailRepository pmDetailRepository;
-    private final PmCategoryRepository pmCategoryRepository;
     private final CenterService centerService;
     private final PersonService personService;
     private final NotificationService notificationService;
@@ -51,11 +50,10 @@ public class PmServiceImpl implements PmService {
     private final FileService fileService;
 
     @Autowired
-    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmDetailRepository pmDetailRepository, PmCategoryRepository pmCategoryRepository, CenterService centerService, PersonService personService, NotificationService notificationService, LogService logService, FileService fileService) {
+    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmDetailRepository pmDetailRepository , CenterService centerService, PersonService personService, NotificationService notificationService, LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.pmInterfaceRepository = pmInterfaceRepository;
         this.pmDetailRepository = pmDetailRepository;
-        this.pmCategoryRepository = pmCategoryRepository;
         this.centerService = centerService;
         this.personService = personService;
         this.notificationService = notificationService;
@@ -455,7 +453,7 @@ public class PmServiceImpl implements PmService {
         pmInterface.setName(pmInterfaceRegisterForm.getTitle());
         pmInterface.setPeriod(pmInterfaceRegisterForm.getPeriod());
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
-        pmInterface.setPmCategory(pmInterfaceRegisterForm.getPmCategory());
+        pmInterface.setCategory("General");
         pmInterface.setStatelessRecurring(pmInterfaceRegisterForm.isStatelessRecurring());
         fileService.checkAttachment(pmInterfaceRegisterForm.getFile(), persistence);
 
@@ -464,20 +462,12 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public Model modelForTaskController(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
-        model.addAttribute("person", person);
-        model.addAttribute("role", authenticated.getAuthorities());
+        model.addAttribute("person", personService.getCurrentPerson());
         model.addAttribute("date", UtilService.getCurrentDate());
 
         return model;
     }
 
-    @Override
-    public List<PmCategory> getPmInterfaceFormData() {
-        return pmCategoryRepository.findAll(Sort.by("name"));
-    }
 
     @Override
     public PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId) {
@@ -490,7 +480,6 @@ public class PmServiceImpl implements PmService {
             pmInterfaceRegisterForm.setDescription(pmInterface.getDescription());
             pmInterfaceRegisterForm.setPeriod(pmInterface.getPeriod());
             pmInterfaceRegisterForm.setPmInterface(pmInterface);
-            pmInterfaceRegisterForm.setPmCategory(pmInterface.getPmCategory());
 
          /*   List<MetaData> metaDataList = fileService.getRelatedMetadataList(List.of(pmInterface.getPersistence().getId()));
             if (!metaDataList.isEmpty()) {

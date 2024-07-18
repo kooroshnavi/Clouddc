@@ -21,7 +21,7 @@ import java.nio.charset.StandardCharsets;
 @Service
 @Slf4j
 @NoArgsConstructor
-public class SoapClientService {
+public final class SoapClientService {
 
     @Value("${soap.principal}")
     private String principal;

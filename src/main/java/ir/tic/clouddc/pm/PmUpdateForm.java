@@ -9,13 +9,18 @@ import org.springframework.web.multipart.MultipartFile;
 @NoArgsConstructor
 public class PmUpdateForm {
     private Pm pm;
+
     @NotBlank(message = "Description is obligatory")
     @Size(min = 5, max = 1000)
     private String description;
+
     private String ownerUsername;
+
     @NotBlank
     private int actionType;
+
     private float temperatureValue;
+
     private MultipartFile file;
 
     public String getOwnerUsername() {

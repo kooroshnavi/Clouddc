@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 
 @Entity
-@Table(schema = "Center")
+@Table(schema = "center")
 @NoArgsConstructor
 public class LocationPmCatalog {
 

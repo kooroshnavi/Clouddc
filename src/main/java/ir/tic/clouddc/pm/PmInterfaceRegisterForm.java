@@ -21,8 +21,6 @@ public class PmInterfaceRegisterForm {
 
     private boolean statelessRecurring;
 
-    private PmCategory pmCategory;
-
     private MultipartFile file;
 
     public boolean isStatelessRecurring() {
@@ -31,14 +29,6 @@ public class PmInterfaceRegisterForm {
 
     public void setStatelessRecurring(boolean statelessRecurring) {
         this.statelessRecurring = statelessRecurring;
-    }
-
-    public PmCategory getPmCategory() {
-        return pmCategory;
-    }
-
-    public void setPmCategory(PmCategory pmCategory) {
-        this.pmCategory = pmCategory;
     }
 
     public boolean isEnabled() {

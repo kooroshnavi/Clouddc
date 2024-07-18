@@ -40,7 +40,6 @@ public abstract class Device {
     @JoinColumn(name = "location_id")
     private Location location;   /// DeviceMovementEvent
 
-
     @OneToMany(mappedBy = "device")
     private List<DeviceMovementEvent> deviceMovementEventList;
 

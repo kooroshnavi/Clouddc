@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(schema = "Center")
+@Table(schema = "center")
 @NoArgsConstructor
 public final class Room extends Location {
 

@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
-@Table(schema = "Pm")
+@Table(schema = "pm")
 @NoArgsConstructor
 public final class TemperaturePm extends Pm {
 
