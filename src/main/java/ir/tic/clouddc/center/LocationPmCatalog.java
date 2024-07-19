@@ -1,6 +1,6 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.pm.Pm;
 import ir.tic.clouddc.pm.PmInterface;
 import jakarta.persistence.*;

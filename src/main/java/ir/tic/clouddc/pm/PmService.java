@@ -2,20 +2,20 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.report.DailyReport;
-import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface PmService {
     void updateTodayPmList(DailyReport todayReport);
 
     List<PmInterface> getPmInterfaceList();
 
-    List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active, @Nullable Integer locationId);
+    List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active);
 
     PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId);
 
@@ -46,4 +46,6 @@ public interface PmService {
     List<Person> getDefaultPersonList();
 
     List<PmInterface> getNonCatalogedPmList(Location location);
+
+    Optional<PmInterface> getPmInterface(int pmInterfaceId);
 }

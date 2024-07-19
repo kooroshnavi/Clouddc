@@ -4,8 +4,8 @@ import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
-import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
@@ -43,7 +43,7 @@ public class CenterServiceImpl implements CenterService {
 
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, PmCategoryRepository pmCategoryRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
         this.notificationService = notificationService;
@@ -273,23 +273,15 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
+        /*
         var center = getHall(centerId);
         List<Float> weeklyTemperature = new ArrayList<>();
         for (LocalDate date : weeklyDateList) {
             weeklyTemperature.add(center.getAverageTemperature().get(date));
-        }
-        return weeklyTemperature;
+        }*/
+        return null;
     }
 
 
-    @Override
-    public List<Rack> getRackList() {
-        return locationRepository.findAllByRack();
-    }
-
-    @Override
-    public List<Room> getRoomList() {
-        return locationRepository.findAllByRoom();
-    }
 
 }

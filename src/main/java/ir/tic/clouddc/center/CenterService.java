@@ -62,8 +62,5 @@ public interface CenterService {
 
     List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
 
-    List<Rack> getRackList();
-
-    List<Room> getRoomList();
 
 }

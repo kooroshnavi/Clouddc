@@ -76,15 +76,13 @@
                     <div class="card-body">
                         <div class="border p-3 rounded">
                             <form class="row g-3" th:action="@{/pm/register}" th:object="${pmInterfaceRegisterForm}"
-                                  method="POST">
-
+                                  enctype="multipart/form-data" method="POST">
 
                                 <div class="col-12">
                                     <label class="form-label">عنوان Pm</label>
-                                    <input type="text" th:field="*{title}" class="form-control"
+                                    <input required="required" type="text" th:field="*{title}" class="form-control"
                                            placeholder="عنوان در لیست ها نمایش داده می شود">
                                 </div>
-
 
                                 <div class="col-12 col-md-6">
                                     <label class="form-label">دوره تکرار</label>
@@ -105,13 +103,13 @@
 
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
-                                    <textarea class="form-control" th:field="*{description}"
+                                    <textarea required="required" class="form-control" th:field="*{description}"
                                               placeholder="خلاصه ای از اینکه چه اقدامی باید انجام شود" rows="4"
                                               cols="4"></textarea>
                                 </div>
 
                                 <div>
-                                    <label title="وضعیت فعالسازی">
+                                    <label>وضعیت فعالسازی
                                         <input th:field="*{enabled}"
                                                type="checkbox"/>
                                     </label>
@@ -119,7 +117,7 @@
                                 </div>
 
                                 <div>
-                                    <label title="تکرار پیوسته">
+                                    <label >تکرار مستقل از آخرین اجرا
                                         <input th:field="*{statelessRecurring}"
                                                type="checkbox"/>
                                     </label>

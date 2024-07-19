@@ -9,6 +9,6 @@ import java.util.List;
 @Repository
 public interface WorkflowRepository extends JpaRepository<Workflow, Long> {
 
-    @Query("SELECT w.persistence.id FROM Workflow w WHERE w.id : =workFlow")
+    @Query("SELECT w.persistence.id FROM Workflow w WHERE w.id =: workFlow")
     List<Long> fetchRelatedPersistenceIdList(long workFlow);
 }

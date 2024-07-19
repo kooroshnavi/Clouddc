@@ -1,8 +1,8 @@
 package ir.tic.clouddc.security;
 
 import ir.tic.clouddc.otp.OtpService;
-import ir.tic.clouddc.person.AddressRepository;
-import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.individual.AddressRepository;
+import ir.tic.clouddc.individual.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
@@ -40,7 +40,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         var otpUid = authentication.getPrincipal().toString();
         var providedOtp = authentication.getCredentials().toString();
-        if (providedOtp.isBlank() || providedOtp.isEmpty() || providedOtp.toCharArray().length < 6) {
+        if (providedOtp.isBlank() || providedOtp.toCharArray().length < 6) {
             throw new BadCredentialsException("Bad Input");
         }
 

@@ -2,7 +2,7 @@ package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +14,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 @Service
-public final class FileServiceImpl implements FileService {
+public class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
 
@@ -62,7 +62,7 @@ public final class FileServiceImpl implements FileService {
     @PreAuthorize("documentOwner == requester")
     public void deleteDocument(long medaDataId, int documentOwner, int requester) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '5', new Person(documentOwner), persistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), new Person(documentOwner), persistence);
         metaDataRepository.deleteById(medaDataId);
     }
 

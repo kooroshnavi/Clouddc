@@ -1,17 +1,14 @@
-package ir.tic.clouddc.person;
+package ir.tic.clouddc.individual;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import ir.tic.clouddc.center.LocationPmCatalog;
-import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Table(schema = "user")
+@Table(schema = "individual")
 @NoArgsConstructor
 public class Person {
     @Id

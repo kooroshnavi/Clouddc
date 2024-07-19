@@ -73,12 +73,12 @@
                             <i class="lni lni-chevron-left"></i>
                         </div>
                         <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.pmCategory.name}"></strong>
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pmInterface.period}"></p>
                             <p class="mb-1" th:if="${pmInterface.description != null}"
-                               th:text=" 'توضیحات پیرامون این Pm: ' + ${pmInterface.description}"></p>
+                               th:text=" 'توضیحات: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
                 </div>

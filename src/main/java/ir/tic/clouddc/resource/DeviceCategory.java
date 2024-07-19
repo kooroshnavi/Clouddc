@@ -24,6 +24,12 @@ public class DeviceCategory {
     @Column
     private String model;   //
 
+    @Column
+    private String serverFactor;
+
+    @Column
+    private String serverFactorSize;
+
     @OneToMany(mappedBy = "deviceCategory")
     private List<Device> deviceList;
 
@@ -65,5 +71,21 @@ public class DeviceCategory {
 
     public void setDeviceList(List<Device> deviceList) {
         this.deviceList = deviceList;
+    }
+
+    public String getServerFactor() {
+        return serverFactor;
+    }
+
+    public void setServerFactor(String serverFactor) {
+        this.serverFactor = serverFactor;
+    }
+
+    public String getServerFactorSize() {
+        return serverFactorSize;
+    }
+
+    public void setServerFactorSize(String serverFactorSize) {
+        this.serverFactorSize = serverFactorSize;
     }
 }

@@ -13,12 +13,6 @@ public final class Server extends Device {
     @Column
     private String remoteAddress;
 
-    @Column
-    private int factorSize;  // 8
-
-    @Column
-    private String formFactor;   //LFF
-
 
     public String getRemoteAddress() {
         return remoteAddress;
@@ -28,19 +22,4 @@ public final class Server extends Device {
         this.remoteAddress = remoteAddress;
     }
 
-    public String getFormFactor() {
-        return formFactor;
-    }
-
-    public void setFormFactor(String formFactor) {
-        this.formFactor = formFactor;
-    }
-
-    public int getFactorSize() {
-        return factorSize;
-    }
-
-    public void setFactorSize(int factorSize) {
-        this.factorSize = factorSize;
-    }
 }

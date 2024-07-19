@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
-      xmlns:sec="http://www.thymeleaf.org/extras/spring-security" xmlns="http://www.w3.org/1999/html">
+      xmlns="http://www.w3.org/1999/html">
 
 <head th:fragment="links">
     <!-- Required meta tags -->
@@ -166,17 +166,14 @@
                     ? "0" + sec
                     : sec;
 
-            let currentTime =
+            document.getElementById(
+                "clock"
+            ).innerHTML =
                 hour +
                 ":" +
                 min +
                 ":" +
                 sec;
-
-            document.getElementById(
-                "clock"
-            ).innerHTML =
-                currentTime;
         }
 
         showTime();
@@ -209,9 +206,9 @@
                     <div class="menu-title">وظایف دوره ای و رخدادها</div>
                 </a>
                 <ul>
-                    <li><a href="/pm/myTask"><i class="bi bi-circle"></i>کارتابل</a>
+                    <li><a href="/pm/workspace"><i class="bi bi-circle"></i>کارتابل</a>
                     </li>
-                    <li><a href="/pm/list"><i class="bi bi-circle"></i>مدیریت وظایف</a>
+                    <li><a href="/pm/interface/list"><i class="bi bi-circle"></i>مدیریت وظایف</a>
                     </li>
                     <li><a href="/event/list"><i class="bi bi-circle"></i>رخدادها</a>
                     </li>

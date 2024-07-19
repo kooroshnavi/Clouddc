@@ -1,4 +1,4 @@
-package ir.tic.clouddc.person;
+package ir.tic.clouddc.individual;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

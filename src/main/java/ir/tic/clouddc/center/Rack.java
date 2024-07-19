@@ -4,6 +4,7 @@ import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.resource.Device;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -15,7 +16,7 @@ import java.util.Map;
 public final class Rack extends Location {
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "salon_id")
+    @JoinColumn(name = "hall_id")
     private Hall hall;
 
     @ManyToOne
@@ -28,13 +29,9 @@ public final class Rack extends Location {
     @Column
     private int deviceListSize;
 
-    public int getDeviceListSize() {
-        return deviceListSize;
-    }
-
-    public void setDeviceListSize(int deviceListSize) {
-        this.deviceListSize = deviceListSize;
-    }
+    @Column
+    @Nationalized
+    private String description;
 
     @ElementCollection
     @CollectionTable(name = "date_temperature_mapping",
@@ -69,6 +66,14 @@ public final class Rack extends Location {
         this.averageTemperature = averageTemperature;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     public Utilizer getUtilizer() {
         return utilizer;
     }
@@ -76,4 +81,13 @@ public final class Rack extends Location {
     public void setUtilizer(Utilizer utilizer) {
         this.utilizer = utilizer;
     }
+
+    public int getDeviceListSize() {
+        return deviceListSize;
+    }
+
+    public void setDeviceListSize(int deviceListSize) {
+        this.deviceListSize = deviceListSize;
+    }
+
 }

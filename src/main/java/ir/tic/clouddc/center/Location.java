@@ -1,8 +1,6 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.Event;
 import ir.tic.clouddc.event.LocationStatusEvent;
-import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import org.hibernate.annotations.Nationalized;
 
@@ -37,7 +35,6 @@ public abstract class Location {
 
     @OneToMany(mappedBy = "location")
     private List<LocationPmCatalog> locationPmCatalogList;
-
 
     public Center getCenter() {
         return center;
@@ -75,7 +72,6 @@ public abstract class Location {
         this.id = id;
     }
 
-
     public List<LocationStatusEvent> getEventList() {
         return eventList;
     }
@@ -87,7 +83,6 @@ public abstract class Location {
     public long getId() {
         return id;
     }
-
 
     public String getName() {
         return name;

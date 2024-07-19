@@ -18,13 +18,11 @@ public class CenterController {
 
     private final EventService eventService;
 
-    private final ReportService reportService;
 
     @Autowired
-    public CenterController(CenterService centerService, EventService eventService, ReportService reportService) {
+    public CenterController(CenterService centerService, EventService eventService) {
         this.centerService = centerService;
         this.eventService = eventService;
-        this.reportService = reportService;
     }
 
     @GetMapping("/overview")

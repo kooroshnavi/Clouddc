@@ -2,7 +2,7 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 
 public class CatalogForm {
     private LocationPmCatalog locationPmCatalog;

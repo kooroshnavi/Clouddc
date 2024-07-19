@@ -1,11 +1,10 @@
-package ir.tic.clouddc.person;
+package ir.tic.clouddc.individual;
 
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 @Entity
-@Table(schema = "user")
+@Table(schema = "individual")
 @NoArgsConstructor
 public class Address {
 

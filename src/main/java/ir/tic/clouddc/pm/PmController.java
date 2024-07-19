@@ -1,9 +1,8 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.Null;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -35,19 +34,15 @@ public class PmController {
         return "pmInterfaceList";
     }
 
-    @GetMapping("/{pmInterfaceId}/register/form")
-    public String showPmInterfaceForm(Model model, @Nullable @PathVariable Short pmInterfaceId) {
-        if (pmInterfaceId == null) {
-            model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
-        } else {
-            var pmInterfaceForm = pmService.pmInterfaceEditFormData(pmInterfaceId);
-            model.addAttribute("pmInterfaceRegisterForm", pmInterfaceForm);
-        }
+    @GetMapping("/register/form")
+    public String showPmInterfaceForm(Model model) {
+
+        model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
 
         return "pmRegisterView";
     }
 
-    @PostMapping("/register")  /// General Pm only
+    @PostMapping(value = "/register")  /// General Pm only
     public String pmInterfacePost(
             Model model,
             @Valid @ModelAttribute("pmInterfaceRegisterForm") PmInterfaceRegisterForm pmInterfaceRegisterForm,
@@ -55,7 +50,7 @@ public class PmController {
             Errors errors) throws IOException {
 
         if (errors.hasErrors()) {
-            log.error("Failed to register task due to validation error on input data: " + errors);
+            log.error("Failed to register task due to validation error on input data: {}", errors);
             return "pmRegisterView";
         }
 
@@ -67,15 +62,20 @@ public class PmController {
         return "redirect:\\pmInterfaceList";
     }
 
-    @GetMapping("/{pmInterfaceId}/active/{active}/location/{locationId}")
+    @GetMapping("/{pmInterfaceId}/active/{active}")
     public String showPmInterfacePmList(Model model
             , @PathVariable boolean active
-            , @PathVariable short pmInterfaceId
-            , @Nullable @PathVariable(required = false) Integer locationId) {
-        var pmList = pmService.getPmInterfacePmList(pmInterfaceId, active, locationId);
-        model.addAttribute("pmList", pmList);
-        model.addAttribute("pmInterface", pmList.get(0).getPmInterface());
-        model.addAttribute("active", active);
+            , @PathVariable Integer pmInterfaceId) {
+        var pmInterface = pmService.getPmInterface(pmInterfaceId);
+        if (pmInterface.isPresent()) {
+            model.addAttribute("pmInterface", pmInterface.get());
+            var pmList = pmService.getPmInterfacePmList(pmInterfaceId, active);
+            model.addAttribute("pmList", pmList);
+            model.addAttribute("active", active);
+        }
+        else {
+            return "404";
+        }
 
         return "pmInterfacePmList";
     }
@@ -166,8 +166,7 @@ public class PmController {
             catalog.ifPresent(catalogForm::setLocationPmCatalog);
             model.addAttribute("update", true);
 
-        }
-        else {
+        } else {
             model.addAttribute("update", false);
         }
         List<Person> defaultPersonList = pmService.getDefaultPersonList();

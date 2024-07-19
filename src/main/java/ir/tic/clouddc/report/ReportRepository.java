@@ -13,12 +13,12 @@ import java.util.Optional;
 public interface ReportRepository extends JpaRepository<DailyReport, Integer> {
 
     Optional<DailyReport> findByActive(boolean active);
-
+/*
     @Query(value = """
             select *
             from Report.daily_report
             where date > (select dateadd(week, -1, getdate()))""", nativeQuery = true)
-    List<DailyReport> getWeeklyReportObjects();
+    List<DailyReport> getWeeklyReportObjects(); */
 
     @Query("SELECT id FROM DailyReport WHERE active = :active")
     int getActiveReportId(@Param("active") boolean active);

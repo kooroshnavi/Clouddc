@@ -1,6 +1,6 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -33,14 +33,16 @@ public final class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void historyUpdate(LocalDate date, LocalTime time, int logMessageId, Person person, Persistence persistence) {
+    public void historyUpdate(LocalDate date, LocalTime time, String logMessage, Person person, Persistence persistence) {
         List<LogHistory> logHistoryList = new ArrayList<>();
-        LogHistory logHistory = new LogHistory(date, time, person, persistence, new LogMessage(logMessageId), true);
+        LogHistory logHistory = new LogHistory(date, time, person, persistence, logMessage, true);
         logHistoryList.add(logHistory);
-        Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findAny();
-        if (currentHistory.isPresent()) {
-            currentHistory.get().setLast(false);
-            logHistoryList.add(currentHistory.get());
+        if (persistence.getLogHistoryList() != null) {
+            Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findAny();
+            if (currentHistory.isPresent()) {
+                currentHistory.get().setLast(false);
+                logHistoryList.add(currentHistory.get());
+            }
         }
         logHistoryRepository.saveAll(logHistoryList);
     }

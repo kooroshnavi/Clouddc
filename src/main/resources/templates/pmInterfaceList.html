@@ -50,29 +50,13 @@
     <!--start content-->
     <main class="page-content">
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <a type="button" href="/pm/register" class="btn btn-warning px-5" data-bs-toggle="tooltip"
+            <a type="button" th:href="@{/pm/register/form}" class="btn btn-warning px-5" data-bs-toggle="tooltip"
                data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">تعریف PM جدید</a>
         </div>
 
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <a type="button" href="/pm/register" class="btn btn-alert px-5" data-bs-toggle="tooltip"
-               data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">دسته بندی</a>
-        </div>
 
         <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
-            <div class="breadcrumb-title pe-3">وظایف</div>
-            <div class="ps-3">
-                <nav aria-label="breadcrumb">
-                    <ol class="breadcrumb mb-0 p-0">
-                        <li class="breadcrumb-item"><a href="javascript:"><i class="bx bx-home-alt"></i></a>
-                        </li>
-                        <li class="breadcrumb-item active" aria-current="page" th:text="${pmTypeName}"></li>
-                    </ol>
-                </nav>
-            </div>
 
-        </div>
         <!--end breadcrumb-->
 
         <div class="card">
@@ -105,7 +89,7 @@
 
                             <td th:text="${pmInterface.period}"></td>
 
-                            <td th:text="${pmInterface.pmCategory.name}"></td>
+                            <td th:text="${pmInterface.category}"></td>
 
                             <td>
                                 <div class="col">

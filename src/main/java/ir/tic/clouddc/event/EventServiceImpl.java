@@ -4,7 +4,7 @@ import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
@@ -218,7 +218,7 @@ public final class EventServiceImpl implements EventService {
         eventDetail.setRegisterTime(event.getRegisterTime());
         var currentPerson = personService.getCurrentPerson();
         var persistence = logService.persistenceSetup(currentPerson);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), 5, currentPerson, persistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("EventUpdate"), currentPerson, persistence);
         fileService.checkAttachment(file, persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(description);
@@ -231,14 +231,14 @@ public final class EventServiceImpl implements EventService {
         if (!Objects.isNull(categoryId)) {
             var category = eventCategoryRepository.findById(categoryId);
             if (category.isPresent()) {
-                eventList = eventRepository.findAllByCategory(category.get(), Sort.by("registerDate"));
+                eventList = eventRepository.findAllByEventCategory(category.get(), Sort.by("registerDate"));
             }
         } else {
             eventList = eventRepository.findAll(Sort.by("registerDate").descending());
         }
         for (Event event : eventList) {
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            event.setPersianRegisterDayTime(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+            event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
         }
         return eventList;
     }
@@ -250,7 +250,7 @@ public final class EventServiceImpl implements EventService {
         if (optionalEvent.isPresent()) {
             event = optionalEvent.get();
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            event.setPersianRegisterDayTime(UtilService.persianDay.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+            event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
             loadEventDetailTransients(event.getEventDetail());
 
             return event;
@@ -269,7 +269,7 @@ public final class EventServiceImpl implements EventService {
 
     private void loadEventDetailTransients(EventDetail eventDetail) {
         eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
-        eventDetail.setPersianDayTime(UtilService.persianDay.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+        eventDetail.setPersianDayTime(UtilService.PERSIAN_DAY.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
     }
 
     @Override

@@ -5,15 +5,14 @@ import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
+import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.notification.NotificationService;
-import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
-import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,17 +21,13 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -142,11 +137,11 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getPmInterfaceList() {
-        return pmInterfaceRepository.findAll(Sort.by("general"));
+        return pmInterfaceRepository.findAll(Sort.by("category"));
     }
 
     @Override
-    public List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active, @Nullable Integer locationId) {
+    public List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active) {
         PmInterface pmInterface;
         var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
         if (optionalPmInterface.isPresent()) {
@@ -155,7 +150,7 @@ public class PmServiceImpl implements PmService {
             throw new NoSuchElementException();
         }
 
-        List<Pm> basePmList = pmRepository.findAllByPmInterfaceAndActiveAndLocationId(pmInterface, active, locationId);
+        List<Pm> basePmList = pmRepository.findAllByPmInterfaceAndActiveAndLocationId(pmInterface, active, null);
 
         setPmTransients(basePmList);
 
@@ -244,13 +239,13 @@ public class PmServiceImpl implements PmService {
         if (ownerUsername.equals(currentPerson.getUsername())) {
             basePmDetail.setDescription(pmUpdateForm.getDescription());
             fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '1', currentPmDetailPersistence.getPerson(), currentPmDetailPersistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), currentPmDetailPersistence.getPerson(), currentPmDetailPersistence);
             if (basePmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
                 temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
             }
         } else {
             basePmDetail.setDescription("Terminated");
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '2', currentPerson, currentPmDetailPersistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("SupervisorPmTermination"), currentPerson, currentPmDetailPersistence);
             supervisorOperation(pmUpdateForm, currentPerson);
         }
         pmDetailRepository.save(basePmDetail);
@@ -288,7 +283,7 @@ public class PmServiceImpl implements PmService {
             pmDetail.setActive(true);
         } else {
             pmDetail.setActive(false);
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), actionCode, assigneePerson, persistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), assigneePerson, persistence);
             pmDetail.setFinishedDate(pmDetail.getRegisterDate());
             pmDetail.setFinishedTime(pmDetail.getRegisterTime());
         }
@@ -389,6 +384,11 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    public Optional<PmInterface> getPmInterface(int pmInterfaceId) {
+        return pmInterfaceRepository.findById(pmInterfaceId);
+    }
+
+    @Override
     public String getPmOwnerUsername(int pmId) {
         return pmDetailRepository.fetchPmOwnerUsername(pmId, true);
     }
@@ -432,7 +432,7 @@ public class PmServiceImpl implements PmService {
         if (pmInterfaceRegisterForm.getPmInterface() != null) { ///// Modify Pm
             pmInterface = pmInterfaceRegisterForm.getPmInterface();
             persistence = pmInterface.getPersistence();
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '7', currentPerson, persistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmInterfaceUpdate"), currentPerson, persistence);
             if (!pmInterface.isEnabled() && pmInterfaceRegisterForm.isEnabled()) {
                 pmInterface.setEnabled(true);
                 centerService.updateNewlyEnabledCatalog(pmInterface);
@@ -446,7 +446,7 @@ public class PmServiceImpl implements PmService {
             pmInterface.setGeneralPm(true);
             pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
             persistence = logService.persistenceSetup(currentPerson);
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), '8', currentPerson, persistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(),UtilService.LOG_MESSAGE.get("PmInterfaceRegister"), currentPerson, persistence);
             pmInterface.setPersistence(persistence);
         }
 

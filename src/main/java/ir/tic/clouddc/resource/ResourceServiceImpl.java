@@ -4,13 +4,11 @@ import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.center.Room;
 import ir.tic.clouddc.event.*;
+import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -134,7 +132,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<Utilizer> getUtilizerListExcept(Utilizer utilizer) {
-        return utilizerRepository.findAllNotIn(List.of(utilizer));
+        return utilizerRepository.findAllByIdNotIn(List.of(utilizer.getId()));
     }
 
     @Override
@@ -162,8 +160,6 @@ public class ResourceServiceImpl implements ResourceService {
                 srv.setSerialNumber(eventLandingForm.getSerialNumber());
                 srv.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
                 srv.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                var persistence = registerDevicePersistence(4);
-                srv.setPersistence(persistence);
                 return deviceRepository.save(srv);
             }
             case "Switch" -> { /// Switch
@@ -171,8 +167,6 @@ public class ResourceServiceImpl implements ResourceService {
                 sw.setSerialNumber(eventLandingForm.getSerialNumber());
                 sw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
                 sw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                var persistence = registerDevicePersistence(4);
-                sw.setPersistence(persistence);
                 return deviceRepository.save(sw);
             }
 
@@ -181,8 +175,6 @@ public class ResourceServiceImpl implements ResourceService {
                 fw.setSerialNumber(eventLandingForm.getSerialNumber());
                 fw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
                 fw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                var persistence = registerDevicePersistence(4);
-                fw.setPersistence(persistence);
                 return deviceRepository.save(fw);
             }
 
@@ -195,13 +187,5 @@ public class ResourceServiceImpl implements ResourceService {
     private Optional<Device> getDeviceBySerialNumber(String serialNumber) {
         return deviceRepository.findBySerialNumber(serialNumber);
     }
-
-    Persistence registerDevicePersistence(int messageId) {
-        var person = personService.getCurrentPerson();
-        var persistence = logService.persistenceSetup(person);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), messageId, person, persistence);
-        return persistence;
-    }
-
 }
 

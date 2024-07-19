@@ -17,12 +17,13 @@ public class ThymeleafError implements ErrorController {
         Object status = request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE);
 
         if (status != null) {
-            Integer statusCode = Integer.valueOf(status.toString());
+            int statusCode = Integer.parseInt(status.toString());
             if (statusCode == HttpStatus.INTERNAL_SERVER_ERROR.value()) {
                 return "500";
             }
+            log.error(status.toString());
         }
-        log.error(status.toString());
+
         return "404";
     }
 

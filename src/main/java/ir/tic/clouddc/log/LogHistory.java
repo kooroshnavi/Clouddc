@@ -1,6 +1,6 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -34,18 +34,18 @@ public class LogHistory {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "message_id")
-    private LogMessage logMessage;
+    @Column
+    private String logMessage;
 
-    public LogHistory(LocalDate date, LocalTime time, Person person, Persistence persistence, LogMessage logMessage, boolean last) {
+    public LogHistory(LocalDate date, LocalTime time, Person person, Persistence persistence, String logMessage, boolean last) {
         this.date = date;
         this.time = time;
         this.person = person;
         this.persistence = persistence;
-        this.logMessage = logMessage;
         this.last = last;
+        this.logMessage = logMessage;
     }
+
     public void setId(long id) {
         this.id = id;
     }
@@ -58,14 +58,9 @@ public class LogHistory {
         this.persistence = persistence;
     }
 
-    public LogMessage getLogMessage() {
-        return logMessage;
-    }
-
-    public void setLogMessage(LogMessage logMessage) {
+    public void setLogMessage(String logMessage) {
         this.logMessage = logMessage;
     }
-
 
     public void setDate(LocalDate date) {
         this.date = date;

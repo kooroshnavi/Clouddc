@@ -1,6 +1,6 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.individual.Person;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 

@@ -20,7 +20,7 @@ public final class UtilService {
 
     private static int TODAY_REPORT_ID;
 
-    public static final Map<String, String> persianDay = Map.ofEntries(
+    public static final Map<String, String> PERSIAN_DAY = Map.ofEntries(
             entry("Sat", "شنبه"),
             entry("Sun", "یکشنبه"),
             entry("Mon", "دوشنبه"),
@@ -30,12 +30,21 @@ public final class UtilService {
             entry("Fri", "جمعه")
     );
 
+    public static final Map<String, String> LOG_MESSAGE = Map.ofEntries(
+            entry("PmInterfaceRegister", "ثبت PmInterface جدید"),
+            entry("PmInterfaceUpdate", "بروزرسانی PmInterface"),
+            entry("PmUpdate", "بروزرسانی Pm"),
+            entry("SupervisorPmTermination", "بستن PmDetail توسط Supervisor"),
+            entry("DisableAttachment", "حذف فایل پیوست"),
+            entry("EventUpdate", "ثبت و بروزرسانی یک رخداد")
+    );
+
     public static String getCurrentDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var month = date.getMonth().getPersianName();
         var day = date.getDayOfMonth();
         var dayName = date.getDayOfWeek().getDisplayName(TextStyle.SHORT_STANDALONE, Locale.getDefault());
-        dayName = persianDay.get(dayName);
+        dayName = PERSIAN_DAY.get(dayName);
 
         return (dayName + "    " + day + "     " + month);
     }
@@ -64,7 +73,7 @@ public final class UtilService {
     }
     public static String getFormattedPersianDayTime(LocalDate localDate, LocalTime localTime) {
         return UtilService
-                .persianDay
+                .PERSIAN_DAY
                 .get(localDate.getDayOfWeek()
                         .getDisplayName(TextStyle.SHORT, Locale.getDefault()) + " - " + localTime);
 

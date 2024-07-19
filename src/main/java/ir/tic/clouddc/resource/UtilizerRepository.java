@@ -8,6 +8,6 @@ import java.util.List;
 @Repository
 public interface UtilizerRepository extends JpaRepository<Utilizer, Integer> {
 
-    List<Utilizer> findAllNotIn(List<Utilizer> utilizerList);
+    List<Utilizer> findAllByIdNotIn(List<Integer> utilizerList);
 
 }
