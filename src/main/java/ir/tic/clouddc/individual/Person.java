@@ -37,6 +37,8 @@ public class Person {
     private Address address;
 
 
+
+
     public List<LocationPmCatalog> getLocationPmCatalogList() {
         return locationPmCatalogList;
     }

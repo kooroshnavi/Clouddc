@@ -45,7 +45,7 @@ public class PmServiceImpl implements PmService {
     private final FileService fileService;
 
     @Autowired
-    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmDetailRepository pmDetailRepository , CenterService centerService, PersonService personService, NotificationService notificationService, LogService logService, FileService fileService) {
+    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmDetailRepository pmDetailRepository, CenterService centerService, PersonService personService, NotificationService notificationService, LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.pmInterfaceRepository = pmInterfaceRepository;
         this.pmDetailRepository = pmDetailRepository;
@@ -374,18 +374,32 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getNonCatalogedPmList(Location location) {
-        List<PmInterface> pmCatalogList = location
-                .getLocationPmCatalogList()
-                .stream()
-                .map(LocationPmCatalog::getPmInterface)
-                .toList();
+        List<PmInterface> pmInterfaceList;
+        var locationCatalog = location.getLocationPmCatalogList();
+        if (locationCatalog == null) {
+            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true);
+            log.info(String.valueOf(pmInterfaceList.size()));
+        } else {
+            List<PmInterface> pmCatalogList = location
+                    .getLocationPmCatalogList()
+                    .stream()
+                    .map(LocationPmCatalog::getPmInterface)
+                    .toList();
 
-        return pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(pmCatalogList, true);
+            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true);
+        }
+        return pmInterfaceList;
+
     }
 
     @Override
     public Optional<PmInterface> getPmInterface(int pmInterfaceId) {
         return pmInterfaceRepository.findById(pmInterfaceId);
+    }
+
+    @Override
+    public Optional<Location> getLocation(Integer locationId) {
+        return centerService.getLocation(locationId);
     }
 
     @Override
@@ -446,7 +460,7 @@ public class PmServiceImpl implements PmService {
             pmInterface.setGeneralPm(true);
             pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
             persistence = logService.persistenceSetup(currentPerson);
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(),UtilService.LOG_MESSAGE.get("PmInterfaceRegister"), currentPerson, persistence);
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmInterfaceRegister"), currentPerson, persistence);
             pmInterface.setPersistence(persistence);
         }
 

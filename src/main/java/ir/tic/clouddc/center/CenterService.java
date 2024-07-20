@@ -14,7 +14,7 @@ import java.util.Optional;
 public interface CenterService {
 
 
-    void updateCatalog(CatalogForm catalogForm);
+    LocationPmCatalog updateCatalog(CatalogForm catalogForm, LocalDate validNextDue);
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {

@@ -4,33 +4,36 @@ import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.individual.Person;
 
-public class CatalogForm {
-    private LocationPmCatalog locationPmCatalog;
+import java.time.LocalDate;
 
-    private Location location;
+public class CatalogForm {
+    private int locationPmCatalogId;
+
+    private int locationId;
 
     private String nextDue;
 
-    private Person defaultPerson;
+    private int defaultPersonId;
 
     private boolean enabled;
 
-    private PmInterface pmInterface;
+    private int pmInterfaceId;
 
-    public Location getLocation() {
-        return location;
+
+    public int getLocationPmCatalogId() {
+        return locationPmCatalogId;
     }
 
-    public void setLocation(Location location) {
-        this.location = location;
+    public void setLocationPmCatalogId(int locationPmCatalogId) {
+        this.locationPmCatalogId = locationPmCatalogId;
     }
 
-    public LocationPmCatalog getLocationPmCatalog() {
-        return locationPmCatalog;
+    public int getLocationId() {
+        return locationId;
     }
 
-    public void setLocationPmCatalog(LocationPmCatalog locationPmCatalog) {
-        this.locationPmCatalog = locationPmCatalog;
+    public void setLocationId(int locationId) {
+        this.locationId = locationId;
     }
 
     public String getNextDue() {
@@ -41,12 +44,20 @@ public class CatalogForm {
         this.nextDue = nextDue;
     }
 
-    public Person getDefaultPerson() {
-        return defaultPerson;
+    public int getDefaultPersonId() {
+        return defaultPersonId;
     }
 
-    public void setDefaultPerson(Person defaultPerson) {
-        this.defaultPerson = defaultPerson;
+    public void setDefaultPersonId(int defaultPersonId) {
+        this.defaultPersonId = defaultPersonId;
+    }
+
+    public int getPmInterfaceId() {
+        return pmInterfaceId;
+    }
+
+    public void setPmInterfaceId(int pmInterfaceId) {
+        this.pmInterfaceId = pmInterfaceId;
     }
 
     public boolean isEnabled() {
@@ -57,11 +68,5 @@ public class CatalogForm {
         this.enabled = enabled;
     }
 
-    public PmInterface getPmInterface() {
-        return pmInterface;
-    }
 
-    public void setPmInterface(PmInterface pmInterface) {
-        this.pmInterface = pmInterface;
-    }
 }

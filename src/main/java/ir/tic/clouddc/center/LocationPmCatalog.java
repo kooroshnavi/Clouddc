@@ -59,7 +59,6 @@ public class LocationPmCatalog {
     }
 
 
-
     public int getId() {
         return id;
     }

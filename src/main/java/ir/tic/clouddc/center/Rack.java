@@ -27,9 +27,6 @@ public final class Rack extends Location {
     private List<Device> deviceList;
 
     @Column
-    private int deviceListSize;
-
-    @Column
     @Nationalized
     private String description;
 
@@ -80,14 +77,6 @@ public final class Rack extends Location {
 
     public void setUtilizer(Utilizer utilizer) {
         this.utilizer = utilizer;
-    }
-
-    public int getDeviceListSize() {
-        return deviceListSize;
-    }
-
-    public void setDeviceListSize(int deviceListSize) {
-        this.deviceListSize = deviceListSize;
     }
 
 }

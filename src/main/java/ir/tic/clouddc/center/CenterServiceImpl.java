@@ -10,6 +10,7 @@ import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -24,7 +25,6 @@ import java.util.*;
 
 @Slf4j
 @Service
-@EnableScheduling
 public class CenterServiceImpl implements CenterService {
 
     private final CenterRepository centerRepository;
@@ -72,22 +72,29 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public void updateCatalog(CatalogForm catalogForm) {
-        LocationPmCatalog locationPmCatalog;
-        if (catalogForm.getLocationPmCatalog() != null) {
-            locationPmCatalog = catalogForm.getLocationPmCatalog();
+    public LocationPmCatalog updateCatalog(CatalogForm catalogForm, LocalDate validNextDue) {
+        log.info("Ready to persist");
+        /*   locationPmCatalog = catalogForm.getLocationPmCatalog();
             locationPmCatalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
             locationPmCatalog.setDefaultPerson(catalogForm.getDefaultPerson());
-            locationPmCatalog.setEnabled(catalogForm.isEnabled());
-        } else {
-            locationPmCatalog = new LocationPmCatalog();
-            locationPmCatalog.setEnabled(true);
-            locationPmCatalog.setLocation(catalogForm.getLocation());
-            locationPmCatalog.setDefaultPerson(catalogForm.getDefaultPerson());
-            locationPmCatalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
-            locationPmCatalog.setPmInterface(catalogForm.getPmInterface());
-        }
-        locationPmCatalogRepository.saveAndFlush(locationPmCatalog);
+            locationPmCatalog.setEnabled(catalogForm.isEnabled());*/
+
+        LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
+        locationPmCatalog.setEnabled(true);
+        locationPmCatalog.setLocation(locationRepository.findById(140).get());   // Cast ALL INT TO LONG
+      //  locationPmCatalog.setDefaultPerson(personService.getPerson(catalogForm.getDefaultPersonId()));
+        locationPmCatalog.setNextDueDate(validateNextDue(validNextDue));
+       // locationPmCatalog.setPmInterface(null);
+       // locationPmCatalog.setLastFinishedPm(null);
+
+
+        log.info("Ready to persist 2");
+
+        var result = locationPmCatalogRepository.save(locationPmCatalog);
+
+        log.info(String.valueOf(result.getNextDueDate()));
+
+        return result;
     }
 
     @Override
@@ -281,7 +288,6 @@ public class CenterServiceImpl implements CenterService {
         }*/
         return null;
     }
-
 
 
 }

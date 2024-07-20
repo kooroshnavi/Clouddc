@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.individual.Person;
 import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
@@ -14,6 +15,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -72,8 +74,7 @@ public class PmController {
             var pmList = pmService.getPmInterfacePmList(pmInterfaceId, active);
             model.addAttribute("pmList", pmList);
             model.addAttribute("active", active);
-        }
-        else {
+        } else {
             return "404";
         }
 
@@ -154,28 +155,22 @@ public class PmController {
         return "activePmList";
     }
 
-    @PostMapping("/catalog/{catalogId}/form")
-    public String showCatalogForm(Model model, @ModelAttribute("catalogForm") CatalogForm catalogForm,
-                                  @Nullable @PathVariable("catalogId") Integer catalogId) {
-        if (catalogId != null) {
-            var catalog = catalogForm.getLocation()
-                    .getLocationPmCatalogList()
-                    .stream()
-                    .filter(locationPmCatalog -> locationPmCatalog.getId() == catalogId)
-                    .findFirst();
-            catalog.ifPresent(catalogForm::setLocationPmCatalog);
-            model.addAttribute("update", true);
-
-        } else {
-            model.addAttribute("update", false);
-        }
+    @GetMapping("/catalog/{locationId}/form")
+    public String showCatalogForm(Model model, @PathVariable Integer locationId) {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
-        List<PmInterface> pmList = pmService.getNonCatalogedPmList(catalogForm.getLocation());
-        model.addAttribute("defaultPersonList", defaultPersonList);
-        model.addAttribute("pmInterfaceList", pmList);
-        model.addAttribute("catalogForm", catalogForm);
+        Optional<Location> optionalLocation = pmService.getLocation(locationId);
+        if (optionalLocation.isPresent()) {
+            List<PmInterface> pmList = pmService.getNonCatalogedPmList(optionalLocation.get());
+            model.addAttribute("defaultPersonList", defaultPersonList);
+            model.addAttribute("pmInterfaceList", pmList);
+            model.addAttribute("catalogForm", new CatalogForm());
+            model.addAttribute("update", false);
+            model.addAttribute("location", optionalLocation.get());
 
-        return "catalogForm";
+            return "catalogForm";
+        } else {
+            return "404";
+        }
     }
 
 

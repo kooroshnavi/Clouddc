@@ -48,4 +48,6 @@ public interface PmService {
     List<PmInterface> getNonCatalogedPmList(Location location);
 
     Optional<PmInterface> getPmInterface(int pmInterfaceId);
+
+    Optional<Location> getLocation(Integer locationId);
 }

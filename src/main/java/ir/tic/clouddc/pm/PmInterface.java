@@ -50,6 +50,10 @@ public final class PmInterface {
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
 
+    public PmInterface(int id) {
+        this.id = id;
+    }
+
     public boolean isStatelessRecurring() {
         return statelessRecurring;
     }
