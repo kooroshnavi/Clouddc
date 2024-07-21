@@ -295,7 +295,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Optional<Location> getLocation(int locationId) {
+    public Optional<Location> getLocation(Long locationId) {
         return centerService.getLocation(locationId);
     }
 

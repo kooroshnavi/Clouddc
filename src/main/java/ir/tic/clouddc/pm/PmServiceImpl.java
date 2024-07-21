@@ -375,18 +375,17 @@ public class PmServiceImpl implements PmService {
     @Override
     public List<PmInterface> getNonCatalogedPmList(Location location) {
         List<PmInterface> pmInterfaceList;
-        var locationCatalog = location.getLocationPmCatalogList();
-        if (locationCatalog == null) {
-            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true);
-            log.info(String.valueOf(pmInterfaceList.size()));
+        if (location.getLocationPmCatalogList().isEmpty()) {
+            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, List.of(0));
         } else {
-            List<PmInterface> pmCatalogList = location
+            List<Integer> catalogedInterface = location
                     .getLocationPmCatalogList()
                     .stream()
                     .map(LocationPmCatalog::getPmInterface)
+                    .map(PmInterface::getId)
                     .toList();
 
-            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true);
+            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, catalogedInterface);
         }
         return pmInterfaceList;
 
@@ -398,7 +397,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Optional<Location> getLocation(Integer locationId) {
+    public Optional<Location> getLocation(Long locationId) {
         return centerService.getLocation(locationId);
     }
 
@@ -469,8 +468,9 @@ public class PmServiceImpl implements PmService {
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
         pmInterface.setCategory("General");
         pmInterface.setStatelessRecurring(pmInterfaceRegisterForm.isStatelessRecurring());
-        fileService.checkAttachment(pmInterfaceRegisterForm.getFile(), persistence);
-
+        if (pmInterfaceRegisterForm.getFile() != null) {
+            fileService.checkAttachment(pmInterfaceRegisterForm.getFile(), persistence);
+        }
         pmInterfaceRepository.saveAndFlush(pmInterface);
     }
 

@@ -156,7 +156,7 @@ public class PmController {
     }
 
     @GetMapping("/catalog/{locationId}/form")
-    public String showCatalogForm(Model model, @PathVariable Integer locationId) {
+    public String showCatalogForm(Model model, @PathVariable Long locationId) {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
         Optional<Location> optionalLocation = pmService.getLocation(locationId);
         if (optionalLocation.isPresent()) {
@@ -172,7 +172,6 @@ public class PmController {
             return "404";
         }
     }
-
 
     @ModelAttribute
     public void addAttributes(Model model) {

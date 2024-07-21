@@ -12,9 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CenterService {
-
-
-    LocationPmCatalog updateCatalog(CatalogForm catalogForm, LocalDate validNextDue);
+    LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate validNextDue);
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {
@@ -48,7 +46,7 @@ public interface CenterService {
 
     Hall getHall(int hallId);
 
-    Optional<Location> getLocation(int locationId);
+    Optional<Location> getLocation(Long locationId);
 
     Optional<Center> getCenter(int centerId);
 

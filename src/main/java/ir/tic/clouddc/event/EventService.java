@@ -37,7 +37,7 @@ public interface EventService {
 
     Optional<Center> getCenter(short centerId);
 
-    Optional<Location> getLocation(int locationId);
+    Optional<Location> getLocation(Long locationId);
     Optional<Device> getDevice(String serialNumber);
 
     long getEventCount();

@@ -97,7 +97,7 @@
 
                                 <div class="mb-3">
                                     <div class="form-label">
-                                        <label>تاریخ شروع اولین وظیفه این Pm :</label>
+                                        <label>اولین سررسید :</label>
                                         <input required="required" type="text" data-jdp
                                                data-jdp-miladi-input="miladi_date" data-jdp-min-date="today"
                                                placeholder="نمایش تاریخ از امروز"/>
@@ -106,7 +106,7 @@
 
                                 <input type="hidden" th:field="*{nextDue}" id="miladi_date"/>
 
-                                <input type="hidden" th:value="${location.id}" th:field="*{locationId}"/>
+                                <input type="hidden" name="locationId" th:value="${location.id}"/>
 
                                 <div class="mb-3">
                                     <label class="form-label">کارتابل پیش فرض</label>

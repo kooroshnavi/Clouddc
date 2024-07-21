@@ -2,18 +2,22 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.LocationStatusEvent;
 import jakarta.persistence.*;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@NoArgsConstructor
+@Data
 public abstract class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private int id;
+    private Long id;
 
     @Column
     @Nationalized
@@ -35,68 +39,4 @@ public abstract class Location {
 
     @OneToMany(mappedBy = "location")
     private List<LocationPmCatalog> locationPmCatalogList;
-
-    public Center getCenter() {
-        return center;
-    }
-
-    public void setCenter(Center center) {
-        this.center = center;
-    }
-
-    public List<LocationStatus> getLocationStatusList() {
-        return locationStatusList;
-    }
-
-    public void setLocationStatusList(List<LocationStatus> locationStatusList) {
-        this.locationStatusList = locationStatusList;
-    }
-
-    public List<LocationPmCatalog> getLocationPmCatalogList() {
-        return locationPmCatalogList;
-    }
-
-    public void setLocationPmCatalogList(List<LocationPmCatalog> locationPmCatalogList) {
-        this.locationPmCatalogList = locationPmCatalogList;
-    }
-
-    public LocationCategory getLocationCategory() {
-        return locationCategory;
-    }
-
-    public void setLocationCategory(LocationCategory locationCategory) {
-        this.locationCategory = locationCategory;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public List<LocationStatusEvent> getEventList() {
-        return eventList;
-    }
-
-    public void setEventList(List<LocationStatusEvent> eventList) {
-        this.eventList = eventList;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public LocationCategory getLocationType() {
-        return locationCategory;
-    }
-
-    public void setLocationType(LocationCategory locationCategory) {
-        this.locationCategory = locationCategory;
-    }
 }

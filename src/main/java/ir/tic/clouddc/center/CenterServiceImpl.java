@@ -72,29 +72,16 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public LocationPmCatalog updateCatalog(CatalogForm catalogForm, LocalDate validNextDue) {
-        log.info("Ready to persist");
-        /*   locationPmCatalog = catalogForm.getLocationPmCatalog();
-            locationPmCatalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
-            locationPmCatalog.setDefaultPerson(catalogForm.getDefaultPerson());
-            locationPmCatalog.setEnabled(catalogForm.isEnabled());*/
-
+    public LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate validNextDue) {
         LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
+        locationPmCatalog.setLocation(locationRepository.getReferenceById(catalogForm.getLocationId()));
+        locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
+        locationPmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
         locationPmCatalog.setEnabled(true);
-        locationPmCatalog.setLocation(locationRepository.findById(140).get());   // Cast ALL INT TO LONG
-      //  locationPmCatalog.setDefaultPerson(personService.getPerson(catalogForm.getDefaultPersonId()));
+        locationPmCatalog.setHistory(false);
         locationPmCatalog.setNextDueDate(validateNextDue(validNextDue));
-       // locationPmCatalog.setPmInterface(null);
-       // locationPmCatalog.setLastFinishedPm(null);
 
-
-        log.info("Ready to persist 2");
-
-        var result = locationPmCatalogRepository.save(locationPmCatalog);
-
-        log.info(String.valueOf(result.getNextDueDate()));
-
-        return result;
+        return locationPmCatalogRepository.save(locationPmCatalog);
     }
 
     @Override
@@ -131,23 +118,23 @@ public class CenterServiceImpl implements CenterService {
         var center1SalonList = center1
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationType().getId() == 1)
+                .filter(location -> location.getLocationCategory().getId() == 1)
                 .toList();
         var center1RoomList = center1
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationType().getId() == 3)
+                .filter(location -> location.getLocationCategory().getId() == 3)
                 .toList();
 
         var center2SalonList = center2
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationType().getId() == 1)
+                .filter(location -> location.getLocationCategory().getId() == 1)
                 .toList();
         var center2RoomList = center2
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationType().getId() == 3)
+                .filter(location -> location.getLocationCategory().getId() == 3)
                 .toList();
 
 
@@ -233,12 +220,17 @@ public class CenterServiceImpl implements CenterService {
 
 
     @Override
-    public Optional<Location> getLocation(int locationId) {
+    public Optional<Location> getLocation(Long locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
-            for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
-                var finishedDate = locationPmCatalog.getLastFinishedPm().getFinishedDate();
-                locationPmCatalog.getLastFinishedPm().setPersianFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+            if (optionalLocation.get().getLocationPmCatalogList() != null) {
+                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
+                    if (locationPmCatalog.isHistory()) {
+                        var finishedDate = locationPmCatalog.getLastFinishedPm().getFinishedDate();
+                        locationPmCatalog.getLastFinishedPm().setPersianFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+                    }
+                    locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
+                }
             }
             return optionalLocation;
         }

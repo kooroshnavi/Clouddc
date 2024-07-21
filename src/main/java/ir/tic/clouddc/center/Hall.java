@@ -11,7 +11,6 @@ import java.util.Map;
 @Table(schema = "center")
 @NoArgsConstructor
 public final class Hall extends Location {
-
     @OneToMany(mappedBy = "hall")
     private List<Rack> rackList;
 

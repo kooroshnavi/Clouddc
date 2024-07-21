@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LocationRepository extends JpaRepository<Location, Integer> {
+public interface LocationRepository extends JpaRepository<Location, Long> {
 
     @Query("SELECT L FROM Location L WHERE L.locationCategory.target IN :locationCategoryNameList")
     List<Location> fetchCustomizedLocationList(List<String> locationCategoryNameList);

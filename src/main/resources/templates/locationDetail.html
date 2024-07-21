@@ -224,7 +224,7 @@
         <!--Rack table (Salon)-->
 
         <!--Pm table-->
-        <h6 class="mb-0 text-uppercase">لیست Pm</h6>
+        <h6 class="mb-0 text-uppercase"  th:text="${'لیست Pm های ' + location.locationCategory.target + ' ' + location.name}"></h6>
         <hr/>
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
 
@@ -243,7 +243,7 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>دسته بندی</th>
+                            <th>نوع</th>
                             <th>عنوان Pm</th>
                             <th>جزئیات آخرین اقدام</th>
                             <th>سررسید بعدی</th>
@@ -256,18 +256,18 @@
                         <tr th:each="pmCatalog, iter : ${catalog}">
 
                             <td th:text="${iter.count}"></td>
-                            <td th:text="${pmCatalog.pmInterface.pmCategory.name}"></td>
+                            <td th:text="${pmCatalog.pmInterface.category}"></td>
 
-                            <td th:text="${pmCatalog.pmInterface.name}">
+                            <td >
                                 <div class="col">
-                                    <a th:href="@{/pm/catalog/{catalogId}/form (catalogId=${pmCatalog.id})}"
+                                    <a th:text="${pmCatalog.pmInterface.name}" th:href="@{/pm/catalog/{catalogId}/form (catalogId=${pmCatalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
                                        title="ویرایش Pm روی این مکان"></a>
                                 </div>
                             </td>
 
-                            <td th:text="${pmCatalog.lastFinishedPm.persianFinishedDate}">
+                            <td th:if="${pmCatalog.history}" th:text="${pmCatalog.lastFinishedPm.persianFinishedDate}">
                                 <div class="col">
                                     <a th:href="@{/pm/{pmId}/detailList(pmId=${pmCatalog.lastFinishedPm.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
@@ -276,8 +276,10 @@
                                 </div>
                             </td>
 
+                            <td th:if="${not pmCatalog.history}">اقدام نشده</td>
+
                             <td th:text="${pmCatalog.persianNextDue}"></td>
-                            <td th:text="${pmCatalog.defaultPerson}"></td>
+                            <td th:text="${pmCatalog.defaultPerson.name}"></td>
 
                             <td class="clock">
                                 <span th:if="${not pmCatalog.enabled}" class="badge bg-light-danger text-danger w-100">غیرفعال</span>

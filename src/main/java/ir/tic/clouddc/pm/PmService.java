@@ -49,5 +49,5 @@ public interface PmService {
 
     Optional<PmInterface> getPmInterface(int pmInterfaceId);
 
-    Optional<Location> getLocation(Integer locationId);
+    Optional<Location> getLocation(Long locationId);
 }

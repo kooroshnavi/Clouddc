@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
@@ -46,9 +47,21 @@ public final class PmInterface {
     @OneToMany(mappedBy = "pmInterface")
     private List<Pm> pmList;
 
+    @OneToMany(mappedBy = "pmInterface")
+    private List<LocationPmCatalog> locationPmCatalogList;
+
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
+
+
+    public List<LocationPmCatalog> getLocationPmCatalogList() {
+        return locationPmCatalogList;
+    }
+
+    public void setLocationPmCatalogList(List<LocationPmCatalog> locationPmCatalogList) {
+        this.locationPmCatalogList = locationPmCatalogList;
+    }
 
     public PmInterface(int id) {
         this.id = id;
