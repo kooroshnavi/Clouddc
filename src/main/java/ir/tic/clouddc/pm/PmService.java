@@ -7,6 +7,7 @@ import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -50,4 +51,6 @@ public interface PmService {
     Optional<PmInterface> getPmInterface(int pmInterfaceId);
 
     Optional<Location> getLocation(Long locationId);
+
+    void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate);
 }

@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
@@ -69,12 +70,6 @@ public class PmServiceImpl implements PmService {
             var pmInterface = catalog.getPmInterface();
             if (pmInterface.isEnabled()) {
                 pmDetail = pmRegister(catalog);
-                if (!pmInterface.isActive()) {
-                    pmInterface.setActive(true);
-                }
-                if (pmInterface.isStatelessRecurring()) {
-                    centerService.updateCatalogDueDate(pmInterface, catalog.getLocation());
-                }
                 pmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
                 pmDetailList.add(pmDetail);
             }
@@ -85,9 +80,17 @@ public class PmServiceImpl implements PmService {
     }
 
     private PmDetail pmRegister(LocationPmCatalog catalog) {
-        if (catalog.getPmInterface().isGeneralPm()) {
+        var pmInterface = pmInterfaceRepository.getReferenceById(catalog.getPmInterface().getId());
+        if (!pmInterface.isActive()) {
+            pmInterface.setActive(true);
+        }
+        if (pmInterface.isStatelessRecurring()) {
+            centerService.updateCatalogDueDate(pmInterface, catalog.getLocation());
+        }
+
+        if (pmInterface.isGeneralPm()) {
             GeneralPm generalPm = new GeneralPm();
-            generalPm.setPmInterface(catalog.getPmInterface());
+            generalPm.setPmInterface(pmInterface);
             generalPm.setLocation(catalog.getLocation());
             generalPm.setActive(true);
             generalPm.setDueDate(UtilService.getDATE());
@@ -399,6 +402,17 @@ public class PmServiceImpl implements PmService {
     @Override
     public Optional<Location> getLocation(Long locationId) {
         return centerService.getLocation(locationId);
+    }
+
+    @Override
+    public void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) {
+        var newCatalog = centerService.registerNewCatalog(catalogForm, validDate);
+        log.info(String.valueOf(newCatalog.getPmInterface().getId()));
+        if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
+            var pmDetail = pmRegister(newCatalog);
+            pmDetail.setPersistence(logService.persistenceSetup(newCatalog.getDefaultPerson()));
+            pmDetailRepository.saveAndFlush(pmDetail);
+        }
     }
 
     @Override

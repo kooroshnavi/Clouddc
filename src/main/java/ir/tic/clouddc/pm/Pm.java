@@ -2,6 +2,7 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
 import jakarta.persistence.*;
+import lombok.Data;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -9,6 +10,7 @@ import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@Data
 public abstract class Pm {    // new Task style
 
     @Id
@@ -34,11 +36,11 @@ public abstract class Pm {    // new Task style
     @OneToMany(mappedBy = "pm")
     private List<PmDetail> pmDetailList;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "pmInterface_id")
     private PmInterface pmInterface;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne
     @JoinColumn(name = "location_id")  // Pm locate: Salon, Rack, Room
     private Location location;
 
@@ -53,109 +55,5 @@ public abstract class Pm {    // new Task style
 
     @Transient
     private String activePersonName;
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public String getPersianFinishedDayTime() {
-        return persianFinishedDayTime;
-    }
-
-    public void setPersianFinishedDayTime(String persianFinishedDayTime) {
-        this.persianFinishedDayTime = persianFinishedDayTime;
-    }
-
-    public LocalTime getFinishedTime() {
-        return finishedTime;
-    }
-
-    public void setFinishedTime(LocalTime finishedTime) {
-        this.finishedTime = finishedTime;
-    }
-
-    public String getPersianDueDate() {
-        return persianDueDate;
-    }
-
-    public void setPersianDueDate(String persianDueDate) {
-        this.persianDueDate = persianDueDate;
-    }
-
-    public String getPersianFinishedDate() {
-        return persianFinishedDate;
-    }
-
-    public void setPersianFinishedDate(String persianFinishedDate) {
-        this.persianFinishedDate = persianFinishedDate;
-    }
-
-    public String getActivePersonName() {
-        return activePersonName;
-    }
-
-    public void setActivePersonName(String activePersonName) {
-        this.activePersonName = activePersonName;
-    }
-
-    public List<PmDetail> getPmDetailList() {
-        return pmDetailList;
-    }
-
-    public void setPmDetailList(List<PmDetail> pmDetailList) {
-        this.pmDetailList = pmDetailList;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public boolean isActive() {
-        return active;
-    }
-
-    public void setActive(boolean active) {
-        this.active = active;
-    }
-
-    public int getDelay() {
-        return delay;
-    }
-
-    public void setDelay(int delay) {
-        this.delay = delay;
-    }
-
-    public LocalDate getDueDate() {
-        return dueDate;
-    }
-
-    public void setDueDate(LocalDate dueDate) {
-        this.dueDate = dueDate;
-    }
-
-    public LocalDate getFinishedDate() {
-        return finishedDate;
-    }
-
-    public void setFinishedDate(LocalDate finishedDate) {
-        this.finishedDate = finishedDate;
-    }
-
-    public PmInterface getPmInterface() {
-        return pmInterface;
-    }
-
-    public void setPmInterface(PmInterface pmInterface) {
-        this.pmInterface = pmInterface;
-    }
 
 }

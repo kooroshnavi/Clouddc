@@ -2,6 +2,7 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.EventService;
 import ir.tic.clouddc.pm.CatalogForm;
+import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -28,6 +29,7 @@ public class CenterController {
 
     @GetMapping("/overview")
     public String showCenterLandingPage(Model model) {
+        UtilService.setDate();
         centerService.getCenterLandingPageModel(model);
         return "centerLandingPage";
     }

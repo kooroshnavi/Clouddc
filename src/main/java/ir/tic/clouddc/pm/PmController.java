@@ -2,7 +2,6 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.individual.Person;
-import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -171,6 +171,24 @@ public class PmController {
         } else {
             return "404";
         }
+    }
+
+    @PostMapping("/catalog/register")
+    public String pmCatalogRegister(Model model, @ModelAttribute CatalogForm catalogForm) {
+        var nextDue = catalogForm.getNextDue();
+        var validDate = LocalDate.parse(nextDue);
+        log.info(String.valueOf(validDate));
+        if (validDate.isBefore(LocalDate.now())) {
+            return "403";
+        }
+
+        pmService.registerNewCatalog(catalogForm, validDate);
+
+     /*   var activePmList = pmService.getActivePmList(true, true);
+        model.addAttribute("workspace", true);
+        model.addAttribute("activePmList", activePmList);
+*/
+        return "500";
     }
 
     @ModelAttribute
