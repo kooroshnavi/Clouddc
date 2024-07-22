@@ -177,10 +177,7 @@ public class PmServiceImpl implements PmService {
     @Override
     public List<MetaData> getPmDetail_3(Pm pm) {
         List<Long> persistenceIdList = pmDetailRepository.getPersistenceIdList(pm.getId());
-        log.info(String.valueOf(persistenceIdList.get(0)));
-        persistenceIdList.addAll(pmDetailRepository.getPersistenceIdList(pm.getPmInterface().getId()));
-
-        log.info(String.valueOf(persistenceIdList.get(0)));
+        persistenceIdList.add(pm.getPmInterface().getPersistence().getId());
 
         return fileService.getRelatedMetadataList(persistenceIdList);
     }
@@ -222,8 +219,8 @@ public class PmServiceImpl implements PmService {
 
 
     @Override
-    @PreAuthorize(" pm.active == true  && (ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
-    public void pmUpdate(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException {
+    @PreAuthorize(" #pm.active == true  && (#ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
+    public void pmUpdate(PmUpdateForm pmUpdateForm, @Param("pm") Pm pm, @Param("ownerUsername") String ownerUsername) throws IOException {
         // PART 1. Pm detail update
         PmDetail basePmDetail;
         var optionalPmDetail = pmDetailRepository.findByPmIdAndActive(pm.getId(), true);

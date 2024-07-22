@@ -4,11 +4,10 @@ import ir.tic.clouddc.individual.PersonService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.io.OutputStream;
@@ -31,7 +30,7 @@ public class DocumentController {
     }
 
     @GetMapping("/{metaDataId}/download")
-    public void getDocument(@RequestParam long metaDataId, HttpServletResponse response) throws IOException {
+    public void getDocument(HttpServletResponse response, @PathVariable Long metaDataId) throws IOException {
         MetaData metaData = fileService.getDocument(metaDataId);
         response.setContentType(metaData.getType());
         String fileName = URLEncoder.encode(metaData.getName(), StandardCharsets.UTF_8);
@@ -43,13 +42,10 @@ public class DocumentController {
     }
 
     @GetMapping("/{metaDataId}/delete")
-    public String deleteDocument(@RequestParam long metaDataId) {
-        fileService.deleteDocument(
-                metaDataId,
-                fileService.getDocumentOwner(metaDataId),
-                personService.getPersonId(SecurityContextHolder.getContext().getAuthentication().getName()));
+    public String deleteDocument(@PathVariable Long metaDataId) {
+        fileService.deleteDocument(metaDataId, fileService.getDocumentOwner(metaDataId), personService.getCurrentPerson().getId());
 
-        return "redirect:eventDetailList";
+        return "404";
     }
 }
 

@@ -14,8 +14,8 @@ public interface FileService {
 
     MetaData getDocument(long id);
 
-    void deleteDocument(long medaDataId, int documentOwner, int requester);
+    void deleteDocument(Long medaDataId, int documentOwner, int requester);
 
-    int getDocumentOwner(long metaDataId);
+    int getDocumentOwner(Long metaDataId);
 
 }

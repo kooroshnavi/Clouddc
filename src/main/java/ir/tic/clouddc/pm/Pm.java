@@ -16,7 +16,7 @@ public abstract class Pm {    // new Task style
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private int id;
+    private int id;      //// 1. Change to LONG    2. Update PmUpdateForm
 
     @Column
     private boolean active;

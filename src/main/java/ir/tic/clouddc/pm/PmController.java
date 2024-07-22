@@ -127,10 +127,10 @@ public class PmController {
         return "pmUpdateForm";
     }
 
-    @PostMapping("/update")
+    @PostMapping(value = "/update")
     public String updatePm(Model model,
                            @RequestParam("attachment") MultipartFile file,
-                           @ModelAttribute("pmUpdateForm") PmUpdateForm pmUpdateForm) throws IOException {
+                           @Valid @ModelAttribute("pmUpdateForm") PmUpdateForm pmUpdateForm) throws IOException {
         if (!file.isEmpty()) {
             pmUpdateForm.setFile(file);
         }

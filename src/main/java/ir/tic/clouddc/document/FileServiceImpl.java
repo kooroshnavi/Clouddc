@@ -6,6 +6,7 @@ import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -47,12 +48,13 @@ public class FileServiceImpl implements FileService {
         attachment.setDocument(file.getBytes());
         metaData.setAttachment(attachment);
         metaData.setPersistence(persistence);
+        metaData.setEnabled(true);
         metaDataRepository.save(metaData);
     }
 
     @Override
     public List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList) {
-        var metadataList =  metaDataRepository.fetchRelatedMetaDataList(persistenceIdList);
+        var metadataList =  metaDataRepository.fetchRelatedMetaDataList(persistenceIdList, true);
         log.info(String.valueOf(metadataList.size()));
 
         return metadataList;
@@ -64,15 +66,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    @PreAuthorize("documentOwner == requester")
-    public void deleteDocument(long medaDataId, int documentOwner, int requester) {
+    @PreAuthorize("#documentOwner == #requester or hasAnyAuthority('ADMIN', 'SUPERVISOR')")
+    public void deleteDocument(Long medaDataId, @Param("documentOwner") int documentOwnerId, @Param("requester") int requesterId) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), new Person(documentOwner), persistence);
-        metaDataRepository.deleteById(medaDataId);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), new Person(requesterId), persistence);
+        metaDataRepository.updateMetadataEnablement(medaDataId, false);
+        log.info(String.valueOf(metaDataRepository.getReferenceById(medaDataId).isEnabled()));
     }
 
     @Override
-    public int getDocumentOwner(long metaDataId) {
-        return metaDataRepository.fetchMetaDataOwnerName(metaDataId);
+    public int getDocumentOwner(Long metaDataId) {
+        return metaDataRepository.fetchMetaDataOwnerId(metaDataId);
     }
 }

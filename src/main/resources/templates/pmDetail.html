@@ -98,9 +98,10 @@
         </div>
 
         <div th:if="${pm.active} AND ${permission}" class="col">
-                <div class="card-body">
-                    <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn-outline-warning btn-danger">بروزرسانی وظیفه برای کارتابل منتسب و همچنین مسئول مدیریت وظایف امکان پذیر است. جهت بروزرسانی کلیک کنید.</a>
-                </div>
+            <div class="card-body">
+                <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn-outline-warning btn-danger">بروزرسانی وظیفه
+                    برای کارتابل منتسب و همچنین مسئول مدیریت وظایف امکان پذیر است. جهت بروزرسانی کلیک کنید.</a>
+            </div>
         </div>
 
         <hr/>
@@ -149,7 +150,8 @@
 
                     </tr>
 
-                    <tr th:if="${ pmInterface.category != 'General' }" th:each="detail, iter : ${temperaturePmDetailList}">
+                    <tr th:if="${ pmInterface.category != 'General' }"
+                        th:each="detail, iter : ${temperaturePmDetailList}">
 
                         <td th:text="${iter.count}"></td>
 
@@ -192,7 +194,7 @@
                             <th>ردیف</th>
                             <th>فایل</th>
                             <th>بارگذاری توسط</th>
-                            <th>حذف فایل</th>
+                            <th>عملیات</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -221,9 +223,14 @@
                                        class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div class="d-flex align-items-hall gap-2"
-                                     th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
+                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}" class="d-flex align-items-hall">
                                     <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}" class="d-flex align-items-hall">
+                                    <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-black" th:text="${metadata.name}"></a>
                                 </div>
@@ -234,13 +241,11 @@
                             <td>
 
                                 <form>
-                                    <a th:if="${metadata.logHistory.person.id == person.id }"
+                                    <a th:if="${metadata.persistence.person.username == #authentication.getName() }"
                                        th:href="@{/document/{metadataId}/delete (metadataId=${metadata.id})}"
-                                       class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="حذف فایل"
-                                       data-bs-original-title="Delete" aria-label="Delete"><i
-                                            class="bi bi-trash-fill"></i></a>
+                                       class="btn-danger"><i>حذف پیوست</i></a>
                                 </form>
+
                             </td>
                         </tr>
                         </tbody>

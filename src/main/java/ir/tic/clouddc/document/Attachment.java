@@ -1,36 +1,22 @@
 package ir.tic.clouddc.document;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Table(schema = "document")
 @NoArgsConstructor
+@Data
 public class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Long id;
 
-    @Lob
+    @Column(columnDefinition="BYTEA")
     private byte[] document;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public byte[] getDocument() {
-        return document;
-    }
-
-    public void setDocument(byte[] document) {
-        this.document = document;
-    }
 }
 
 

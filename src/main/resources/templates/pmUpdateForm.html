@@ -98,7 +98,7 @@
                                     <div class="card-body">
 
                                         <form class="row g-3" th:action="@{/pm/update}"
-                                              th:object="${pmUpdateForm}" method="POST">
+                                              enctype="multipart/form-data"  th:object="${pmUpdateForm}" method="POST">
 
                                             <div th:if="${pmInterface.id == 2}" class="col-12">
                                                 <div class="form-check form-switch">
@@ -135,6 +135,8 @@
                                                     </select>
                                                 </label>
                                             </div>
+
+                                            <input type="hidden" name="locationId" th:value="${location.id}"/>
 
                                             <div class="col">
                                                 <!-- Button trigger modal -->

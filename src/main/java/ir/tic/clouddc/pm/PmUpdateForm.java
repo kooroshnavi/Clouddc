@@ -1,22 +1,18 @@
 package ir.tic.clouddc.pm;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
 import org.springframework.web.multipart.MultipartFile;
 
 
 @NoArgsConstructor
 public class PmUpdateForm {
+
     private Pm pm;
 
-    @NotBlank(message = "Description is obligatory")
-    @Size(min = 5, max = 1000)
     private String description;
 
     private String ownerUsername;
 
-    @NotBlank
     private int actionType;
 
     private float temperatureValue;
