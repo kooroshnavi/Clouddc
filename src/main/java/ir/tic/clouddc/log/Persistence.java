@@ -2,6 +2,7 @@ package ir.tic.clouddc.log;
 
 import ir.tic.clouddc.individual.Person;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -9,12 +10,13 @@ import java.util.List;
 @Entity
 @Table(schema = "log")
 @NoArgsConstructor
+@Data
 public class Persistence {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private long id;
+    private Long id;
 
     @ManyToOne
     @JoinColumn(name = "owner_id")
@@ -23,23 +25,11 @@ public class Persistence {
     @OneToMany(mappedBy = "persistence")
     private List<LogHistory> logHistoryList;
 
+    public Persistence(Long id) {
+        this.id = id;
+    }
+
     public Persistence(Person person) {
         this.person = person;
-    }
-
-    public long getId() {
-        return id;
-    }
-
-    public List<LogHistory> getLogHistoryList() {
-        return logHistoryList;
-    }
-
-    public void setLogHistoryList(List<LogHistory> logHistoryList) {
-        this.logHistoryList = logHistoryList;
-    }
-
-    public Person getPerson() {
-        return person;
     }
 }

@@ -4,6 +4,7 @@ import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.utils.UtilService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.text.DecimalFormat;
 import java.util.List;
 
 @Service
+@Slf4j
 public class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
@@ -49,8 +51,11 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<MetaData> getRelatedMetadataList(List<Long> persistenceIDlist) {
-        return metaDataRepository.fetchRelatedMetaDataList(persistenceIDlist);
+    public List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList) {
+        var metadataList =  metaDataRepository.fetchRelatedMetaDataList(persistenceIdList);
+        log.info(String.valueOf(metadataList.size()));
+
+        return metadataList;
     }
 
     @Override

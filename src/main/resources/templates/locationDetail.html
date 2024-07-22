@@ -116,21 +116,12 @@
         <h6 th:if="${location.locationCategory.id == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
         <hr/>
         <div th:if="${location.locationCategory.id == 2}" class='housing'>
-            <div class='door'>
-                <div class='handle'></div>
-            </div>
-            <div class='foot'></div>
-            <div class='foot'></div>
-
-            <ol class='rack'>
-                <li class='medium'>
-                    <a href='#'>M 0</a>
-                    <div class='light'></div>
-                    <div class='light'></div>
-                </li>
-
-                <li class='large'>
-                    <a href='#'>L 0</a>
+            <div class= "bi-hdd-rack-fill" th:text="${rack.name}" ></div>
+            <ol class="rack">
+                <li th:each="device, iter : ${rackDeviceList}" class='large'>
+                    <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}" class="btn-sm px-sm-1" th:text="${device.deviceCategory.model + ' - ' + device.deviceCategory.serverFactorSize + device.deviceCategory.serverFactor}" data-bs-toggle="tooltip"
+                       data-bs-placement="left" th:title="${device.serialNumber}">
+                    </a>
                     <div class='light'></div>
                     <div class='light'></div>
                 </li>

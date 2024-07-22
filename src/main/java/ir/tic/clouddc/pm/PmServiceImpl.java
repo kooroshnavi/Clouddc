@@ -17,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.repository.query.Param;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
@@ -144,17 +145,10 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getPmInterfacePmList(int pmInterfaceId, boolean active) {
-        PmInterface pmInterface;
-        var optionalPmInterface = pmInterfaceRepository.findById(pmInterfaceId);
-        if (optionalPmInterface.isPresent()) {
-            pmInterface = optionalPmInterface.get();
-        } else {
-            throw new NoSuchElementException();
-        }
+    public List<Pm> getPmInterfacePmList(PmInterface pmInterface, boolean active) {
+        List<Pm> basePmList = pmRepository.findAllByPmInterfaceAndActive(pmInterface, active);
 
-        List<Pm> basePmList = pmRepository.findAllByPmInterfaceAndActiveAndLocationId(pmInterface, active, null);
-
+        log.info(String.valueOf(basePmList.size()));
         setPmTransients(basePmList);
 
         return basePmList.stream().sorted(Comparator.comparing(Pm::getDueDate).reversed()).toList();
@@ -163,25 +157,31 @@ public class PmServiceImpl implements PmService {
     @Override
     public Pm getPmDetail_1(int pmId) {
         /// Get pm and its interface
-        var optionalPm = pmRepository.findById(pmId);
-        if (optionalPm.isPresent()) {
-            setPmTransients(List.of(optionalPm.get()));
-            return optionalPm.get();
-        } else {
-            throw new NoSuchElementException("The specified Pm does not exist.");
-        }
+        return pmRepository.getReferenceById(pmId);
     }
+
 
     @Override
     public List<PmDetail> getPmDetail_2(Pm pm) {
-        var sortedPmDetailList = pm.getPmDetailList().stream().sorted(Comparator.comparing(PmDetail::getId).reversed()).toList();
-        setPmDetailTransients(sortedPmDetailList);
-        return sortedPmDetailList;
+        if (pm.getPmDetailList() != null) {
+            var sortedPmDetailList = pm
+                    .getPmDetailList().stream()
+                    .sorted(Comparator.comparing(PmDetail::getId).reversed())
+                    .toList();
+            setPmDetailTransients(sortedPmDetailList);
+            return sortedPmDetailList;
+        }
+        return new ArrayList<>();
     }
 
     @Override
     public List<MetaData> getPmDetail_3(Pm pm) {
         List<Long> persistenceIdList = pmDetailRepository.getPersistenceIdList(pm.getId());
+        log.info(String.valueOf(persistenceIdList.get(0)));
+        persistenceIdList.addAll(pmDetailRepository.getPersistenceIdList(pm.getPmInterface().getId()));
+
+        log.info(String.valueOf(persistenceIdList.get(0)));
+
         return fileService.getRelatedMetadataList(persistenceIdList);
     }
 
@@ -215,7 +215,7 @@ public class PmServiceImpl implements PmService {
 
     private boolean pmDetailFormViewPermission(String currentPmDetailUsername) {
         List<GrantedAuthority> supervisorRoleList = List.of(new SimpleGrantedAuthority("SUPERVISOR"), new SimpleGrantedAuthority("ADMIN"));
-        if (personService.getCurrentPersonRoleList().contains((GrantedAuthority) supervisorRoleList)) {
+        if (personService.getCurrentPersonRoleList().contains(supervisorRoleList)) {
             return true;
         } else return currentPmDetailUsername.equals(personService.getCurrentUsername());
     }
@@ -349,8 +349,8 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    @PreAuthorize(" pm.active == true AND (ownerUsername == authentication.name OR hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
-    public PmUpdateForm getPmUpdateForm(Pm pm, String ownerUsername) {
+    @PreAuthorize("#pm.active == true AND (#ownerUsername == authentication.name OR hasAnyAuthority('ADMIN', 'SUPERVISOR'))")
+    public PmUpdateForm getPmUpdateForm(@Param("pm") Pm pm, @Param("ownerUsername") String ownerUsername) {
         PmUpdateForm pmUpdateForm = new PmUpdateForm();
         pmUpdateForm.setPm(pm);
         pmUpdateForm.setOwnerUsername(ownerUsername);
@@ -395,8 +395,8 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Optional<PmInterface> getPmInterface(int pmInterfaceId) {
-        return pmInterfaceRepository.findById(pmInterfaceId);
+    public PmInterface getPmInterface(int pmInterfaceId) {
+        return pmInterfaceRepository.getReferenceById(pmInterfaceId);
     }
 
     @Override

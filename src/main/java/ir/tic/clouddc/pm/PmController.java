@@ -69,9 +69,9 @@ public class PmController {
             , @PathVariable boolean active
             , @PathVariable Integer pmInterfaceId) {
         var pmInterface = pmService.getPmInterface(pmInterfaceId);
-        if (pmInterface.isPresent()) {
-            model.addAttribute("pmInterface", pmInterface.get());
-            var pmList = pmService.getPmInterfacePmList(pmInterfaceId, active);
+        if (pmInterface != null) {
+            model.addAttribute("pmInterface", pmInterface);
+            var pmList = pmService.getPmInterfacePmList(pmInterface, active);
             model.addAttribute("pmList", pmList);
             model.addAttribute("active", active);
         } else {
@@ -86,6 +86,8 @@ public class PmController {
         var pm = pmService.getPmDetail_1(pmId);
         var pmDetailList = pmService.getPmDetail_2(pm);
         var metadataList = pmService.getPmDetail_3(pm);
+        log.info(String.valueOf(metadataList.size()));
+
         var activeDetail = pmDetailList.stream().filter(PmDetail::isActive).findFirst();
 
         if (activeDetail.isPresent()) {

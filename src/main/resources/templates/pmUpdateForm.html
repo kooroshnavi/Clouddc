@@ -70,19 +70,13 @@
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
                     <div class="d-flex align-items-hall gap-3">
-                        <div th:if="${pm.delay} == 0" class="icon-box bg-light-success border-0">
-                            <i class="lni lni-chevron-left">بدون تاخیر</i>
-                        </div>
-                        <div th:if="${pm.delay} > 0" th:text="${pm.delay}" class="icon-box bg-light-danger border-0">
-                            <i class="lni lni-chevron-left"></i>
-                        </div>
                         <div class="info">
                             <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
-                            <p class="mb-1" th:text=" 'مکان: ' + ${pm.location.name}"></p>
-                            <p class="mb-1" th:text=" 'سررسید: ' + ${pm.dueDate}"></p>
+                            <p class="mb-1" th:text="${'مکان: ' + pm.location.locationCategory.target + ' ' + pm.location.name}"></p>
+                            <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
                             <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
                             <p class="mb-1" th:if="${pmInterface.description != null}"
-                               th:text=" 'توضیحات اولیه مسئول ثبت کننده: ' + ${pmInterface.description}"></p>
+                               th:text=" 'توضیحات: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
                 </div>
@@ -206,7 +200,6 @@
 </div>
 <!--end wrapper-->
 
-
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/fileSizeValidation.js"></script>
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
@@ -219,7 +212,6 @@
 <script src="/panel/assets/js/pace.min.js"></script>
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
-
 
 </body>
 

@@ -10,7 +10,7 @@ public interface FileService {
 
     void checkAttachment(MultipartFile file, Persistence persistence) throws IOException;
 
-    List<MetaData> getRelatedMetadataList(List<Long> persistenceIDlist);
+    List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList);
 
     MetaData getDocument(long id);
 

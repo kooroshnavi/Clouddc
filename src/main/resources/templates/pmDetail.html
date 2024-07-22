@@ -74,7 +74,7 @@
                             <i class="lni lni-chevron-left"></i>
                         </div>
                         <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.pmCategory.name}"></strong>
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
@@ -97,16 +97,16 @@
             </div>
         </div>
 
-        <div th:if="${pm.active} && ${permission}" class="col">
-            <div class="card bg-primary text-white">
+        <div th:if="${pm.active} AND ${permission}" class="col">
                 <div class="card-body">
-                    <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn btn-danger">بروزرسانی وظیفه برای شخص منتسب و مسئول مدیریت وظایف امکان پذیر است.</a>
+                    <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn-outline-warning btn-danger">بروزرسانی وظیفه برای کارتابل منتسب و همچنین مسئول مدیریت وظایف امکان پذیر است. جهت بروزرسانی کلیک کنید.</a>
                 </div>
-            </div>
         </div>
 
+        <hr/>
+
         <div class="col">
-            <div th:if="${pm.active} and ${not permission}" class="card bg-warning text-dark">
+            <div th:if="${pm.active} AND ${not permission}" class="card bg-warning text-dark">
                 <div class="card-body">
                     <p class="card-text">وظیفه در کارتابل دیگر همکاران می باشد.</p>
                 </div>
@@ -124,7 +124,7 @@
                         <th>زمان انتساب گردش کار</th>
                         <th>زمان اتمام گردش کار</th>
                         <th>کارتابل</th>
-                        <th th:if="${pmInterface.id == 2}">دمای گزارش شده</th>
+                        <th th:if="${ pmInterface.category != 'General' }">دمای گزارش شده</th>
                         <th>توضیحات</th>
                     </tr>
                     </thead>
@@ -149,7 +149,7 @@
 
                     </tr>
 
-                    <tr th:if="${pmInterface.id == 2}" th:each="detail, iter : ${temperaturePmDetailList}">
+                    <tr th:if="${ pmInterface.category != 'General' }" th:each="detail, iter : ${temperaturePmDetailList}">
 
                         <td th:text="${iter.count}"></td>
 
@@ -177,7 +177,77 @@
         </div>
 
         <!--attachment table-->
-        <div class="card" align="center" th:replace="~{staticDetailsTemplate :: attachment(metadataList)}"></div>
+        <div class="card" align="center">
+            <div class="card-body">
+                <h6 class="mb-0 text-uppercase" align="center">
+                    <strong>لیست پیوست</strong>
+                </h6>
+                <div class="d-flex align-items-hall">
+
+                </div>
+                <div class="card-body">
+                    <table class="table mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>فایل</th>
+                            <th>بارگذاری توسط</th>
+                            <th>حذف فایل</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="metadata, iter : ${metadataList}">
+
+                            <td th:text="${iter.count}"></td>
+                            <td>
+
+                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
+                                     class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
+                                     class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div class="d-flex align-items-hall gap-2"
+                                     th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
+                                    <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                </div>
+
+                            </td>
+
+                            <td th:text="${metadata.persistence.person.name}"/>
+                            <td>
+
+                                <form>
+                                    <a th:if="${metadata.logHistory.person.id == person.id }"
+                                       th:href="@{/document/{metadataId}/delete (metadataId=${metadata.id})}"
+                                       class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                                       title="حذف فایل"
+                                       data-bs-original-title="Delete" aria-label="Delete"><i
+                                            class="bi bi-trash-fill"></i></a>
+                                </form>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
         <!--End attachment table-->
 
     </main>
