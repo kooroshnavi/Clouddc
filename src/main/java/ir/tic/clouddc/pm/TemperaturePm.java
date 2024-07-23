@@ -1,15 +1,8 @@
 package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.LocationPmCatalog;
-import ir.tic.clouddc.utils.UtilService;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Table;
-import jakarta.persistence.Transient;
+import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Table(schema = "pm")
@@ -21,6 +14,10 @@ public final class TemperaturePm extends Pm {
 
     @Column
     private float averageDailyValue;
+
+    @ManyToOne
+    @JoinColumn(name = "catalog_id")
+    private LocationPmCatalog locationPmCatalog;
 
     public String getTEMPERATURE_FIELD_NAME() {
         return TEMPERATURE_FIELD_NAME;

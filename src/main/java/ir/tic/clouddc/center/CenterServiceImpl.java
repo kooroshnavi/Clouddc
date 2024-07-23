@@ -2,28 +2,26 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.pm.Pm;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
-import jakarta.annotation.Nullable;
-import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
-import java.time.format.TextStyle;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -74,14 +72,15 @@ public class CenterServiceImpl implements CenterService {
     }*/
 
     @Override
-    public LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate validNextDue) {
+    public LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate nextDue) {
         LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
         locationPmCatalog.setLocation(locationRepository.getReferenceById(catalogForm.getLocationId()));
         locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
         locationPmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
         locationPmCatalog.setEnabled(true);
         locationPmCatalog.setHistory(false);
-        locationPmCatalog.setNextDueDate(validateNextDue(validNextDue));
+        locationPmCatalog.setActive(false);
+        locationPmCatalog.setNextDueDate(UtilService.validateNextDue(nextDue));
 
         return locationPmCatalogRepository.save(locationPmCatalog);
     }
@@ -193,23 +192,12 @@ public class CenterServiceImpl implements CenterService {
             for (LocationPmCatalog catalog : locationPmCatalogList) {
                 var dueDate = catalog.getNextDueDate();
                 if (dueDate.isBefore(UtilService.getDATE()) || dueDate.equals(UtilService.getDATE())) {  // expired due date
-                    catalog.setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(1)));
+                    catalog.setNextDueDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(1)));
                 }
             }
             locationPmCatalogRepository.saveAll(locationPmCatalogList);
         }
     }
-
-    private LocalDate validateNextDue(LocalDate nextDue) {
-        if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
-            return nextDue.plusDays(2);
-        } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
-            return nextDue.plusDays(1);
-        } else {
-            return nextDue;
-        }
-    }
-
 
     @Override
     public Hall getHall(int hallId) {

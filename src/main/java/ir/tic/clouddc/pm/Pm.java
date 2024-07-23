@@ -1,6 +1,5 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -17,7 +16,7 @@ public abstract class Pm {    // new Task style
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private Long id;      //// 1. Change to LONG    2. Update PmUpdateForm
+    private Long id;
 
     @Column
     private boolean active;
