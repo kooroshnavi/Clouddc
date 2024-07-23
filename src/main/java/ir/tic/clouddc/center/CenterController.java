@@ -40,8 +40,8 @@ public class CenterController {
         if (optionalLocation.isPresent()) {
             var baseLocation = optionalLocation.get();
             model.addAttribute("location", baseLocation);
-            var catalog = baseLocation.getLocationPmCatalogList();
-            model.addAttribute("catalog", catalog);
+            var catalogList = baseLocation.getLocationPmCatalogList();
+            model.addAttribute("catalogList", catalogList);
             var eventList = eventService.getLocationEventList(baseLocation);
             model.addAttribute("eventList", eventList);
 

@@ -51,6 +51,7 @@
     <!--start content-->
     <main class="page-content">
         <!--breadcrumb-->
+
         <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
             <div class="breadcrumb-title pe-3">Pm</div>
             <div class="ps-3">
@@ -101,6 +102,18 @@
                                     </select>
                                 </div>
 
+                                <div class="col-12 col-md-6">
+                                    <label class="form-label">مکان قابل اجرا</label>
+                                    <select class="form-select" name="subject" th:field="*{target}">
+                                        <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
+                                        <option th:value="1">هال (سالن)</option>
+                                        <option th:value="2">رک</option>
+                                        <option th:value="3">اتاق - انبار</option>
+                                        <option disabled="disabled" th:value="4">تجهیز (در حال آماده سازی)</option>
+                                        <option th:value="5">عمومی (تمام موارد اشاره شده)</option>
+                                    </select>
+                                </div>
+
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
                                     <textarea required="required" class="form-control" th:field="*{description}"
@@ -109,7 +122,7 @@
                                 </div>
 
                                 <div>
-                                    <label>وضعیت فعالسازی
+                                    <label>وضعیت فعال سازی
                                         <input th:field="*{enabled}"
                                                type="checkbox"/>
                                     </label>
@@ -117,7 +130,7 @@
                                 </div>
 
                                 <div>
-                                    <label >تکرار مستقل از آخرین اجرا
+                                    <label>تکرار مستقل از آخرین اجرا
                                         <input th:field="*{statelessRecurring}"
                                                type="checkbox"/>
                                     </label>

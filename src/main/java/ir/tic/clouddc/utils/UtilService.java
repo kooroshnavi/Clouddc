@@ -49,6 +49,16 @@ public final class UtilService {
         return (dayName + "    " + day + "     " + month);
     }
 
+    public static LocalDate validateNextDue(LocalDate nextDue) {
+        if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Thu")) {
+            return nextDue.plusDays(2);
+        } else if (nextDue.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()).equals("Fri")) {
+            return nextDue.plusDays(1);
+        } else {
+            return nextDue;
+        }
+    }
+
     public static void setDate() {
         UtilService.DATE = LocalDate.now();
     }
@@ -71,6 +81,7 @@ public final class UtilService {
         return dateTimeFormatter.format(PersianDateTime.fromGregorian(dateTime));
 
     }
+
     public static String getFormattedPersianDayTime(LocalDate localDate, LocalTime localTime) {
         return UtilService
                 .PERSIAN_DAY

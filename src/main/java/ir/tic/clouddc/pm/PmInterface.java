@@ -28,9 +28,6 @@ public final class PmInterface {
     private int period;
 
     @Column
-    private boolean active;
-
-    @Column
     private boolean enabled;
 
     @Column
@@ -44,10 +41,10 @@ public final class PmInterface {
     private String description;
 
     @Column
-    private String category;
+    private String category; // General - CheckList - Temperature
 
-    @OneToMany(mappedBy = "pmInterface")
-    private List<Pm> pmList;
+    @Column
+    private int target;  //  Hall - Rack - Room - Location
 
     @OneToMany(mappedBy = "pmInterface")
     private List<LocationPmCatalog> locationPmCatalogList;
@@ -55,7 +52,6 @@ public final class PmInterface {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")
     private Persistence persistence;
-
 
     public PmInterface(Integer id) {
         this.id = id;

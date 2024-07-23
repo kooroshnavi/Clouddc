@@ -82,17 +82,16 @@ public class PmServiceImpl implements PmService {
 
     private PmDetail pmRegister(LocationPmCatalog catalog) {
         var pmInterface = pmInterfaceRepository.getReferenceById(catalog.getPmInterface().getId());
-        if (!pmInterface.isActive()) {
-            pmInterface.setActive(true);
+        if (!catalog.isActive()) {
+            catalog.setActive(true);
         }
         if (pmInterface.isStatelessRecurring()) {
-            centerService.updateCatalogDueDate(pmInterface, catalog.getLocation());
+            catalog.setNextDueDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod())));
         }
 
         if (pmInterface.isGeneralPm()) {
             GeneralPm generalPm = new GeneralPm();
-            generalPm.setPmInterface(pmInterface);
-            generalPm.setLocation(catalog.getLocation());
+            generalPm.setCatalog(catalog);
             generalPm.setActive(true);
             generalPm.setDueDate(UtilService.getDATE());
             generalPm.setDelay(0);
@@ -107,8 +106,7 @@ public class PmServiceImpl implements PmService {
             return generalPmDetail;
         } else {
             TemperaturePm temperaturePm = new TemperaturePm();
-            temperaturePm.setPmInterface(catalog.getPmInterface());
-            temperaturePm.setLocation(catalog.getLocation());
+            temperaturePm.setCatalog(catalog);
             temperaturePm.setActive(true);
             temperaturePm.setDueDate(UtilService.getDATE());
             temperaturePm.setDelay(0);
@@ -145,17 +143,15 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getPmInterfacePmList(PmInterface pmInterface, boolean active) {
-        List<Pm> basePmList = pmRepository.findAllByPmInterfaceAndActive(pmInterface, active);
-
-        log.info(String.valueOf(basePmList.size()));
+    public List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active) {
+        List<Pm> basePmList = pmRepository.fetchActivePmList(pmInterfaceId, active);
         setPmTransients(basePmList);
 
         return basePmList.stream().sorted(Comparator.comparing(Pm::getDueDate).reversed()).toList();
     }
 
     @Override
-    public Pm getPmDetail_1(int pmId) {
+    public Pm getPmDetail_1(Long pmId) {
         /// Get pm and its interface
         return pmRepository.getReferenceById(pmId);
     }
@@ -177,7 +173,7 @@ public class PmServiceImpl implements PmService {
     @Override
     public List<MetaData> getPmDetail_3(Pm pm) {
         List<Long> persistenceIdList = pmDetailRepository.getPersistenceIdList(pm.getId());
-        persistenceIdList.add(pm.getPmInterface().getPersistence().getId());
+        persistenceIdList.add(pm.getCatalog().getPmInterface().getPersistence().getId());
 
         return fileService.getRelatedMetadataList(persistenceIdList);
     }
@@ -211,8 +207,12 @@ public class PmServiceImpl implements PmService {
     }
 
     private boolean pmDetailFormViewPermission(String currentPmDetailUsername) {
-        List<GrantedAuthority> supervisorRoleList = List.of(new SimpleGrantedAuthority("SUPERVISOR"), new SimpleGrantedAuthority("ADMIN"));
-        if (personService.getCurrentPersonRoleList().contains(supervisorRoleList)) {
+        var currentPersonRoleList = personService.getCurrentPersonRoleList();
+        if (currentPersonRoleList
+                .stream()
+                .anyMatch(grantedAuthority
+                        -> grantedAuthority.getAuthority().equals("ADMIN")
+                        || grantedAuthority.getAuthority().equals("SUPERVISOR"))) {
             return true;
         } else return currentPmDetailUsername.equals(personService.getCurrentUsername());
     }
@@ -238,7 +238,9 @@ public class PmServiceImpl implements PmService {
         var currentPerson = personService.getCurrentPerson();
         if (ownerUsername.equals(currentPerson.getUsername())) {
             basePmDetail.setDescription(pmUpdateForm.getDescription());
-            fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
+            if (pmUpdateForm.getFile() != null) {
+                fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
+            }
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), currentPmDetailPersistence.getPerson(), currentPmDetailPersistence);
             if (basePmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
                 temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
@@ -246,63 +248,63 @@ public class PmServiceImpl implements PmService {
         } else {
             basePmDetail.setDescription("Terminated");
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("SupervisorPmTermination"), currentPerson, currentPmDetailPersistence);
-            supervisorOperation(pmUpdateForm, currentPerson);
+            supervisorOperation(pmUpdateForm, currentPerson, pm);
         }
-        pmDetailRepository.save(basePmDetail);
+        pmDetailRepository.saveAndFlush(basePmDetail);
+
+        log.info("Current pmDetail persisted");
 
         // PART 2. Pm Update
-        if (pmUpdateForm.getActionType() == 0) {  //  End Pm
+        if (pmUpdateForm.getActionType().equals(0)) {  //  End Pm
+            log.info("Closing Pm....");
             endPm(pm);
 
         } else { //  Assign new PmDetail
-
             if (pm instanceof GeneralPm generalPm) {
+                log.info("new General Pm");
                 GeneralPmDetail pmDetail = new GeneralPmDetail();
-                pmDetail.setRegisterDate(UtilService.getDATE());
-                pmDetail.setRegisterTime(UtilService.getTime());
-                pmDetail.setDelay(0);
                 pmDetail.setPm(generalPm);
-                assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), '0', true);
+                assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), true);
 
             } else if (pm instanceof TemperaturePm temperaturePm) {
                 TemperaturePmDetail pmDetail = new TemperaturePmDetail();
-                pmDetail.setRegisterDate(UtilService.getDATE());
-                pmDetail.setRegisterTime(UtilService.getTime());
-                pmDetail.setDelay(0);
                 pmDetail.setPm(temperaturePm);
-                assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), '0', true);
+                assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), true);
             }
         }
     }
 
-    private PmDetail assignNewPmDetail(PmDetail pmDetail, int personId, char actionCode, boolean active) {
+    private PmDetail assignNewPmDetail(PmDetail pmDetail, Integer personId, boolean active) {
+        log.info(String.valueOf("assignPmDetail to: " + personId));
         var assigneePerson = personService.getPerson(personId);
         Persistence persistence = logService.persistenceSetup(assigneePerson);
+        pmDetail.setPersistence(persistence);
+        pmDetail.setRegisterDate(UtilService.getDATE());
+        pmDetail.setRegisterTime(UtilService.getTime());
+        pmDetail.setDelay(0);
 
         if (active) {
             pmDetail.setActive(true);
         } else {
             pmDetail.setActive(false);
-            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), assigneePerson, persistence);
             pmDetail.setFinishedDate(pmDetail.getRegisterDate());
             pmDetail.setFinishedTime(pmDetail.getRegisterTime());
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), assigneePerson, persistence);
         }
-        pmDetail.setPersistence(persistence);
 
         var persistedPmDetail = pmDetailRepository.save(pmDetail);
-        notificationService.sendActiveTaskAssignedMessage(assigneePerson.getAddress().getValue(), pmDetail.getPm().getPmInterface().getName(), pmDetail.getPm().getDelay(), LocalDateTime.of(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
+        notificationService.sendActiveTaskAssignedMessage(assigneePerson.getAddress().getValue(), pmDetail.getPm().getCatalog().getPmInterface().getName(), pmDetail.getPm().getDelay(), LocalDateTime.of(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
 
         return persistedPmDetail;
     }
 
 
-    private void supervisorOperation(PmUpdateForm pmUpdateForm, Person currentPerson) throws IOException {
-        var pm = pmUpdateForm.getPm();
+    private void supervisorOperation(PmUpdateForm pmUpdateForm, Person currentPerson, Pm pm) throws IOException {
         if (pm instanceof GeneralPm generalPm) {
             GeneralPmDetail supervisorGeneralPmDetail = new GeneralPmDetail();
             supervisorGeneralPmDetail.setDescription(pmUpdateForm.getDescription());
             supervisorGeneralPmDetail.setPm(generalPm);
-            var persistedDetail = assignNewPmDetail(supervisorGeneralPmDetail, currentPerson.getId(), '3', false);
+            var persistedDetail = assignNewPmDetail(supervisorGeneralPmDetail, currentPerson.getId(), false);
             fileService.checkAttachment(pmUpdateForm.getFile(), persistedDetail.getPersistence());
 
         } else if (pm instanceof TemperaturePm temperaturePm) {
@@ -310,7 +312,7 @@ public class PmServiceImpl implements PmService {
             supervisorTemperatureDetail.setDescription(pmUpdateForm.getDescription());
             supervisorTemperatureDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
             supervisorTemperatureDetail.setPm(temperaturePm);
-            var persistedDetail = assignNewPmDetail(supervisorTemperatureDetail, currentPerson.getId(), '3', false);
+            var persistedDetail = assignNewPmDetail(supervisorTemperatureDetail, currentPerson.getId(), false);
             fileService.checkAttachment(pmUpdateForm.getFile(), persistedDetail.getPersistence());
         }
     }
@@ -319,13 +321,10 @@ public class PmServiceImpl implements PmService {
         pm.setFinishedDate(UtilService.getDATE());
         pm.setFinishedTime(UtilService.getTime());
         pm.setActive(false);
+        var catalog = pm.getCatalog();
+        var pmInterface = catalog.getPmInterface();
 
-        if (pm instanceof GeneralPm) {
-
-            centerService.updateCatalogDueDate(pm.getPmInterface(), pm.getLocation());
-
-        } else if (pm instanceof TemperaturePm temperaturePm) {
-
+        if (pm instanceof TemperaturePm temperaturePm) {
             List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
             for (PmDetail pmDetail : temperaturePm.getPmDetailList()) {
                 temperaturePmDetailList.add((TemperaturePmDetail) pmDetail);
@@ -335,25 +334,23 @@ public class PmServiceImpl implements PmService {
             temperaturePm.setAverageDailyValue(sum / (float) reportedTemperatures);
         }
 
-        var persistedPm = pmRepository.save(pm);
-
-        var pmInterface = persistedPm.getPmInterface();
-        if (pmInterface.getPmList().stream().noneMatch(Pm::isActive)) {
-            pmInterface.setActive(false);
-            pmInterfaceRepository.save(pmInterface);
+        if (!pmInterface.isStatelessRecurring()) {
+            catalog.setNextDueDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod())));
         }
-        return persistedPm;
+        if (catalog.getPmList().stream().filter(Pm::isActive).count() == 1) {
+            catalog.setActive(false);
+        }
+
+        if (!catalog.isHistory()) {
+            catalog.setHistory(true);
+        }
+        catalog.setLastFinishedDate(pm.getFinishedDate());
+        catalog.setLastFinishedTime(pm.getFinishedTime());
+        catalog.setLastPmId(pm.getId());
+
+        return pmRepository.save(pm);
     }
 
-    @Override
-    @PreAuthorize("#pm.active == true AND (#ownerUsername == authentication.name OR hasAnyAuthority('ADMIN', 'SUPERVISOR'))")
-    public PmUpdateForm getPmUpdateForm(@Param("pm") Pm pm, @Param("ownerUsername") String ownerUsername) {
-        PmUpdateForm pmUpdateForm = new PmUpdateForm();
-        pmUpdateForm.setPm(pm);
-        pmUpdateForm.setOwnerUsername(ownerUsername);
-
-        return pmUpdateForm;
-    }
 
     @Override
     public List<Person> getAssignPersonList(String pmOwnerUsername) {
@@ -374,9 +371,10 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getNonCatalogedPmList(Location location) {
+        List<Integer> targetIdList = List.of(location.getLocationCategory().getId(), 5);
         List<PmInterface> pmInterfaceList;
         if (location.getLocationPmCatalogList().isEmpty()) {
-            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, List.of(0));
+            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, List.of(0), targetIdList);
         } else {
             List<Integer> catalogedInterface = location
                     .getLocationPmCatalogList()
@@ -385,7 +383,7 @@ public class PmServiceImpl implements PmService {
                     .map(PmInterface::getId)
                     .toList();
 
-            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, catalogedInterface);
+            pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, catalogedInterface, targetIdList);
         }
         return pmInterfaceList;
 
@@ -393,6 +391,7 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public PmInterface getPmInterface(int pmInterfaceId) {
+
         return pmInterfaceRepository.getReferenceById(pmInterfaceId);
     }
 
@@ -413,19 +412,13 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public String getPmOwnerUsername(int pmId) {
+    public String getPmOwnerUsername(Long pmId) {
         return pmDetailRepository.fetchPmOwnerUsername(pmId, true);
     }
 
     @Override
-    public Pm getPm(int pmId) {
-        var pm = pmRepository.findById(pmId);
-        if (pm.isPresent()) {
-            setPmTransients(List.of(pm.get()));
-            return pm.get();
-        } else {
-            throw new NoSuchElementException();
-        }
+    public Optional<Pm> getPm(Long pmId) {
+        return pmRepository.findById(pmId);
     }
 
     @Override
@@ -466,7 +459,7 @@ public class PmServiceImpl implements PmService {
 
         } else {    // New Pm
             pmInterface = new PmInterface();
-            pmInterface.setActive(false);
+            pmInterface.setTarget(pmInterfaceRegisterForm.getTarget());
             pmInterface.setGeneralPm(true);
             pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
             persistence = logService.persistenceSetup(currentPerson);

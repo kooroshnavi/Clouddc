@@ -7,9 +7,11 @@ import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.pm.CatalogForm;
+import ir.tic.clouddc.pm.Pm;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.annotation.Nullable;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -180,12 +182,8 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public void updateCatalogDueDate(PmInterface pmInterface, Location location) {
-        var catalog = locationPmCatalogRepository.findByPmInterfaceAndLocation(pmInterface, location);
-        if (catalog.isPresent()) {
-            catalog.get().setNextDueDate(validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod())));
-            locationPmCatalogRepository.save(catalog.get());
-        }
+    public void updateCatalogDueDate(LocationPmCatalog catalog) {
+        locationPmCatalogRepository.updateCatalogDueDate(UtilService.getDATE().plusDays(catalog.getPmInterface().getPeriod()), catalog.getId());
     }
 
     @Override
@@ -226,8 +224,9 @@ public class CenterServiceImpl implements CenterService {
             if (optionalLocation.get().getLocationPmCatalogList() != null) {
                 for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
                     if (locationPmCatalog.isHistory()) {
-                        var finishedDate = locationPmCatalog.getLastFinishedPm().getFinishedDate();
-                        locationPmCatalog.getLastFinishedPm().setPersianFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+                        var finishedDate = locationPmCatalog.getLastFinishedDate();
+                        locationPmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+                        locationPmCatalog.setPersianLastFinishedDayTime(UtilService.getFormattedPersianDayTime(finishedDate, locationPmCatalog.getLastFinishedTime()));
                     }
                     locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
                 }

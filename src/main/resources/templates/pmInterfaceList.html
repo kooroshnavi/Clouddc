@@ -74,6 +74,9 @@
                             <th index=1>دسته بندی
                                 <div class="filter"></div>
                             </th>
+                            <th index=1>نوع
+                                <div class="filter"></div>
+                            </th>
                             <th>جزئیات</th>
                         </tr>
                         </thead>
@@ -88,6 +91,8 @@
                             </td>
 
                             <td th:text="${pmInterface.period}"></td>
+
+                            <td th:text="${pmInterface.target}"></td>
 
                             <td th:text="${pmInterface.category}"></td>
 

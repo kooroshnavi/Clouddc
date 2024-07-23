@@ -12,11 +12,11 @@
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
     <link href="/panel/assets/css/normalize.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/jquery-ui.css" rel="stylesheet"/>
     <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
-    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
-    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
     <link href="/panel/assets/css/style.css" rel="stylesheet"/>
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
@@ -116,10 +116,12 @@
         <h6 th:if="${location.locationCategory.id == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
         <hr/>
         <div th:if="${location.locationCategory.id == 2}" class='housing'>
-            <div class= "bi-hdd-rack-fill" th:text="${rack.name}" ></div>
+            <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
             <ol class="rack">
                 <li th:each="device, iter : ${rackDeviceList}" class='large'>
-                    <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}" class="btn-sm px-sm-1" th:text="${device.deviceCategory.model + ' - ' + device.deviceCategory.serverFactorSize + device.deviceCategory.serverFactor}" data-bs-toggle="tooltip"
+                    <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}" class="btn-sm px-sm-1"
+                       th:text="${device.deviceCategory.model + ' - ' + device.deviceCategory.serverFactorSize + device.deviceCategory.serverFactor}"
+                       data-bs-toggle="tooltip"
                        data-bs-placement="left" th:title="${device.serialNumber}">
                     </a>
                     <div class='light'></div>
@@ -215,16 +217,17 @@
         <!--Rack table (Salon)-->
 
         <!--Pm table-->
-        <h6 class="mb-0 text-uppercase"  th:text="${'لیست Pm های ' + location.locationCategory.target + ' ' + location.name}"></h6>
+        <h6 class="mb-0 text-uppercase"
+            th:text="${'لیست Pm های ' + location.locationCategory.target + ' ' + location.name}"></h6>
         <hr/>
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
 
-                <div class="ui-dialog-buttonpane">
-                    <a th:href="@{/pm/catalog/{locationId}/form(locationId=${location.id})}"
-                       class="btn btn-outline-success"
-                            th:text="'افزودن Pm به ' + ${location.name}">
-                    </a>
-                </div>
+            <div class="ui-dialog-buttonpane">
+                <a th:href="@{/pm/catalog/{locationId}/form(locationId=${location.id})}"
+                   class="btn btn-outline-success"
+                   th:text="'افزودن Pm به ' + ${location.name}">
+                </a>
+            </div>
 
         </div>
         <div class="card">
@@ -244,37 +247,39 @@
                         </thead>
                         <tbody>
 
-                        <tr th:each="pmCatalog, iter : ${catalog}">
+                        <tr th:each="catalog, iter : ${catalogList}">
 
                             <td th:text="${iter.count}"></td>
-                            <td th:text="${pmCatalog.pmInterface.category}"></td>
+                            <td th:text="${catalog.pmInterface.category}"></td>
 
-                            <td >
+                            <td>
                                 <div class="col">
-                                    <a th:text="${pmCatalog.pmInterface.name}" th:href="@{/pm/catalog/{catalogId}/form (catalogId=${pmCatalog.id})}"
+                                    <a th:text="${catalog.pmInterface.name}"
+                                       th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
                                        title="ویرایش Pm روی این مکان"></a>
                                 </div>
                             </td>
 
-                            <td th:if="${pmCatalog.history}" th:text="${pmCatalog.lastFinishedPm.persianFinishedDate}">
+                            <td th:if="${catalog.history}">
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmId}/detailList(pmId=${pmCatalog.lastFinishedPm.id})}"
+                                    <a th:text="${catalog.persianLastFinishedDate}"
+                                       th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom"
-                                       th:text="${pmCatalog.lastFinishedPm.persianFinishedDayTime}"></a>
+                                       data-bs-placement="top"
+                                       th:title="${catalog.persianLastFinishedDayTime}"></a>
                                 </div>
                             </td>
 
-                            <td th:if="${not pmCatalog.history}">اقدام نشده</td>
+                            <td th:if="${not catalog.history}">اقدام نشده</td>
 
-                            <td th:text="${pmCatalog.persianNextDue}"></td>
-                            <td th:text="${pmCatalog.defaultPerson.name}"></td>
+                            <td th:text="${catalog.persianNextDue}"></td>
+                            <td th:text="${catalog.defaultPerson.name}"></td>
 
                             <td class="clock">
-                                <span th:if="${not pmCatalog.enabled}" class="badge bg-light-danger text-danger w-100">غیرفعال</span>
-                                <span th:if="${pmCatalog.enabled}"
+                                <span th:if="${not catalog.enabled}" class="badge bg-light-danger text-danger w-100">غیرفعال</span>
+                                <span th:if="${catalog.enabled}"
                                       class="badge bg-light-success text-success w-100">فعال</span>
                             </td>
 
@@ -371,10 +376,10 @@
 <script src="/panel/assets/js/jquery-ui.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-<script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
 
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>

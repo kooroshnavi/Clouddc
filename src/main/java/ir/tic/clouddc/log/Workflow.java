@@ -13,7 +13,6 @@ public abstract class Workflow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
     private Long id;
 
     @Column

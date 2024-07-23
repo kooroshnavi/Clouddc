@@ -10,7 +10,9 @@ import java.util.List;
 
 @Repository
 public interface PmInterfaceRepository extends JpaRepository<PmInterface, Integer> {
-    @Query("SELECT p FROM PmInterface p WHERE p.enabled = :enabled AND p.id NOT IN :pmInterfaceIdList")
-    List<PmInterface> fetchPmInterfaceListNotInCatalogList(@Param("enabled") boolean enabled, List<Integer> pmInterfaceIdList);
+    @Query("select p from PmInterface p where p.enabled = :enabled and p.id not in :pmInterfaceIdList and p.target in :targetIdList")
+    List<PmInterface> fetchPmInterfaceListNotInCatalogList
+            (@Param("enabled") boolean enabled
+                    , List<Integer> pmInterfaceIdList, List<Integer> targetIdList);
 }
 

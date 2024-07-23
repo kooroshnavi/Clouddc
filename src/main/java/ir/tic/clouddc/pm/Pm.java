@@ -1,6 +1,7 @@
 package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.LocationPmCatalog;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -16,7 +17,7 @@ public abstract class Pm {    // new Task style
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column
-    private int id;      //// 1. Change to LONG    2. Update PmUpdateForm
+    private Long id;      //// 1. Change to LONG    2. Update PmUpdateForm
 
     @Column
     private boolean active;
@@ -33,16 +34,12 @@ public abstract class Pm {    // new Task style
     @Column
     private LocalTime finishedTime;
 
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "catalog_id")
+    private LocationPmCatalog catalog;
+
     @OneToMany(mappedBy = "pm")
     private List<PmDetail> pmDetailList;
-
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "pmInterface_id")
-    private PmInterface pmInterface;
-
-    @ManyToOne
-    @JoinColumn(name = "location_id")  // Pm locate: Salon, Rack, Room
-    private Location location;
 
     @Transient
     private String persianDueDate;

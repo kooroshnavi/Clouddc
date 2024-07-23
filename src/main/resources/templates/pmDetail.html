@@ -78,7 +78,7 @@
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
-                            <p class="mb-1" th:text=" 'محل اجرا: ' + ${pm.location.name}"></p>
+                            <p class="mb-1" th:text=" 'محل اجرا: ' + ${location.name}"></p>
                             <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
                             <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
                         </div>
@@ -125,7 +125,7 @@
                         <th>زمان انتساب گردش کار</th>
                         <th>زمان اتمام گردش کار</th>
                         <th>کارتابل</th>
-                        <th th:if="${ pmInterface.category != 'General' }">دمای گزارش شده</th>
+                        <th th:if="${pmInterface.category != 'General' }">دمای گزارش شده</th>
                         <th>توضیحات</th>
                     </tr>
                     </thead>

@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(schema = "center")
@@ -18,23 +20,31 @@ public final class LocationPmCatalog {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "location_id")
     private Location location;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "pmInterface_id")
     private PmInterface pmInterface;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "default_workspace_id")
     private Person defaultPerson;
 
-    @OneToOne
-    @JoinColumn(name = "last_pm_id")
-    private Pm lastFinishedPm;
+    @Column
+    private LocalDate lastFinishedDate;
+
+    @Column
+    private LocalTime lastFinishedTime;
+
+    @Column
+    private Long lastPmId;
+
+    @OneToMany
+    private List<Pm> pmList;
 
     @Column
     private LocalDate nextDueDate;
@@ -43,13 +53,16 @@ public final class LocationPmCatalog {
     private boolean enabled;
 
     @Column
+    private boolean active;
+
+    @Column
     private boolean history;
 
     @Transient
-    private String persianFinishedDate;
+    private String persianLastFinishedDate;
 
     @Transient
-    private String persianFinishedDayTime;
+    private String persianLastFinishedDayTime;
 
     @Transient
     private String persianNextDue;

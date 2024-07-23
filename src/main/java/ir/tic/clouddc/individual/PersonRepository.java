@@ -12,7 +12,8 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     List<Person> findAllByAssignee(boolean assignee);
 
-    List<Person> findAllByUsernameNotInAndAssignee(List<String> usernameList, boolean assignee);
+    @Query("SELECT p from Person p where p.username not in :usernameList and p.assignee = :assignee")
+    List<Person> fetchAssignablePersonList(List<String> usernameList, @Param("assignee") boolean assignee);
 
     Person findByUsername(String name);
 

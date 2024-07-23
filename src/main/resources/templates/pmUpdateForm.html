@@ -72,7 +72,7 @@
                     <div class="d-flex align-items-hall gap-3">
                         <div class="info">
                             <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
-                            <p class="mb-1" th:text="${'مکان: ' + pm.location.locationCategory.target + ' ' + pm.location.name}"></p>
+                            <p class="mb-1" th:text="${'مکان: ' + location.locationCategory.target + ' ' + location.name}"></p>
                             <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
                             <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
                             <p class="mb-1" th:if="${pmInterface.description != null}"
@@ -136,7 +136,9 @@
                                                 </label>
                                             </div>
 
-                                            <input type="hidden" name="locationId" th:value="${location.id}"/>
+                                            <input type="hidden" name="pmId" th:value="${pm.id}"/>
+                                            <input type="hidden" name="ownerUsername" th:value="${pmOwnerUsername}"/>
+
 
                                             <div class="col">
                                                 <!-- Button trigger modal -->

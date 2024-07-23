@@ -40,7 +40,7 @@ public interface CenterService {
 
     List<LocationPmCatalog> getTodayCatalogList(LocalDate date);
 
-    void updateCatalogDueDate(PmInterface pmInterface, Location location);
+    void updateCatalogDueDate(LocationPmCatalog catalog);
 
     void updateNewlyEnabledCatalog(PmInterface pmInterface);
 

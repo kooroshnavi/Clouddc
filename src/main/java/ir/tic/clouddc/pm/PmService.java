@@ -16,13 +16,13 @@ public interface PmService {
 
     List<PmInterface> getPmInterfaceList();
 
-    List<Pm> getPmInterfacePmList(PmInterface pmInterface, boolean active);
+    List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active);
 
     PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId);
 
     Model modelForTaskController(Model model);
 
-    Pm getPmDetail_1(int pmId);
+    Pm getPmDetail_1(Long pmId);
 
     List<PmDetail> getPmDetail_2(Pm pm);
 
@@ -32,15 +32,13 @@ public interface PmService {
 
     List<Pm> getActivePmList(boolean active, boolean workspace);
 
-    PmUpdateForm getPmUpdateForm(Pm pm, String ownerUsername);
-
     void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
     void pmUpdate(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 
-    String getPmOwnerUsername(int pmId);
+    String getPmOwnerUsername(Long pmId);
 
-    Pm getPm(int pmId);
+    Optional<Pm> getPm(Long pmId);
 
     List<Person> getAssignPersonList(String pmOwnerUsername);
 

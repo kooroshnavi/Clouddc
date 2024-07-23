@@ -44,7 +44,7 @@ final class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> getPersonListExcept(List<String> ignoreUsernameList) {
-        return personRepository.findAllByUsernameNotInAndAssignee(ignoreUsernameList, true);
+        return personRepository.fetchAssignablePersonList(ignoreUsernameList, true);
     }
 
     @Override

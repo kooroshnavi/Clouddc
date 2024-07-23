@@ -120,9 +120,9 @@
                             <td th:text="${iter.count}"></td>
                             <td th:text="${pm.id}"></td>
 
-                            <td th:text="${pm.location.locationCategory.target + ' ' + pm.location.name}" data-bs-toggle="tooltip"
+                            <td th:text="${pm.catalog.location.locationCategory.target + ' ' + pm.catalog.location.name}" data-bs-toggle="tooltip"
                                 data-bs-placement="top"
-                                th:title="${pm.location.locationCategory.target}" dir="rtl"></td>
+                                th:title="${pm.catalog.location.locationCategory.target}" dir="rtl"></td>
 
                             <td th:text="${pm.persianDueDate}"></td>
 
