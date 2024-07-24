@@ -10,6 +10,7 @@ import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -81,6 +82,10 @@ public class ResourceServiceImpl implements ResourceService {
         return utilizerRepository.findAll();
     }
 
+    @Override
+    public Device getDevice(Long deviceId) throws SQLException {
+        return deviceRepository.getReferenceById(deviceId);
+    }
 
     @Override
     public Optional<Device> getDevice(String serialNumber) {
@@ -151,6 +156,7 @@ public class ResourceServiceImpl implements ResourceService {
             return defaultDeviceStatus;
         }
     }
+
 
     private Device registerNewDevice(EventLandingForm eventLandingForm) {
 

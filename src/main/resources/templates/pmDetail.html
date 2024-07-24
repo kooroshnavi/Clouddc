@@ -78,7 +78,11 @@
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
-                            <p class="mb-1" th:text=" 'محل اجرا: ' + ${location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.target}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.type}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
                             <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
                             <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
                         </div>
@@ -125,7 +129,6 @@
                         <th>زمان انتساب گردش کار</th>
                         <th>زمان اتمام گردش کار</th>
                         <th>کارتابل</th>
-                        <th th:if="${pmInterface.category != 'General' }">دمای گزارش شده</th>
                         <th>توضیحات</th>
                     </tr>
                     </thead>
@@ -146,27 +149,6 @@
                             th:title="${detail.persianFinishedDayTime}" dir="rtl"></td>
 
                         <td th:text="${detail.persistence.person.name}"></td>
-                        <td th:text="${detail.description}"></td>
-
-                    </tr>
-
-                    <tr th:if="${ pmInterface.category != 'General' }"
-                        th:each="detail, iter : ${temperaturePmDetailList}">
-
-                        <td th:text="${iter.count}"></td>
-
-                        <td th:text="${detail.persianRegisterDate}" data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            th:title="${detail.persianRegisterDayTime}" dir="rtl"></td>
-
-                        <td th:if="${detail.active}">اقدام نشده</td>
-                        <td th:if="${not detail.active}" th:text="${detail.persianFinishedDate}"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            th:title="${detail.persianFinishedDayTime}" dir="rtl"></td>
-
-                        <td th:text="${detail.persistence.person.name}"></td>
-                        <td th:text="${detail.temperatureValue}"></td>
                         <td th:text="${detail.description}"></td>
 
                     </tr>

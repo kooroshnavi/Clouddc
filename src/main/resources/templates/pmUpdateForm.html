@@ -71,12 +71,17 @@
                 <div class="card-body">
                     <div class="d-flex align-items-hall gap-3">
                         <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
-                            <p class="mb-1" th:text="${'مکان: ' + location.locationCategory.target + ' ' + location.name}"></p>
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
+                            </h6>
+                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
+                            <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.target}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.type}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
                             <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
                             <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
-                            <p class="mb-1" th:if="${pmInterface.description != null}"
-                               th:text=" 'توضیحات: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
                 </div>
@@ -100,14 +105,6 @@
                                         <form class="row g-3" th:action="@{/pm/update}"
                                               enctype="multipart/form-data"  th:object="${pmUpdateForm}" method="POST">
 
-                                            <div th:if="${pmInterface.id == 2}" class="col-12">
-                                                <div class="form-check form-switch">
-                                                    <label class="form-label">میزان دما
-                                                        <input type="number" th:field="*{temperatureValue}" dir="rtl"
-                                                               min="5" max="50" step="0.1" required="required"/>
-                                                    </label>
-                                                </div>
-                                            </div>
 
                                             <div class="col-12">
                                                 <label class="form-label">نتیجه بررسی</label>

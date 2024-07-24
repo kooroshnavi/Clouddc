@@ -7,12 +7,15 @@ import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface CenterService {
     LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate validNextDue);
+
+    Location getRefrencedLocation(Long locationId) throws SQLException;
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {

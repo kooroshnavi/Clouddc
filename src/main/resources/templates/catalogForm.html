@@ -73,9 +73,13 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
-                    <div class="card-header py-3 bg-transparent" align="hall">
+                    <div th:if="${isLocation}" class="card-header py-3 bg-transparent" align="center">
                         <h5 class="mb-0"
                             th:text="${'فرم ثبت Pm برای ' + location.locationCategory.target + ' ' + location.name}"></h5>
+                    </div>
+                    <div th:if="${isDevice}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${'فرم ثبت Pm برای ' + device.deviceCategory.type + ' ' + device.serialNumber}"></h5>
                     </div>
 
                     <div class="card-body">
@@ -103,10 +107,10 @@
                                                placeholder="نمایش تاریخ از امروز"/>
                                     </div>
                                 </div>
-
                                 <input type="hidden" th:field="*{nextDue}" id="miladi_date"/>
 
-                                <input type="hidden" name="locationId" th:value="${location.id}"/>
+                                <input th:if="${isLocation}" type="hidden" name="locationId" th:value="${location.id}"/>
+                                <input th:if="${isDevice}" type="hidden" name="deviceId" th:value="${device.id}"/>
 
                                 <div class="mb-3">
                                     <label class="form-label">کارتابل پیش فرض</label>

@@ -1,7 +1,10 @@
 package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.DevicePmCatalog;
 import ir.tic.clouddc.security.ModifyProtection;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -13,8 +16,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -43,7 +46,7 @@ public class PmController {
 
         model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
 
-        return "pmRegisterView";
+        return "pmInterfaceRegisterView";
     }
 
     @PostMapping(value = "/register")  /// General Pm only
@@ -55,7 +58,7 @@ public class PmController {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: {}", errors);
-            return "pmRegisterView";
+            return "redirect:/pm/register/form";
         }
 
         if (!file.isEmpty()) {
@@ -70,10 +73,21 @@ public class PmController {
     public String showPmInterfacePmList(Model model
             , @PathVariable boolean active
             , @PathVariable Integer pmInterfaceId) {
+
         var pmInterface = pmService.getPmInterface(pmInterfaceId);
         if (pmInterface != null) {
-            model.addAttribute("pmInterface", pmInterface);
+
             var pmList = pmService.getPmInterfacePmList(pmInterface.getId(), active);
+
+            if (!pmList.isEmpty() && pmInterface.getCategoryId() == 1) {
+                var locationPmCatalog = (LocationPmCatalog) pmList.get(0).getPmInterfaceCatalog();
+                model.addAttribute("locationPmCatalog", locationPmCatalog);
+            } else if (!pmList.isEmpty() && pmInterface.getCategoryId() == 2) {
+                var devicePmCatalog = (DevicePmCatalog) pmList.get(0).getPmInterfaceCatalog();
+                model.addAttribute("devicePmCatalog", devicePmCatalog);
+            }
+
+            model.addAttribute("pmInterface", pmInterface);
             model.addAttribute("pmList", pmList);
             model.addAttribute("active", active);
         } else {
@@ -88,9 +102,9 @@ public class PmController {
         var pm = pmService.getPmDetail_1(pmId);
         var pmDetailList = pmService.getPmDetail_2(pm);
         var metadataList = pmService.getPmDetail_3(pm);
-        var catalog = pm.getCatalog();
+        var catalog = pm.getPmInterfaceCatalog();
         var pmInterface = catalog.getPmInterface();
-        var location = catalog.getLocation();
+
 
         var activeDetail = pmDetailList.stream().filter(PmDetail::isActive).findFirst();
 
@@ -100,7 +114,7 @@ public class PmController {
             model.addAttribute("permission", permission);
         }
 
-        if (pm instanceof TemperaturePm) {
+     /*   if (pm instanceof TemperaturePm) {
             List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
             for (PmDetail pmDetail : pmDetailList) {
                 temperaturePmDetailList.add((TemperaturePmDetail) pmDetail);
@@ -108,10 +122,15 @@ public class PmController {
             model.addAttribute("temperaturePmDetailList", temperaturePmDetailList);
         } else {
             model.addAttribute("pmDetailList", pmDetailList);
+        }*/
+
+        if (catalog instanceof LocationPmCatalog locationPmCatalog) {
+            model.addAttribute("locationPmCatalog", locationPmCatalog);
+        } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
+            model.addAttribute("devicePmCatalog", devicePmCatalog);
         }
 
         model.addAttribute("pmInterface", pmInterface);
-        model.addAttribute("location", location);
         model.addAttribute("pm", pm);
         model.addAttribute("metadataList", metadataList);
 
@@ -125,13 +144,17 @@ public class PmController {
             return "404";
         } else {
             var pm = optionalPm.get();
-            var catalog = pm.getCatalog();
+            var catalog = pm.getPmInterfaceCatalog();
             var pmInterface = catalog.getPmInterface();
-            var location = catalog.getLocation();
             var pmOwnerUsername = pmService.getPmOwnerUsername(pmId);
             var assignPersonList = pmService.getAssignPersonList(pmOwnerUsername);
 
-            model.addAttribute("location", location);
+            if (catalog instanceof LocationPmCatalog locationPmCatalog) {
+                model.addAttribute("locationPmCatalog", locationPmCatalog);
+            } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
+                model.addAttribute("devicePmCatalog", devicePmCatalog);
+            }
+
             model.addAttribute("pmInterface", pmInterface);
             model.addAttribute("pm", pm);
             model.addAttribute("pmUpdateForm", new PmUpdateForm());
@@ -152,7 +175,7 @@ public class PmController {
         }
         var pm = pmService.getPm(pmUpdateForm.getPmId());
         if (pm.isPresent()) {
-            pmService.pmUpdate(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
+            pmService.UpdatePm(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
             return "redirect:/pm/workspace";
         }
 
@@ -177,17 +200,19 @@ public class PmController {
         return "activePmList";
     }
 
-    @GetMapping("/catalog/{locationId}/form")
-    public String showCatalogForm(Model model, @PathVariable Long locationId) {
+    @GetMapping("/catalog/location/{locationId}/form")
+    public String showLocationCatalogForm(Model model, @PathVariable Long locationId) {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
         Optional<Location> optionalLocation = pmService.getLocation(locationId);
         if (optionalLocation.isPresent()) {
-            List<PmInterface> pmList = pmService.getNonCatalogedPmList(optionalLocation.get());
+            List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(optionalLocation.get(), null);
             model.addAttribute("defaultPersonList", defaultPersonList);
-            model.addAttribute("pmInterfaceList", pmList);
+            model.addAttribute("pmInterfaceList", pmInterfaceList);
             model.addAttribute("catalogForm", new CatalogForm());
             model.addAttribute("update", false);
             model.addAttribute("location", optionalLocation.get());
+            model.addAttribute("isLocation", true);
+            model.addAttribute("isDevice", false);
 
             return "catalogForm";
         } else {
@@ -195,8 +220,26 @@ public class PmController {
         }
     }
 
+    @GetMapping("/catalog/device/{deviceId}/form")
+    public String showDeviceCatalogForm(Model model, @PathVariable Long deviceId) throws SQLException {
+        List<Person> defaultPersonList = pmService.getDefaultPersonList();
+        Device device = pmService.getDevice(deviceId);
+
+        List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(null, device);
+        model.addAttribute("defaultPersonList", defaultPersonList);
+        model.addAttribute("pmInterfaceList", pmInterfaceList);
+        model.addAttribute("catalogForm", new CatalogForm());
+        model.addAttribute("update", false);
+        model.addAttribute("device", device);
+        model.addAttribute("isLocation", false);
+        model.addAttribute("isDevice", true);
+
+        return "catalogForm";
+
+    }
+
     @PostMapping("/catalog/register")
-    public String pmCatalogRegister(Model model, @ModelAttribute CatalogForm catalogForm) {
+    public String pmCatalogRegister(Model model, @ModelAttribute CatalogForm catalogForm) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);
         log.info(String.valueOf(validDate));
@@ -204,7 +247,6 @@ public class PmController {
             return "403";
         }
         pmService.registerNewCatalog(catalogForm, validDate);
-
 
         return "redirect:/pm/workspace";
     }

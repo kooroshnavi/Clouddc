@@ -4,9 +4,12 @@ import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.report.DailyReport;
+import ir.tic.clouddc.resource.Device;
+import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +37,7 @@ public interface PmService {
 
     void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
-    void pmUpdate(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
+    void UpdatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 
     String getPmOwnerUsername(Long pmId);
 
@@ -44,11 +47,13 @@ public interface PmService {
 
     List<Person> getDefaultPersonList();
 
-    List<PmInterface> getNonCatalogedPmList(Location location);
+    List<PmInterface> getNonCatalogedPmInterfaceList(@Nullable Location location, @Nullable Device device);
 
     PmInterface getPmInterface(int pmInterfaceId);
 
     Optional<Location> getLocation(Long locationId);
 
-    void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate);
+    void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException;
+
+    Device getDevice(Long deviceId) throws SQLException;
 }

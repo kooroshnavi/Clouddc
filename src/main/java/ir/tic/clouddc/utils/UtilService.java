@@ -39,6 +39,23 @@ public final class UtilService {
             entry("EventUpdate", "ثبت و بروزرسانی یک رخداد")
     );
 
+    public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(
+            entry(1, "عمومی - مکان ها"),
+            entry(2, "عمومی - تجهیزات")
+    );
+
+    public static final Map<Integer, Integer> PM_CATEGORY_ID = Map.ofEntries(
+            entry(1, 1),
+            entry(2, 1),
+            entry(3, 1),
+            entry(4, 1),
+            entry(5, 2),
+            entry(6, 2),
+            entry(7, 2),
+            entry(8, 2),
+            entry(9, 2)
+    );
+
     public static String getCurrentDate() {
         var date = PersianDate.fromGregorian(LocalDate.now());
         var month = date.getMonth().getPersianName();

@@ -1,6 +1,5 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.LocationPmCatalog;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -28,17 +27,20 @@ public abstract class Pm {    // new Task style
     private LocalDate dueDate;
 
     @Column
+    private LocalTime registerTime;
+
+    @Column
     private LocalDate finishedDate;
 
     @Column
     private LocalTime finishedTime;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "catalog_id")
-    private LocationPmCatalog catalog;
-
     @OneToMany(mappedBy = "pm")
     private List<PmDetail> pmDetailList;
+
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "catalog_id")
+    private PmInterfaceCatalog pmInterfaceCatalog;
 
     @Transient
     private String persianDueDate;

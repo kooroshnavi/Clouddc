@@ -12,6 +12,6 @@ public interface PmRepository extends JpaRepository<Pm, Long> {
 
     List<Pm> findAllByActive(boolean active);
 
-    @Query("select p from Pm p where p.catalog.pmInterface.id = :id and p.active = :active")
+    @Query("select p from Pm p where p.pmInterfaceCatalog.pmInterface.id = :id and p.active = :active")
     List<Pm> fetchActivePmList(@Param("id") Integer pmInterfaceId, @Param("active") boolean active);
 }

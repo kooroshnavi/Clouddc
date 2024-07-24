@@ -77,7 +77,7 @@
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pmInterface.period}"></p>
-                            <p class="mb-1" th:if="${pmInterface.description != null}"
+                            <p th:if="${not pmInterface.description == null}" class="mb-1"
                                th:text=" 'توضیحات: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
@@ -98,7 +98,8 @@
                         <tr>
                             <th>ردیف</th>
                             <th>شماره Pm</th>
-                            <th>مکان</th>
+                            <th th:if="${pmInterface.category == 1}">مکان</th>
+                            <th th:if="${pmInterface.category == 2}">تجهیز</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
 
@@ -120,9 +121,8 @@
                             <td th:text="${iter.count}"></td>
                             <td th:text="${pm.id}"></td>
 
-                            <td th:text="${pm.catalog.location.locationCategory.target + ' ' + pm.catalog.location.name}" data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                th:title="${pm.catalog.location.locationCategory.target}" dir="rtl"></td>
+                            <td th:if="${pmInterface.category == 1}" th:text="${locationPmCatalog.location.locationCategory.target + ' ' + locationPmCatalog.location.name}" dir="rtl"></td>
+                            <td th:if="${pmInterface.category == 2}" th:text="${devicePmCatalog.device.deviceCategory.type + ' ' + devicePmCatalog.device.location.locationCategory.target + ' ' + devicePmCatalog.device.location.name}" dir="rtl"></td>
 
                             <td th:text="${pm.persianDueDate}"></td>
 
@@ -146,6 +146,10 @@
                             </td>
 
                         </tr>
+
+
+
+
                         </tbody>
                         <tfoot>
                         </tfoot>

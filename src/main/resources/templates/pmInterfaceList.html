@@ -72,9 +72,9 @@
                                 <div class="filter"></div>
                             </th>
                             <th index=1>دسته بندی
-                                <div class="filter"></div>
+                                    <div class="filter"></div>
                             </th>
-                            <th index=1>نوع
+                            <th index=1>قابل اجرا بر روی
                                 <div class="filter"></div>
                             </th>
                             <th>جزئیات</th>
@@ -92,9 +92,17 @@
 
                             <td th:text="${pmInterface.period}"></td>
 
-                            <td th:text="${pmInterface.target}"></td>
-
                             <td th:text="${pmInterface.category}"></td>
+
+                            <td th:if="${pmInterface.target == 1}" th:text="${pmInterface.category}">سالن</td>
+                            <td th:if="${pmInterface.target == 2}" th:text="${pmInterface.category}">رک</td>
+                            <td th:if="${pmInterface.target == 3}" th:text="${pmInterface.category}">(اتاق - انبار)</td>
+                            <td th:if="${pmInterface.target == 4}" th:text="${pmInterface.category}">کلیه مکان ها</td>
+                            <td th:if="${pmInterface.target == 5}" th:text="${pmInterface.category}">سرور</td>
+                            <td th:if="${pmInterface.target == 6}" th:text="${pmInterface.category}">سوئیچ</td>
+                            <td th:if="${pmInterface.target == 7}" th:text="${pmInterface.category}">فایروال</td>
+                            <td th:if="${pmInterface.target == 8}" th:text="${pmInterface.category}">انکلوژر</td>
+                            <td th:if="${pmInterface.target == 8}" th:text="${pmInterface.category}">کلیه تجهیزات</td>
 
                             <td>
                                 <div class="col">

@@ -13,7 +13,6 @@ public final class Server extends Device {
     @Column
     private String remoteAddress;
 
-
     public String getRemoteAddress() {
         return remoteAddress;
     }

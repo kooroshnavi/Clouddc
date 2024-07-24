@@ -17,6 +17,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -83,6 +84,11 @@ public class CenterServiceImpl implements CenterService {
         locationPmCatalog.setNextDueDate(UtilService.validateNextDue(nextDue));
 
         return locationPmCatalogRepository.save(locationPmCatalog);
+    }
+
+    @Override
+    public Location getRefrencedLocation(Long locationId) throws SQLException {
+        return locationRepository.getReferenceById(locationId);
     }
 
     @Override

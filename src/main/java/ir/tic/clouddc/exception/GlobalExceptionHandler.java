@@ -23,6 +23,13 @@ public class GlobalExceptionHandler {
         this.notificationService = notificationService;
     }
 
+    @ExceptionHandler(SQLException.class)
+    public void sqlException(SQLException sqlException) {
+        log.error(sqlException.getSQLState());
+        log.error(sqlException.getMessage());
+        notificationService.sendExceptionMessage(sqlException.getMessage(), LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+    }
+
     @ExceptionHandler(AccessDeniedException.class)
     public String accessDenied(AccessDeniedException accessDeniedException) {
         log.error(accessDeniedException.getMessage());
@@ -33,13 +40,6 @@ public class GlobalExceptionHandler {
     public String noValue(NoSuchElementException noSuchElementException) {
         log.error(noSuchElementException.getMessage());
         return "404";
-    }
-
-    @ExceptionHandler(SQLException.class)
-    public void sqlException(SQLException sqlException) {
-        log.error(sqlException.getSQLState());
-        log.error(sqlException.getMessage());
-        notificationService.sendExceptionMessage(sqlException.getMessage(), LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
     }
 
 }

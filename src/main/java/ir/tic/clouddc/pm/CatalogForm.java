@@ -1,17 +1,15 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.center.LocationPmCatalog;
-import ir.tic.clouddc.individual.Person;
 import lombok.Data;
-
-import java.time.LocalDate;
 
 @Data
 public class CatalogForm {
-    private int locationPmCatalogId;
+
+    private int pmInterfaceCatalogId;
 
     private Long locationId;
+
+    private Long deviceId;
 
     private String nextDue;
 

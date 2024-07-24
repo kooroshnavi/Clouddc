@@ -41,13 +41,17 @@ public final class PmInterface {
     private String description;
 
     @Column
-    private String category; // General - CheckList - Temperature
+    @Nationalized
+    private String category;
 
     @Column
-    private int target;  //  Hall - Rack - Room - Location
+    private int categoryId; // 1. GeneralLocation - 2. GeneralDevice
+
+    @Column
+    private int target;  //  Hall - Rack - Room - Location - server - sw - fw - enc - device
 
     @OneToMany(mappedBy = "pmInterface")
-    private List<LocationPmCatalog> locationPmCatalogList;
+    private List<PmInterfaceCatalog> pmInterfaceCatalogList;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "persistence_id")

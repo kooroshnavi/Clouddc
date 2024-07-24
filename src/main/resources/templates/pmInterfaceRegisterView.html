@@ -103,14 +103,19 @@
                                 </div>
 
                                 <div class="col-12 col-md-6">
-                                    <label class="form-label">مکان قابل اجرا</label>
+                                    <label class="form-label">این Pm روی کدام مکان یا نوع تجهیز اعمال شود؟</label>
                                     <select class="form-select" name="subject" th:field="*{target}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                        <option th:value="1">هال (سالن)</option>
-                                        <option th:value="2">رک</option>
-                                        <option th:value="3">اتاق - انبار</option>
-                                        <option disabled="disabled" th:value="4">تجهیز (در حال آماده سازی)</option>
-                                        <option th:value="5">عمومی (تمام موارد اشاره شده)</option>
+                                        <option th:value="1">مکان: هال (سالن)</option>
+                                        <option th:value="2">مکان: رک</option>
+                                        <option th:value="3">مکان: اتاق - انبار</option>
+                                        <option th:value="4">روی هر سه مکان قابل اجرا باشد</option>
+                                        <option th:value="5">تجهیز: سرور</option>
+                                        <option th:value="6">تجهیز: سوئیچ</option>
+                                        <option th:value="7">تجهیز: فایروال</option>
+                                        <option th:value="8">تجهیز: انکلوژر</option>
+                                        <option th:value="9">روی تمام انواع تجهیزات</option>
+
                                     </select>
                                 </div>
 

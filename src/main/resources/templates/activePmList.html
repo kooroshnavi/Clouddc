@@ -76,7 +76,6 @@
                             <th>ردیف</th>
                             <th>شماره Pm</th>
                             <th>عنوان Pm</th>
-                            <th>مکان / تجهیز</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
                             <th th:if="${not workspace}">کارتابل</th>
@@ -92,10 +91,8 @@
                             <td th:text="${pm.id}"></td>
 
                             <td>
-                                <strong th:text="${pm.catalog.pmInterface.name}"></strong>
+                                <strong th:text="${pm.pmInterfaceCatalog.pmInterface.name}"></strong>
                             </td>
-
-                            <td th:text="${pm.catalog.location.locationCategory.target + ' ' + pm.catalog.location.name}"></td>
 
                             <td th:text="${pm.persianDueDate}"></td>
 

@@ -51,4 +51,7 @@ public abstract class Device {
     @OneToMany(mappedBy = "device")
     private List<DeviceStatusEvent> deviceStatusEventList;
 
+    @OneToMany(mappedBy = "device")
+    private List<DevicePmCatalog> devicePmCatalogList;
+
 }

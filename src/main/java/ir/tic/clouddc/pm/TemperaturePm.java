@@ -8,16 +8,11 @@ import lombok.NoArgsConstructor;
 @Table(schema = "pm")
 @NoArgsConstructor
 public final class TemperaturePm extends Pm {
-
     @Transient
     private final String TEMPERATURE_FIELD_NAME = "دما";
 
     @Column
     private float averageDailyValue;
-
-    @ManyToOne
-    @JoinColumn(name = "catalog_id")
-    private LocationPmCatalog locationPmCatalog;
 
     public String getTEMPERATURE_FIELD_NAME() {
         return TEMPERATURE_FIELD_NAME;
@@ -30,5 +25,4 @@ public final class TemperaturePm extends Pm {
     public void setAverageDailyValue(float averageDailyValue) {
         this.averageDailyValue = averageDailyValue;
     }
-
 }
