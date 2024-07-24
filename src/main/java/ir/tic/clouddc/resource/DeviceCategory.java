@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -8,15 +9,19 @@ import java.util.List;
 @Entity
 @Table(schema = "resource")
 @NoArgsConstructor
+@Data
 public class DeviceCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Integer id;
 
     @Column
-    private String type;  // server - switch - firewall
+    private String category;  // server - switch - firewall - enclosure
+
+    @Column
+    private int categoryId;  // 1 - 2 - 3 - 4
 
     @Column
     private String vendor; // hpe - cisco
@@ -25,67 +30,11 @@ public class DeviceCategory {
     private String model;   //
 
     @Column
-    private String serverFactor;
+    private String factor;
 
     @Column
-    private String serverFactorSize;
+    private int factorSize;
 
     @OneToMany(mappedBy = "deviceCategory")
     private List<Device> deviceList;
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String name) {
-        this.type = name;
-    }
-
-    public String getVendor() {
-        return vendor;
-    }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
-
-    public String getModel() {
-        return model;
-    }
-
-    public void setModel(String model) {
-        this.model = model;
-    }
-
-    public List<Device> getDeviceList() {
-        return deviceList;
-    }
-
-    public void setDeviceList(List<Device> deviceList) {
-        this.deviceList = deviceList;
-    }
-
-    public String getServerFactor() {
-        return serverFactor;
-    }
-
-    public void setServerFactor(String serverFactor) {
-        this.serverFactor = serverFactor;
-    }
-
-    public String getServerFactorSize() {
-        return serverFactorSize;
-    }
-
-    public void setServerFactorSize(String serverFactorSize) {
-        this.serverFactorSize = serverFactorSize;
-    }
 }

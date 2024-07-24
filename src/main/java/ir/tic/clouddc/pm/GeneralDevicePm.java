@@ -1,13 +1,11 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.resource.DevicePmCatalog;
-import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Table(schema = "pm")
 @NoArgsConstructor
 public class GeneralDevicePm extends Pm {
 }

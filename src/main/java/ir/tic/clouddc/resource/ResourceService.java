@@ -1,7 +1,6 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.event.*;
-import org.springframework.ui.Model;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -11,7 +10,7 @@ public interface ResourceService {
 
     Device validateFormDevice(EventLandingForm eventLandingForm);
 
-    Device getDeviceDetailModel(long deviceId);
+    Device getRefrencedDevice(long deviceId) throws SQLException;
 
     Utilizer getUtilizer(int utilizerId);
     List<Utilizer> getUtilizerList();

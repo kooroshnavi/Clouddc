@@ -159,15 +159,9 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Pm getPmDetail_1(Long pmId) {
-        /// Get pm and its interface
-        return pmRepository.getReferenceById(pmId);
-    }
-
-
-    @Override
     public List<PmDetail> getPmDetail_2(Pm pm) {
         if (pm.getPmDetailList() != null) {
+            log.info("getPmDetail 2");
             var sortedPmDetailList = pm
                     .getPmDetailList().stream()
                     .sorted(Comparator.comparing(PmDetail::getId).reversed())
@@ -227,7 +221,7 @@ public class PmServiceImpl implements PmService {
 
 
     @Override
-    @PreAuthorize(" #pm.active == true  && (#ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
+    @PreAuthorize("#pm.active == true  && (#ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
     public void UpdatePm(PmUpdateForm pmUpdateForm, @Param("pm") Pm pm, @Param("ownerUsername") String ownerUsername) throws IOException {
         // PART 1. Pm detail update
         PmDetail basePmDetail;
@@ -353,7 +347,6 @@ public class PmServiceImpl implements PmService {
         return pmRepository.save(pm);
     }
 
-
     @Override
     public List<Person> getAssignPersonList(String pmOwnerUsername) {
         List<Person> assignPersonList;
@@ -427,13 +420,27 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public Device getDevice(Long deviceId) throws SQLException {
-       return resourceService.getDevice(deviceId);
+        return resourceService.getDevice(deviceId);
+    }
+
+    @Override
+    public Pm getRefrencedPm(Long pmId) throws SQLException {
+        Pm pm;
+        try {
+            pm = pmRepository.getReferenceById(pmId);
+        } catch (Exception e) {
+            throw new SQLException(e);
+        }
+        setPmTransients(List.of(pm));
+
+        return pm;
     }
 
     @Override
     public void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException {
 
         if (catalogForm.getLocationId() != null) {
+            log.info(String.valueOf(catalogForm.getLocationId()));
             LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
             locationPmCatalog.setLocation(centerService.getRefrencedLocation(catalogForm.getLocationId()));
             locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
@@ -466,13 +473,11 @@ public class PmServiceImpl implements PmService {
                 pmDetailRepository.saveAndFlush(pmDetail);
             }
         }
-
-
     }
 
-
     @Override
-    public String getPmOwnerUsername(Long pmId) {
+    @PreAuthorize("#active")
+    public String getPmOwnerUsername(Long pmId, @Param("active") boolean active) {
         return pmDetailRepository.fetchPmOwnerUsername(pmId, true);
     }
 

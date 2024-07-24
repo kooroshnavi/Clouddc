@@ -6,14 +6,12 @@ import ir.tic.clouddc.center.Room;
 import ir.tic.clouddc.event.*;
 import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.utils.UtilService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -49,26 +47,30 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Device getDeviceDetailModel(long deviceId) {
-        Optional<Device> optionalDevice = deviceRepository.findById(deviceId);
-        if (optionalDevice.isPresent()) {
-            for (Event event : optionalDevice.get().getDeviceStatusEventList()) {
-                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            }
-            for (Event event : optionalDevice.get().getDeviceStatusEventList()) {
-                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-
-            }
-            for (Event event : optionalDevice.get().getDeviceUtilizerEventList()) {
-                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            }
-            for (Event event : optionalDevice.get().getDeviceMovementEventList()) {
-                event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            }
-            return optionalDevice.get();
-        } else {
-            throw new NoSuchElementException();
+    public Device getRefrencedDevice(long deviceId) throws SQLException {
+        Device device;
+        try {
+            device = deviceRepository.getReferenceById(deviceId);
+        } catch (Exception e) {
+            throw new SQLException(e);
         }
+
+        /*
+        for (Event event : device.getDeviceStatusEventList()) {
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+        }
+        for (Event event : device.getDeviceStatusEventList()) {
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+
+        }
+        for (Event event : device.getDeviceUtilizerEventList()) {
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+        }
+        for (Event event : device.getDeviceMovementEventList()) {
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+        }*/
+
+        return device;
     }
 
     @Override
@@ -160,7 +162,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     private Device registerNewDevice(EventLandingForm eventLandingForm) {
 
-        switch (eventLandingForm.getDevice().getDeviceCategory().getType()) {
+        switch (eventLandingForm.getDevice().getDeviceCategory().getCategory()) {
             case "Server" -> {   /// Server
                 Server srv = new Server();
                 srv.setSerialNumber(eventLandingForm.getSerialNumber());

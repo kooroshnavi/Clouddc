@@ -25,8 +25,6 @@ public interface PmService {
 
     Model modelForTaskController(Model model);
 
-    Pm getPmDetail_1(Long pmId);
-
     List<PmDetail> getPmDetail_2(Pm pm);
 
     List<MetaData> getPmDetail_3(Pm pm);
@@ -39,7 +37,7 @@ public interface PmService {
 
     void UpdatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 
-    String getPmOwnerUsername(Long pmId);
+    String getPmOwnerUsername(Long pmId, boolean active);
 
     Optional<Pm> getPm(Long pmId);
 
@@ -56,4 +54,6 @@ public interface PmService {
     void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException;
 
     Device getDevice(Long deviceId) throws SQLException;
+
+    Pm getRefrencedPm(Long pmId) throws SQLException;
 }

@@ -98,13 +98,12 @@ public class PmController {
     }
 
     @GetMapping("/{pmId}/detailList")
-    public String showPmDetailPage(Model model, @PathVariable Long pmId) {
-        var pm = pmService.getPmDetail_1(pmId);
+    public String showPmDetailPage(Model model, @PathVariable Long pmId) throws SQLException {
+        var pm = pmService.getRefrencedPm(pmId);
         var pmDetailList = pmService.getPmDetail_2(pm);
         var metadataList = pmService.getPmDetail_3(pm);
         var catalog = pm.getPmInterfaceCatalog();
         var pmInterface = catalog.getPmInterface();
-
 
         var activeDetail = pmDetailList.stream().filter(PmDetail::isActive).findFirst();
 
@@ -130,6 +129,7 @@ public class PmController {
             model.addAttribute("devicePmCatalog", devicePmCatalog);
         }
 
+        model.addAttribute("pmDetailList", pmDetailList);
         model.addAttribute("pmInterface", pmInterface);
         model.addAttribute("pm", pm);
         model.addAttribute("metadataList", metadataList);
@@ -138,32 +138,26 @@ public class PmController {
     }
 
     @GetMapping("/{pmId}/form")
-    public String showPmUpdateForm(Model model, @PathVariable Long pmId) {
-        var optionalPm = pmService.getPm(pmId);
-        if (optionalPm.isEmpty()) {
-            return "404";
-        } else {
-            var pm = optionalPm.get();
-            var catalog = pm.getPmInterfaceCatalog();
-            var pmInterface = catalog.getPmInterface();
-            var pmOwnerUsername = pmService.getPmOwnerUsername(pmId);
-            var assignPersonList = pmService.getAssignPersonList(pmOwnerUsername);
+    public String showPmUpdateForm(Model model, @PathVariable Long pmId) throws SQLException {
+        var pm = pmService.getRefrencedPm(pmId);
+        var pmOwnerUsername = pmService.getPmOwnerUsername(pmId, pm.isActive());
+        var assignPersonList = pmService.getAssignPersonList(pmOwnerUsername);
+        var catalog = pm.getPmInterfaceCatalog();
+        var pmInterface = catalog.getPmInterface();
 
-            if (catalog instanceof LocationPmCatalog locationPmCatalog) {
-                model.addAttribute("locationPmCatalog", locationPmCatalog);
-            } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
-                model.addAttribute("devicePmCatalog", devicePmCatalog);
-            }
-
-            model.addAttribute("pmInterface", pmInterface);
-            model.addAttribute("pm", pm);
-            model.addAttribute("pmUpdateForm", new PmUpdateForm());
-            model.addAttribute("assignPersonList", assignPersonList);
-            model.addAttribute("pmOwnerUsername", pmOwnerUsername);
-
-            return "pmUpdateForm";
-
+        if (catalog instanceof LocationPmCatalog locationPmCatalog) {
+            model.addAttribute("locationPmCatalog", locationPmCatalog);
+        } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
+            model.addAttribute("devicePmCatalog", devicePmCatalog);
         }
+
+        model.addAttribute("pmInterface", pmInterface);
+        model.addAttribute("pm", pm);
+        model.addAttribute("pmUpdateForm", new PmUpdateForm());
+        model.addAttribute("assignPersonList", assignPersonList);
+        model.addAttribute("pmOwnerUsername", pmOwnerUsername);
+
+        return "pmUpdateForm";
     }
 
     @PostMapping(value = "/update")

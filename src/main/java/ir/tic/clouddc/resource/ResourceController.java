@@ -5,8 +5,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+
+import java.sql.SQLException;
 
 @Controller
 @RequestMapping("/resource")
@@ -20,9 +22,9 @@ public class ResourceController {
     }
 
     @GetMapping("/device/{deviceId}/detail")
-    public String showDeviceDetail(Model model, @RequestParam("deviceId") long deviceId) {
+    public String showDeviceDetail(Model model, @PathVariable Long deviceId) throws SQLException {
 
-        var device = resourceService.getDeviceDetailModel(deviceId);
+        var device = resourceService.getRefrencedDevice(deviceId);
 
         if (device instanceof Server server) {
             model.addAttribute("server", server);

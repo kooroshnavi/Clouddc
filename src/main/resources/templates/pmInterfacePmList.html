@@ -77,7 +77,7 @@
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pmInterface.period}"></p>
-                            <p th:if="${not pmInterface.description == null}" class="mb-1"
+                            <p th:if="${pmInterface.description != null}" class="mb-1"
                                th:text=" 'توضیحات: ' + ${pmInterface.description}"></p>
                         </div>
                     </div>
