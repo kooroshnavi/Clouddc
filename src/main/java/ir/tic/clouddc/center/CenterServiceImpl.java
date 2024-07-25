@@ -21,7 +21,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -212,11 +211,13 @@ public class CenterServiceImpl implements CenterService {
 
 
     @Override
-    public Optional<Location> getLocation(Long locationId) {
+    public Location getLocation(Long locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
-        if (optionalLocation.isPresent()) {
-            if (optionalLocation.get().getLocationPmCatalogList() != null) {
-                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
+        if (optionalLocation.isPresent()){
+            var location = (Location) optionalLocation.get();
+
+            if (location.getLocationPmCatalogList() != null) {
+                for (LocationPmCatalog locationPmCatalog : location.getLocationPmCatalogList()) {
                     if (locationPmCatalog.isHistory()) {
                         var finishedDate = locationPmCatalog.getLastFinishedDate();
                         locationPmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
@@ -225,9 +226,9 @@ public class CenterServiceImpl implements CenterService {
                     locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
                 }
             }
-            return optionalLocation;
+            return location;
         }
-        throw new NoSuchElementException();
+        return null;
     }
 
     @Override

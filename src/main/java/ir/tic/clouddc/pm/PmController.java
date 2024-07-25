@@ -19,7 +19,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Controller
@@ -195,23 +194,21 @@ public class PmController {
     }
 
     @GetMapping("/catalog/location/{locationId}/form")
-    public String showLocationCatalogForm(Model model, @PathVariable Long locationId) {
+    public String showLocationCatalogForm(Model model, @PathVariable Long locationId) throws SQLException {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
-        Optional<Location> optionalLocation = pmService.getLocation(locationId);
-        if (optionalLocation.isPresent()) {
-            List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(optionalLocation.get(), null);
-            model.addAttribute("defaultPersonList", defaultPersonList);
-            model.addAttribute("pmInterfaceList", pmInterfaceList);
-            model.addAttribute("catalogForm", new CatalogForm());
-            model.addAttribute("update", false);
-            model.addAttribute("location", optionalLocation.get());
-            model.addAttribute("isLocation", true);
-            model.addAttribute("isDevice", false);
+        Location location = pmService.getReferencedLocation(locationId);
 
-            return "catalogForm";
-        } else {
-            return "404";
-        }
+        List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(location, null);
+        model.addAttribute("defaultPersonList", defaultPersonList);
+        model.addAttribute("pmInterfaceList", pmInterfaceList);
+        model.addAttribute("catalogForm", new CatalogForm());
+        model.addAttribute("update", false);
+        model.addAttribute("location", location);
+        model.addAttribute("isLocation", true);
+        model.addAttribute("isDevice", false);
+
+        return "catalogForm";
+
     }
 
     @GetMapping("/catalog/device/{deviceId}/form")
@@ -233,6 +230,7 @@ public class PmController {
     }
 
     @PostMapping("/catalog/register")
+    @ModifyProtection
     public String pmCatalogRegister(Model model, @ModelAttribute CatalogForm catalogForm) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);
@@ -244,9 +242,9 @@ public class PmController {
 
         return "redirect:/pm/workspace";
     }
-
+/*
     @ModelAttribute
     public void addAttributes(Model model) {
         pmService.modelForTaskController(model);
-    }
+    }*/
 }

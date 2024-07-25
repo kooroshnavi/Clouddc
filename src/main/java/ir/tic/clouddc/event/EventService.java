@@ -12,6 +12,7 @@ import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Optional;
 
@@ -20,7 +21,7 @@ public interface EventService {
 
     void eventSetup(EventLandingForm eventLandingForm
             , @Nullable DeviceStatusForm deviceStatusForm
-            , @Nullable LocationStatusForm locationStatusForm) throws IOException;
+            , @Nullable LocationStatusForm locationStatusForm) throws IOException, SQLException;
 
 
     List<EventCategory> getEventCategoryList();
@@ -37,7 +38,7 @@ public interface EventService {
 
     Optional<Center> getCenter(short centerId);
 
-    Optional<Location> getLocation(Long locationId);
+    Location getRefrencedLocation(Long locationId) throws SQLException;
     Optional<Device> getDevice(String serialNumber);
 
     long getEventCount();

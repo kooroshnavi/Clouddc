@@ -49,7 +49,7 @@ public interface CenterService {
 
     Hall getHall(int hallId);
 
-    Optional<Location> getLocation(Long locationId);
+    Location getLocation(Long locationId);
 
     Optional<Center> getCenter(int centerId);
 

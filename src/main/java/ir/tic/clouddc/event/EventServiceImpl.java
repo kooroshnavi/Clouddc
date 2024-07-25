@@ -21,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.math.RoundingMode;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.format.TextStyle;
 import java.util.*;
@@ -112,7 +113,7 @@ public final class EventServiceImpl implements EventService {
     @Override
     public void eventSetup(EventLandingForm eventLandingForm
             , @Nullable DeviceStatusForm deviceStatusForm
-            , @Nullable LocationStatusForm locationStatusForm) throws IOException {
+            , @Nullable LocationStatusForm locationStatusForm) throws IOException, SQLException {
 
         switch (eventLandingForm.getEventCategoryId()) {
             case VISIT_EVENT_CATEGORY_ID -> {
@@ -187,13 +188,13 @@ public final class EventServiceImpl implements EventService {
         return deviceUtilizerEvent;
     }
 
-    private DeviceMovementEvent deviceMovementEventRegister_4(EventLandingForm eventLandingForm) {
+    private DeviceMovementEvent deviceMovementEventRegister_4(EventLandingForm eventLandingForm) throws SQLException {
         DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
         deviceMovementEvent.setRegisterDate(UtilService.getDATE());
         deviceMovementEvent.setRegisterTime(UtilService.getTime());
         deviceMovementEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
         var destination = centerService.getLocation(eventLandingForm.getLocationId());
-        destination.ifPresent(deviceMovementEvent::setDestination);
+        deviceMovementEvent.setDestination(destination);
         deviceMovementEvent.setSource(eventLandingForm.getDevice().getLocation());
         deviceMovementEvent.setDevice(eventLandingForm.getDevice());
         deviceMovementEvent.setActive(false);
@@ -295,7 +296,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Optional<Location> getLocation(Long locationId) {
+    public Location getRefrencedLocation(Long locationId) throws SQLException {
         return centerService.getLocation(locationId);
     }
 

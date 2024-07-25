@@ -414,8 +414,8 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Optional<Location> getLocation(Long locationId) {
-        return centerService.getLocation(locationId);
+    public Location getReferencedLocation(Long locationId) throws SQLException {
+        return centerService.getRefrencedLocation(locationId);
     }
 
     @Override

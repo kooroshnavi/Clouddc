@@ -25,15 +25,13 @@ public class ResourceController {
     public String showDeviceDetail(Model model, @PathVariable Long deviceId) throws SQLException {
 
         var device = resourceService.getRefrencedDevice(deviceId);
-
-        if (device instanceof Server server) {
-            model.addAttribute("server", server);
-        } else if (device instanceof Switch sw) {
-            model.addAttribute("sw", sw);
-        } else if (device instanceof Firewall fw) {
-            model.addAttribute("fw", fw);
-        }
         model.addAttribute("device", device);
+
+        var catalogList = device.getDevicePmCatalogList();
+        model.addAttribute("catalogList", catalogList);
+
+       /* var eventList = eventService.getLocationEventList(baseLocation);
+        model.addAttribute("eventList", eventList);*/
 
         return "deviceDetail";
     }

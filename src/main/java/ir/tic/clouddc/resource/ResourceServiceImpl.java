@@ -43,7 +43,13 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public Device validateFormDevice(EventLandingForm eventLandingForm) {
         Optional<Device> currentDevice = getDeviceBySerialNumber(eventLandingForm.getSerialNumber());
-        return currentDevice.orElseGet(() -> registerNewDevice(eventLandingForm));
+        return currentDevice.orElseGet(() -> {
+            try {
+                return registerNewDevice(eventLandingForm);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        });
     }
 
     @Override
@@ -160,20 +166,20 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
 
-    private Device registerNewDevice(EventLandingForm eventLandingForm) {
+    private Device registerNewDevice(EventLandingForm eventLandingForm) throws SQLException {
 
         switch (eventLandingForm.getDevice().getDeviceCategory().getCategory()) {
             case "Server" -> {   /// Server
                 Server srv = new Server();
                 srv.setSerialNumber(eventLandingForm.getSerialNumber());
-                srv.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
+                srv.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
                 srv.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 return deviceRepository.save(srv);
             }
             case "Switch" -> { /// Switch
                 Switch sw = new Switch();
                 sw.setSerialNumber(eventLandingForm.getSerialNumber());
-                sw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
+                sw.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
                 sw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 return deviceRepository.save(sw);
             }
@@ -181,7 +187,7 @@ public class ResourceServiceImpl implements ResourceService {
             case "Firewall" -> { /// Firewall
                 Firewall fw = new Firewall();
                 fw.setSerialNumber(eventLandingForm.getSerialNumber());
-                fw.setLocation(centerService.getLocation(eventLandingForm.getLocationId()).get());
+                fw.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
                 fw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
                 return deviceRepository.save(fw);
             }

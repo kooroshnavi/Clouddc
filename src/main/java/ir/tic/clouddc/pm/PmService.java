@@ -49,7 +49,7 @@ public interface PmService {
 
     PmInterface getPmInterface(int pmInterfaceId);
 
-    Optional<Location> getLocation(Long locationId);
+    Location getReferencedLocation(Long locationId) throws SQLException;
 
     void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException;
 

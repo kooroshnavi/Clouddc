@@ -53,5 +53,4 @@ public abstract class Device {
 
     @OneToMany(mappedBy = "device")
     private List<DevicePmCatalog> devicePmCatalogList;
-
 }

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.util.List;
 import java.util.Objects;
 
@@ -53,7 +54,7 @@ public class EventController {
     @PostMapping("/form/detail")
     public String showEventStatusModel(Model model
             , @Nullable @ModelAttribute("eventLandingForm") EventLandingForm eventLandingForm
-            , @Nullable EventLandingForm fromImportantDevicePmForm) {
+            , @Nullable EventLandingForm fromImportantDevicePmForm) throws SQLException {
 
         if (!Objects.isNull(eventLandingForm)) {
             switch (eventLandingForm.getTarget()) {
@@ -67,19 +68,16 @@ public class EventController {
                     }
                 }
                 case "Location" -> {
-                    var location = eventService.getLocation(eventLandingForm.getLocationId());
-                    if (location.isPresent()) { // Location status event
-                        eventLandingForm.setLocation(location.get());
+                    var location = eventService.getRefrencedLocation(eventLandingForm.getLocationId());
+                        eventLandingForm.setLocation(location);
                         eventLandingForm.setEventCategoryId((short) 2);
 
-                        LocationStatusForm locationStatusForm = eventService.getLocationStatusForm(location.get());
-                        LocationStatus locationStatus = eventService.getCurrentLocationStatus(location.get());
+                        LocationStatusForm locationStatusForm = eventService.getLocationStatusForm(location);
+                        LocationStatus locationStatus = eventService.getCurrentLocationStatus(location);
                         locationStatusForm.setCurrentLocationStatus(locationStatus);
                         model.addAttribute("locationStatusForm", locationStatusForm);
                         model.addAttribute("locationStatus", locationStatus);
-                    } else {
-                        return "redirect:404";
-                    }
+
                 }
                 case "Device" -> {
                     var device = eventService.getDevice(eventLandingForm.getSerialNumber());
@@ -123,7 +121,7 @@ public class EventController {
     public String eventRegisterPost(Model model, @ModelAttribute("eventRegisterForm") EventLandingForm eventLandingForm   /// general event
             , @Nullable @ModelAttribute("deviceStatusForm") DeviceStatusForm deviceStatusForm   /// device status event
             , @Nullable @ModelAttribute("locationStatusForm") LocationStatusForm locationStatusForm /// location status event
-            , @RequestParam("attachment") MultipartFile file) throws IOException {
+            , @RequestParam("attachment") MultipartFile file) throws IOException, SQLException {
 
         if (!file.isEmpty()) {
             if (!Objects.isNull(locationStatusForm)) {
