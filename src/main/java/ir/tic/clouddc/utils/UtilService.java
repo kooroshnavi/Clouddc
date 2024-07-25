@@ -1,10 +1,10 @@
 package ir.tic.clouddc.utils;
 
 import com.github.mfathi91.time.PersianDate;
-import com.github.mfathi91.time.PersianDateTime;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
@@ -16,6 +16,7 @@ import static java.util.Map.entry;
 
 public final class UtilService {
 
+    private static final Logger log = LoggerFactory.getLogger(UtilService.class);
     private static LocalDate DATE;
 
     private static int TODAY_REPORT_ID;
@@ -93,18 +94,13 @@ public final class UtilService {
         return dateFormatter.format(PersianDate.fromGregorian(date));
     }
 
-    public static String getFormattedPersianDateTime(LocalDateTime dateTime) {
-        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-        return dateTimeFormatter.format(PersianDateTime.fromGregorian(dateTime));
-
-    }
 
     public static String getFormattedPersianDayTime(LocalDate localDate, LocalTime localTime) {
-        return UtilService
-                .PERSIAN_DAY
-                .get(localDate.getDayOfWeek()
-                        .getDisplayName(TextStyle.SHORT, Locale.getDefault()) + " - " + localTime);
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        var dayName = PERSIAN_DAY.get(localDate.getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault()));
+        var formattedTime = timeFormatter.format(localTime);
 
+        return dayName + " - " + formattedTime;
     }
 
     public static void setTodayReportId(int todayReportId) {

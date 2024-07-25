@@ -77,10 +77,10 @@
                         <th scope="col">نوع</th>
                         <th scope="col">نام</th>
                         <th scope="col">مرکز</th>
-                        <th th:if="${location.locationCategory.id == 2}" scope="col">سالن</th>
-                        <th th:if="${location.locationCategory.id == 2 && rack.utilizer.id == 14}" scope="col">توضیحات
+                        <th th:if="${location.locationCategory.categoryId == 2}" scope="col">سالن</th>
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 14}" scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.id == 2 && rack.utilizer.id != 14}" scope="col">بهره
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id != 14}" scope="col">بهره
                             بردار
                         </th>
                     </tr>
@@ -88,17 +88,17 @@
 
                     <tbody>
                     <tr>
-                        <td th:text="${location.locationCategory.target}"></td>
+                        <td th:text="${location.locationCategory.category}"></td>
                         <td th:text="${location.name}"></td>
                         <td th:text="${location.center.name}"></td>
 
-                        <td th:if="${location.locationCategory.id == 2}" th:text="${rack.hall.name}"></td>
+                        <td th:if="${location.locationCategory.categoryId == 2}" th:text="${rack.hall.name}"></td>
 
 
-                        <td th:if="${location.locationCategory.id == 2 && rack.utilizer.id == 14}"
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 14}"
                             th:text="${rack.description}"></td>
-                        <td th:if="${location.locationCategory.id == 2 && rack.utilizer.id != 14}">
-                            <div th:if="${location.locationCategory.id == 2}" class="col">
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id != 14}">
+                            <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
                                    th:href="@{/resource/utilizer/detail(utilizerId=${rack.utilizer.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
@@ -114,9 +114,9 @@
 
 
         <!--Device view (Rack)-->
-        <h6 th:if="${location.locationCategory.id == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
+        <h6 th:if="${location.locationCategory.categoryId == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
         <hr/>
-        <div th:if="${location.locationCategory.id == 2}" class='housing'>
+        <div th:if="${location.locationCategory.categoryId == 2}" class='housing'>
             <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
             <ol class="rack">
                 <li th:each="device, iter : ${rackDeviceList}" class='large'>
@@ -134,9 +134,9 @@
 
 
         <!--Device table (Room)-->
-        <h6 th:if="${location.locationCategory.id == 3}" class="mb-0 text-uppercase">لیست تجهیزات اتاق</h6>
+        <h6 th:if="${location.locationCategory.categoryId == 3}" class="mb-0 text-uppercase">لیست تجهیزات اتاق</h6>
         <hr/>
-        <div th:if="${location.locationCategory.id == 3}" class="card">
+        <div th:if="${location.locationCategory.categoryId == 3}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table mb-0 table-striped">
@@ -152,7 +152,7 @@
                         <tr th:each="device, iter : ${roomDeviceList}">
 
                             <td th:text="${iter.count}"></td>
-                            <td th:text="${device.deviceCategory.type} "></td>
+                            <td th:text="${device.deviceCategory.category} "></td>
 
                             <td th:text="${device.serialNumber}">
                                 <div class="col">
@@ -176,9 +176,9 @@
         <!--Module table (Room)-->
 
         <!--Rack table (Salon)-->
-        <h6 th:if="${location.locationCategory.id == 1}" class="mb-0 text-uppercase">رک های سالن</h6>
+        <h6 th:if="${location.locationCategory.categoryId == 1}" class="mb-0 text-uppercase">رک های سالن</h6>
         <hr/>
-        <div th:if="${location.locationCategory.id == 1}" class="card">
+        <div th:if="${location.locationCategory.categoryId == 1}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
@@ -219,7 +219,7 @@
 
         <!--Pm table-->
         <h6 class="mb-0 text-uppercase"
-            th:text="${'لیست Pm های ' + location.locationCategory.target + ' ' + location.name}"></h6>
+            th:text="${'لیست Pm های ' + location.locationCategory.category + ' ' + location.name}"></h6>
         <hr/>
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
 

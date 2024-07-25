@@ -203,6 +203,7 @@ public class PmServiceImpl implements PmService {
             pmDetail.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
             if (!pmDetail.isActive()) {
                 pmDetail.setPersianFinishedDate(UtilService.getFormattedPersianDate(pmDetail.getFinishedDate()));
+                log.info(UtilService.getFormattedPersianDayTime(pmDetail.getFinishedDate(), pmDetail.getFinishedTime()));
                 pmDetail.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pmDetail.getFinishedDate(), pmDetail.getFinishedTime()));
             }
         }
@@ -244,11 +245,11 @@ public class PmServiceImpl implements PmService {
                 fileService.checkAttachment(pmUpdateForm.getFile(), currentPmDetailPersistence);
             }
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), currentPmDetailPersistence.getPerson(), currentPmDetailPersistence);
-            if (basePmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
+          /*  if (basePmDetail instanceof TemperaturePmDetail temperaturePmDetail) {
                 temperaturePmDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
-            }
+            }*/
         } else {
-            basePmDetail.setDescription("Terminated");
+            basePmDetail.setDescription("توسط مسئول مدیریت وظایف از کارتابل خارج شد.");
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("SupervisorPmTermination"), currentPerson, currentPmDetailPersistence);
             supervisorOperation(pmUpdateForm, currentPerson, pm);
         }
@@ -262,7 +263,7 @@ public class PmServiceImpl implements PmService {
             endPm(pm);
 
         } else { //  Assign new PmDetail
-            log.info("new General Pm");
+            log.info("new General PmDetail");
             GeneralPmDetail pmDetail = new GeneralPmDetail();
             pmDetail.setPm(pm);
             assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), true);
@@ -271,7 +272,6 @@ public class PmServiceImpl implements PmService {
 
 
     private PmDetail assignNewPmDetail(PmDetail pmDetail, Integer personId, boolean active) {
-        log.info(String.valueOf("assignPmDetail to: " + personId));
         var assigneePerson = personService.getPerson(personId);
         Persistence persistence = logService.persistenceSetup(assigneePerson);
         pmDetail.setPersistence(persistence);
@@ -295,19 +295,11 @@ public class PmServiceImpl implements PmService {
 
 
     private void supervisorOperation(PmUpdateForm pmUpdateForm, Person currentPerson, Pm pm) throws IOException {
-        if (pm instanceof GeneralLocationPm generalLocationPm) {
-            GeneralPmDetail supervisorGeneralPmDetail = new GeneralPmDetail();
-            supervisorGeneralPmDetail.setDescription(pmUpdateForm.getDescription());
-            supervisorGeneralPmDetail.setPm(generalLocationPm);
-            var persistedDetail = assignNewPmDetail(supervisorGeneralPmDetail, currentPerson.getId(), false);
-            fileService.checkAttachment(pmUpdateForm.getFile(), persistedDetail.getPersistence());
-
-        } else if (pm instanceof TemperaturePm temperaturePm) {
-            TemperaturePmDetail supervisorTemperatureDetail = new TemperaturePmDetail();
-            supervisorTemperatureDetail.setDescription(pmUpdateForm.getDescription());
-            supervisorTemperatureDetail.setTemperatureValue(pmUpdateForm.getTemperatureValue());
-            supervisorTemperatureDetail.setPm(temperaturePm);
-            var persistedDetail = assignNewPmDetail(supervisorTemperatureDetail, currentPerson.getId(), false);
+        GeneralPmDetail supervisorGeneralPmDetail = new GeneralPmDetail();
+        supervisorGeneralPmDetail.setDescription(pmUpdateForm.getDescription());
+        supervisorGeneralPmDetail.setPm(pm);
+        var persistedDetail = assignNewPmDetail(supervisorGeneralPmDetail, currentPerson.getId(), false);
+        if (pmUpdateForm.getFile() != null) {
             fileService.checkAttachment(pmUpdateForm.getFile(), persistedDetail.getPersistence());
         }
     }
@@ -370,7 +362,7 @@ public class PmServiceImpl implements PmService {
         List<Integer> catalogedInterface;
 
         if (!Objects.equals(location, null)) {
-            List<Integer> targetIdList = List.of(location.getLocationCategory().getId(), 4);
+            List<Integer> targetIdList = List.of(location.getLocationCategory().getCategoryId(), 4);
             if (location.getLocationPmCatalogList().isEmpty()) {
                 pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, List.of(0), targetIdList);
             } else {
@@ -387,7 +379,7 @@ public class PmServiceImpl implements PmService {
             return pmInterfaceList;
 
         } else if (!Objects.equals(device, null)) {
-            List<Integer> targetIdList = List.of(device.getDeviceCategory().getId(), 9);
+            List<Integer> targetIdList = List.of(device.getDeviceCategory().getCategoryId(), 9);
             if (device.getDevicePmCatalogList().isEmpty()) {
                 pmInterfaceList = pmInterfaceRepository.fetchPmInterfaceListNotInCatalogList(true, List.of(0), targetIdList);
             } else {
@@ -420,7 +412,7 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public Device getDevice(Long deviceId) throws SQLException {
-        return resourceService.getDevice(deviceId);
+        return resourceService.getReferencedDevice(deviceId);
     }
 
     @Override
@@ -458,13 +450,13 @@ public class PmServiceImpl implements PmService {
             }
         } else {
             DevicePmCatalog devicePmCatalog = new DevicePmCatalog();
-            devicePmCatalog.setDevice(resourceService.getDevice(catalogForm.getDeviceId()));
+            devicePmCatalog.setDevice(resourceService.getReferencedDevice(catalogForm.getDeviceId()));
             devicePmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
             devicePmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
             devicePmCatalog.setEnabled(true);
             devicePmCatalog.setHistory(false);
             devicePmCatalog.setActive(false);
-            devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
+            devicePmCatalog.setNextDueDate(validDate);
 
             var newCatalog = pmInterfaceCatalogRepository.save(devicePmCatalog);
             if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {

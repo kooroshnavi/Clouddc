@@ -193,7 +193,7 @@ public final class EventServiceImpl implements EventService {
         deviceMovementEvent.setRegisterDate(UtilService.getDATE());
         deviceMovementEvent.setRegisterTime(UtilService.getTime());
         deviceMovementEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-        var destination = centerService.getLocation(eventLandingForm.getLocationId());
+        var destination = centerService.getRefrencedLocation(eventLandingForm.getLocationId());
         deviceMovementEvent.setDestination(destination);
         deviceMovementEvent.setSource(eventLandingForm.getDevice().getLocation());
         deviceMovementEvent.setDevice(eventLandingForm.getDevice());
@@ -251,7 +251,7 @@ public final class EventServiceImpl implements EventService {
         if (optionalEvent.isPresent()) {
             event = optionalEvent.get();
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
             loadEventDetailTransients(event.getEventDetail());
 
             return event;
@@ -297,12 +297,12 @@ public final class EventServiceImpl implements EventService {
 
     @Override
     public Location getRefrencedLocation(Long locationId) throws SQLException {
-        return centerService.getLocation(locationId);
+        return centerService.getRefrencedLocation(locationId);
     }
 
     @Override
     public Optional<Device> getDevice(String serialNumber) {
-        return resourceService.getDevice(serialNumber);
+        return resourceService.getDeviceBySerialNumber(serialNumber);
     }
 
     @Override

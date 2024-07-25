@@ -211,13 +211,12 @@ public class CenterServiceImpl implements CenterService {
 
 
     @Override
-    public Location getLocation(Long locationId) {
+    public Optional<Location> getLocation(Long locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
-        if (optionalLocation.isPresent()){
-            var location = (Location) optionalLocation.get();
 
-            if (location.getLocationPmCatalogList() != null) {
-                for (LocationPmCatalog locationPmCatalog : location.getLocationPmCatalogList()) {
+        if (optionalLocation.isPresent()) {
+            if (optionalLocation.get().getLocationPmCatalogList() != null) {
+                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
                     if (locationPmCatalog.isHistory()) {
                         var finishedDate = locationPmCatalog.getLastFinishedDate();
                         locationPmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
@@ -226,9 +225,9 @@ public class CenterServiceImpl implements CenterService {
                     locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
                 }
             }
-            return location;
         }
-        return null;
+        return optionalLocation;
+
     }
 
     @Override

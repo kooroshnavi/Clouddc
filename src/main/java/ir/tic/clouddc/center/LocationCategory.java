@@ -1,6 +1,7 @@
 package ir.tic.clouddc.center;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
@@ -9,41 +10,24 @@ import java.util.List;
 @Entity
 @Table(schema = "center")
 @NoArgsConstructor
+@Data
 public class LocationCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;  // 1 - 2 - 3
+    private Integer id;  // 1 - 2 - 3
 
     @Column
     @Nationalized
-    private String target; /// Hall - Rack - Room
+    private String category; /// Hall - Rack - Room
+
+    @Column
+    private int categoryId;
 
     @OneToMany(mappedBy = "locationCategory")
     private List<Location> locationList;
 
-    public List<Location> getLocationList() {
-        return locationList;
-    }
 
-    public void setLocationList(List<Location> locationList) {
-        this.locationList = locationList;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public String getTarget() {
-        return target;
-    }
-
-    public void setTarget(String name) {
-        this.target = name;
-    }
 }
+

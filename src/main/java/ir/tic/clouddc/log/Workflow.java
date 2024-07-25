@@ -2,6 +2,7 @@ package ir.tic.clouddc.log;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -22,6 +23,7 @@ public abstract class Workflow {
     private LocalTime registerTime;    // Register or assign registerTime
 
     @Column
+    @Nationalized
     private String description;
 
     @OneToOne(cascade = {CascadeType.ALL})

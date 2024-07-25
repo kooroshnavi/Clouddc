@@ -77,7 +77,7 @@
                             <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
                             <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.target}"></p>
                             <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.type}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.category}"></p>
                             <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
                             <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
                             <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>

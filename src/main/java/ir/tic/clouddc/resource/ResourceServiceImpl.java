@@ -6,6 +6,8 @@ import ir.tic.clouddc.center.Room;
 import ir.tic.clouddc.event.*;
 import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.utils.UtilService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 public class ResourceServiceImpl implements ResourceService {
 
     private final DeviceRepository deviceRepository;
@@ -53,12 +56,21 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Device getRefrencedDevice(long deviceId) throws SQLException {
-        Device device;
-        try {
-            device = deviceRepository.getReferenceById(deviceId);
-        } catch (Exception e) {
-            throw new SQLException(e);
+    public Optional<Device> getDevice(Long deviceId) {
+        Optional<Device> currentDevice = deviceRepository.findById(deviceId);
+
+        if (currentDevice.isPresent()) {
+            if (currentDevice.get().getDevicePmCatalogList() != null) {
+                log.info("Current device has catalog");
+                for (DevicePmCatalog devicePmCatalog : currentDevice.get().getDevicePmCatalogList()) {
+                    if (devicePmCatalog.isHistory()) {
+                        var finishedDate = devicePmCatalog.getLastFinishedDate();
+                        devicePmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+                        devicePmCatalog.setPersianLastFinishedDayTime(UtilService.getFormattedPersianDayTime(finishedDate, devicePmCatalog.getLastFinishedTime()));
+                    }
+                    devicePmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(devicePmCatalog.getNextDueDate()));
+                }
+            }
         }
 
         /*
@@ -76,7 +88,7 @@ public class ResourceServiceImpl implements ResourceService {
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
         }*/
 
-        return device;
+        return currentDevice;
     }
 
     @Override
@@ -90,14 +102,15 @@ public class ResourceServiceImpl implements ResourceService {
         return utilizerRepository.findAll();
     }
 
+
     @Override
-    public Device getDevice(Long deviceId) throws SQLException {
-        return deviceRepository.getReferenceById(deviceId);
+    public Optional<Device> getDeviceBySerialNumber(String serialNumber) {
+        return deviceRepository.findBySerialNumber(serialNumber);
     }
 
     @Override
-    public Optional<Device> getDevice(String serialNumber) {
-        return deviceRepository.findBySerialNumber(serialNumber);
+    public Device getReferencedDevice(Long deviceId) {
+        return deviceRepository.getReferenceById(deviceId);
     }
 
     @Override
@@ -196,10 +209,6 @@ public class ResourceServiceImpl implements ResourceService {
                 return null;
             }
         }
-    }
-
-    private Optional<Device> getDeviceBySerialNumber(String serialNumber) {
-        return deviceRepository.findBySerialNumber(serialNumber);
     }
 }
 

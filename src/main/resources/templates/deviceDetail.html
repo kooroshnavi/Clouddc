@@ -98,7 +98,7 @@
 
                         <td>
                             <div class="col">
-                                <a th:text="${device.location.locationCategory.target} + ' ' + ${device.location.name}" th:href="@{/center/location/{locationId}/detail (locationId=${device.location.id})}"
+                                <a th:text="${device.location.locationCategory.category} + ' ' + ${device.location.name}" th:href="@{/center/location/{locationId}/detail (locationId=${device.location.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="جزئیات محل نصب"></a>
                             </div>
@@ -161,7 +161,7 @@
                                        th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
-                                       th:title="${catalog.persianLastFinishedDayTime}"></a>
+                                       title="جزئیات آخرین اقدام"></a>
                                 </div>
                             </td>
 

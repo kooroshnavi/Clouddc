@@ -37,24 +37,28 @@ public class CenterController {
     @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
     public String showLocationDetail(Model model, @PathVariable Long locationId) {
         var baseLocation = centerService.getLocation(locationId);
-        model.addAttribute("location", baseLocation);
-        var catalogList = baseLocation.getLocationPmCatalogList();
-        model.addAttribute("catalogList", catalogList);
-        var eventList = eventService.getLocationEventList(baseLocation);
-        model.addAttribute("eventList", eventList);
+        if (baseLocation.isPresent()) {
+            model.addAttribute("location", baseLocation.get());
+            var catalogList = baseLocation.get().getLocationPmCatalogList();
+            model.addAttribute("catalogList", catalogList);
+            var eventList = eventService.getLocationEventList(baseLocation.get());
+            model.addAttribute("eventList", eventList);
 
-
-        if (baseLocation instanceof Hall location) {
-            model.addAttribute("hall", location);
-            model.addAttribute("rackList", location.getRackList());
-        } else if (baseLocation instanceof Rack location) {
-            model.addAttribute("rack", location);
-            model.addAttribute("rackDeviceList", location.getDeviceList());
-        } else if (baseLocation instanceof Room location) {
-            model.addAttribute("room", location);
-            model.addAttribute("roomDeviceList", location.getDeviceList());
+            if (baseLocation.get() instanceof Hall location) {
+                model.addAttribute("hall", location);
+                model.addAttribute("rackList", location.getRackList());
+            } else if (baseLocation.get() instanceof Rack location) {
+                model.addAttribute("rack", location);
+                model.addAttribute("rackDeviceList", location.getDeviceList());
+            } else if (baseLocation.get() instanceof Room location) {
+                model.addAttribute("room", location);
+                model.addAttribute("roomDeviceList", location.getDeviceList());
+            }
+            return "locationDetail";
         }
-        return "locationDetail";
+
+        return "404";
+
 
     }
 
