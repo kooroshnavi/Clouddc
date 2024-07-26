@@ -220,7 +220,7 @@ public final class EventServiceImpl implements EventService {
         var currentPerson = personService.getCurrentPerson();
         var persistence = logService.persistenceSetup(currentPerson);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("EventUpdate"), currentPerson, persistence);
-        fileService.checkAttachment(file, persistence);
+        fileService.registerAttachment(file, persistence);
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(description);
         eventDetail.setEvent(event);
@@ -261,7 +261,7 @@ public final class EventServiceImpl implements EventService {
 
     @Override
     public MetaData getRelatedMetadata(long persistenceId) {
-        var metadata = fileService.getRelatedMetadataList(List.of(persistenceId));
+        var metadata = fileService.getRelatedMetadataList(List.of(persistenceId), false);
         if (!metadata.isEmpty()) {
             return metadata.get(0);
         }

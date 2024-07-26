@@ -7,6 +7,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Nationalized;
 
+import java.time.LocalDate;
+
 @Entity
 @Table(schema = "document")
 @NoArgsConstructor
@@ -28,6 +30,18 @@ public class MetaData {
 
     @Column
     private boolean enabled;
+
+    @Column
+    private LocalDate uploadDate;
+
+    @Column
+    private LocalDate disableDate;
+
+    @Transient
+    private String persianUploadDate;
+
+    @Transient
+    private String persianDisableDate;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "persistence_id")

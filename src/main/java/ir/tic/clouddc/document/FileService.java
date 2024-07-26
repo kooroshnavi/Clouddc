@@ -5,17 +5,18 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.Optional;
 
 public interface FileService {
 
-    void checkAttachment(MultipartFile file, Persistence persistence) throws IOException;
+    void registerAttachment(MultipartFile file, Persistence persistence) throws IOException;
 
-    List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList);
+    List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList, boolean fullList);
 
-    MetaData getDocument(long id);
+    Optional<MetaData> getDocument(Long id);
 
-    void deleteDocument(Long medaDataId, int documentOwner, int requester);
+    void disableDocument(Long medaDataId, Integer documentOwnerId,  Integer requesterId);
 
-    int getDocumentOwner(Long metaDataId);
+    Integer getDocumentOwner(Long metaDataId);
 
 }

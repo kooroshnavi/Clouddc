@@ -1,18 +1,23 @@
 package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.log.LogService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/document")
@@ -23,15 +28,32 @@ public class DocumentController {
 
     private final PersonService personService;
 
+    private final LogService logService;
+
+
     @Autowired
-    public DocumentController(FileService fileService, PersonService personService) {
+    public DocumentController(FileService fileService, PersonService personService, LogService logService) {
         this.fileService = fileService;
         this.personService = personService;
+        this.logService = logService;
+    }
+
+    @GetMapping("/list")
+    public String getAttachmentList(Model model) {
+        List<Long> persistenceIdList = logService.getPersistenceIdList(personService.getCurrentPerson().getId());
+        List<MetaData> metaDataList = fileService.getRelatedMetadataList(persistenceIdList, true);
+        model.addAttribute("metadataList", metaDataList);
+
+        return "attachmentList";
     }
 
     @GetMapping("/{metaDataId}/download")
     public void getDocument(HttpServletResponse response, @PathVariable Long metaDataId) throws IOException {
-        MetaData metaData = fileService.getDocument(metaDataId);
+        Optional<MetaData> optionalMetaData = fileService.getDocument(metaDataId);
+        if (optionalMetaData.isEmpty()) {
+            throw new FileNotFoundException();
+        }
+        var metaData = optionalMetaData.get();
         response.setContentType(metaData.getType());
         String fileName = URLEncoder.encode(metaData.getName(), StandardCharsets.UTF_8);
         response.setHeader("Content-disposition", "attachment; filename=" + fileName);
@@ -41,11 +63,12 @@ public class DocumentController {
         outputStream.close();
     }
 
-    @GetMapping("/{metaDataId}/delete")
-    public String deleteDocument(@PathVariable Long metaDataId) {
-        fileService.deleteDocument(metaDataId, fileService.getDocumentOwner(metaDataId), personService.getCurrentPerson().getId());
+    @GetMapping("/{metaDataId}/disable")
+    public String disableDocument(@PathVariable Long metaDataId) {
+        fileService.disableDocument(metaDataId, fileService.getDocumentOwner(metaDataId), personService.getCurrentPerson().getId());
 
-        return "404";
+        return "redirect:/document/list";
     }
+
 }
 

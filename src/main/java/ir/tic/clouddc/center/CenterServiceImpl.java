@@ -180,29 +180,6 @@ public class CenterServiceImpl implements CenterService {
         locationStatusRepository.saveAllAndFlush(locationStatusList);
     }
 
-    @Override
-    public List<LocationPmCatalog> getTodayCatalogList(LocalDate date) {
-        return locationPmCatalogRepository.findAllByNextDueDateAndEnabled(date, true);
-    }
-
-    @Override
-    public void updateCatalogDueDate(LocationPmCatalog catalog) {
-        locationPmCatalogRepository.updateCatalogDueDate(UtilService.getDATE().plusDays(catalog.getPmInterface().getPeriod()), catalog.getId());
-    }
-
-    @Override
-    public void updateNewlyEnabledCatalog(PmInterface pmInterface) {
-        List<LocationPmCatalog> locationPmCatalogList = locationPmCatalogRepository.findAllByPmInterface(pmInterface);
-        if (!locationPmCatalogList.isEmpty()) {
-            for (LocationPmCatalog catalog : locationPmCatalogList) {
-                var dueDate = catalog.getNextDueDate();
-                if (dueDate.isBefore(UtilService.getDATE()) || dueDate.equals(UtilService.getDATE())) {  // expired due date
-                    catalog.setNextDueDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(1)));
-                }
-            }
-            locationPmCatalogRepository.saveAll(locationPmCatalogList);
-        }
-    }
 
     @Override
     public Hall getHall(int hallId) {

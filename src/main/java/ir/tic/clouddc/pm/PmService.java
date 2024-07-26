@@ -6,6 +6,7 @@ import ir.tic.clouddc.individual.Person;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.resource.Device;
 import jakarta.annotation.Nullable;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
@@ -21,8 +22,6 @@ public interface PmService {
 
     List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active);
 
-    PmInterfaceRegisterForm pmInterfaceEditFormData(int pmInterfaceId);
-
     Model modelForTaskController(Model model);
 
     List<PmDetail> getPmDetail_2(Pm pm);
@@ -35,7 +34,7 @@ public interface PmService {
 
     void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 
-    void UpdatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
+    void updatePm(PmUpdateForm pmUpdateForm, Pm pm, String ownerUsername) throws IOException;
 
     String getPmOwnerUsername(Long pmId, boolean active);
 
@@ -47,7 +46,7 @@ public interface PmService {
 
     List<PmInterface> getNonCatalogedPmInterfaceList(@Nullable Location location, @Nullable Device device);
 
-    PmInterface getPmInterface(int pmInterfaceId);
+    PmInterface getReferencedPmInterface(Integer pmInterfaceId) throws EntityNotFoundException;
 
     Location getReferencedLocation(Long locationId) throws SQLException;
 
@@ -56,4 +55,6 @@ public interface PmService {
     Device getDevice(Long deviceId) throws SQLException;
 
     Pm getRefrencedPm(Long pmId) throws SQLException;
+
+    Long getActivePmCount(Integer id);
 }

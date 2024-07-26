@@ -3,7 +3,6 @@ package ir.tic.clouddc.center;
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
@@ -40,12 +39,6 @@ public interface CenterService {
     List<CenterIdNameProjection> getCenterIdAndNameList();
 
     void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event);
-
-    List<LocationPmCatalog> getTodayCatalogList(LocalDate date);
-
-    void updateCatalogDueDate(LocationPmCatalog catalog);
-
-    void updateNewlyEnabledCatalog(PmInterface pmInterface);
 
     Hall getHall(int hallId);
 

@@ -12,7 +12,7 @@ public interface LogService {
 
     void historyUpdate(LocalDate date, LocalTime time, String logMessage, Person person, Persistence persistence);
 
-    List<Long> getPersistenceIdList(long workFlow);
+    List<Long> getPersistenceIdList(Integer personId);
 
     void saveWorkFlow(List<Workflow> workflowList);
 

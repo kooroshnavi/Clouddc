@@ -1,8 +1,8 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -31,7 +32,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public void checkAttachment(MultipartFile file, Persistence persistence) throws IOException {
+    public void registerAttachment(MultipartFile file, Persistence persistence) throws IOException {
         if (!file.isEmpty()) {
             attachmentRegister(file, persistence);
         }
@@ -44,6 +45,7 @@ public class FileServiceImpl implements FileService {
         metaData.setType(file.getContentType());
         var size = file.getSize() / 1024.0; // KB
         metaData.setSize(Float.parseFloat(df.format(size)));
+        metaData.setUploadDate(UtilService.getDATE());
         Attachment attachment = new Attachment();
         attachment.setDocument(file.getBytes());
         metaData.setAttachment(attachment);
@@ -53,29 +55,43 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList) {
-        var metadataList =  metaDataRepository.fetchRelatedMetaDataList(persistenceIdList, true);
+    public List<MetaData> getRelatedMetadataList(List<Long> persistenceIdList, boolean fullList) {
+        List<MetaData> metadataList;
+        if (fullList) {
+            metadataList = metaDataRepository.fetchFullMetadataList(persistenceIdList);
+        } else {
+            metadataList = metaDataRepository.fetchRelatedMetaDataList(persistenceIdList, true);
+        }
+        if (!metadataList.isEmpty()) {
+            for (MetaData metadata : metadataList) {
+                metadata.setPersianUploadDate(UtilService.getFormattedPersianDate(metadata.getUploadDate()));
+                if (!metadata.isEnabled()) {
+                    metadata.setPersianDisableDate(UtilService.getFormattedPersianDate(metadata.getDisableDate()));
+                }
+            }
+        }
         log.info(String.valueOf(metadataList.size()));
 
         return metadataList;
     }
 
     @Override
-    public MetaData getDocument(long id) {
-        return metaDataRepository.findById(id).get();
+    public Optional<MetaData> getDocument(Long id) {
+        return metaDataRepository.findById(id);
     }
 
     @Override
-    @PreAuthorize("#documentOwner == #requester or hasAnyAuthority('ADMIN', 'SUPERVISOR')")
-    public void deleteDocument(Long medaDataId, @Param("documentOwner") int documentOwnerId, @Param("requester") int requesterId) {
+    @PreAuthorize("#documentOwner == #requester")
+    public void disableDocument(Long medaDataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
         var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), new Person(requesterId), persistence);
-        metaDataRepository.updateMetadataEnablement(medaDataId, false);
+        metaDataRepository.disableMetadata(medaDataId, false, UtilService.getDATE());
         log.info(String.valueOf(metaDataRepository.getReferenceById(medaDataId).isEnabled()));
     }
 
     @Override
-    public int getDocumentOwner(Long metaDataId) {
+    public Integer getDocumentOwner(Long metaDataId) {
         return metaDataRepository.fetchMetaDataOwnerId(metaDataId);
     }
+
 }

@@ -8,6 +8,7 @@ import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
+import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.NoSuchElementException;
@@ -39,6 +40,12 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     public String noValue(NoSuchElementException noSuchElementException) {
         log.error(noSuchElementException.getMessage());
+        return "404";
+    }
+
+    @ExceptionHandler(FileNotFoundException.class)
+    public String noValue(FileNotFoundException fileNotFoundException) {
+        log.error(fileNotFoundException.getMessage());
         return "404";
     }
 

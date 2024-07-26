@@ -9,7 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 @Data
 public class PmInterfaceRegisterForm {
 
-    private PmInterface pmInterface;
+    private Integer pmInterfaceId;
 
     @NotBlank(message = "عنوان نباید خالی باشد")
     private String title;
@@ -24,6 +24,8 @@ public class PmInterfaceRegisterForm {
     private boolean enabled;
 
     private boolean statelessRecurring;
+
+    private boolean update;
 
     private MultipartFile file;
 }

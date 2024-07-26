@@ -102,7 +102,7 @@
                                     </select>
                                 </div>
 
-                                <div class="col-12 col-md-6">
+                                <div th:if="${not isUpdate}" class="col-12 col-md-6">
                                     <label class="form-label">این Pm روی کدام مکان یا نوع تجهیز اعمال شود؟</label>
                                     <select class="form-select" name="subject" th:field="*{target}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -126,12 +126,11 @@
                                               cols="4"></textarea>
                                 </div>
 
-                                <div>
+                                <div th:if="${enablementAccess}">
                                     <label>وضعیت فعال سازی
                                         <input th:field="*{enabled}"
                                                type="checkbox"/>
                                     </label>
-                                    <span></span>
                                 </div>
 
                                 <div>
@@ -141,6 +140,10 @@
                                     </label>
                                     <span></span>
                                 </div>
+
+                                <input type="hidden" name="update" th:value="${isUpdate}"/>
+                                <input th:if="${not enablementAccess}" type="hidden" name="enabled" th:value="${pmInterface.enabled}"/>
+                                <input th:if="${isUpdate}" type="hidden" name="pmInterfaceId" th:value="${pmInterface.id}"/>
 
                                 <div class="col-12">
                                     <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>

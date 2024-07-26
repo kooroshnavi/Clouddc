@@ -28,4 +28,5 @@ public interface LocationPmCatalogRepository extends JpaRepository<LocationPmCat
     @Modifying
     @Query("update LocationPmCatalog l set l.nextDueDate = :nextDue where l.id = :id")
     void updateCatalogDueDate(@Param("nextDue") LocalDate date, @Param("id") Long id);
+
 }

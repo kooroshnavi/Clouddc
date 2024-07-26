@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -25,7 +26,9 @@ public interface MetaDataRepository extends JpaRepository<MetaData, Long> {
 
     @Transactional
     @Modifying
-    @Query("update MetaData m set m.enabled = :enabled where m.id = :id")
-    void updateMetadataEnablement(@Param("id") Long id, @Param("enabled") boolean enabled);
+    @Query("update MetaData m set m.enabled = :enabled, m.disableDate = :disableDate where m.id = :metaDataId")
+    void disableMetadata(@Param("metaDataId") Long id, @Param("enabled") boolean enabled, @Param("disableDate") LocalDate date);
 
+    @Query("SELECT m FROM MetaData m WHERE m.persistence.id IN :persistenceIdList")
+    List<MetaData> fetchFullMetadataList(List<Long> persistenceIdList);
 }

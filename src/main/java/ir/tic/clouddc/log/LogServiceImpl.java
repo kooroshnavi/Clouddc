@@ -16,7 +16,9 @@ import java.util.Optional;
 public final class LogServiceImpl implements LogService {
 
     private final PersistenceRepository persistenceRepository;
+
     private final LogHistoryRepository logHistoryRepository;
+
     private final WorkflowRepository workflowRepository;
 
     @Autowired
@@ -48,8 +50,8 @@ public final class LogServiceImpl implements LogService {
     }
 
     @Override
-    public List<Long> getPersistenceIdList(long workFlow) {
-        return null;
+    public List<Long> getPersistenceIdList(Integer personId) {
+        return persistenceRepository.getPersonPersistenceIdList(personId);
     }
 
     @Override

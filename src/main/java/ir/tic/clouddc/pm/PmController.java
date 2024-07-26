@@ -19,6 +19,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Slf4j
 @Controller
@@ -44,8 +45,42 @@ public class PmController {
     public String showPmInterfaceForm(Model model) {
 
         model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
+        model.addAttribute("isUpdate", false);
+        model.addAttribute("enablementAccess", true);
 
         return "pmInterfaceRegisterView";
+    }
+
+    @GetMapping("/{pmInterfaceId}/edit")
+    @ModifyProtection
+    public String pmInterfaceEditForm(Model model, @PathVariable Integer pmInterfaceId) {
+        if (Objects.equals(pmInterfaceId, null) || pmInterfaceId == 0 || pmInterfaceId < 0) {
+            return "404";
+        }
+        var pmInterface = pmService.getReferencedPmInterface(pmInterfaceId);
+        var activePmCount = pmService.getActivePmCount(pmInterface.getId());
+        if (activePmCount > 0) {
+            model.addAttribute("enablementAccess", false);
+        } else {
+            model.addAttribute("enablementAccess", true);
+        }
+        PmInterfaceRegisterForm pmInterfaceRegisterForm = getPmInterfaceRegisterForm(pmInterface);
+
+        model.addAttribute("pmInterfaceRegisterForm", pmInterfaceRegisterForm);
+        model.addAttribute("pmInterface", pmInterface);
+        model.addAttribute("isUpdate", true);
+
+        return "pmInterfaceRegisterView";
+    }
+
+    private static PmInterfaceRegisterForm getPmInterfaceRegisterForm(PmInterface pmInterface) {
+        PmInterfaceRegisterForm pmInterfaceRegisterForm = new PmInterfaceRegisterForm();
+        pmInterfaceRegisterForm.setTitle(pmInterface.getName());
+        pmInterfaceRegisterForm.setDescription(pmInterface.getDescription());
+        pmInterfaceRegisterForm.setPeriod(pmInterface.getPeriod());
+        pmInterfaceRegisterForm.setEnabled(pmInterface.isEnabled());
+        pmInterfaceRegisterForm.setStatelessRecurring(pmInterface.isStatelessRecurring());
+        return pmInterfaceRegisterForm;
     }
 
     @PostMapping(value = "/register")  /// General Pm only
@@ -73,7 +108,7 @@ public class PmController {
             , @PathVariable boolean active
             , @PathVariable Integer pmInterfaceId) {
 
-        var pmInterface = pmService.getPmInterface(pmInterfaceId);
+        var pmInterface = pmService.getReferencedPmInterface(pmInterfaceId);
         if (pmInterface != null) {
 
             var pmList = pmService.getPmInterfacePmList(pmInterface.getId(), active);
@@ -168,7 +203,7 @@ public class PmController {
         }
         var pm = pmService.getPm(pmUpdateForm.getPmId());
         if (pm.isPresent()) {
-            pmService.UpdatePm(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
+            pmService.updatePm(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
             return "redirect:/pm/workspace";
         }
 
