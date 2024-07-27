@@ -70,7 +70,6 @@ public class FileServiceImpl implements FileService {
                 }
             }
         }
-        log.info(String.valueOf(metadataList.size()));
 
         return metadataList;
     }
@@ -82,16 +81,17 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @PreAuthorize("#documentOwner == #requester")
-    public void disableDocument(Long medaDataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
-        var persistence = metaDataRepository.fetchMetaDataPersistence(medaDataId);
+    public void disableDocument(Long metadataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
+        metaDataRepository.disableMetadata(metadataId, false, UtilService.getDATE());
+        log.info(String.valueOf(documentOwnerId));
+        log.info(String.valueOf(requesterId));
+        var persistence = metaDataRepository.fetchMetaDataPersistence(metadataId);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), new Person(requesterId), persistence);
-        metaDataRepository.disableMetadata(medaDataId, false, UtilService.getDATE());
-        log.info(String.valueOf(metaDataRepository.getReferenceById(medaDataId).isEnabled()));
+        log.info(String.valueOf(metadataId));
     }
 
     @Override
     public Integer getDocumentOwner(Long metaDataId) {
         return metaDataRepository.fetchMetaDataOwnerId(metaDataId);
     }
-
 }

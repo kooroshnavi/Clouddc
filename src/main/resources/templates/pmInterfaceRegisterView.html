@@ -76,7 +76,8 @@
 
                     <div class="card-body">
                         <div class="border p-3 rounded">
-                            <form class="row g-3" th:action="@{/pm/register}" th:object="${pmInterfaceRegisterForm}"
+
+                            <form class="row g-lg-3" th:action="@{/pm/register}" th:object="${pmInterfaceRegisterForm}"
                                   enctype="multipart/form-data" method="POST">
 
                                 <div class="col-12">
@@ -84,8 +85,9 @@
                                     <input required="required" type="text" th:field="*{title}" class="form-control"
                                            placeholder="عنوان در لیست ها نمایش داده می شود">
                                 </div>
+                                <hr/>
 
-                                <div class="col-12 col-md-6">
+                                <div class="col-12">
                                     <label class="form-label">دوره تکرار</label>
                                     <select class="form-select" name="subject" th:field="*{period}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -101,8 +103,9 @@
                                         <option th:value="180">180 روز</option>
                                     </select>
                                 </div>
+                                <hr/>
 
-                                <div th:if="${not isUpdate}" class="col-12 col-md-6">
+                                <div th:if="${not isUpdate}" class="col-12">
                                     <label class="form-label">این Pm روی کدام مکان یا نوع تجهیز اعمال شود؟</label>
                                     <select class="form-select" name="subject" th:field="*{target}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
@@ -115,9 +118,27 @@
                                         <option th:value="7">تجهیز: فایروال</option>
                                         <option th:value="8">تجهیز: انکلوژر</option>
                                         <option th:value="9">روی تمام انواع تجهیزات</option>
-
                                     </select>
                                 </div>
+                                <hr/>
+
+                                <div th:if="${enablementAccess}" class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:field="*{enabled}">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال سازی</label>
+                                </div>
+                                <hr/>
+
+                                <div th:if="${not enablementAccess}" class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked="checked" disabled="disabled">
+                                    <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این Pm خاتمه یابد.</label>
+                                </div>
+
+                                <div class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" th:field="*{statelessRecurring}" checked>
+                                    <label class="form-check-label" for="flexSwitchCheckChecked">تکرار مستقل
+                                    </label>
+                                </div>
+                                <hr/>
 
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
@@ -125,30 +146,17 @@
                                               placeholder="خلاصه ای از اینکه چه اقدامی باید انجام شود" rows="4"
                                               cols="4"></textarea>
                                 </div>
-
-                                <div th:if="${enablementAccess}">
-                                    <label>وضعیت فعال سازی
-                                        <input th:field="*{enabled}"
-                                               type="checkbox"/>
-                                    </label>
-                                </div>
-
-                                <div>
-                                    <label>تکرار مستقل از آخرین اجرا
-                                        <input th:field="*{statelessRecurring}"
-                                               type="checkbox"/>
-                                    </label>
-                                    <span></span>
-                                </div>
-
-                                <input type="hidden" name="update" th:value="${isUpdate}"/>
-                                <input th:if="${not enablementAccess}" type="hidden" name="enabled" th:value="${pmInterface.enabled}"/>
-                                <input th:if="${isUpdate}" type="hidden" name="pmInterfaceId" th:value="${pmInterface.id}"/>
+                                <hr/>
 
                                 <div class="col-12">
                                     <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
                                     <input class="form-control" type="file" name="attachment" id="attachment">
                                 </div>
+                                <hr/>
+
+                                <input type="hidden" name="update" th:value="${isUpdate}"/>
+                                <input th:if="${not enablementAccess}" type="hidden" name="enabled" th:value="${pmInterface.enabled}"/>
+                                <input th:if="${isUpdate}" type="hidden" name="pmInterfaceId" th:value="${pmInterface.id}"/>
 
                                 <div class="col">
                                     <!-- Button trigger modal -->
@@ -180,6 +188,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                <hr/>
 
                             </form>
                         </div>

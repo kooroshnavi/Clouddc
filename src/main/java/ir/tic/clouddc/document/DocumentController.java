@@ -2,6 +2,7 @@ package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.individual.PersonService;
 import ir.tic.clouddc.log.LogService;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.io.FileNotFoundException;
@@ -63,11 +65,17 @@ public class DocumentController {
         outputStream.close();
     }
 
-    @GetMapping("/{metaDataId}/disable")
-    public String disableDocument(@PathVariable Long metaDataId) {
-        fileService.disableDocument(metaDataId, fileService.getDocumentOwner(metaDataId), personService.getCurrentPerson().getId());
+    @PostMapping("/disable")
+    public String disableDocument(HttpServletRequest request) {
+        var requestParam = request.getParameter("metadataId");
+        if (requestParam != null && !requestParam.isBlank() && !requestParam.isEmpty()) {
+            log.info(String.valueOf(request.getParameter("metadataId")));
+            var metadataId = Long.valueOf(requestParam);
+            fileService.disableDocument(metadataId, fileService.getDocumentOwner(metadataId), personService.getCurrentPerson().getId());
 
-        return "redirect:/document/list";
+            return "redirect:/document/list";
+        }
+        return "404";
     }
 
 }

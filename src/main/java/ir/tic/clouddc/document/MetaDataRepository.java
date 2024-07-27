@@ -21,13 +21,13 @@ public interface MetaDataRepository extends JpaRepository<MetaData, Long> {
     @Query("SELECT m.persistence.person.id FROM MetaData m WHERE m.id  = :id")
     int fetchMetaDataOwnerId(@Param("id") Long id);
 
-    @Query("SELECT (m.persistence) FROM MetaData m WHERE m.id  = :id")
+    @Query("SELECT m.persistence FROM MetaData m WHERE m.id  = :id")
     Persistence fetchMetaDataPersistence(@Param("id") Long metadataId);
 
     @Transactional
     @Modifying
-    @Query("update MetaData m set m.enabled = :enabled, m.disableDate = :disableDate where m.id = :metaDataId")
-    void disableMetadata(@Param("metaDataId") Long id, @Param("enabled") boolean enabled, @Param("disableDate") LocalDate date);
+    @Query("update MetaData m set m.enabled = :enabled, m.disableDate = :disableDate where m.id = :metadataId")
+    void disableMetadata(@Param("metadataId") Long id, @Param("enabled") boolean enabled, @Param("disableDate") LocalDate date);
 
     @Query("SELECT m FROM MetaData m WHERE m.persistence.id IN :persistenceIdList")
     List<MetaData> fetchFullMetadataList(List<Long> persistenceIdList);

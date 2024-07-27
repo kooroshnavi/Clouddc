@@ -85,6 +85,7 @@
                             <th>وضعیت</th>
                         </tr>
                         </thead>
+
                         <tbody>
                         <tr th:each="metadata, iter : ${metadataList}">
 
@@ -92,6 +93,13 @@
                             <td>
                                 <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
                                     <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.presentationml.presentation'}"
+                                     class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file-plus me-2 font-24 text-danger'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
                                 </div>
@@ -110,59 +118,79 @@
                                        class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}" class="d-flex align-items-hall">
-                                    <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}"
+                                     class="d-flex align-items-hall">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}" class="d-flex align-items-hall">
-                                    <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
+                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text/plain' || metadata.type == 'text'}"
+                                     class="d-flex align-items-hall">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'text/html'}" class="d-flex align-items-hall">
+                                    <div class="bx bxs-file-html"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-info" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/x-zip-compressed'}"
+                                     class="d-flex align-items-hall">
+                                    <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
                                 </div>
                             </td>
 
                             <td th:text="${metadata.persianUploadDate}"/>
+
                             <td th:if="${not metadata.enabled}" th:text="${metadata.persianDisableDate}"/>
                             <td th:if="${metadata.enabled}">فعال</td>
-                            <td th:if="${metadata.enabled}">
-                                <form th:if="${metadata.enabled}" th:action="@{/document/{metadataId}/disable (metadataId=${metadata.id})}" method="get">
 
-                                    <div class="col">
-                                        <!-- Button trigger modal -->
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#exampleWarningModal">غیرفعالسازی
-                                        </button>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                                <div class="modal-content bg-danger">
-                                                    <div class="modal-header border-dark">
-                                                        <h5 class="modal-title text-dark">توجه</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                                aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-dark">
-                                                        <p>همکار گرامی در صورتی که فایل اشتباهی را بارگذاری کرده اید می توانید آن را غیرفعال کنید.</p>
-                                                        <p>در صورت تایید؛ پیوست مربوطه غیرفعال شده و پس از ۳۰ روز حذف می شود.</p>
-                                                    </div>
-                                                    <div class="modal-footer border-dark">
-                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                                            لغو
-                                                        </button>
-                                                        <button type="submit" class="btn btn-dark">تایید</button>
-                                                    </div>
+                            <td th:if="${metadata.enabled}">
+                                <div class="col">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#exampleLargeModal">غیرفعالسازی
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleLargeModal" tabindex="-1"
+                                         aria-hidden="true">
+                                        <div class="modal-dialog modal-lg">
+                                            <div class="modal-content bg-danger">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title">توجه</h5>
+                                                    <button type="button" class="btn-close"
+                                                            data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body">همکار گرامی در صورت غیرفعالسازی، فایل مدنظر تا 7 روز صرفا در همین صفحه و برای شما در دسترس بوده و دیگران امکان مشاهده و دانلود نخواهند داشت. پس از مدت اشاره شده، فایل مذکور حذف و غیرقابل دسترسی است.
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="text-bg-light"
+                                                            data-bs-dismiss="modal">لغو
+                                                    </button>
+                                                    <form class="row g-3" th:action="@{/document/disable}"
+                                                          enctype="multipart/form-data" method="POST">
+                                                        <input type="hidden" name="metadataId" th:value="${metadata.id}"/>
+                                                    <button class="font-weight-bold text-bg-dark" type="submit">غیرفعالسازی فایل</button>
+                                                    </form>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
+                                </div>
                             </td>
+
                             <td th:if="${not metadata.enabled}">
                                 <button type="button" class="btn btn-outline-warning" disabled="disabled">در انتظار حذف
                                 </button>
                             </td>
+
                         </tr>
                         </tbody>
                     </table>
