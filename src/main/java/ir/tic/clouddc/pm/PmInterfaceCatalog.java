@@ -1,6 +1,6 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,18 +14,17 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public abstract class PmInterfaceCatalog {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "pmInterface_id")
+    @JoinColumn(name = "PmInterfaceID")
     private PmInterface pmInterface;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "default_workspace_id")
+    @JoinColumn(name = "DefaultWorkspaceID")
     private Person defaultPerson;
 
     @Column
@@ -49,7 +48,7 @@ public abstract class PmInterfaceCatalog {
     @Column
     private boolean history;
 
-    @OneToMany
+    @OneToMany(mappedBy = "pmInterfaceCatalog")
     private List<Pm> pmList;
 
     @Transient

@@ -6,7 +6,7 @@ import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface DeviceStatusRepository extends JpaRepository<DeviceStatus, Integer> {
+public interface DeviceStatusRepository extends JpaRepository<DeviceStatus, Long> {
 
     Optional<DeviceStatus> findByDeviceAndCurrent(Device device, boolean current);
 }

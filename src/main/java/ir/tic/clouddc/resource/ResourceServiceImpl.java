@@ -4,7 +4,7 @@ import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.center.Room;
 import ir.tic.clouddc.event.*;
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -118,7 +118,7 @@ public class ResourceServiceImpl implements ResourceService {
         List<DeviceStatus> deviceStatusList = new ArrayList<>();
         var device = event.getDevice();
         var currentDeviceStatus = getCurrentDeviceStatus(device);
-        currentDeviceStatus.setCurrent(false);
+        currentDeviceStatus.setActive(false);
         deviceStatusList.add(currentDeviceStatus);
 
         DeviceStatus newDeviceStatus = new DeviceStatus();
@@ -130,7 +130,7 @@ public class ResourceServiceImpl implements ResourceService {
         newDeviceStatus.setModule(deviceStatusForm.isModule());
         newDeviceStatus.setStorage(deviceStatusForm.isStorage());
         newDeviceStatus.setPort(deviceStatusForm.isPort());
-        newDeviceStatus.setCurrent(true);
+        newDeviceStatus.setActive(true);
 
         deviceStatusList.add(newDeviceStatus);
 

@@ -1,4 +1,4 @@
-package ir.tic.clouddc.individual;
+package ir.tic.clouddc.person;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;

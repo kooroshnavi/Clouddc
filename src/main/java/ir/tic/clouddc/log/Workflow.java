@@ -2,7 +2,6 @@ package ir.tic.clouddc.log;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -13,7 +12,7 @@ import java.time.LocalTime;
 public abstract class Workflow {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     private Long id;
 
     @Column
@@ -23,11 +22,10 @@ public abstract class Workflow {
     private LocalTime registerTime;    // Register or assign registerTime
 
     @Column
-    @Nationalized
     private String description;
 
     @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "persistence_id")
+    @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
     @Transient

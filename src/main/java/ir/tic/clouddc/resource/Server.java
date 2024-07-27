@@ -6,10 +6,9 @@ import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "resource")
+@Table(schema = "Resource")
 @NoArgsConstructor
 public final class Server extends Device {
-
     @Column
     private String remoteAddress;
 

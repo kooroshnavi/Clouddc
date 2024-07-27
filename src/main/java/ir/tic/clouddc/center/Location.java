@@ -4,7 +4,6 @@ import ir.tic.clouddc.event.LocationStatusEvent;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
@@ -13,14 +12,12 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public abstract class Location {
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column
     private Long id;
 
     @Column
-    @Nationalized
     private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)

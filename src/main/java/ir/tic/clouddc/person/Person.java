@@ -1,18 +1,17 @@
-package ir.tic.clouddc.individual;
+package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.center.LocationPmCatalog;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
 @Entity
-@Table(schema = "individual")
+@Table(schema = "Person")
 @NoArgsConstructor
 @Data
-public class Person {
+public final class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +22,6 @@ public class Person {
     private String username;
 
     @Column
-    @Nationalized
     private String name;
 
     @Column

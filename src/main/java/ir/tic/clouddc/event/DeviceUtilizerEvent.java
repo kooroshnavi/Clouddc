@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "event")
+@Table(schema = "Event")
 @NoArgsConstructor
-public class DeviceUtilizerEvent extends Event {
+public final class DeviceUtilizerEvent extends Event {
 
     @OneToOne
     @JoinColumn(name = "old_utilize_id")

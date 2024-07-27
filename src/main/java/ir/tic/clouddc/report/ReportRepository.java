@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface ReportRepository extends JpaRepository<DailyReport, Integer> {
+public interface ReportRepository extends JpaRepository<DailyReport, Long> {
 
     Optional<DailyReport> findByActive(boolean active);
 /*
@@ -24,6 +24,6 @@ public interface ReportRepository extends JpaRepository<DailyReport, Integer> {
     int getActiveReportId(@Param("active") boolean active);
 
     @Query("SELECT date FROM DailyReport WHERE id IN :id")
-    List<LocalDate> getWeeklyDateList(@Param("id") List<Integer> weeklyIdList);
+    List<LocalDate> getWeeklyDateList(@Param("id") List<Long> weeklyIdList);
 
 }

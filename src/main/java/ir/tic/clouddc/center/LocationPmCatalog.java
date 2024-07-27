@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "center")
+@Table(schema = "Center")
 @NoArgsConstructor
 public final class LocationPmCatalog extends PmInterfaceCatalog {
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "LocationID")
     private Location location;
 
     public Location getLocation() {

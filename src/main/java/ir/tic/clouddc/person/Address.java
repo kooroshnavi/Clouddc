@@ -1,14 +1,14 @@
-package ir.tic.clouddc.individual;
+package ir.tic.clouddc.person;
 
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "individual")
+@Table(schema = "Person")
 @NoArgsConstructor
 @Data
-public class Address {
+public final class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -2,17 +2,18 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "center")
+@Table(schema = "Center")
 @NoArgsConstructor
-public class LocationStatus {
-
+@Data
+public final class LocationStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
-    private int id;
+    private Integer id;
 
     @Column
     private boolean door;
@@ -24,14 +25,14 @@ public class LocationStatus {
     private boolean power;
 
     @Column
-    private boolean current;
+    private boolean active;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "LocationID")
     private Location location;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "EventID")
     private Event event;
 
     @Transient
@@ -40,75 +41,4 @@ public class LocationStatus {
     @Transient
     private String persianStatusDayTime;
 
-    public String getPersianStatusDate() {
-        return persianStatusDate;
-    }
-
-    public void setPersianStatusDate(String persianStatusDate) {
-        this.persianStatusDate = persianStatusDate;
-    }
-
-    public String getPersianStatusDayTime() {
-        return persianStatusDayTime;
-    }
-
-    public void setPersianStatusDayTime(String persianStatusDayTime) {
-        this.persianStatusDayTime = persianStatusDayTime;
-    }
-
-    public boolean isCurrent() {
-        return current;
-    }
-
-    public void setCurrent(boolean current) {
-        this.current = current;
-    }
-
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public boolean isDoor() {
-        return door;
-    }
-
-    public void setDoor(boolean door) {
-        this.door = door;
-    }
-
-    public boolean isVentilation() {
-        return ventilation;
-    }
-
-    public void setVentilation(boolean ventilation) {
-        this.ventilation = ventilation;
-    }
-
-    public boolean isPower() {
-        return power;
-    }
-
-    public void setPower(boolean power) {
-        this.power = power;
-    }
-
-    public Location getLocation() {
-        return location;
-    }
-
-    public void setLocation(Location location) {
-        this.location = location;
-    }
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
 }

@@ -2,8 +2,8 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.individual.Person;
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.pm.CatalogForm;
@@ -162,9 +162,9 @@ public class CenterServiceImpl implements CenterService {
     public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event) {
         List<LocationStatus> locationStatusList = new ArrayList<>();
         var location = locationStatusForm.getLocation();
-        var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isCurrent).findFirst();
+        var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();
         if (currentStatus.isPresent()) {
-            currentStatus.get().setCurrent(false);
+            currentStatus.get().setActive(false);
             locationStatusList.add(currentStatus.get());
         }
         LocationStatus locationStatus = new LocationStatus();
@@ -173,7 +173,7 @@ public class CenterServiceImpl implements CenterService {
         locationStatus.setDoor(locationStatusForm.isDoor());
         locationStatus.setVentilation(locationStatusForm.isVentilation());
         locationStatus.setPower(locationStatusForm.isPower());
-        locationStatus.setCurrent(true);
+        locationStatus.setActive(true);
 
         locationStatusList.add(locationStatus);
 

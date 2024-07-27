@@ -1,6 +1,6 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

@@ -1,7 +1,7 @@
 package ir.tic.clouddc.notification;
 
 import com.github.mfathi91.time.PersianDateTime;
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.soap2.SoapClientService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

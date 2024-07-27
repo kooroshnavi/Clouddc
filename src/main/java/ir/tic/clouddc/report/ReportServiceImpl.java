@@ -9,7 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,34 +59,9 @@ class ReportServiceImpl implements ReportService {
         today.setActive(true);
         dailyReportList.add(today);
         reportRepository.saveAll(dailyReportList);
-        UtilService.setTodayReportId(yesterday.get().getId() + 1);
+        UtilService.setTodayReportId((int) (yesterday.get().getId() + 1));
         return today;
     }
 
-
-    @Override
-    public void saveAll(List<DailyReport> dailyReportList) {
-        reportRepository.saveAll(dailyReportList);
-    }
-
-
-    @Override
-    public List<LocalDate> getWeeklyDate() {
-        int activeReportId = reportRepository.getActiveReportId(true);
-        List<Integer> weeklyIdList = new ArrayList<>();
-        for (int i = activeReportId - 1; i > activeReportId - 7; i--) {
-            weeklyIdList.add(i);
-        }
-
-        List<LocalDate> weeklyDateList = reportRepository.getWeeklyDateList(weeklyIdList);
-        return weeklyDateList;
-    }
-
-    @Override
-    public LocalDate getWeeklyOffsetDate() {
-        int activeReportId = reportRepository.getActiveReportId(true);
-        int weeklyOffsetReportId = activeReportId - 5;
-        return reportRepository.findById(weeklyOffsetReportId).get().getDate();
-    }
 
 }

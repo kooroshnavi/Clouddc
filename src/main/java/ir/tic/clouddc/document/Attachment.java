@@ -5,17 +5,17 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "document")
+@Table(schema = "Document")
 @NoArgsConstructor
 @Data
-public class Attachment {
+public final class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Long id;
 
-    @Column(columnDefinition="BYTEA")
+    @Lob
     private byte[] document;
 }
 

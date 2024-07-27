@@ -11,9 +11,8 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 public abstract class Pm {    // new Task style
-
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column
     private Long id;
 
@@ -39,7 +38,7 @@ public abstract class Pm {    // new Task style
     private List<PmDetail> pmDetailList;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "catalog_id")
+    @JoinColumn(name = "CatalogID")
     private PmInterfaceCatalog pmInterfaceCatalog;
 
     @Transient

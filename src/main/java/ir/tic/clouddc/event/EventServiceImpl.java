@@ -4,7 +4,7 @@ import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
@@ -42,11 +42,11 @@ public final class EventServiceImpl implements EventService {
     private final LogService logService;
     private final ResourceService resourceService;
 
-    private static final short VISIT_EVENT_CATEGORY_ID = 1;
-    private static final short LOCATION_STATUS_EVENT_CATEGORY_ID = 2;
-    private static final short DEVICE_UTILIZER_EVENT_CATEGORY_ID = 3;
-    private static final short DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
-    private static final short DEVICE_STATUS_EVENT_CATEGORY_ID = 5;
+    private static final int VISIT_EVENT_CATEGORY_ID = 1;
+    private static final int LOCATION_STATUS_EVENT_CATEGORY_ID = 2;
+    private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 3;
+    private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
+    private static final int DEVICE_STATUS_EVENT_CATEGORY_ID = 5;
 
 
     @Autowired
@@ -245,7 +245,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getEventHistory(int eventId) {
+    public Event getEventHistory(Long eventId) {
         var optionalEvent = eventRepository.findById(eventId);
         Event event;
         if (optionalEvent.isPresent()) {
@@ -260,7 +260,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public MetaData getRelatedMetadata(long persistenceId) {
+    public MetaData getRelatedMetadata(Long persistenceId) {
         var metadata = fileService.getRelatedMetadataList(List.of(persistenceId), false);
         if (!metadata.isEmpty()) {
             return metadata.get(0);
@@ -291,7 +291,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Optional<Center> getCenter(short centerId) {
+    public Optional<Center> getCenter(Integer centerId) {
         return centerService.getCenter(centerId);
     }
 

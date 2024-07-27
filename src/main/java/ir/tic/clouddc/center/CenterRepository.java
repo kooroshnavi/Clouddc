@@ -8,13 +8,8 @@ import java.util.List;
 
 @Repository
 public interface CenterRepository extends JpaRepository<Center, Integer> {
-    List<Center> findAllByIdIn(List<Long> ids);
-
     @Query("SELECT C.id, C.name FROM Center C")
     List<CenterService.CenterIdNameProjection> fetchCenterIdNameList();
-
-
-
 }
 
 

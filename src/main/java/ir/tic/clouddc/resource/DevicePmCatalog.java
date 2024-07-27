@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "resource")
+@Table(schema = "Resource")
 @NoArgsConstructor
 public final class DevicePmCatalog extends PmInterfaceCatalog {
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "DeviceID")
     private Device device;
 
     public Device getDevice() {

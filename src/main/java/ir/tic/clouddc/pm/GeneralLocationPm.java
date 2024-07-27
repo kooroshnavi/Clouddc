@@ -1,11 +1,11 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.LocationPmCatalog;
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "pm")
+@Table(schema = "Pm")
 @NoArgsConstructor
 public final class GeneralLocationPm extends Pm {
 }

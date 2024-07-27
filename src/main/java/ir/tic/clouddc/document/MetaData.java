@@ -5,21 +5,19 @@ import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 import java.time.LocalDate;
 
 @Entity
-@Table(schema = "document")
+@Table(schema = "Document")
 @NoArgsConstructor
 @Data
-public class MetaData {
+public final class MetaData {
 
     @Id
     private Long id;
 
     @Column
-    @Nationalized
     private String name;
 
     @Column

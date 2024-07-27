@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(schema = "center")
+@Table(schema = "Center")
 @NoArgsConstructor
 public final class Room extends Location {
 
@@ -16,7 +16,7 @@ public final class Room extends Location {
     private List<Device> deviceList;
 
     @ManyToOne
-    @JoinColumn(name = "utilizer_id")
+    @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 
 

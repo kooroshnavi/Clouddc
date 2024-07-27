@@ -11,7 +11,7 @@ import java.time.LocalTime;
 public abstract class PmDetail extends Workflow {  // Common fields in Pm-related details
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "pm_id")
+    @JoinColumn(name = "PmID")
     private Pm pm;
 
     @Column

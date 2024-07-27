@@ -1,42 +1,30 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Entity
-@Table(schema = "center")
+@Table(schema = "Center")
 @NoArgsConstructor
 public final class Rack extends Location {
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "hall_id")
+    @JoinColumn(name = "HallID")
     private Hall hall;
 
     @ManyToOne
-    @JoinColumn(name = "utilizer_id")
+    @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
 
     @Column
-    @Nationalized
     private String description;
-
-    @ElementCollection
-    @CollectionTable(name = "date_temperature_mapping",
-            schema = "Center",
-            joinColumns = {@JoinColumn(name = "rack_id", referencedColumnName = "id")})
-    @MapKeyColumn(name = "date")
-    @Column(name = "average_temperature")
-    private Map<LocalDate, Float> averageTemperature;
 
 
     public Hall getHall() {
@@ -53,14 +41,6 @@ public final class Rack extends Location {
 
     public void setDeviceList(List<Device> deviceList) {
         this.deviceList = deviceList;
-    }
-
-    public Map<LocalDate, Float> getAverageTemperature() {
-        return averageTemperature;
-    }
-
-    public void setAverageTemperature(Map<LocalDate, Float> averageTemperature) {
-        this.averageTemperature = averageTemperature;
     }
 
     public String getDescription() {

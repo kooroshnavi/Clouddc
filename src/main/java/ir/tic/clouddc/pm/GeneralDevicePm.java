@@ -5,7 +5,7 @@ import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "pm")
+@Table(schema = "Pm")
 @NoArgsConstructor
-public class GeneralDevicePm extends Pm {
+public final class GeneralDevicePm extends Pm {
 }

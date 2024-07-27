@@ -2,7 +2,7 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
-import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
 import ir.tic.clouddc.security.ModifyProtection;

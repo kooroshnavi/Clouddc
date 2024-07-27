@@ -6,9 +6,9 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "event")
+@Table(schema = "Event")
 @NoArgsConstructor
-public class LocationStatusEvent extends Event {
+public final class LocationStatusEvent extends Event {
 
     @Column
     private boolean doorChanged;  // order 0
@@ -20,11 +20,11 @@ public class LocationStatusEvent extends Event {
     private boolean powerChanged; // order 2
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "status_id")
+    @JoinColumn(name = "StatusID")
     private LocationStatus locationStatus;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "location_id")
+    @JoinColumn(name = "LocationID")
     private Location location;
 
     public LocationStatus getLocationStatus() {

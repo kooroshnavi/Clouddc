@@ -1,6 +1,6 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.utils.UtilService;

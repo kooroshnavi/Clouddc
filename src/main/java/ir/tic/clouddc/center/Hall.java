@@ -1,14 +1,14 @@
 package ir.tic.clouddc.center;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Entity;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Entity
-@Table(schema = "center")
+@Table(schema = "Center")
 @NoArgsConstructor
 public final class Hall extends Location {
     @OneToMany(mappedBy = "hall")

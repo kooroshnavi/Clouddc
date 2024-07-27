@@ -1,6 +1,6 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,10 +9,10 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
-@Table(schema = "log", name = "history")
+@Table(schema = "Log", name = "History")
 @NoArgsConstructor
 @Data
-public class LogHistory {
+public final class LogHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
@@ -28,11 +28,11 @@ public class LogHistory {
     private boolean last;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "person_id")
+    @JoinColumn(name = "PersonID")
     private Person person;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "persistence_id")
+    @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
     @Column

@@ -1,8 +1,8 @@
 package ir.tic.clouddc.security;
 
 import ir.tic.clouddc.otp.OtpService;
-import ir.tic.clouddc.individual.AddressRepository;
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.AddressRepository;
+import ir.tic.clouddc.person.PersonService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;

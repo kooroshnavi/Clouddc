@@ -6,7 +6,7 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "event")
+@Table(schema = "Event")
 @NoArgsConstructor
 public final class DeviceStatusEvent extends Event {
 

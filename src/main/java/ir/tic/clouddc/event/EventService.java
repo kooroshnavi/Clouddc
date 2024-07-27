@@ -30,13 +30,13 @@ public interface EventService {
 
     Model modelForEventController(Model model);
 
-    Event getEventHistory(int eventId);
+    Event getEventHistory(Long eventId);
 
-    MetaData getRelatedMetadata(long persistenceId);
+    MetaData getRelatedMetadata(Long persistenceId);
 
     List<Event> getEventList(@Nullable Integer categoryId);
 
-    Optional<Center> getCenter(short centerId);
+    Optional<Center> getCenter(Integer centerId);
 
     Location getRefrencedLocation(Long locationId) throws SQLException;
     Optional<Device> getDevice(String serialNumber);

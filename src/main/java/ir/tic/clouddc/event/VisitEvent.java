@@ -5,9 +5,9 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "event")
+@Table(schema = "Event")
 @NoArgsConstructor
-public class VisitEvent extends Event {
+public final class VisitEvent extends Event {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "center_id")

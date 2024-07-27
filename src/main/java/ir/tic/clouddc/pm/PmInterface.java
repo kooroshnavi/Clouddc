@@ -1,27 +1,23 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
 @Entity
-@Table(schema = "pm")
+@Table(schema = "Pm")
 @NoArgsConstructor
 @Data
 public final class PmInterface {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
     private Integer id;
 
     @Column
-    @Nationalized
     private String name;
 
     @Column
@@ -37,11 +33,9 @@ public final class PmInterface {
     private boolean statelessRecurring;
 
     @Column
-    @Nationalized
     private String description;
 
     @Column
-    @Nationalized
     private String category;
 
     @Column
@@ -54,7 +48,7 @@ public final class PmInterface {
     private List<PmInterfaceCatalog> pmInterfaceCatalogList;
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "persistence_id")
+    @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
     public PmInterface(Integer id) {

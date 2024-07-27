@@ -62,21 +62,21 @@ public class EventController {
                     var center = eventService.getCenter(eventLandingForm.getCenterId());
                     if (center.isPresent()) {
                         eventLandingForm.setCenter(center.get());
-                        eventLandingForm.setEventCategoryId((short) 1);
+                        eventLandingForm.setEventCategoryId(1);
                     } else {
                         return "redirect:404";
                     }
                 }
                 case "Location" -> {
                     var location = eventService.getRefrencedLocation(eventLandingForm.getLocationId());
-                        eventLandingForm.setLocation(location);
-                        eventLandingForm.setEventCategoryId((short) 2);
+                    eventLandingForm.setLocation(location);
+                    eventLandingForm.setEventCategoryId(2);
 
-                        LocationStatusForm locationStatusForm = eventService.getLocationStatusForm(location);
-                        LocationStatus locationStatus = eventService.getCurrentLocationStatus(location);
-                        locationStatusForm.setCurrentLocationStatus(locationStatus);
-                        model.addAttribute("locationStatusForm", locationStatusForm);
-                        model.addAttribute("locationStatus", locationStatus);
+                    LocationStatusForm locationStatusForm = eventService.getLocationStatusForm(location);
+                    LocationStatus locationStatus = eventService.getCurrentLocationStatus(location);
+                    locationStatusForm.setCurrentLocationStatus(locationStatus);
+                    model.addAttribute("locationStatusForm", locationStatusForm);
+                    model.addAttribute("locationStatus", locationStatus);
 
                 }
                 case "Device" -> {
@@ -152,7 +152,7 @@ public class EventController {
     }
 
     @GetMapping("/{eventId}/detail")
-    public String viewEventDetail(Model model, @PathVariable int eventId) {
+    public String viewEventDetail(Model model, @PathVariable Long eventId) {
         Event baseEvent = eventService.getEventHistory(eventId);
         model.addAttribute("metaData", List.of(eventService.getRelatedMetadata(baseEvent.getEventDetail().getPersistence().getId())));
 

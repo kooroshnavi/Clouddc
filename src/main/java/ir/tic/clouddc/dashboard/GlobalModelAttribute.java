@@ -1,7 +1,7 @@
 package ir.tic.clouddc.dashboard;
 
 
-import ir.tic.clouddc.individual.PersonService;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

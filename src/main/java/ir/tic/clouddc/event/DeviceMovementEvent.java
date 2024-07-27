@@ -6,20 +6,20 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "event")
+@Table(schema = "Event")
 @NoArgsConstructor
 public final class DeviceMovementEvent extends Event {
 
     @OneToOne
-    @JoinColumn(name = "source_location_id")
+    @JoinColumn(name = "SourceLocationID")
     private Location source;
 
     @OneToOne
-    @JoinColumn(name = "destination_location_id")
+    @JoinColumn(name = "DestinationLocationID")
     private Location destination;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "DeviceID")
     private Device device;
 
     public Location getSource() {

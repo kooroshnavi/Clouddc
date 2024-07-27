@@ -1,6 +1,6 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.person.Person;
 
 import java.time.LocalDate;
 import java.time.LocalTime;

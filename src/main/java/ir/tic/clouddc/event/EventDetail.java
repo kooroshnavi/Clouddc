@@ -5,12 +5,12 @@ import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Table(schema = "event")
+@Table(schema = "Event")
 @NoArgsConstructor
-public class EventDetail extends Workflow {
+public final class EventDetail extends Workflow {
 
     @OneToOne(cascade = {CascadeType.ALL})
-    @JoinColumn(name = "event_id")
+    @JoinColumn(name = "EventID")
     private Event event;
 
     @Transient

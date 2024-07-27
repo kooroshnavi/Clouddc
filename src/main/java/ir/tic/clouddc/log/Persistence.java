@@ -1,6 +1,6 @@
 package ir.tic.clouddc.log;
 
-import ir.tic.clouddc.individual.Person;
+import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,11 +8,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(schema = "log")
+@Table(schema = "Log")
 @NoArgsConstructor
 @Data
-public class Persistence {
-
+public final class Persistence {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column

@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 import java.util.List;
 
 @Entity
-@Table(schema = "resource")
+@Table(schema = "Resource")
 @NoArgsConstructor
 @Data
-public class DeviceCategory {
-
+public final class DeviceCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column
