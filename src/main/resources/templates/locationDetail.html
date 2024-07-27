@@ -253,13 +253,23 @@
                             <td th:text="${iter.count}"></td>
                             <td th:text="${catalog.pmInterface.category}"></td>
 
-                            <td>
+                            <td th:if="${catalog.pmInterface.enabled}">
                                 <div class="col">
                                     <a th:text="${catalog.pmInterface.name}"
                                        th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
                                        title="ویرایش Pm روی این مکان"></a>
+                                </div>
+                            </td>
+
+                            <td th:if="${not catalog.pmInterface.enabled}">
+                                <div class="col">
+                                    <button th:text="${catalog.pmInterface.name}"
+                                       th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="top"
+                                       title="ویرایش Pm روی این مکان" disabled="disabled"></button>
                                 </div>
                             </td>
 
@@ -275,7 +285,12 @@
 
                             <td th:if="${not catalog.history}">اقدام نشده</td>
 
-                            <td th:text="${catalog.persianNextDue}"></td>
+                            <td th:if="${catalog.pmInterface.enabled &&  catalog.enabled}" th:text="${catalog.persianNextDue}"></td>
+                            <td th:if="${not catalog.pmInterface.enabled && not catalog.enabled}">
+                                <span class="badge bg-light-danger text-danger w-100">غیرفعال</span>
+
+                            </td>
+
                             <td th:text="${catalog.defaultPerson.name}"></td>
 
                             <td class="clock">

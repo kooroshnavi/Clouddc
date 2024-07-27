@@ -78,11 +78,16 @@
                             </h6>
                             <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
                             <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
-                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.category}"></p>
-                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.category}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1"
+                               th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.category}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1"
+                               th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
+                               th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.category}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
+                               th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
+                               th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
                             <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
                             <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
                         </div>
@@ -206,13 +211,15 @@
                                        class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}" class="d-flex align-items-hall">
+                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}"
+                                     class="d-flex align-items-hall">
                                     <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-black" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}" class="d-flex align-items-hall">
+                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}"
+                                     class="d-flex align-items-hall">
                                     <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-black" th:text="${metadata.name}"></a>
@@ -221,42 +228,38 @@
                             </td>
 
                             <td th:text="${metadata.persistence.person.name}"/>
+
                             <td>
-
-                                <form th:action="@{/document/{metadataId}/disable (metadataId=${metadata.id})}" method="get">
-
-                                    <div th:if="${metadata.persistence.person.username == #authentication.getName()}" class="col">
-                                        <!-- Button trigger modal -->
-                                        <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                                data-bs-target="#exampleWarningModal">عدم نمایش پیوست
-                                        </button>
-                                        <!-- Modal -->
-                                        <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
-                                            <div class="modal-dialog modal-lg modal-dialog-centered">
-                                                <div class="modal-content bg-danger">
-                                                    <div class="modal-header border-dark">
-                                                        <h5 class="modal-title text-dark">عدم نمایش پیوست</h5>
-                                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                                aria-label="Close"></button>
-                                                    </div>
-                                                    <div class="modal-body text-dark">
-                                                        <p>همکار گرامی در صورتی که فایل اشتباهی را بارگذاری کرده اید می توانید آن را غیرفعال کنید. امکان حذف پیوست های بارگذاری شده دیگر همکاران وجود ندارد.</p>
-                                                        <p>در صورت تایید؛ پیوست مربوطه غیرفعال شده و پس از ۳۰ روز در صورت عدم فعالسازی حذف می شود. جهت فعالسازی و امکان مشاهده مجدد و دانلود از طریق منوی دسترسی سریع (بالای صفحه کنار ساعت) --> مدیریت پیوست ها نسبت به فعالسازی و دانلود اقدام نمایید.</p>
-                                                    </div>
-                                                    <div class="modal-footer border-dark">
-                                                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                                            لغو
-                                                        </button>
-                                                        <button type="submit" class="btn btn-dark">تایید</button>
-                                                    </div>
+                                <div th:if="${metadata.persistence.person.username == #authentication.getName()}"
+                                     class="col">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#exampleWarningModal">مدیریت فایل های پیوست
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content bg-gradient-info">
+                                                <div class="modal-header border-dark">
+                                                    <h5 class="modal-title text-dark">مدیریت فایل</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-dark">
+                                                    <p>همکار گرامی جهت مشاهده و حذف فایل های خود می توانید از طریق بخش
+                                                        مدیریت فایل واقع در منوی دسترسی سریع (بالا سمت چپ کنار
+                                                        ساعت) اقدام نمایید.
+                                                       </p>
+                                                </div>
+                                                <div class="modal-footer border-dark">
+                                                    <a th:href="@{/document/list}" class="btn btn-dark">مدیریت فایل</a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
-                                </form>
-
+                                </div>
                             </td>
-                        </tr>
+
                         </tbody>
                     </table>
                 </div>

@@ -73,7 +73,7 @@
                         <th scope="col">برند</th>
                         <th scope="col">مدل</th>
                         <th scope="col">شماره سریال</th>
-                        <th th:if="${device.deviceCategory.categoryId == 1}" scope="col">فرم فاکتور شاسی سرور</th>
+                        <th th:if="${device.deviceCategory.categoryId == 5}" scope="col">فرم فاکتور شاسی</th>
                         <th scope="col">بهره بردار</th>
                         <th scope="col">محل نصب</th>
                     </tr>
@@ -84,7 +84,7 @@
                         <td th:text="${device.deviceCategory.vendor}"></td>
                         <td th:text="${device.deviceCategory.model}"></td>
                         <td th:text="${device.serialNumber}"></td>
-                        <td th:if="${device.deviceCategory.categoryId == 1}"
+                        <td th:if="${device.deviceCategory.categoryId == 5}"
                             th:text="${device.deviceCategory.factor} + '-' + ${device.deviceCategory.factorSize}"></td>
 
                         <td>
