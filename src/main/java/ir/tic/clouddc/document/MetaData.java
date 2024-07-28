@@ -41,7 +41,7 @@ public final class MetaData {
     @Transient
     private String persianDisableDate;
 
-    @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 

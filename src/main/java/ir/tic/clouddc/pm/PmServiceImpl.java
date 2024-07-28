@@ -455,7 +455,7 @@ public class PmServiceImpl implements PmService {
             devicePmCatalog.setEnabled(true);
             devicePmCatalog.setHistory(false);
             devicePmCatalog.setActive(false);
-            devicePmCatalog.setNextDueDate(validDate);
+            devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
 
             var newCatalog = pmInterfaceCatalogRepository.save(devicePmCatalog);
             if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
@@ -481,10 +481,10 @@ public class PmServiceImpl implements PmService {
     public List<Pm> getActivePmList(boolean active, boolean workspace) {
         List<Pm> activePmList;
         if (workspace) {
-            activePmList = pmDetailRepository.fetchPmListByActivationAndPerson(personService.getCurrentUsername(), active);
+            activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getCurrentUsername(), active);
 
         } else {
-            activePmList = pmDetailRepository.fetchPmListByActivationAndPerson(null, active);
+            activePmList = pmDetailRepository.fetchActivePmList(active);
         }
 
         if (!activePmList.isEmpty()) {

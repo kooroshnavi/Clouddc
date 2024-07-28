@@ -58,7 +58,7 @@ public class DocumentController {
         var metaData = optionalMetaData.get();
         response.setContentType(metaData.getType());
         String fileName = URLEncoder.encode(metaData.getName(), StandardCharsets.UTF_8);
-        response.setHeader("Content-disposition", "attachment; filename=" + fileName);
+        response.setHeader("Content-disposition", "attachment; filename*=UTF-8''" + fileName);
         OutputStream outputStream = response.getOutputStream();
         byte[] buffer = metaData.getAttachment().getDocument();
         outputStream.write(buffer);

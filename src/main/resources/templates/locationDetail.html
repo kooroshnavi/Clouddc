@@ -78,9 +78,11 @@
                         <th scope="col">نام</th>
                         <th scope="col">مرکز</th>
                         <th th:if="${location.locationCategory.categoryId == 2}" scope="col">سالن</th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 14}" scope="col">توضیحات
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}" scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id != 14}" scope="col">بهره
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}" scope="col">توضیحات
+                        </th>
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}" scope="col">بهره
                             بردار
                         </th>
                     </tr>
@@ -95,9 +97,10 @@
                         <td th:if="${location.locationCategory.categoryId == 2}" th:text="${rack.hall.name}"></td>
 
 
-                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 14}"
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             th:text="${rack.description}"></td>
-                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id != 14}">
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده - خالی</td>
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}">
                             <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
                                    th:href="@{/resource/utilizer/detail(utilizerId=${rack.utilizer.id})}"
@@ -204,7 +207,7 @@
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
 
-                            <td th:text="${rack.deviceList.size} "></td>
+                            <td th:text="${rack.deviceList.size()} "></td>
                             <td th:text="${rack.utilizer.name} "></td>
 
                         </tr>
@@ -255,7 +258,7 @@
 
                             <td th:if="${catalog.pmInterface.enabled}">
                                 <div class="col">
-                                    <a th:text="${catalog.pmInterface.name}"
+                                    <a th:text="${catalog.pmInterface.title}"
                                        th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
@@ -265,7 +268,7 @@
 
                             <td th:if="${not catalog.pmInterface.enabled}">
                                 <div class="col">
-                                    <button th:text="${catalog.pmInterface.name}"
+                                    <button th:text="${catalog.pmInterface.title}"
                                        th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"

@@ -6,7 +6,7 @@ function timer(remaining) {
   m = m < 10 ? "0" + m : m;
   s = s < 10 ? "0" + s : s;
   h = h < 10 ? "0" + h : h;
-  document.getElementById("countdown").innerHTML = `Time left: ${h} : ${m} : ${s}`;
+  document.getElementById("countdown").innerHTML = ` آخرین کد ارسالی تا  ${s} : ${m} : ${h} معتبر است`;
   remaining -= 1;
   if (remaining >= 0 && timerOn) {
     setTimeout(function () {

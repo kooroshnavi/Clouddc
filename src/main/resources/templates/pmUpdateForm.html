@@ -73,7 +73,7 @@
                         <div class="info">
                             <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
                             </h6>
-                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.name}"></strong></h6>
+                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.target}"></strong></h6>
                             <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
                             <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.category}"></p>
                             <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>

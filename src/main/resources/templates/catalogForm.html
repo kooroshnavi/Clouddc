@@ -90,7 +90,7 @@
                                         <select class="single-select" th:field="*{pmInterfaceId}">
                                             <option th:each="pmInterface : ${pmInterfaceList}"
                                                     th:value="${pmInterface.id}"
-                                                    th:text="${pmInterface.name + ' با دوره تکرار ' + pmInterface.period}"></option>
+                                                    th:text="${pmInterface.title + ' با دوره تکرار ' + pmInterface.period}"></option>
                                         </select>
                                     </label>
                                 </div>

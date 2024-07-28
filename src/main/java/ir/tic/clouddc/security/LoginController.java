@@ -77,7 +77,7 @@ public class LoginController {
                 UUID otpUid = UUID.randomUUID();
                 UUID expiryTimeUUID = UUID.nameUUIDFromBytes(otpUid.toString().getBytes(StandardCharsets.UTF_8));
 
-                otpService.generateOtp(otpRequest.getAddress()
+               var otp =  otpService.generateOtp(otpRequest.getAddress()
                         , otpUid.toString()
                         , expiryTimeUUID.toString()
                         , request.getRemoteAddr()
@@ -85,6 +85,7 @@ public class LoginController {
                 var exp = otpService.getOtpExpiry(otpUid.toString());
                 LocalDateTime expiry = LocalDateTime.parse(exp);
                 model.addAttribute("otpInput", new OtpForm());
+                model.addAttribute("otp", otp);
                 model.addAttribute("otpUid", otpUid.toString());
                 model.addAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
                 return "otp-verify";
@@ -95,10 +96,12 @@ public class LoginController {
             }
 
         } else {
-            var exp = otpService.getOtpExpiry(otpService.getOtpUid(otpRequest.getAddress()));
+            var OTPUid = otpService.getOtpUid(otpRequest.getAddress());
+            var exp = otpService.getOtpExpiry(OTPUid);
             LocalDateTime expiry = LocalDateTime.parse(exp);
             model.addAttribute("otpInput", new OtpForm());
-            model.addAttribute("otpUid", otpService.getOtpUid(otpRequest.getAddress()));
+            model.addAttribute("otp", otpService.getOTP(OTPUid));
+            model.addAttribute("otpUid", OTPUid);
             model.addAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
             return "otp-verify";
         }

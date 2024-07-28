@@ -11,8 +11,10 @@ import java.util.List;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
 public abstract class Pm {    // new Task style
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pm_seq_generator")
+    @SequenceGenerator(name = "pm_seq_generator", sequenceName = "pm_sequence", allocationSize = 1)
     @Column(name = "PmID")
     private Long id;
 

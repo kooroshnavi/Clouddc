@@ -14,8 +14,10 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public abstract class PmInterfaceCatalog {
+
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "catalog_seq_generator")
+    @SequenceGenerator(name = "catalog_seq_generator", sequenceName = "catalog_sequence", allocationSize = 1)
     @Column(name = "CatalogID")
     private Long id;
 
