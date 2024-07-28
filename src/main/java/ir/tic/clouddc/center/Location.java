@@ -14,18 +14,18 @@ import java.util.List;
 public abstract class Location {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column
+    @Column(name = "LocationID")
     private Long id;
 
-    @Column
+    @Column(name = "Name")
     private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "location_category_id")
+    @JoinColumn(name = "LocationCategoryID")
     private LocationCategory locationCategory;  // Hall - Rack - Room
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "center_id")
+    @JoinColumn(name = "CenterID")
     private Center center;
 
     @OneToMany(mappedBy = "location")

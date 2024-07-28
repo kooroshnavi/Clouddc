@@ -163,7 +163,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public DeviceStatus getCurrentDeviceStatus(Device device) {
-        var currentStatus = deviceStatusRepository.findByDeviceAndCurrent(device, true);
+        var currentStatus = deviceStatusRepository.findByDeviceAndActive(device, true);
         if (currentStatus.isPresent()) {
             return currentStatus.get();
         } else {

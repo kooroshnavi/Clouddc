@@ -10,30 +10,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class DeviceStatusEvent extends Event {
 
-    @Column
+    @Column(name = "DualPowerChanged")
     private boolean dualPowerChanged;  // order 0
 
-    @Column
+    @Column(name = "StsChanged")
     private boolean stsChanged; // order 1
 
-    @Column
+    @Column(name = "FanChanged")
     private boolean fanChanged; // order 2
 
-    @Column
+    @Column(name = "ModuleChanged")
     private boolean moduleChanged; // order 3
 
-    @Column
+    @Column(name = "StorageChanged")
     private boolean storageChanged; // order 4
 
-    @Column
+    @Column(name = "PortChanged")
     private boolean portChanged; // order 5
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "related_status_id")
+    @JoinColumn(name = "DeviceStatusID")
     private DeviceStatus deviceStatus;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "DeviceID")
     private Device device;
 
     public boolean isDualPowerChanged() {

@@ -12,9 +12,9 @@ public final class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "PersonID")
     private Integer id;
 
-    @Column
+    @Column(name = "PhoneNumber")
     private String value;
 }

@@ -17,22 +17,22 @@ public final class MetaData {
     @Id
     private Long id;
 
-    @Column
+    @Column(name = "FileName")
     private String name;
 
-    @Column
+    @Column(name = "FileType")
     private String type;
 
-    @Column
+    @Column(name = "SizeOnDisk")
     private float size;
 
-    @Column
+    @Column(name = "Enabled")
     private boolean enabled;
 
-    @Column
+    @Column(name = "UploadDate")
     private LocalDate uploadDate;
 
-    @Column
+    @Column(name = "DisableDate")
     private LocalDate disableDate;
 
     @Transient
@@ -42,12 +42,12 @@ public final class MetaData {
     private String persianDisableDate;
 
     @OneToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
-    @JoinColumn(name = "persistence_id")
+    @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId
-    @JoinColumn(name = "id")
+    @JoinColumn(name = "DocumentID")
     private Attachment attachment;
 
 }

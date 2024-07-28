@@ -14,13 +14,13 @@ import java.util.List;
 public final class Utilizer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "UtilizerID")
     private Integer id;
 
-    @Column
+    @Column(name = "Name")
     private String name;
 
-    @Column
+    @Column(name = "Messenger")
     private boolean messenger;
 
     @OneToMany(mappedBy = "utilizer")

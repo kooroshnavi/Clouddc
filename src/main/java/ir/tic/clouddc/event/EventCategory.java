@@ -14,13 +14,13 @@ public final class EventCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "EventCategoryID")
     private Integer id;
 
-    @Column
-    private String name;
+    @Column(name = "Title")
+    private String title;
 
-    @Column
+    @Column(name = "Target")
     private String target;  /// Center - Location - Device
 
     @OneToMany(mappedBy = "eventCategory")

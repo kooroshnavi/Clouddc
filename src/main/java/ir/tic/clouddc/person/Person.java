@@ -15,19 +15,19 @@ public final class Person {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "PersonID")
     private Integer id;
 
-    @Column
+    @Column(name = "Username")
     private String username;
 
-    @Column
+    @Column(name = "FullName")
     private String name;
 
-    @Column
+    @Column(name = "Assignable")
     private boolean assignee; // false for manager and viewer
 
-    @Column
+    @Column(name = "RoleCode")
     private char role;
 
     @OneToMany(mappedBy = "defaultPerson")

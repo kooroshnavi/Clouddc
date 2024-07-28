@@ -16,7 +16,7 @@ import java.util.List;
 public abstract class PmInterfaceCatalog {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column
+    @Column(name = "CatalogID")
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -24,28 +24,28 @@ public abstract class PmInterfaceCatalog {
     private PmInterface pmInterface;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DefaultWorkspaceID")
+    @JoinColumn(name = "DefaultPersonID")
     private Person defaultPerson;
 
-    @Column
+    @Column(name = "LastFinishedDate")
     private LocalDate lastFinishedDate;
 
-    @Column
+    @Column(name = "LastFinishedTime")
     private LocalTime lastFinishedTime;
 
-    @Column
+    @Column(name = "LastPmId")
     private Long lastPmId;
 
-    @Column
+    @Column(name = "nextDueDate")
     private LocalDate nextDueDate;
 
-    @Column
+    @Column(name = "Enabled")
     private boolean enabled;
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
 
-    @Column
+    @Column(name = "History")
     private boolean history;
 
     @OneToMany(mappedBy = "pmInterfaceCatalog")

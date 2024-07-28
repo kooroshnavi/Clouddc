@@ -13,25 +13,25 @@ import java.util.List;
 public abstract class Pm {    // new Task style
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
-    @Column
+    @Column(name = "PmID")
     private Long id;
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
 
-    @Column
+    @Column(name = "Delay")
     private int delay;
 
-    @Column
+    @Column(name = "DueDate")
     private LocalDate dueDate;
 
-    @Column
+    @Column(name = "RegisterTime")
     private LocalTime registerTime;
 
-    @Column
+    @Column(name = "FinishedDate")
     private LocalDate finishedDate;
 
-    @Column
+    @Column(name = "FinishedTime")
     private LocalTime finishedTime;
 
     @OneToMany(mappedBy = "pm")

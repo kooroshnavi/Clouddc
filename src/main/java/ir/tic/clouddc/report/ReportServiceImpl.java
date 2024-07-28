@@ -1,6 +1,5 @@
 package ir.tic.clouddc.report;
 
-import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +19,12 @@ class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
 
-    private final CenterService centerService;
-
     private final PmService pmService;
 
 
     @Autowired
-    ReportServiceImpl(ReportRepository reportRepository, CenterService centerService, PmService pmService) {
+    ReportServiceImpl(ReportRepository reportRepository, PmService pmService) {
         this.reportRepository = reportRepository;
-        this.centerService = centerService;
         this.pmService = pmService;
     }
 
@@ -37,7 +33,6 @@ class ReportServiceImpl implements ReportService {
         UtilService.setDate();
         var todayReport = setCurrentReport();
         pmService.updateTodayPmList(todayReport);
-        centerService.setDailyTemperatureReport(findActive(true).get());
     }
 
     @Override

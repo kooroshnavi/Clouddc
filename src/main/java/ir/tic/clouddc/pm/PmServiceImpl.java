@@ -524,7 +524,7 @@ public class PmServiceImpl implements PmService {
         }
 
         pmInterface.setEnabled(pmInterfaceRegisterForm.isEnabled());
-        pmInterface.setName(pmInterfaceRegisterForm.getTitle());
+        pmInterface.setTitle(pmInterfaceRegisterForm.getTitle());
         pmInterface.setPeriod(pmInterfaceRegisterForm.getPeriod());
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
         pmInterface.setStatelessRecurring(pmInterfaceRegisterForm.isStatelessRecurring());

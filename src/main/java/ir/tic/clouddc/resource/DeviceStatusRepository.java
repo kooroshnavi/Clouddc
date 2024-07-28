@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface DeviceStatusRepository extends JpaRepository<DeviceStatus, Long> {
 
-    Optional<DeviceStatus> findByDeviceAndCurrent(Device device, boolean current);
+    Optional<DeviceStatus> findByDeviceAndActive(Device device, boolean current);
 }

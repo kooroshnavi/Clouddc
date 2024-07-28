@@ -13,13 +13,13 @@ import java.util.List;
 public final class LocationCategory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Integer id;  // 1 - 2 - 3
+    @Column(name = "LocationCategoryID")
+    private Integer locationCategoryID;  // 1 - 2 - 3
 
-    @Column
+    @Column(name = "Category")
     private String category; /// Hall - Rack - Room
 
-    @Column
+    @Column(name = "CategoryId")
     private int categoryId;
 
     @OneToMany(mappedBy = "locationCategory")

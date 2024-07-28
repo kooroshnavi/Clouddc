@@ -10,17 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public final class LocationStatusEvent extends Event {
 
-    @Column
+    @Column(name = "DoorChanged")
     private boolean doorChanged;  // order 0
 
-    @Column
+    @Column(name = "VentilationChanged")
     private boolean ventilationChanged; // order 1
 
-    @Column
+    @Column(name = "PowerChanged")
     private boolean powerChanged; // order 2
 
     @OneToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "StatusID")
+    @JoinColumn(name = "LocationStatusID")
     private LocationStatus locationStatus;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})

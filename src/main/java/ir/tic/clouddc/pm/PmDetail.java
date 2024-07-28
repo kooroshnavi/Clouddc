@@ -14,16 +14,16 @@ public abstract class PmDetail extends Workflow {  // Common fields in Pm-relate
     @JoinColumn(name = "PmID")
     private Pm pm;
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
 
-    @Column
+    @Column(name = "FinishedDate")
     private LocalDate finishedDate;
 
-    @Column
+    @Column(name = "FinishedTime")
     private LocalTime finishedTime;
 
-    @Column
+    @Column(name = "Delay")
     private int delay;
 
     @Transient

@@ -14,24 +14,24 @@ public abstract class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column
+    @Column(name = "EventID")
     private Long id;
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
 
-    @Column
+    @Column(name = "RegisterDate")
     private LocalDate registerDate;
 
-    @Column
+    @Column(name = "RegisterTime")
     private LocalTime registerTime;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "category_id")
+    @JoinColumn(name = "EventCategoryID")
     private EventCategory eventCategory;
 
     @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "eventDetail_id")
+    @JoinColumn(name = "EventDetailID")
     private EventDetail eventDetail;
 
     @Transient

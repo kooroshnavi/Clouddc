@@ -12,10 +12,11 @@ public final class Attachment {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "AttachmentID")
     private Long id;
 
     @Lob
+    @Column(name = "Document")
     private byte[] document;
 }
 

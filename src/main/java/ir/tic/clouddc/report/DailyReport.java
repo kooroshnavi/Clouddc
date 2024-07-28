@@ -1,12 +1,10 @@
 package ir.tic.clouddc.report;
 
-import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
-import java.util.List;
 
 @Entity
 @Table(schema = "Report")
@@ -15,18 +13,14 @@ import java.util.List;
 public final class DailyReport {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "ReportID")
     private Long id;
 
-    @Column
+    @Column(name = "Date")
     private LocalDate date;
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
-
-    @ManyToMany
-    @JoinTable(name = "report_event", schema = "report", joinColumns = @JoinColumn(name = "report_id"), inverseJoinColumns = @JoinColumn(name = "event_id"))
-    private List<Event> eventList;
 
     @Transient
     private String persianDate;

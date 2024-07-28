@@ -11,15 +11,15 @@ import lombok.NoArgsConstructor;
 public final class DeviceUtilizerEvent extends Event {
 
     @OneToOne
-    @JoinColumn(name = "old_utilize_id")
+    @JoinColumn(name = "OldUtilizerID")
     private Utilizer oldUtilizer;
 
     @OneToOne
-    @JoinColumn(name = "new_utilize_id")
+    @JoinColumn(name = "NewUtilizerID")
     private Utilizer newUtilizer;
 
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "device_id")
+    @JoinColumn(name = "DeviceID")
     private Device device;
 
     public Device getDevice() {

@@ -1,6 +1,5 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.EventService;
 import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,13 +17,11 @@ public class CenterController {
 
     private final CenterService centerService;
 
-    private final EventService eventService;
 
 
     @Autowired
-    public CenterController(CenterService centerService, EventService eventService) {
+    public CenterController(CenterService centerService ) {
         this.centerService = centerService;
-        this.eventService = eventService;
     }
 
     @GetMapping("/overview")
@@ -41,8 +38,6 @@ public class CenterController {
             model.addAttribute("location", baseLocation.get());
             var catalogList = baseLocation.get().getLocationPmCatalogList();
             model.addAttribute("catalogList", catalogList);
-            var eventList = eventService.getLocationEventList(baseLocation.get());
-            model.addAttribute("eventList", eventList);
 
             if (baseLocation.get() instanceof Hall location) {
                 model.addAttribute("hall", location);

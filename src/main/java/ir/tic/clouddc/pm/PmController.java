@@ -75,7 +75,7 @@ public class PmController {
 
     private static PmInterfaceRegisterForm getPmInterfaceRegisterForm(PmInterface pmInterface) {
         PmInterfaceRegisterForm pmInterfaceRegisterForm = new PmInterfaceRegisterForm();
-        pmInterfaceRegisterForm.setTitle(pmInterface.getName());
+        pmInterfaceRegisterForm.setTitle(pmInterface.getTitle());
         pmInterfaceRegisterForm.setDescription(pmInterface.getDescription());
         pmInterfaceRegisterForm.setPeriod(pmInterface.getPeriod());
         pmInterfaceRegisterForm.setEnabled(pmInterface.isEnabled());

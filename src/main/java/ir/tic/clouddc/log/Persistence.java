@@ -14,11 +14,11 @@ import java.util.List;
 public final class Persistence {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "PersistenceID")
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @JoinColumn(name = "PersonID")
     private Person person;
 
     @OneToMany(mappedBy = "persistence")

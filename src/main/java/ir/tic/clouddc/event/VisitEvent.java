@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public final class VisitEvent extends Event {
 
     @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "center_id")
+    @JoinColumn(name = "CenterID")
     private Center center;
 
     public Center getCenter() {

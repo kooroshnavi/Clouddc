@@ -13,16 +13,16 @@ import java.util.List;
 public final class Center {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "CenterID")
     private Integer id;
 
-    @Column
+    @Column(name = "Name")
     private String name;
 
-    @Column
+    @Column(name = "City")
     private String city;
 
-    @Column
+    @Column(name = "Province")
     private String province;
 
     @OneToMany(mappedBy = "center")

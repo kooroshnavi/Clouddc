@@ -23,7 +23,7 @@ public final class Rack extends Location {
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
 
-    @Column
+    @Column(name = "Description")
     private String description;
 
 

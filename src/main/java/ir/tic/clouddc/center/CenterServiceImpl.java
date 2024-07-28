@@ -97,7 +97,7 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
-        var locationStatus = locationStatusRepository.findByLocationAndCurrent(location, true);
+        var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
         if (locationStatus.isPresent()) {
             return locationStatus.get();
         } else {
@@ -124,23 +124,23 @@ public class CenterServiceImpl implements CenterService {
         var center1SalonList = center1
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationCategory().getId() == 1)
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 1)
                 .toList();
         var center1RoomList = center1
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationCategory().getId() == 3)
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 3)
                 .toList();
 
         var center2SalonList = center2
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationCategory().getId() == 1)
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 1)
                 .toList();
         var center2RoomList = center2
                 .getLocationList()
                 .stream()
-                .filter(location -> location.getLocationCategory().getId() == 3)
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 3)
                 .toList();
 
 

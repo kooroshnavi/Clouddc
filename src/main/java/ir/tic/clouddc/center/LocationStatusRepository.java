@@ -8,5 +8,5 @@ import java.util.Optional;
 @Repository
 public interface LocationStatusRepository extends JpaRepository<LocationStatus, Integer> {
 
-    Optional<LocationStatus> findByLocationAndCurrent(Location location, boolean current);
+    Optional<LocationStatus> findByLocationAndActive(Location location, boolean current);
 }

@@ -14,14 +14,14 @@ import java.util.List;
 @Data
 public abstract class Device {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "device_generator")
-    @SequenceGenerator(name="device_generator", sequenceName="device_sequence")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "DeviceID")
     private Long id;
 
-    @Column
+    @Column(name = "SerialNumber")
     private String serialNumber;   /// DeviceForm
 
-    @Column
+    @Column(name = "Priority")
     private boolean priorityDevice;    /// DeviceForm
 
     @ManyToOne(cascade = CascadeType.ALL)
@@ -35,6 +35,10 @@ public abstract class Device {
     @ManyToOne
     @JoinColumn(name = "LocationID")
     private Location location;   /// DeviceMovementEvent
+
+    @ManyToOne
+    @JoinColumn(name = "SupplierID")
+    private Supplier supplier;
 
     @OneToMany(mappedBy = "device")
     private List<DeviceMovementEvent> deviceMovementEventList;

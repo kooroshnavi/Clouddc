@@ -15,16 +15,16 @@ import java.time.LocalTime;
 public final class LogHistory {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "LogHistoryID")
     private Long id;
 
-    @Column
+    @Column(name = "Date")
     private LocalDate date;
 
-    @Column
+    @Column(name = "Time")
     private LocalTime time;
 
-    @Column
+    @Column(name = "Last")
     private boolean last;
 
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -35,7 +35,7 @@ public final class LogHistory {
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
-    @Column
+    @Column(name = "LogMessage")
     private String logMessage;
 
     public LogHistory(LocalDate date, LocalTime time, Person person, Persistence persistence, String logMessage, boolean last) {

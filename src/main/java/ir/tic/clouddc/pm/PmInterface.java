@@ -14,34 +14,34 @@ import java.util.List;
 public final class PmInterface {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "PmInterfaceID")
     private Integer id;
 
-    @Column
-    private String name;
+    @Column(name = "Title")
+    private String title;
 
-    @Column
+    @Column(name = "Period")
     private int period;
 
-    @Column
+    @Column(name = "Enabled")
     private boolean enabled;
 
-    @Column
+    @Column(name = "GeneralPm")
     private boolean generalPm;
 
-    @Column
+    @Column(name = "StatelessRecurring")
     private boolean statelessRecurring;
 
-    @Column
+    @Column(name = "Description")
     private String description;
 
-    @Column
+    @Column(name = "Category")
     private String category;
 
-    @Column
+    @Column(name = "CategoryId")
     private int categoryId; // 1. GeneralLocation - 2. GeneralDevice
 
-    @Column
+    @Column(name = "targetId")
     private int target;  //  Hall - Rack - Room - Location - server - sw - fw - enc - device
 
     @OneToMany(mappedBy = "pmInterface")

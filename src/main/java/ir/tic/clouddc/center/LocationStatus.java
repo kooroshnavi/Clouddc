@@ -12,19 +12,19 @@ import lombok.NoArgsConstructor;
 public final class LocationStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "LocationStatusID")
     private Integer id;
 
-    @Column
+    @Column(name = "DoorOK")
     private boolean door;
 
-    @Column
+    @Column(name = "VentilationOK")
     private boolean ventilation;
 
-    @Column
+    @Column(name = "PowerOK")
     private boolean power;
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
 
     @ManyToOne(cascade = CascadeType.ALL)

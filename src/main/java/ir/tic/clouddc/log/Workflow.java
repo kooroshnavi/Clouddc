@@ -13,15 +13,16 @@ public abstract class Workflow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @Column(name = "WorkflowID")
     private Long id;
 
-    @Column
+    @Column(name = "RegisterDate")
     private LocalDate registerDate;  // Register or assign registerDate
 
-    @Column
+    @Column(name = "RegisterTime")
     private LocalTime registerTime;    // Register or assign registerTime
 
-    @Column
+    @Column(name = "Description")
     private String description;
 
     @OneToOne(cascade = {CascadeType.ALL})
