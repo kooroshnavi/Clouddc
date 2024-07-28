@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Entity
 @NoArgsConstructor
+@Table(schema = "Resource")
 @Data
 public class Supplier {
 

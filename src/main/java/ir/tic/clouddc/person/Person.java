@@ -14,8 +14,6 @@ import java.util.List;
 public final class Person {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "PersonID")
     private Integer id;
 
     @Column(name = "Username")
@@ -33,8 +31,9 @@ public final class Person {
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
 
-    @OneToOne
-    @PrimaryKeyJoinColumn
+    @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
+    @MapsId
+    @JoinColumn(name = "AddressID")
     private Address address;
 
     public Person(Integer id) {
