@@ -37,7 +37,9 @@ public final class UtilService {
             entry("PmUpdate", "بروزرسانی Pm"),
             entry("SupervisorPmTermination", "بستن PmDetail توسط Supervisor"),
             entry("DisableAttachment", "حذف فایل پیوست"),
-            entry("EventUpdate", "ثبت و بروزرسانی یک رخداد")
+            entry("EventUpdate", "ثبت و بروزرسانی یک رخداد"),
+            entry("CatalogRegister", "ثبت کاتالوگ"),
+            entry("CatalogUpdate", "بروزرسانی کاتالوگ")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(

@@ -66,7 +66,7 @@ public class FileServiceImpl implements FileService {
             for (MetaData metadata : metadataList) {
                 metadata.setPersianUploadDate(UtilService.getFormattedPersianDate(metadata.getUploadDate()));
                 if (!metadata.isEnabled()) {
-                    metadata.setPersianDisableDate(UtilService.getFormattedPersianDate(metadata.getDisableDate()));
+                    metadata.setPersianRemoveDate(UtilService.getFormattedPersianDate(metadata.getRemoveDate()));
                 }
             }
         }
@@ -82,7 +82,7 @@ public class FileServiceImpl implements FileService {
     @Override
     @PreAuthorize("#documentOwner == #requester")
     public void disableDocument(Long metadataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
-        metaDataRepository.disableMetadata(metadataId, false, UtilService.getDATE());
+        metaDataRepository.disableMetadata(metadataId, false, UtilService.getDATE().plusDays(7));
         log.info(String.valueOf(documentOwnerId));
         log.info(String.valueOf(requesterId));
         var persistence = metaDataRepository.fetchMetaDataPersistence(metadataId);

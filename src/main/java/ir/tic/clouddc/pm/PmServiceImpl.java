@@ -5,12 +5,11 @@ import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.notification.NotificationService;
-import ir.tic.clouddc.report.DailyReport;
+import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
 import ir.tic.clouddc.resource.ResourceService;
@@ -23,7 +22,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
-import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
@@ -430,40 +428,61 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException {
+        Persistence persistence;
+        var currentPerson = personService.getCurrentPerson();
 
-        if (catalogForm.getLocationId() != null) {
-            log.info(String.valueOf(catalogForm.getLocationId()));
-            LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
-            locationPmCatalog.setLocation(centerService.getRefrencedLocation(catalogForm.getLocationId()));
-            locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
-            locationPmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
-            locationPmCatalog.setEnabled(true);
-            locationPmCatalog.setHistory(false);
-            locationPmCatalog.setActive(false);
-            locationPmCatalog.setNextDueDate(validDate);
+        if (catalogForm.getPmInterfaceCatalogId() != null) {
+            var catalog = pmInterfaceCatalogRepository.getReferenceById(catalogForm.getPmInterfaceCatalogId());
+            persistence = catalog.getPersistence();
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("CatalogUpdate"), currentPerson, persistence);
+            catalog.setEnabled(catalogForm.isEnabled());
+            catalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
+            catalog.setNextDueDate(UtilService.validateNextDue(validDate));
 
-            var newCatalog = pmInterfaceCatalogRepository.save(locationPmCatalog);
-            if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
-                var pmDetail = pmRegister(newCatalog);
-                pmDetail.setPersistence(logService.persistenceSetup(newCatalog.getDefaultPerson()));
-                pmDetailRepository.saveAndFlush(pmDetail);
-            }
+            pmInterfaceCatalogRepository.save(catalog);
         } else {
-            DevicePmCatalog devicePmCatalog = new DevicePmCatalog();
-            devicePmCatalog.setDevice(resourceService.getReferencedDevice(catalogForm.getDeviceId()));
-            devicePmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
-            devicePmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
-            devicePmCatalog.setEnabled(true);
-            devicePmCatalog.setHistory(false);
-            devicePmCatalog.setActive(false);
-            devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
+            if (catalogForm.getLocationId() != null) {
+                log.info(String.valueOf(catalogForm.getLocationId()));
+                LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
+                locationPmCatalog.setLocation(centerService.getRefrencedLocation(catalogForm.getLocationId()));
+                locationPmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
+                locationPmCatalog.setPmInterface(getReferencedPmInterface(catalogForm.getPmInterfaceId()));
+                locationPmCatalog.setEnabled(true);
+                locationPmCatalog.setHistory(false);
+                locationPmCatalog.setActive(false);
+                locationPmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
 
-            var newCatalog = pmInterfaceCatalogRepository.save(devicePmCatalog);
-          /*  if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
-                var pmDetail = pmRegister(newCatalog);
-                pmDetail.setPersistence(logService.persistenceSetup(newCatalog.getDefaultPerson()));
-                pmDetailRepository.saveAndFlush(pmDetail);
-            }*/
+                persistence = logService.persistenceSetup(currentPerson);
+                logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("CatalogRegister"), currentPerson, persistence);
+                locationPmCatalog.setPersistence(persistence);
+
+                var newCatalog = pmInterfaceCatalogRepository.save(locationPmCatalog);
+                if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
+                    var pmDetail = pmRegister(newCatalog);
+                    pmDetail.setPersistence(logService.persistenceSetup(newCatalog.getDefaultPerson()));
+                    pmDetailRepository.saveAndFlush(pmDetail);
+                }
+            } else {
+                DevicePmCatalog devicePmCatalog = new DevicePmCatalog();
+                devicePmCatalog.setDevice(resourceService.getReferencedDevice(catalogForm.getDeviceId()));
+                devicePmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
+                devicePmCatalog.setPmInterface(getReferencedPmInterface(catalogForm.getPmInterfaceId()));
+                devicePmCatalog.setEnabled(true);
+                devicePmCatalog.setHistory(false);
+                devicePmCatalog.setActive(false);
+                devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
+
+                persistence = logService.persistenceSetup(currentPerson);
+                logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("CatalogRegister"), currentPerson, persistence);
+                devicePmCatalog.setPersistence(persistence);
+
+                var newCatalog = pmInterfaceCatalogRepository.save(devicePmCatalog);
+                if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
+                    var pmDetail = pmRegister(newCatalog);
+                    pmDetail.setPersistence(logService.persistenceSetup(newCatalog.getDefaultPerson()));
+                    pmDetailRepository.saveAndFlush(pmDetail);
+                }
+            }
         }
     }
 
@@ -497,7 +516,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Long getActivePmCount(Integer pmInterfaceId) {
+    public Long getPmInterfaceActivePmCount(Integer pmInterfaceId) {
         return pmRepository.countActiveByPmInterface(pmInterfaceId, true);
     }
 
@@ -508,13 +527,23 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    public PmInterfaceCatalog getReferencedCatalog(Long catalogId) throws EntityNotFoundException {
+        return pmInterfaceCatalogRepository.getReferenceById(catalogId);
+    }
+
+    @Override
+    public Long getCatalogActivePmCount(Long catalogId) {
+        return pmRepository.getCatalogActivePmCount(catalogId, true);
+    }
+
+    @Override
     @ModifyProtection
     public void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException {
         PmInterface pmInterface;
         Persistence persistence;
         var currentPerson = personService.getCurrentPerson();
 
-        if (pmInterfaceRegisterForm.isUpdate()) { ///// Modify Pm
+        if (pmInterfaceRegisterForm.isUpdate()) { ///// Modify PmInterface
             pmInterface = pmInterfaceRepository.getReferenceById(pmInterfaceRegisterForm.getPmInterfaceId());
             persistence = pmInterface.getPersistence();
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmInterfaceUpdate"), currentPerson, persistence);

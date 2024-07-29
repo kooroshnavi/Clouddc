@@ -77,9 +77,14 @@
                         <h5 class="mb-0"
                             th:text="${'فرم ثبت Pm برای ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h5>
                     </div>
+                    <div th:if="${update}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            >ویرایش کاتالوگ</h5>
+                    </div>
 
                     <div class="card-body">
                         <div class="border p-3 rounded">
+
                             <form class="row g-3" th:action="@{/pm/catalog/register}"
                                   th:object="${catalogForm}"
                                   method="POST">
@@ -105,8 +110,10 @@
                                 </div>
                                 <input type="hidden" th:field="*{nextDue}" id="miladi_date"/>
 
-                                <input th:if="${isLocation}" type="hidden" name="locationId" th:value="${location.id}"/>
-                                <input th:if="${isDevice}" type="hidden" name="deviceId" th:value="${device.id}"/>
+                                <input th:if="${isLocation && not update}" type="hidden" name="locationId" th:value="${location.id}"/>
+                                <input th:if="${isDevice && not update}" type="hidden" name="deviceId" th:value="${device.id}"/>
+                                <input th:if="${update}" type="hidden" name="pmInterfaceCatalogId" th:value="${catalog.id}"/>
+                                <input th:if="${update && not enablementAccess}" type="hidden" name="enabled" th:value="${catalog.enabled}"/>
 
                                 <div class="mb-3">
                                     <label class="form-label">کارتابل پیش فرض</label>
@@ -116,10 +123,15 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${update}">
-                                    <input th:checked="${catalogForm.enabled}" th:field="*{enabled}"
-                                           type="checkbox"/>
-                                    <span></span>
+                                <div th:if="${update && enablementAccess}" class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:field="*{enabled}">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال سازی</label>
+                                </div>
+                                <hr/>
+
+                                <div th:if="${update && not enablementAccess}" class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked="checked" disabled="disabled">
+                                    <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این Pm خاتمه یابد.</label>
                                 </div>
 
                                 <div class="col">
@@ -133,20 +145,18 @@
                                             <div class="modal-content bg-warning">
                                                 <div class="modal-header border-dark">
                                                     <h5 class="modal-title text-dark">همکار گرامی، نظر به اهمیت ثبت
-                                                        اطلاعات صحیح و قابل استناد، موارد ذیل را رعایت فرمایید.</h5>
+                                                        اطلاعات صحیح و قابل استناد،</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body text-dark">
-                                                    <p>خودداری از ثبت وظایف با اقدامات مشابه وظایف قبلی</p>
-                                                    <p>خودداری از ثبت رخدادها در قالب وظیفه و ثبت آن ها در بخش
-                                                        مربوطه</p>
+                                                    <p>لطفا در ثبت و ویرایش Pm ها دقت لازم را مبذول نمایید باتشکر</p>
                                                 </div>
                                                 <div class="modal-footer border-dark">
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                         بستن
                                                     </button>
-                                                    <button type="submit" class="btn btn-dark">ثبت وظیفه جدید</button>
+                                                    <button type="submit" class="btn btn-dark">بروزرسانی</button>
                                                 </div>
                                             </div>
                                         </div>

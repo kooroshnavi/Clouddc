@@ -108,17 +108,12 @@
     });
 
     function OTPVerifyFn(e) {
-        const otpGen = [[${otp}]];
         const userOtp = document.getElementById('userOTP').value;
         if (userOtp === "" || userOtp.length < 6) {
             alert("کد ورود یک عدد ۶ رقمی است.");
             e.preventDefault();
         }
-        else if (userOtp !== otpGen) {
-            alert("کد وارد شده اشتباه است.");
-            e.preventDefault();
-        }
-        else if (userOtp === otpGen) {
+        else {
             return true;
         }
     }

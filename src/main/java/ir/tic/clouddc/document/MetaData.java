@@ -32,14 +32,14 @@ public final class MetaData {
     @Column(name = "UploadDate")
     private LocalDate uploadDate;
 
-    @Column(name = "DisableDate")
-    private LocalDate disableDate;
+    @Column(name = "RemoveDate")
+    private LocalDate removeDate;
 
     @Transient
     private String persianUploadDate;
 
     @Transient
-    private String persianDisableDate;
+    private String persianRemoveDate;
 
     @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
     @JoinColumn(name = "PersistenceID")

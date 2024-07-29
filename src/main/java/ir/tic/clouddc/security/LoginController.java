@@ -77,7 +77,7 @@ public class LoginController {
                 UUID otpUid = UUID.randomUUID();
                 UUID expiryTimeUUID = UUID.nameUUIDFromBytes(otpUid.toString().getBytes(StandardCharsets.UTF_8));
 
-               var otp =  otpService.generateOtp(otpRequest.getAddress()
+               otpService.generateOtp(otpRequest.getAddress()
                         , otpUid.toString()
                         , expiryTimeUUID.toString()
                         , request.getRemoteAddr()
@@ -85,7 +85,6 @@ public class LoginController {
                 var exp = otpService.getOtpExpiry(otpUid.toString());
                 LocalDateTime expiry = LocalDateTime.parse(exp);
                 model.addAttribute("otpInput", new OtpForm());
-                model.addAttribute("otp", otp);
                 model.addAttribute("otpUid", otpUid.toString());
                 model.addAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
                 return "otp-verify";
@@ -100,7 +99,6 @@ public class LoginController {
             var exp = otpService.getOtpExpiry(OTPUid);
             LocalDateTime expiry = LocalDateTime.parse(exp);
             model.addAttribute("otpInput", new OtpForm());
-            model.addAttribute("otp", otpService.getOTP(OTPUid));
             model.addAttribute("otpUid", OTPUid);
             model.addAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
             return "otp-verify";

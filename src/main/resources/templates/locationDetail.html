@@ -259,17 +259,17 @@
                             <td th:if="${catalog.pmInterface.enabled}">
                                 <div class="col">
                                     <a th:text="${catalog.pmInterface.title}"
-                                       th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
+                                       th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
-                                       title="ویرایش Pm روی این مکان" disabled="disabled"></a>
+                                       title="ویرایش Pm روی این مکان"></a>
                                 </div>
                             </td>
 
                             <td th:if="${not catalog.pmInterface.enabled}">
                                 <div class="col">
                                     <button th:text="${catalog.pmInterface.title}"
-                                       th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
+                                       th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
                                        title="ویرایش Pm روی این مکان" disabled="disabled"></button>
@@ -289,7 +289,7 @@
                             <td th:if="${not catalog.history}">اقدام نشده</td>
 
                             <td th:if="${catalog.pmInterface.enabled &&  catalog.enabled}" th:text="${catalog.persianNextDue}"></td>
-                            <td th:if="${not catalog.pmInterface.enabled && not catalog.enabled}">
+                            <td th:if="${not catalog.pmInterface.enabled || not catalog.enabled}">
                                 <span class="badge bg-light-danger text-danger w-100">غیرفعال</span>
 
                             </td>
@@ -315,17 +315,9 @@
         <!--Event table-->
         <h6 class="mb-0 text-uppercase">رخدادها</h6>
         <hr/>
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <form class="row g-3" th:action="@{/pm/catalog/form}" th:object="${catalogForm}" method="POST"
-                  enctype="multipart/form-data">
-                <div class="ui-dialog-buttonpane">
-                    <a th:href="@{/pm/catalog/{locationId}/form(locationId=${location.id})}"
-                       class="btn btn-outline-warning"
-                       th:text="'ثبت رخداد برای ' + ${location.name}">
-                    </a>
-                </div>
-            </form>
-        </div>
+
+
+
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">

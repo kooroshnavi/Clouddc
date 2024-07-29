@@ -85,7 +85,7 @@
                             <th>ردیف</th>
                             <th>فایل</th>
                             <th>تاریخ بارگذاری</th>
-                            <th>تاریخ غیرفعالسازی</th>
+                            <th>تاریخ حذف</th>
                             <th>وضعیت</th>
                         </tr>
                         </thead>
@@ -198,7 +198,7 @@
 
                             <td th:text="${metadata.persianUploadDate}"/>
 
-                            <td th:if="${not metadata.enabled}" th:text="${metadata.persianDisableDate}"/>
+                            <td th:if="${not metadata.enabled}" th:text="${metadata.persianRemoveDate}"/>
                             <td th:if="${metadata.enabled}">فعال</td>
 
                             <td th:if="${metadata.enabled}">

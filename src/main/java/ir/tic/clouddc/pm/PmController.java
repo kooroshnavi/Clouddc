@@ -6,6 +6,7 @@ import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
 import ir.tic.clouddc.security.ModifyProtection;
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -58,7 +59,7 @@ public class PmController {
             return "404";
         }
         var pmInterface = pmService.getReferencedPmInterface(pmInterfaceId);
-        var activePmCount = pmService.getActivePmCount(pmInterface.getId());
+        var activePmCount = pmService.getPmInterfaceActivePmCount(pmInterface.getId());
         if (activePmCount > 0) {
             model.addAttribute("enablementAccess", false);
         } else {
@@ -71,6 +72,37 @@ public class PmController {
         model.addAttribute("isUpdate", true);
 
         return "pmInterfaceRegisterView";
+    }
+
+    @GetMapping("/catalog/{catalogId}/edit")
+    @ModifyProtection
+    public String catalogEditForm(Model model, @PathVariable Long catalogId) throws SQLException {
+        if (Objects.equals(catalogId, null) || catalogId == 0 || catalogId < 0) {
+            return "404";
+        }
+        var catalog = pmService.getReferencedCatalog(catalogId);
+        if (!catalog.getPmInterface().isEnabled()) {
+            return "403";
+        }
+        var activePmCount = pmService.getCatalogActivePmCount(catalog.getId());
+        if (activePmCount > 0) {
+            model.addAttribute("enablementAccess", false);
+        } else {
+            model.addAttribute("enablementAccess", true);
+        }
+        List<Person> defaultPersonList = pmService.getDefaultPersonList();
+        CatalogForm catalogForm = new CatalogForm();
+        catalogForm.setEnabled(catalog.isEnabled());
+        catalogForm.setDefaultPersonId(catalog.getDefaultPerson().getId());
+
+        model.addAttribute("catalogForm", catalogForm);
+        model.addAttribute("catalog", catalog);
+        model.addAttribute("update", true);
+        model.addAttribute("isLocation", false);
+        model.addAttribute("isDevice", false);
+        model.addAttribute("defaultPersonList", defaultPersonList);
+
+        return "catalogForm";
     }
 
     private static PmInterfaceRegisterForm getPmInterfaceRegisterForm(PmInterface pmInterface) {
@@ -241,6 +273,7 @@ public class PmController {
         model.addAttribute("location", location);
         model.addAttribute("isLocation", true);
         model.addAttribute("isDevice", false);
+        model.addAttribute("enablementAccess", false);
 
         return "catalogForm";
 
@@ -259,6 +292,7 @@ public class PmController {
         model.addAttribute("device", device);
         model.addAttribute("isLocation", false);
         model.addAttribute("isDevice", true);
+        model.addAttribute("enablementAccess", false);
 
         return "catalogForm";
 
@@ -266,17 +300,19 @@ public class PmController {
 
     @PostMapping("/catalog/register")
     @ModifyProtection
-    public String pmCatalogRegister(Model model, @ModelAttribute CatalogForm catalogForm) throws SQLException {
+    public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);
         log.info(String.valueOf(validDate));
-        if (validDate.isBefore(LocalDate.now())) {
+        if (validDate.isBefore(UtilService.getDATE())) {
             return "403";
         }
         pmService.registerNewCatalog(catalogForm, validDate);
 
         return "redirect:/pm/workspace";
     }
+
+
 /*
     @ModelAttribute
     public void addAttributes(Model model) {

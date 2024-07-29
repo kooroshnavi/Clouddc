@@ -2,6 +2,7 @@ package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.resource.UtilizerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -86,6 +87,11 @@ final class PersonServiceImpl implements PersonService {
     @Override
     public List<Person> getDefaultAssgineeList() {
         return personRepository.findAllByAssignee(true);
+    }
+
+    @Override
+    public Person getReferencedPerson(Integer defaultPersonId) throws EntityNotFoundException {
+        return personRepository.getReferenceById(defaultPersonId);
     }
 
 }

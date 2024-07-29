@@ -1,5 +1,6 @@
 package ir.tic.clouddc.pm;
 
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -52,6 +53,10 @@ public abstract class PmInterfaceCatalog {
 
     @OneToMany(mappedBy = "pmInterfaceCatalog")
     private List<Pm> pmList;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "PersistenceID")
+    private Persistence persistence;
 
     @Transient
     private String persianLastFinishedDate;

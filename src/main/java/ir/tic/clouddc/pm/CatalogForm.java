@@ -5,7 +5,7 @@ import lombok.Data;
 @Data
 public class CatalogForm {
 
-    private int pmInterfaceCatalogId;
+    private Long pmInterfaceCatalogId;
 
     private Long locationId;
 
@@ -13,9 +13,9 @@ public class CatalogForm {
 
     private String nextDue;
 
-    private int defaultPersonId;
+    private Integer defaultPersonId;
 
     private boolean enabled;
 
-    private int pmInterfaceId;
+    private Integer pmInterfaceId;
 }

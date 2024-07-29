@@ -3,7 +3,6 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.resource.Device;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
@@ -56,7 +55,11 @@ public interface PmService {
 
     Pm getRefrencedPm(Long pmId) throws SQLException;
 
-    Long getActivePmCount(Integer id);
+    Long getPmInterfaceActivePmCount(Integer id);
 
     long getWorkspaceSize();
+
+    PmInterfaceCatalog getReferencedCatalog(Long catalogId);
+
+    Long getCatalogActivePmCount(Long catalogId);
 }
