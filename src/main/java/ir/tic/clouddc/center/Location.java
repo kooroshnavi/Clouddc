@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public abstract class Location {
+
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE)
     @Column(name = "LocationID")

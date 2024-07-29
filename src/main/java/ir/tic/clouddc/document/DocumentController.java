@@ -65,17 +65,15 @@ public class DocumentController {
         outputStream.close();
     }
 
-    @PostMapping("/disable")
-    public String disableDocument(HttpServletRequest request) {
-        var requestParam = request.getParameter("metadataId");
-        if (requestParam != null && !requestParam.isBlank() && !requestParam.isEmpty()) {
-            log.info(String.valueOf(request.getParameter("metadataId")));
-            var metadataId = Long.valueOf(requestParam);
-            fileService.disableDocument(metadataId, fileService.getDocumentOwner(metadataId), personService.getCurrentPerson().getId());
-
-            return "redirect:/document/list";
+    @GetMapping("/{metadataId}/disable")
+    public String disableDocument(@PathVariable Long metadataId) {
+        var exist = fileService.checkMetadata(metadataId);
+        if (!exist) {
+            return "404";
         }
-        return "404";
+        fileService.disableDocument(metadataId, fileService.getDocumentOwner(metadataId), personService.getCurrentPerson().getId());
+
+        return "redirect:/document/list";
     }
 
 }

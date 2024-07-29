@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public final class Persistence {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PersistenceID")

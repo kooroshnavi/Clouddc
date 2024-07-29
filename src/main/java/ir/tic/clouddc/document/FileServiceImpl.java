@@ -94,4 +94,10 @@ public class FileServiceImpl implements FileService {
     public Integer getDocumentOwner(Long metaDataId) {
         return metaDataRepository.fetchMetaDataOwnerId(metaDataId);
     }
+
+    @Override
+    public boolean checkMetadata(Long metadataId) {
+        return metaDataRepository.existsById(metadataId);
+    }
+
 }

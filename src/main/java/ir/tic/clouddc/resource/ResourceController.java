@@ -22,7 +22,6 @@ public class ResourceController {
 
     @GetMapping("/device/{deviceId}/detail")
     public String showDeviceDetail(Model model, @PathVariable Long deviceId) throws EntityNotFoundException {
-
         var device = resourceService.getDevice(deviceId);
         if (device.isPresent()) {
             model.addAttribute("device", device.get());
@@ -30,11 +29,20 @@ public class ResourceController {
             return "deviceDetail";
         }
 
-
-       /* var eventList = eventService.getLocationEventList(baseLocation);
-        model.addAttribute("eventList", eventList);*/
         return "404";
+    }
 
+    @GetMapping("/utilizer/{utilizerId}/detail")
+    public String showUtilizerDetail(Model model, @PathVariable Integer utilizerId) throws EntityNotFoundException {
+        var utilizer = resourceService.getUtilizer(utilizerId);
+        if (utilizer != null) {
+            model.addAttribute("utilizer", utilizer);
+            model.addAttribute("rackList", utilizer.getRackList());
+            model.addAttribute("deviceList", utilizer.getDeviceList());
+            return "utilizerDetail";
+        }
+
+        return "404";
     }
 
 }

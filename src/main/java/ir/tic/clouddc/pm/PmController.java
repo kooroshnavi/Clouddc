@@ -210,7 +210,7 @@ public class PmController {
         return "404";
     }
 
-    @GetMapping("/workspace")
+    @RequestMapping(value = "/workspace", method = {RequestMethod.GET, RequestMethod.POST})
     public String showWorkspace(Model model) {
         var activePmList = pmService.getActivePmList(true, true);
         model.addAttribute("workspace", true);

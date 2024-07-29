@@ -19,4 +19,6 @@ public interface FileService {
 
     Integer getDocumentOwner(Long metaDataId);
 
+    boolean checkMetadata(Long metadataId);
+
 }

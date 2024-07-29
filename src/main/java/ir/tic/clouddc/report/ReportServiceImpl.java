@@ -1,5 +1,6 @@
 package ir.tic.clouddc.report;
 
+import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -8,14 +9,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 @Slf4j
 @Service
 @EnableScheduling
-class ReportServiceImpl implements ReportService {
+public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
 
@@ -31,16 +28,10 @@ class ReportServiceImpl implements ReportService {
     @Scheduled(cron = "0 5 0 * * SAT,SUN,MON,TUE,WED")
     public void startMidnightScheduling() {
         UtilService.setDate();
-        var todayReport = setCurrentReport();
-        pmService.updateTodayPmList(todayReport);
+        pmService.updateTodayPmList();
     }
 
-    @Override
-    public Optional<DailyReport> findActive(boolean active) {
-        return reportRepository.findByActive(active);
-    }
-
-
+/*
     @Override
     public DailyReport setCurrentReport() {
         List<DailyReport> dailyReportList = new ArrayList<>();
@@ -54,9 +45,11 @@ class ReportServiceImpl implements ReportService {
         today.setActive(true);
         dailyReportList.add(today);
         reportRepository.saveAll(dailyReportList);
-        UtilService.setTodayReportId((int) (yesterday.get().getId() + 1));
+
+        UtilService.setTodayReportId(reportRepository.getActiveReportId(true));
+
         return today;
-    }
+    }*/
 
 
 }

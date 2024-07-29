@@ -11,6 +11,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Data
 public final class DailyReport {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ReportID")

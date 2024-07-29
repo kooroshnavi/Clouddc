@@ -20,8 +20,8 @@ public interface ReportRepository extends JpaRepository<DailyReport, Long> {
             where date > (select dateadd(week, -1, getdate()))""", nativeQuery = true)
     List<DailyReport> getWeeklyReportObjects(); */
 
-    @Query("SELECT id FROM DailyReport WHERE active = :active")
-    int getActiveReportId(@Param("active") boolean active);
+    @Query("SELECT r.id FROM DailyReport r WHERE r.active = :active")
+    Long getActiveReportId(@Param("active") boolean active);
 
     @Query("SELECT date FROM DailyReport WHERE id IN :id")
     List<LocalDate> getWeeklyDateList(@Param("id") List<Long> weeklyIdList);

@@ -16,8 +16,8 @@ import java.util.List;
 import java.util.Optional;
 
 public interface PmService {
-    void updateTodayPmList(DailyReport todayReport);
 
+    void updateTodayPmList();
     List<PmInterface> getPmInterfaceList();
 
     List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active);
@@ -57,4 +57,6 @@ public interface PmService {
     Pm getRefrencedPm(Long pmId) throws SQLException;
 
     Long getActivePmCount(Integer id);
+
+    long getWorkspaceSize();
 }

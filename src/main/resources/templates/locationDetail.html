@@ -103,7 +103,7 @@
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}">
                             <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
-                                   th:href="@{/resource/utilizer/detail(utilizerId=${rack.utilizer.id})}"
+                                   th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${rack.utilizer.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
@@ -262,7 +262,7 @@
                                        th:href="@{/pm/catalog/{catalogId}/form (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
-                                       title="ویرایش Pm روی این مکان"></a>
+                                       title="ویرایش Pm روی این مکان" disabled="disabled"></a>
                                 </div>
                             </td>
 

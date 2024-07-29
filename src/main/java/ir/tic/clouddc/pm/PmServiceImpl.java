@@ -38,7 +38,6 @@ import java.util.*;
 
 @Slf4j
 @Service
-@EnableScheduling
 @Transactional
 public class PmServiceImpl implements PmService {
 
@@ -72,23 +71,25 @@ public class PmServiceImpl implements PmService {
 
     }
 
-    public void updateTodayPmList(DailyReport todayReport) {
+    public void updateTodayPmList() {
         final List<PmInterfaceCatalog> todayCatalogList = pmInterfaceCatalogRepository.getTodayCatalogList(UtilService.getDATE(), true, true);
         List<Pm> activePmList = pmRepository.findAllByActive(true);
         List<PmDetail> pmDetailList = new ArrayList<>();
 
         delayCalculation(activePmList, pmDetailList);
 
-        for (PmInterfaceCatalog catalog : todayCatalogList) {
-            PmDetail pmDetail;
-            pmDetail = pmRegister(catalog);
-            pmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
-            pmDetailList.add(pmDetail);
-
+        if (!todayCatalogList.isEmpty()) {
+            for (PmInterfaceCatalog catalog : todayCatalogList) {
+                PmDetail pmDetail;
+                pmDetail = pmRegister(catalog);
+                pmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
+                pmDetailList.add(pmDetail);
+            }
         }
-
-        pmDetailRepository.saveAll(pmDetailList);
-        notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
+        if (!pmDetailList.isEmpty()) {
+            pmDetailRepository.saveAll(pmDetailList);
+            notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
+        }
     }
 
     private PmDetail pmRegister(PmInterfaceCatalog catalog) {
@@ -135,10 +136,10 @@ public class PmServiceImpl implements PmService {
         if (!currentPmList.isEmpty()) {
             for (Pm pm : currentPmList) {
                 var registerDateTime = LocalDateTime.of(pm.getDueDate(), pm.getRegisterTime());
-                pm.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), registerDateTime));
+                pm.setDelay((int) ChronoUnit.DAYS.between(registerDateTime, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime())));
                 var activeTaskDetail = pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get();
                 LocalDateTime assignedDateTime = LocalDateTime.of(activeTaskDetail.getRegisterDate(), activeTaskDetail.getRegisterTime());
-                activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()), assignedDateTime));
+                activeTaskDetail.setDelay((int) ChronoUnit.DAYS.between(assignedDateTime, LocalDateTime.of(UtilService.getDATE(), UtilService.getTime())));
                 pmDetailList.add(activeTaskDetail);
             }
         }
@@ -458,11 +459,11 @@ public class PmServiceImpl implements PmService {
             devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
 
             var newCatalog = pmInterfaceCatalogRepository.save(devicePmCatalog);
-            if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
+          /*  if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
                 var pmDetail = pmRegister(newCatalog);
                 pmDetail.setPersistence(logService.persistenceSetup(newCatalog.getDefaultPerson()));
                 pmDetailRepository.saveAndFlush(pmDetail);
-            }
+            }*/
         }
     }
 
@@ -498,6 +499,12 @@ public class PmServiceImpl implements PmService {
     @Override
     public Long getActivePmCount(Integer pmInterfaceId) {
         return pmRepository.countActiveByPmInterface(pmInterfaceId, true);
+    }
+
+    @Override
+    public long getWorkspaceSize() {
+        var currentPerson = personService.getCurrentPerson();
+        return pmDetailRepository.countActiveByPerson(currentPerson.getId(), true);
     }
 
     @Override

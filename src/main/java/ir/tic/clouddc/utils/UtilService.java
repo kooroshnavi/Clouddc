@@ -19,7 +19,7 @@ public final class UtilService {
     private static final Logger log = LoggerFactory.getLogger(UtilService.class);
     private static LocalDate DATE;
 
-    private static int TODAY_REPORT_ID;
+    private static Long TODAY_REPORT_ID;
 
     public static final Map<String, String> PERSIAN_DAY = Map.ofEntries(
             entry("Sat", "شنبه"),
@@ -103,11 +103,11 @@ public final class UtilService {
         return dayName + " - " + formattedTime;
     }
 
-    public static void setTodayReportId(int todayReportId) {
+    public static void setTodayReportId(Long todayReportId) {
         TODAY_REPORT_ID = todayReportId;
     }
 
-    public static int getTodayReportId() {
+    public static Long getTodayReportId() {
         return TODAY_REPORT_ID;
     }
 }

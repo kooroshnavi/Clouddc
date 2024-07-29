@@ -10,7 +10,7 @@ import java.time.LocalTime;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class PmDetail extends Workflow {  // Common fields in Pm-related details
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "PmID")
     private Pm pm;
 
