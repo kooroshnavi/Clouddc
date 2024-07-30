@@ -12,6 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public final class PmInterface {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "PmInterfaceID")

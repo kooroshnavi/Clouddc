@@ -12,11 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 public final class Rack extends Location {
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "HallID")
     private Hall hall;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 

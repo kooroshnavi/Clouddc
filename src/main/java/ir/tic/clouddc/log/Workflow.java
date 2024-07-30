@@ -12,8 +12,8 @@ import java.time.LocalTime;
 public abstract class Workflow {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "workflow_seq_generator")
-    @SequenceGenerator(name = "workflow_seq_generator", sequenceName = "workflow_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WorkflowGenerator")
+    @SequenceGenerator(name = "WorkflowGenerator", sequenceName = "WorkflowSequence", allocationSize = 1, schema = "Log")
     @Column(name = "WorkflowID")
     private Long id;
 

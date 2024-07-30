@@ -11,6 +11,7 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public final class Center {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "CenterID")

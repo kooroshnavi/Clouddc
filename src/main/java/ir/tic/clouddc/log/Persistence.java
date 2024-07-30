@@ -18,7 +18,7 @@ public final class Persistence {
     @Column(name = "PersistenceID")
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "PersonID")
     private Person person;
 

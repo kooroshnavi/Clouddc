@@ -34,13 +34,11 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(AccessDeniedException.class)
     public String accessDenied(AccessDeniedException accessDeniedException) {
-        log.error(accessDeniedException.getMessage());
         return "403";
     }
 
     @ExceptionHandler(NoSuchElementException.class)
     public String noValue(NoSuchElementException noSuchElementException) {
-        log.error(noSuchElementException.getMessage());
         return "404";
     }
 

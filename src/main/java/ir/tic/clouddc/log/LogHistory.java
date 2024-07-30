@@ -13,6 +13,7 @@ import java.time.LocalTime;
 @NoArgsConstructor
 @Data
 public final class LogHistory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LogHistoryID")

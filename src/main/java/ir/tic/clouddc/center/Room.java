@@ -15,7 +15,7 @@ public final class Room extends Location {
     @OneToMany(mappedBy = "location")
     private List<Device> deviceList;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 

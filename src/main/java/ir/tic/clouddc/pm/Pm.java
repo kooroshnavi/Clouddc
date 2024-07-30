@@ -13,8 +13,8 @@ import java.util.List;
 public abstract class Pm {    // new Task style
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "pm_seq_generator")
-    @SequenceGenerator(name = "pm_seq_generator", sequenceName = "pm_sequence", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PmGenerator")
+    @SequenceGenerator(name = "PmGenerator", sequenceName = "PmSequence", allocationSize = 1, schema = "Pm")
     @Column(name = "PmID")
     private Long id;
 

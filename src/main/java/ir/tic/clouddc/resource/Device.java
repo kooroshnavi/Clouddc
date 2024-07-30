@@ -15,7 +15,8 @@ import java.util.List;
 public abstract class Device {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DeviceGenerator")
+    @SequenceGenerator(name = "DeviceGenerator", sequenceName = "DeviceSequence", allocationSize = 1, schema = "Resource")
     @Column(name = "DeviceID")
     private Long id;
 

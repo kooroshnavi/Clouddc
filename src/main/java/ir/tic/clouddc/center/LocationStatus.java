@@ -14,7 +14,7 @@ public final class LocationStatus {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LocationStatusID")
-    private Integer id;
+    private Long id;
 
     @Column(name = "DoorOK")
     private boolean door;
@@ -28,7 +28,7 @@ public final class LocationStatus {
     @Column(name = "Active")
     private boolean active;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "LocationID")
     private Location location;
 

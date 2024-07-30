@@ -14,7 +14,8 @@ import java.util.List;
 public abstract class Location {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LocationGenerator")
+    @SequenceGenerator(name = "LocationGenerator", sequenceName = "LocationSequence", allocationSize = 1, schema = "Center")
     @Column(name = "LocationID")
     private Long id;
 
