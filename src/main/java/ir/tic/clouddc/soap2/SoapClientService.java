@@ -46,7 +46,6 @@ public final class SoapClientService {
 
         this.message = HEADER + System.lineSeparator() + System.lineSeparator() + message + System.lineSeparator();
         this.address = address;
-        log.info(this.message);
 
         URL url;
         URLConnection connection;
@@ -96,8 +95,6 @@ public final class SoapClientService {
             while ((responseString = in.readLine()) != null) {
                 outputString = outputString + responseString;
             }
-
-            log.info(outputString);
             // Get the response from the web service call
             Document document = parseXmlFile(outputString);
             NodeList nodeLst = document.getElementsByTagName("sendmessageResponse");
@@ -119,7 +116,7 @@ public final class SoapClientService {
         } catch (ParserConfigurationException | SAXException e) {
             throw new RuntimeException(e);
         } catch (IOException e) {
-            System.out.println(e.getMessage());
+            log.error(e.getMessage());
             throw new RuntimeException(e);
         }
 

@@ -28,7 +28,6 @@ public final class LogServiceImpl implements LogService {
         this.workflowRepository = workflowRepository;
     }
 
-
     @Override
     public Persistence persistenceSetup(Person person) {
         return new Persistence(person);
@@ -57,6 +56,11 @@ public final class LogServiceImpl implements LogService {
     @Override
     public void saveWorkFlow(List<Workflow> workflowList) {
         workflowRepository.saveAll(workflowList);
+    }
+
+    @Override
+    public List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId) {
+        return logHistoryRepository.getPmInterfaceSupervisorEditedPersistenceList(stringPmInterfaceId);
     }
 
 

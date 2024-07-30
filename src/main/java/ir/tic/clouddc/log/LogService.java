@@ -16,4 +16,5 @@ public interface LogService {
 
     void saveWorkFlow(List<Workflow> workflowList);
 
+    List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId);
 }

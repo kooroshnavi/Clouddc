@@ -69,7 +69,7 @@ public class PmServiceImpl implements PmService {
 
     }
 
-    public void updateTodayPmList() {
+    public String updateTodayPmList() {
         final List<PmInterfaceCatalog> todayCatalogList = pmInterfaceCatalogRepository.getTodayCatalogList(UtilService.getDATE(), true, true);
         List<Pm> activePmList = pmRepository.findAllByActive(true);
         List<PmDetail> pmDetailList = new ArrayList<>();
@@ -86,8 +86,9 @@ public class PmServiceImpl implements PmService {
         }
         if (!pmDetailList.isEmpty()) {
             pmDetailRepository.saveAll(pmDetailList);
-            notificationService.sendScheduleUpdateMessage("09127016653", "Scheduler successful @: " + LocalDateTime.now());
+            return "Pm Scheduler Successful @: " + LocalDateTime.now();
         }
+      return "No pm schedules for today." + LocalDateTime.now();
     }
 
     private PmDetail pmRegister(PmInterfaceCatalog catalog) {
@@ -160,7 +161,6 @@ public class PmServiceImpl implements PmService {
     @Override
     public List<PmDetail> getPmDetail_2(Pm pm) {
         if (pm.getPmDetailList() != null) {
-            log.info("getPmDetail 2");
             var sortedPmDetailList = pm
                     .getPmDetailList().stream()
                     .sorted(Comparator.comparing(PmDetail::getId).reversed())
@@ -175,6 +175,9 @@ public class PmServiceImpl implements PmService {
     public List<MetaData> getPmDetail_3(Pm pm) {
         List<Long> persistenceIdList = pmDetailRepository.getPersistenceIdList(pm.getId());
         persistenceIdList.add(pm.getPmInterfaceCatalog().getPmInterface().getPersistence().getId());
+        var stringPmInterfaceId = pm.getPmInterfaceCatalog().getPmInterface().getId().toString();
+        List<Long> pmInterfaceSupervisorEditFilePersistenceIdList = logService.getSupervisorPmInterfaceEditFilePersiscentceIdList(stringPmInterfaceId);
+        persistenceIdList.addAll(pmInterfaceSupervisorEditFilePersistenceIdList);
 
         return fileService.getRelatedMetadataList(persistenceIdList, false);
     }
@@ -202,7 +205,6 @@ public class PmServiceImpl implements PmService {
             pmDetail.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(pmDetail.getRegisterDate(), pmDetail.getRegisterTime()));
             if (!pmDetail.isActive()) {
                 pmDetail.setPersianFinishedDate(UtilService.getFormattedPersianDate(pmDetail.getFinishedDate()));
-                log.info(UtilService.getFormattedPersianDayTime(pmDetail.getFinishedDate(), pmDetail.getFinishedTime()));
                 pmDetail.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pmDetail.getFinishedDate(), pmDetail.getFinishedTime()));
             }
         }
@@ -254,15 +256,12 @@ public class PmServiceImpl implements PmService {
         }
         pmDetailRepository.saveAndFlush(basePmDetail);
 
-        log.info("Current pmDetail persisted");
 
         // PART 2. Pm Update
         if (pmUpdateForm.getActionType().equals(0)) {  //  End Pm
-            log.info("Closing Pm....");
             endPm(pm);
 
         } else { //  Assign new PmDetail
-            log.info("new General PmDetail");
             GeneralPmDetail pmDetail = new GeneralPmDetail();
             pmDetail.setPm(pm);
             assignNewPmDetail(pmDetail, pmUpdateForm.getActionType(), true);
@@ -442,7 +441,6 @@ public class PmServiceImpl implements PmService {
             pmInterfaceCatalogRepository.save(catalog);
         } else {
             if (catalogForm.getLocationId() != null) {
-                log.info(String.valueOf(catalogForm.getLocationId()));
                 LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
                 locationPmCatalog.setLocation(centerService.getRefrencedLocation(catalogForm.getLocationId()));
                 locationPmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
@@ -565,7 +563,14 @@ public class PmServiceImpl implements PmService {
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
         pmInterface.setStatelessRecurring(pmInterfaceRegisterForm.isStatelessRecurring());
         if (pmInterfaceRegisterForm.getFile() != null) {
-            fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), persistence);
+            if (Objects.equals(currentPerson.getId(), persistence.getPerson().getId())) {
+                fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), persistence);
+            } else {
+                logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmInterfaceUpdateSupervisorFile"), currentPerson, persistence);
+                var newPersistence = logService.persistenceSetup(currentPerson);
+                logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), pmInterface.getId().toString(), currentPerson, newPersistence);
+                fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), newPersistence);
+            }
         }
         pmInterfaceRepository.saveAndFlush(pmInterface);
     }

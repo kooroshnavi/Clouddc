@@ -50,8 +50,8 @@ public class OtpServiceImpl implements OtpService {
         otpCache.put(otpUid, otp);
         otpCache.put(otp, address);
         otpCache.put(expiryTimeUUID, requestDateTime.plusHours(EXPIRE_HOUR).toString());
-        notificationService.sendOTPMessage(address, otp, machine, persianDateTime);
 
+        notificationService.sendOTPMessage(address, otp, machine, persianDateTime);
     }
 
     private String getRandomOTP(String otpUid) {

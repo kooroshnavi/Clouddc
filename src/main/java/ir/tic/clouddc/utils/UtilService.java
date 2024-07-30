@@ -34,6 +34,7 @@ public final class UtilService {
     public static final Map<String, String> LOG_MESSAGE = Map.ofEntries(
             entry("PmInterfaceRegister", "ثبت PmInterface جدید"),
             entry("PmInterfaceUpdate", "بروزرسانی PmInterface"),
+            entry("PmInterfaceUpdateSupervisorFile", "افزودن فایل به PmInterface توسط Supervisor"),
             entry("PmUpdate", "بروزرسانی Pm"),
             entry("SupervisorPmTermination", "بستن PmDetail توسط Supervisor"),
             entry("DisableAttachment", "حذف فایل پیوست"),

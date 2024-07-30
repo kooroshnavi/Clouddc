@@ -16,7 +16,7 @@ import java.util.Optional;
 
 public interface PmService {
 
-    void updateTodayPmList();
+    String updateTodayPmList();
     List<PmInterface> getPmInterfaceList();
 
     List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active);

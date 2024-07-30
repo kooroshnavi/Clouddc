@@ -12,7 +12,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
@@ -51,6 +53,7 @@ public class FileServiceImpl implements FileService {
         metaData.setAttachment(attachment);
         metaData.setPersistence(persistence);
         metaData.setEnabled(true);
+
         metaDataRepository.save(metaData);
     }
 
@@ -82,7 +85,8 @@ public class FileServiceImpl implements FileService {
     @Override
     @PreAuthorize("#documentOwner == #requester")
     public void disableDocument(Long metadataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
-        metaDataRepository.disableMetadata(metadataId, false, UtilService.getDATE().plusDays(7));
+        var deleteDate = UtilService.validateNextDue(UtilService.getDATE().plusDays(7));
+        metaDataRepository.disableMetadata(metadataId, false, deleteDate);
         log.info(String.valueOf(documentOwnerId));
         log.info(String.valueOf(requesterId));
         var persistence = metaDataRepository.fetchMetaDataPersistence(metadataId);
@@ -98,6 +102,18 @@ public class FileServiceImpl implements FileService {
     @Override
     public boolean checkMetadata(Long metadataId) {
         return metaDataRepository.existsById(metadataId);
+    }
+
+    @Override
+    public String scheduleDocumentRemoval(LocalDate date) {
+        List<Long> removalDueIdList = metaDataRepository.getRemovalDueIdList(date, false);
+        if (!removalDueIdList.isEmpty()) {
+            metaDataRepository.deleteAllById(removalDueIdList);
+            log.info(removalDueIdList.size() + " attachment removed.");
+
+            return removalDueIdList.size() + " attachment removed.";
+        }
+        return "No file has RemovalDueDate";
     }
 
 }

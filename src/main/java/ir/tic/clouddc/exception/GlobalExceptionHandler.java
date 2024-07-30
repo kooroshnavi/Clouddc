@@ -2,6 +2,7 @@ package ir.tic.clouddc.exception;
 
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
@@ -46,6 +47,14 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(FileNotFoundException.class)
     public String noValue(FileNotFoundException fileNotFoundException) {
         log.error(fileNotFoundException.getMessage());
+        return "404";
+    }
+
+
+    @ExceptionHandler(EntityNotFoundException.class)
+    public String noValue(EntityNotFoundException entityNotFoundException) {
+        log.error(entityNotFoundException.getMessage());
+        notificationService.sendExceptionMessage(entityNotFoundException.getMessage(), LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
         return "404";
     }
 
