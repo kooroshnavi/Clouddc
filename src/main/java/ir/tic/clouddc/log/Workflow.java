@@ -13,7 +13,7 @@ public abstract class Workflow {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "WorkflowGenerator")
-    @SequenceGenerator(name = "WorkflowGenerator", sequenceName = "WorkflowSequence", allocationSize = 1, schema = "Log")
+    @SequenceGenerator(name = "WorkflowGenerator", sequenceName = "Workflow_SEQ", allocationSize = 1, schema = "Log")
     @Column(name = "WorkflowID")
     private Long id;
 

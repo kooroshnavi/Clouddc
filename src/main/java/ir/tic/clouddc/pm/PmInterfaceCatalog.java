@@ -18,7 +18,7 @@ public abstract class PmInterfaceCatalog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CatalogGenerator")
-    @SequenceGenerator(name = "CatalogGenerator", sequenceName = "CatalogSequence", allocationSize = 1, schema = "Pm")
+    @SequenceGenerator(name = "CatalogGenerator", sequenceName = "Catalog_SEQ", allocationSize = 1, schema = "Pm")
     @Column(name = "CatalogID")
     private Long id;
 

@@ -28,6 +28,7 @@ public class CenterController {
     public String showCenterLandingPage(Model model) {
         UtilService.setDate();
         centerService.getCenterLandingPageModel(model);
+
         return "centerLandingPage";
     }
 

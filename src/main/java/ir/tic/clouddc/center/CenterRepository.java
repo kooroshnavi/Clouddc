@@ -10,6 +10,9 @@ import java.util.List;
 public interface CenterRepository extends JpaRepository<Center, Integer> {
     @Query("SELECT C.id, C.name FROM Center C")
     List<CenterService.CenterIdNameProjection> fetchCenterIdNameList();
+
+    @Query("select c from Center c where c.id in :centerIDList")
+    List<Center> getCenterList(List<Integer> centerIDList);
 }
 
 

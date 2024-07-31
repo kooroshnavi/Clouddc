@@ -14,7 +14,7 @@ public abstract class Event {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "EventGenerator")
-    @SequenceGenerator(name = "EventGenerator", sequenceName = "EventSequence", allocationSize = 1, schema = "Event")
+    @SequenceGenerator(name = "EventGenerator", sequenceName = "Event_SEQ", allocationSize = 1, schema = "Event")
     @Column(name = "EventID")
     private Long id;
 

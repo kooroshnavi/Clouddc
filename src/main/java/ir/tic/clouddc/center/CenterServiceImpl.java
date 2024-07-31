@@ -116,7 +116,7 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public Model getCenterLandingPageModel(Model model) {
-        List<Center> centerList = centerRepository.findAll();
+        List<Center> centerList = centerRepository.getCenterList(List.of(1, 2));
 
         var center1 = centerList.get(0);
         var center2 = centerList.get(1);
@@ -150,6 +150,7 @@ public class CenterServiceImpl implements CenterService {
         model.addAttribute("center2", center2);
         model.addAttribute("center2SalonList", center2SalonList);
         model.addAttribute("center2RoomList", center2RoomList);
+
         return model;
     }
 
