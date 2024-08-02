@@ -1,7 +1,6 @@
 package ir.tic.clouddc.center;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.List;
@@ -16,7 +15,7 @@ public final class Center {
     @Column(name = "CenterID")
     private Integer id;
 
-    @Column(name = "Name", columnDefinition = "nvarchar(255)")
+    @Column(name = "Name")
     private String name;
 
     @Column(name = "City")

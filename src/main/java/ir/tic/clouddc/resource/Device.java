@@ -16,7 +16,7 @@ public abstract class Device {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "DeviceGenerator")
-    @SequenceGenerator(name = "DeviceGenerator", sequenceName = "Device_SEQ", allocationSize = 1, schema = "Resource")
+    @SequenceGenerator(name = "DeviceGenerator", sequenceName = "Device_SEQ", allocationSize = 1, schema = "Resource", initialValue = 1000)
     @Column(name = "DeviceID")
     private Long id;
 

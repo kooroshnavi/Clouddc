@@ -42,7 +42,7 @@ public final class PmInterface {
     @Column(name = "CategoryId")
     private int categoryId; // 1. GeneralLocation - 2. GeneralDevice
 
-    @Column(name = "targetId")
+    @Column(name = "TargetId")
     private int target;  //  Hall - Rack - Room - Location - server - sw - fw - enc - device
 
     @OneToMany(mappedBy = "pmInterface")

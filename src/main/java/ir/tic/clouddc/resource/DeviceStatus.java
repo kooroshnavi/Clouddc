@@ -13,28 +13,28 @@ public final class DeviceStatus {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "DeviceStatusID")
     private Long id;
 
-    @Column
+    @Column(name = "DualPowerOK")
     private boolean dualPower;  // order 0
 
-    @Column
+    @Column(name = "StatsOK")
     private boolean sts; // order 1
 
-    @Column
+    @Column(name = "FanOK")
     private boolean fan; // order 2
 
-    @Column
+    @Column(name = "ModuleOK")
     private boolean module; // order 3
 
-    @Column
+    @Column(name = "StorageOK")
     private boolean storage; // order 4
 
-    @Column
+    @Column(name = "PortOK")
     private boolean port; // order 5
 
-    @Column
+    @Column(name = "Active")
     private boolean active;
 
     @ManyToOne(cascade = CascadeType.MERGE)

@@ -4,7 +4,6 @@ import ir.tic.clouddc.event.LocationStatusEvent;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 import java.util.List;
 
@@ -16,11 +15,11 @@ public abstract class Location {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "LocationGenerator")
-    @SequenceGenerator(name = "LocationGenerator", sequenceName = "Location_SEQ", allocationSize = 1, schema = "Center")
+    @SequenceGenerator(name = "LocationGenerator", sequenceName = "Location_SEQ", allocationSize = 1, schema = "Center", initialValue = 10000)
     @Column(name = "LocationID")
     private Long id;
 
-    @Column
+    @Column(name = "Name")
     private String name;
 
     @ManyToOne(cascade = CascadeType.ALL)

@@ -11,12 +11,13 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public final class LocationCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "LocationCategoryID")
     private Integer locationCategoryID;  // 1 - 2 - 3
 
-    @Column(name = "Category")
+    @Column(name = "Category", columnDefinition = "nvarchar(50)")
     private String category; /// Hall - Rack - Room
 
     @Column(name = "CategoryId")

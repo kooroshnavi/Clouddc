@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -76,7 +77,7 @@ public class PmController {
 
     @GetMapping("/catalog/{catalogId}/edit")
     @ModifyProtection
-    public String catalogEditForm(Model model, @PathVariable Long catalogId) throws SQLException {
+    public String catalogEditForm(Model model, @PathVariable Long catalogId) {
         if (Objects.equals(catalogId, null) || catalogId == 0 || catalogId < 0) {
             return "404";
         }
@@ -300,7 +301,7 @@ public class PmController {
 
     @PostMapping("/catalog/register")
     @ModifyProtection
-    public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm) throws SQLException {
+    public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm, RedirectAttributes redirectAttributes) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);
         log.info(String.valueOf(validDate));
@@ -309,10 +310,17 @@ public class PmController {
         }
         pmService.registerNewCatalog(catalogForm, validDate);
 
-        return "redirect:/pm/workspace";
+        if (catalogForm.getLocationId() != null) {
+            redirectAttributes.addAttribute("locationId", catalogForm.getLocationId());
+            return "redirect:/center/location/{locationId}/detail";
+        } else if (catalogForm.getDeviceId() != null) {
+            redirectAttributes.addAttribute("deviceId", catalogForm.getDeviceId());
+            return "redirect:/resource/device/{deviceId}/detail";
+        } else {
+            //    var catalog = pmService.getReferencedCatalog(catalogForm.getPmInterfaceCatalogId());
+            return "redirect:/pm/interface/list";
+        }
     }
-
-
 /*
     @ModelAttribute
     public void addAttributes(Model model) {

@@ -18,7 +18,7 @@ public abstract class PmInterfaceCatalog {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CatalogGenerator")
-    @SequenceGenerator(name = "CatalogGenerator", sequenceName = "Catalog_SEQ", allocationSize = 1, schema = "Pm")
+    @SequenceGenerator(name = "CatalogGenerator", sequenceName = "Catalog_SEQ", allocationSize = 1, schema = "Pm", initialValue = 1000)
     @Column(name = "CatalogID")
     private Long id;
 
@@ -39,7 +39,7 @@ public abstract class PmInterfaceCatalog {
     @Column(name = "LastPmId")
     private Long lastPmId;
 
-    @Column(name = "nextDueDate")
+    @Column(name = "NextDueDate")
     private LocalDate nextDueDate;
 
     @Column(name = "Enabled")

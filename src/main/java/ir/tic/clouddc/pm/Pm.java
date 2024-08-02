@@ -14,7 +14,7 @@ public abstract class Pm {    // new Task style
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "PmGenerator")
-    @SequenceGenerator(name = "PmGenerator", sequenceName = "Pm_SEQ", allocationSize = 1, schema = "Pm")
+    @SequenceGenerator(name = "PmGenerator", sequenceName = "Pm_SEQ", allocationSize = 1, schema = "Pm", initialValue = 1000)
     @Column(name = "PmID")
     private Long id;
 

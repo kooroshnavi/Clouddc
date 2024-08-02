@@ -17,8 +17,6 @@ public class CenterController {
 
     private final CenterService centerService;
 
-
-
     @Autowired
     public CenterController(CenterService centerService ) {
         this.centerService = centerService;

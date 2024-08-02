@@ -11,27 +11,28 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public final class DeviceCategory {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
+    @Column(name = "DeviceCategoryID")
     private Integer id;
 
-    @Column
+    @Column(name = "Category")
     private String category;  // server - switch - firewall - enclosure
 
-    @Column
+    @Column(name = "CategoryId")
     private int categoryId;  // 1 - 2 - 3 - 4
 
-    @Column
+    @Column(name = "Vendor")
     private String vendor; // hpe - cisco
 
-    @Column
+    @Column(name = "Model")
     private String model;   //
 
-    @Column
+    @Column(name = "Factor")
     private String factor;
 
-    @Column
+    @Column(name = "FactorSize")
     private int factorSize;
 
     @OneToMany(mappedBy = "deviceCategory")
