@@ -21,7 +21,7 @@ public class indexController {
     }
 
     @GetMapping
-    public String showIndex(Model model) {
+    public String showIndex() {
         return "index";
     }
 

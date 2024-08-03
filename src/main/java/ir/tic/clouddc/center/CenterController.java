@@ -24,7 +24,6 @@ public class CenterController {
 
     @GetMapping("/overview")
     public String showCenterLandingPage(Model model) {
-        UtilService.setDate();
         centerService.getCenterLandingPageModel(model);
 
         return "centerLandingPage";

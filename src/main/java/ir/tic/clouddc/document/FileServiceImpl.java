@@ -109,11 +109,10 @@ public class FileServiceImpl implements FileService {
         List<Long> removalDueIdList = metaDataRepository.getRemovalDueIdList(date, false);
         if (!removalDueIdList.isEmpty()) {
             metaDataRepository.deleteAllById(removalDueIdList);
-            log.info(removalDueIdList.size() + " attachment removed.");
 
             return removalDueIdList.size() + " attachment removed.";
         }
-        return "No file has RemovalDueDate";
+        return "No file were removed.";
     }
 
 }
