@@ -7,6 +7,7 @@ import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
 import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -317,8 +318,11 @@ public class PmController {
             redirectAttributes.addAttribute("deviceId", catalogForm.getDeviceId());
             return "redirect:/resource/device/{deviceId}/detail";
         } else {
-            //    var catalog = pmService.getReferencedCatalog(catalogForm.getPmInterfaceCatalogId());
-            return "redirect:/pm/interface/list";
+            var catalog = pmService.getReferencedCatalog(catalogForm.getPmInterfaceCatalogId());
+            var pmInterfaceId = catalog.getPmInterface().getId();
+            redirectAttributes.addAttribute("pmInterfaceId", pmInterfaceId);
+            redirectAttributes.addAttribute("active", true);
+            return "redirect:/pm/{pmInterfaceId}/active/{active}";
         }
     }
 /*
