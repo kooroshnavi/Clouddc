@@ -1,0 +1,41 @@
+table {
+  margin: 0 auto;
+  margin-top: 20px;
+  width: 100%;
+  position: relative;
+  overflow: auto;
+  overflow-y: overlay;
+}
+
+th,
+thead {
+  position: sticky;
+  top: 0;
+  border: 1px solid #dddddd;
+  background-color: #1f2d54;
+  text-align: center;
+  color: white;
+  table-layout: fixed;
+  word-break: break-word;
+  height: 45px;
+}
+
+.filter {
+  position: absolute;
+  width: 20vw;
+  height: 30vh;
+  display: none;
+  text-align: left;
+  font-size: small;
+  z-index: 9999;
+  overflow: auto;
+  background: #ffffff;
+  color: #1f2d54;
+  border: 1px solid #dddddd;
+}
+
+.filter input {
+  margin: 5px !important;
+  padding: 0 !important;
+  width: 10%;
+}

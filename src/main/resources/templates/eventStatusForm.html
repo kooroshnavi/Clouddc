@@ -1,0 +1,397 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>گزارش رخداد</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
+            <div class="breadcrumb-title pe-3">رخدادها</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="javascript:"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">ثبت رخداد</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="row">
+            <div class="col-xl-9 mx-auto">
+
+                <h6 class="mb-0 text-uppercase">جدول اولیه</h6>
+                <hr/>
+                <div class="card color-table bg-primary">
+                    <div class="card-body">
+                        <table class="table mb-0">
+                            <thead>
+                            <tr>
+                                <th th:if="${eventLandingForm.target} == 'Center'" scope="col">نام مرکز</th>
+                                <th th:if="${eventLandingForm.target} == 'Center'" scope="col">شهر</th>
+                                <th th:if="${eventLandingForm.target} == 'Center'" scope="col">استان</th>
+
+                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.target} == 'Hall' "
+                                    scope="col">نام سالن
+                                </th>
+                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.target} == 'Rack' "
+                                    scope="col">نام رک
+                                </th>
+                                <th th:if="${eventLandingForm.target} == 'Location' && ${eventLandingForm.location.locationType.target} == 'Room' "
+                                    scope="col">نام اتاق
+                                </th>
+
+                                <th th:if="${eventLandingForm.target} == 'Device'" scope="col">نوع تجهیز</th>
+                                <th th:if="${eventLandingForm.target} == 'Device'" scope="col">شماره سریال</th>
+                                <th th:if="${eventLandingForm.target} == 'Device'" scope="col">برند</th>
+                                <th th:if="${eventLandingForm.target} == 'Device'" scope="col">مدل</th>
+                                <th th:if="${eventLandingForm.target} == 'Device' && ${eventLandingForm.device.deviceCategory.type} == 'Server'"
+                                    scope="col">فرم فاکتور شاسی
+                                </th>
+                                <th th:if="${eventLandingForm.target} == 'Device' && ${eventLandingForm.device.deviceCategory.type} == 'Switch'"
+                                    scope="col">تعداد پورت سوئیچ
+                                </th>
+                                <th th:if="${eventLandingForm.target} == 'Device'" scope="col">محل نصب</th>
+                                <th th:if="${eventLandingForm.target} == 'Device'" scope="col">بهره بردار</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td th:if="${eventLandingForm.target} == 'Center'"
+                                    th:text="${eventLandingForm.center.name}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Center'"
+                                    th:text="${eventLandingForm.center.city}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Center'"
+                                    th:text="${eventLandingForm.center.province}"></td>
+
+                                <td th:if="${eventLandingForm.target} == 'Location'"
+                                    th:text="${eventLandingForm.location.name}"></td>
+
+
+                                <td th:if="${eventLandingForm.target} == 'Device'"
+                                    th:text="${eventLandingForm.device.deviceCategory.type}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device'"
+                                    th:text="${eventLandingForm.device.serialNumber}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device'"
+                                    th:text="${eventLandingForm.device.deviceCategory.vendor}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device'"
+                                    th:text="${eventLandingForm.device.deviceCategory.model}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device' && && ${eventLandingForm.device.deviceCategory.type} == 'Server'"
+                                    th:text="${server.factorSize + '-' + server.formFactor}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device' && && ${eventLandingForm.device.deviceCategory.type} == 'Switch'"
+                                    th:text="${sw.portNumber}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device'"
+                                    th:text="${eventLandingForm.device.location.name}"></td>
+                                <td th:if="${eventLandingForm.target} == 'Device'"
+                                    th:text="${eventLandingForm.device.utilizer}"></td>
+
+                            </tr>
+                            </tbody>
+
+                        </table>توضیحات کلی
+                    </div>
+                </div>
+
+                <div th:if="${eventLandingForm.eventCategoryId} == 1" class="card-body">
+                    <div class="border p-3 rounded">
+                        <form class="was-validated" class="row g-3" th:action="@{/event/register}"
+                              enctype="multipart/form-data"
+                              th:object="${eventLandingForm}" method="post">
+
+                            <div class="mb-3" th:replace="~{staticDetailsTemplate :: formDescription}"></div>
+
+                            <div class="mb-3" th:replace="~{staticDetailsTemplate :: formFile}"></div>
+
+                            <!-- Button trigger modal -->
+                            <div class="mb-3">
+                                <button class="btn btn-primary" type="submit">ثبت رخداد بازدید</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${eventLandingForm.eventCategoryId} == 2" class="holder">
+                    <form class="row g-3" th:action="@{/event/register}"
+                          enctype="multipart/form-data"
+                          th:object="${locationStatusForm}" method="post">
+
+                        <table width="100%">
+
+                            <tr>
+                                <td>درب مکان به درستی باز و بسته می شود.</td>
+                                <td>
+                                    <div>
+                                        <label>
+                                            <input th:checked="${locationStatus.door}" th:field="*{door}"
+                                                   type="checkbox"/>
+                                        </label>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>عملکرد فن ها و شرایط تهویه ظاهرا مناسب است.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${locationStatus.ventilation}" th:field="*{ventilation}"
+                                               type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>برق مکان وصل و پایدار است.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${locationStatus.power}" th:field="*{power}"
+                                               type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <div class="mb-3" th:replace="~{staticDetailsTemplate :: formDescription}"></div>
+
+                        <div class="mb-3" th:replace="~{staticDetailsTemplate :: formFile}"></div>
+
+                        <button type="submit" class="btn btn-primary">ثبت رخداد تغییرات</button>
+
+                    </form>
+                </div>
+
+                <div th:if="${eventLandingForm.eventCategoryId} == 3" class="card-body">
+                    <div class="border p-3 rounded">
+                        <form class="was-validated" class="row g-3" th:action="@{/event/register}"
+                              enctype="multipart/form-data"
+                              th:object="${eventLandingForm}" method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label">بهره بردار</label>
+                                <select class="form-select" th:field="*{utilizerId}">
+                                    <option value="0">انتخاب بهره بردار</option>
+                                    <option th:each="utilizer : ${utilizerList}" th:value="${utilizer.id}"
+                                            th:text="${utilizer.name}"></option>
+                                </select>
+                                <div class="invalid-feedback">بهره بردار انتخاب نشده است.</div>
+                            </div>
+
+                            <div class="mb-3" th:replace="~{staticDetailsTemplate :: formDescription}"></div>
+
+                            <div class="mb-3" th:replace="~{staticDetailsTemplate :: formFile}"></div>
+
+                            <!-- Button trigger modal -->
+                            <div class="mb-3">
+                                <button class="btn btn-primary" type="submit">ثبت رخداد تغییرات</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+
+                <div th:if="${eventLandingForm.eventCategoryId} == 4" class="card-body">
+                    <div class="border p-3 rounded">
+                        <form class="was-validated" class="row g-3" th:action="@{/event/register}"
+                              enctype="multipart/form-data"
+                              th:object="${eventLandingForm}" method="post">
+
+                            <div class="mb-3">
+                                <label class="form-label">جابجایی تجهیز</label>
+                                <select class="form-select" th:field="*{utilizerId}">
+                                    <option value="0">محل نصب تجهیز</option>
+                                    <option th:each="center : ${centerList}" th:value="${center.id}"
+                                            th:text="${center.name}"></option>
+                                </select>
+                                <div class="invalid-feedback">محل نصب انتخاب نشده است.</div>
+                            </div>
+
+                            <div class="mb-3" th:replace="~{staticDetailsTemplate :: formDescription}"></div>
+
+                            <div class="mb-3" th:replace="~{staticDetailsTemplate :: formFile}"></div>
+
+                            <!-- Button trigger modal -->
+                            <div class="mb-3">
+                                <button class="btn btn-primary" type="submit">ثبت رخداد تغییرات</button>
+                            </div>
+
+                        </form>
+                    </div>
+                </div>
+
+                <div th:if="${eventLandingForm.eventCategoryId} == 5" class="holder">
+                    <form class="row g-3" th:action="@{/event/register}"
+                          enctype="multipart/form-data"
+                          th:object="${deviceStatusForm}" method="post">
+
+                        <table width="100%">
+
+                            <tr>
+                                <td>تجهیز به دو (2) منبع نیرو متصل است.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${deviceStatus.dualPower}" th:field="*{dualPower}"
+                                               type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>چراغ وضعیت تجهیز، سبزرنگ است.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${deviceStatus.sts}" th:field="*{sts}" type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>فن های تجهیز به درستی کار می کنند.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${deviceStatus.fan}" th:field="*{fan}" type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>ماژول ها سالم هستند.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${deviceStatus.module}" th:field="*{module}"
+                                               type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>چراغ نارنجی یا قرمز روی باکس های استوریج نمی بینم</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${deviceStatus.storage}" th:field="*{storage}"
+                                               type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>پورت های غیرخالی و آپ لینک های تجهیز، متصل هستند.</td>
+                                <td>
+                                    <div>
+                                        <input th:checked="${deviceStatus.port}" th:field="*{port}"
+                                               type="checkbox"/>
+                                        <span></span>
+                                    </div>
+                                </td>
+                            </tr>
+
+                        </table>
+
+                        <div class="mb-3" th:replace="~{staticDetailsTemplate :: formDescription}"></div>
+
+                        <div class="mb-3" th:replace="~{staticDetailsTemplate :: formFile}"></div>
+
+                        <button type="submit" class="btn btn-primary">ثبت رخداد تغییرات</button>
+
+                    </form>
+                </div>
+
+
+            </div>
+
+        </div><!--end row-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:;" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/fileSizeValidation.js"></script>
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+
+</body>
+
+</html>

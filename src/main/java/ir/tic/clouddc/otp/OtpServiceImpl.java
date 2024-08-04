@@ -24,7 +24,7 @@ public class OtpServiceImpl implements OtpService {
 
     private static final long EXPIRE_HOUR = 12;
 
-    private LoadingCache<String, String> otpCache;
+    private final LoadingCache<String, String> otpCache;
 
     private final NotificationService notificationService;
 
@@ -50,6 +50,7 @@ public class OtpServiceImpl implements OtpService {
         otpCache.put(otpUid, otp);
         otpCache.put(otp, address);
         otpCache.put(expiryTimeUUID, requestDateTime.plusHours(EXPIRE_HOUR).toString());
+
         notificationService.sendOTPMessage(address, otp, machine, persianDateTime);
     }
 
@@ -81,14 +82,11 @@ public class OtpServiceImpl implements OtpService {
         } else if (!realOtp.equals(providedOtp)) { //invalid otp
             return "-1";
         }
-        var address = otpCache.get(realOtp);
-       /* otpCache.invalidate(otpUid);
+        /* otpCache.invalidate(otpUid);
         otpCache.invalidate(address);
         otpCache.invalidate(UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8)).toString());
         otpCache.invalidate(realOtp);*/
 
-        return address;
+        return otpCache.get(realOtp);
     }
-
-
 }

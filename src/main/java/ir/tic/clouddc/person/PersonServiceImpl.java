@@ -1,7 +1,12 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.resource.Utilizer;
+import ir.tic.clouddc.resource.UtilizerRepository;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -11,11 +16,15 @@ import java.util.List;
 @Service
 final class PersonServiceImpl implements PersonService {
 
-    private PersonRepository personRepository;
+    private final PersonRepository personRepository;
+
+    private final UtilizerRepository utilizerRepository;
+
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository) {
+    public PersonServiceImpl(PersonRepository personRepository, UtilizerRepository utilizerRepository) {
         this.personRepository = personRepository;
+        this.utilizerRepository = utilizerRepository;
     }
 
     @Override
@@ -35,10 +44,8 @@ final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List getPersonListNotIn(int personId) {
-        List<Integer> ids = new ArrayList<>();
-        ids.add(personId);
-        return personRepository.findAllByIdNotInAndAssignee(ids, true);
+    public List<Person> getPersonListExcept(List<String> ignoreUsernameList) {
+        return personRepository.fetchAssignablePersonList(ignoreUsernameList, true);
     }
 
     @Override
@@ -50,6 +57,41 @@ final class PersonServiceImpl implements PersonService {
     public Person updatePerson(Person person) {
         personRepository.save(person);
         return null;
+    }
+
+    @Override
+    public int getPersonId(String username) {
+        return personRepository.fetchPersonId(username);
+    }
+
+    @Override
+    public Person getCurrentPerson() {
+        return getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
+    }
+
+    @Override
+    public String getCurrentUsername() {
+        return SecurityContextHolder.getContext().getAuthentication().getName();
+    }
+
+    @Override
+    public List<GrantedAuthority> getCurrentPersonRoleList() {
+        return new ArrayList<>(SecurityContextHolder.getContext().getAuthentication().getAuthorities());
+    }
+
+    @Override
+    public List<Utilizer> getUtilizerList() {
+        return utilizerRepository.findAll();
+    }
+
+    @Override
+    public List<Person> getDefaultAssgineeList() {
+        return personRepository.findAllByAssignee(true);
+    }
+
+    @Override
+    public Person getReferencedPerson(Integer defaultPersonId) throws EntityNotFoundException {
+        return personRepository.getReferenceById(defaultPersonId);
     }
 
 }

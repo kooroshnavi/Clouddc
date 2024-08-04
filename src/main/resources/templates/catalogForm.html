@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/bootstrap/dist/css/bootstrap.rtl.min.css" rel="stylesheet"/>
+    <link href="/panel/bootstrap/dist/css/bootstrap.rtl.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+    <link href="/JalaliDatePicker/JalaliDatePicker_1.min.css" rel="stylesheet" >
+    <script type="text/javascript" src="/JalaliDatePicker/JalaliDatePicker.min_2.js"></script>
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>Pm Register</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
+            <div class="breadcrumb-title pe-3">Pm</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">تعریف Pm</li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+                    <div th:if="${isLocation}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${'فرم ثبت Pm برای ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
+                    <div th:if="${isDevice}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${'فرم ثبت Pm برای ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h5>
+                    </div>
+                    <div th:if="${update}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            >ویرایش کاتالوگ</h5>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="border p-3 rounded">
+
+                            <form class="row g-3" th:action="@{/pm/catalog/register}"
+                                  th:object="${catalogForm}"
+                                  method="POST">
+
+                                <div th:if="${not update}" class="mb-3">
+                                    <label class="form-label">انتخاب Pm</label>
+                                    <label>
+                                        <select class="single-select" th:field="*{pmInterfaceId}">
+                                            <option th:each="pmInterface : ${pmInterfaceList}"
+                                                    th:value="${pmInterface.id}"
+                                                    th:text="${pmInterface.title + ' با دوره تکرار ' + pmInterface.period}"></option>
+                                        </select>
+                                    </label>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-label">
+                                        <label>اولین سررسید :</label>
+                                        <input required="required" type="text" data-jdp
+                                               data-jdp-miladi-input="miladi_date" data-jdp-min-date="today"
+                                               placeholder="نمایش تاریخ از امروز"/>
+                                    </div>
+                                </div>
+                                <input type="hidden" th:field="*{nextDue}" id="miladi_date"/>
+
+                                <input th:if="${isLocation && not update}" type="hidden" name="locationId" th:value="${location.id}"/>
+                                <input th:if="${isDevice && not update}" type="hidden" name="deviceId" th:value="${device.id}"/>
+                                <input th:if="${update}" type="hidden" name="pmInterfaceCatalogId" th:value="${catalog.id}"/>
+                                <input th:if="${update && not enablementAccess}" type="hidden" name="enabled" th:value="${catalog.enabled}"/>
+
+                                <div class="mb-3">
+                                    <label class="form-label">کارتابل پیش فرض</label>
+                                    <select class="single-select" th:field="*{defaultPersonId}">
+                                        <option th:each="person : ${defaultPersonList}"
+                                                th:value="${person.id}" th:text="${person.name}"></option>
+                                    </select>
+                                </div>
+
+                                <div th:if="${update && enablementAccess}" class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:field="*{enabled}">
+                                    <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال سازی</label>
+                                </div>
+                                <hr/>
+
+                                <div th:if="${update && not enablementAccess}" class="col-12">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked="checked" disabled="disabled">
+                                    <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این Pm خاتمه یابد.</label>
+                                </div>
+
+                                <div class="col">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#exampleWarningModal">ثبت
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content bg-warning">
+                                                <div class="modal-header border-dark">
+                                                    <h5 class="modal-title text-dark">همکار گرامی، نظر به اهمیت ثبت
+                                                        اطلاعات صحیح و قابل استناد،</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-dark">
+                                                    <p>لطفا در ثبت و ویرایش Pm ها دقت لازم را مبذول نمایید باتشکر</p>
+                                                </div>
+                                                <div class="modal-footer border-dark">
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                        بستن
+                                                    </button>
+                                                    <button type="submit" class="btn btn-dark">بروزرسانی</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div><!--end row-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+<script src="/panel/assets/js/fileSizeValidation.js"></script>
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+<script src="/JalaliDatePicker/JalaliDatePickerGeorgianResponse_3.js"></script>
+
+</body>
+
+</html>

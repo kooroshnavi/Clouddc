@@ -1,13 +1,14 @@
 package ir.tic.clouddc.center;
 
+import ir.tic.clouddc.pm.CatalogForm;
+import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @Slf4j
 @Controller
@@ -17,31 +18,57 @@ public class CenterController {
     private final CenterService centerService;
 
     @Autowired
-    public CenterController(CenterService centerService) {
+    public CenterController(CenterService centerService ) {
         this.centerService = centerService;
     }
 
-    @GetMapping("/temperature/history")
-    public String getTemperatureHistory(Model model) {
-        model.addAttribute("temperatureHistoryList", centerService.getTemperatureHistoryList());
-        return "temperatureHistoryView";
-    }
-    @GetMapping("/temperature/form")
-    public String getTemperatureForm(Model model) {
-        model.addAttribute("temperatureForm", new TemperatureForm());
-        return "dailyTemperatureForm";
+    @GetMapping("/overview")
+    public String showCenterLandingPage(Model model) {
+        centerService.getCenterLandingPageModel(model);
+
+        return "centerLandingPage";
     }
 
-    @PostMapping("/temperature/form")
-    public String submitTemperatureForm(Model model, @ModelAttribute("temperatureForm") TemperatureForm temperatureForm) {
-        if (temperatureForm.getSalon1Temp().isBlank() && temperatureForm.getSalon2Temp().isBlank()) {
-            model.addAttribute("temperatureForm", new TemperatureForm());
-            return "dailyTemperatureForm";
+    @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
+    public String showLocationDetail(Model model, @PathVariable Long locationId) {
+        var baseLocation = centerService.getLocation(locationId);
+        if (baseLocation.isPresent()) {
+            model.addAttribute("location", baseLocation.get());
+            var catalogList = baseLocation.get().getLocationPmCatalogList();
+            model.addAttribute("catalogList", catalogList);
+
+            if (baseLocation.get() instanceof Hall location) {
+                model.addAttribute("hall", location);
+                model.addAttribute("rackList", location.getRackList());
+            } else if (baseLocation.get() instanceof Rack location) {
+                model.addAttribute("rack", location);
+                model.addAttribute("rackDeviceList", location.getDeviceList());
+            } else if (baseLocation.get() instanceof Room location) {
+                model.addAttribute("room", location);
+                model.addAttribute("roomDeviceList", location.getDeviceList());
+            }
+            return "locationDetail";
         }
-        model.addAttribute("temperatureHistoryList", centerService.saveDailyTemperature(temperatureForm));
-        return "temperatureHistoryView";
+
+        return "404";
+
+
     }
 
+    @PostMapping("/location/catalog/register")
+    public String registerCatalog(@ModelAttribute("catalogForm") CatalogForm catalogForm) {
+        var nextDue = catalogForm.getNextDue();
+        var validDate = LocalDate.parse(nextDue);
+        log.info(String.valueOf(validDate));
+        if (validDate.isBefore(LocalDate.now())) {
+            return "403";
+        }
+
+        centerService.registerNewCatalog(catalogForm, validDate);
+
+        //  redirectAttributes.addAttribute("locationId", catalogForm.getLocationId());
+        return "500";
+    }
 
     @ModelAttribute
     public void addAttributes(Model model) {

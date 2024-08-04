@@ -1,52 +1,58 @@
 package ir.tic.clouddc.center;
 
-import com.github.mfathi91.time.PersianDate;
-import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.event.LocationStatusEvent;
+import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.ReportService;
+import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.pm.CatalogForm;
+import ir.tic.clouddc.pm.PmInterface;
+import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.scheduling.annotation.EnableScheduling;
-import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
+import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
-@EnableScheduling
 public class CenterServiceImpl implements CenterService {
 
     private final CenterRepository centerRepository;
 
-    private final TemperatureRepository temperatureRepository;
-
     private final PersonService personService;
-
-    private final ReportService reportService;
 
     private final NotificationService notificationService;
 
-    @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, TemperatureRepository temperatureRepository, PersonService personService, ReportService reportService, NotificationService notificationService) {
-        this.centerRepository = centerRepository;
-        this.temperatureRepository = temperatureRepository;
-        this.personService = personService;
-        this.reportService = reportService;
-        this.notificationService = notificationService;
-    }
+    private final LogService logService;
 
+    private final LocationRepository locationRepository;
+
+    private final LocationPmCatalogRepository locationPmCatalogRepository;
+
+    private final LocationStatusRepository locationStatusRepository;
+
+
+    @Autowired
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
+        this.centerRepository = centerRepository;
+        this.personService = personService;
+        this.notificationService = notificationService;
+        this.logService = logService;
+        this.locationRepository = locationRepository;
+        this.locationPmCatalogRepository = locationPmCatalogRepository;
+        this.locationStatusRepository = locationStatusRepository;
+    }
+/*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
     public void dailyTemperatureCheck() {
         var dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
@@ -63,22 +69,158 @@ public class CenterServiceImpl implements CenterService {
                 notificationService.sendTemperatureReminderMessage(dateTime);
             }
         }
+    }*/
+
+    @Override
+    public LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate nextDue) {
+        LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
+        locationPmCatalog.setLocation(locationRepository.getReferenceById(catalogForm.getLocationId()));
+        locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
+        locationPmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
+        locationPmCatalog.setEnabled(true);
+        locationPmCatalog.setHistory(false);
+        locationPmCatalog.setActive(false);
+        locationPmCatalog.setNextDueDate(UtilService.validateNextDue(nextDue));
+
+        return locationPmCatalogRepository.save(locationPmCatalog);
     }
 
     @Override
-    public Center getCenter(int centerId) {
-        return centerRepository.findById(centerId).get();
+    public Location getRefrencedLocation(Long locationId) throws SQLException {
+        return locationRepository.getReferenceById(locationId);
     }
 
     @Override
-    public List<Center> getDefaultCenterList() {
-        List<Integer> centerIds = Arrays.asList(1, 2, 3);
-        return centerRepository.findAllByIdIn(centerIds);
+    public List<LocationPmCatalog> getLocationCatalogList(Location baseLocation) {
+        return locationPmCatalogRepository.findAllByLocation(baseLocation);
+    }
+
+    @Override
+    public LocationStatus getCurrentLocationStatus(Location location) {
+        var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
+        if (locationStatus.isPresent()) {
+            return locationStatus.get();
+        } else {
+            LocationStatus defaultLocationStatus = new LocationStatus();
+            defaultLocationStatus.setDoor(true);
+            defaultLocationStatus.setVentilation(true);
+            defaultLocationStatus.setPower(true);
+            return defaultLocationStatus;
+        }
+    }
+
+    @Override
+    public List<Location> getCustomizedLocationList(List<String> locationCategoryNameList) {
+        return locationRepository.fetchCustomizedLocationList(locationCategoryNameList);
+    }
+
+    @Override
+    public Model getCenterLandingPageModel(Model model) {
+        List<Center> centerList = centerRepository.getCenterList(List.of(1000, 1001));
+
+        var center1 = centerList.get(0);
+        var center2 = centerList.get(1);
+
+        var center1SalonList = center1
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 1)
+                .toList();
+        var center1RoomList = center1
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 3)
+                .toList();
+
+        var center2SalonList = center2
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 1)
+                .toList();
+        var center2RoomList = center2
+                .getLocationList()
+                .stream()
+                .filter(location -> location.getLocationCategory().getLocationCategoryID() == 3)
+                .toList();
+
+
+        model.addAttribute("center1", center1);
+        model.addAttribute("center1SalonList", center1SalonList);
+        model.addAttribute("center1RoomList", center1RoomList);
+        model.addAttribute("center2", center2);
+        model.addAttribute("center2SalonList", center2SalonList);
+        model.addAttribute("center2RoomList", center2RoomList);
+
+        return model;
+    }
+
+    @Override
+    public List<CenterIdNameProjection> getCenterIdAndNameList() {
+        return centerRepository.fetchCenterIdNameList();
+    }
+
+    @Override
+    public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event) {
+        List<LocationStatus> locationStatusList = new ArrayList<>();
+        var location = locationStatusForm.getLocation();
+        var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();
+        if (currentStatus.isPresent()) {
+            currentStatus.get().setActive(false);
+            locationStatusList.add(currentStatus.get());
+        }
+        LocationStatus locationStatus = new LocationStatus();
+        locationStatus.setLocation(locationStatusForm.getLocation());
+        locationStatus.setEvent(event);
+        locationStatus.setDoor(locationStatusForm.isDoor());
+        locationStatus.setVentilation(locationStatusForm.isVentilation());
+        locationStatus.setPower(locationStatusForm.isPower());
+        locationStatus.setActive(true);
+
+        locationStatusList.add(locationStatus);
+
+        locationStatusRepository.saveAllAndFlush(locationStatusList);
+    }
+
+
+    @Override
+    public Hall getHall(int hallId) {
+        return null;
+    }
+
+
+    @Override
+    public Optional<Location> getLocation(Long locationId) {
+        Optional<Location> optionalLocation = locationRepository.findById(locationId);
+
+        if (optionalLocation.isPresent()) {
+            if (optionalLocation.get().getLocationPmCatalogList() != null) {
+                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
+                    if (locationPmCatalog.isHistory()) {
+                        var finishedDate = locationPmCatalog.getLastFinishedDate();
+                        locationPmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
+                        locationPmCatalog.setPersianLastFinishedDayTime(UtilService.getFormattedPersianDayTime(finishedDate, locationPmCatalog.getLastFinishedTime()));
+                    }
+                    locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
+                }
+            }
+        }
+        return optionalLocation;
+
+    }
+
+    @Override
+    public Optional<Center> getCenter(int centerId) {
+        return centerRepository.findById(centerId);
+    }
+
+    @Override
+    public List<Hall> getHallList() {
+        return null;
     }
 
     @Override
     public List<Center> getCenterList() {
-        return centerRepository.findAll();
+        return centerRepository.findAll(Sort.by("name"));
     }
 
     @Override
@@ -92,56 +234,23 @@ public class CenterServiceImpl implements CenterService {
         return model;
     }
 
-    @Override
-    public List<Temperature> saveDailyTemperature(TemperatureForm temperatureForm) {
-        var time = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        var person = personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
-        var todayReport = reportService.findActive(true).get();
-        var temp1 = temperatureForm.getSalon1Temp();
-        var temp2 = temperatureForm.getSalon2Temp();
-        List<Temperature> dailyTemps = new ArrayList<>();
-
-        if (!temp1.isEmpty() && Float.parseFloat(temperatureForm.getSalon1Temp()) >= 5.0 && Float.parseFloat(temperatureForm.getSalon1Temp()) <= 50.0) {
-            Temperature salon1Temperature = new Temperature();
-            salon1Temperature.setTime(time);
-            salon1Temperature.setValue(Float.parseFloat(temperatureForm.getSalon1Temp()));
-            salon1Temperature.setCenter(getCenter(1));
-            salon1Temperature.setPerson(person);
-            salon1Temperature.setDailyReport(todayReport);
-            dailyTemps.add(salon1Temperature);
-        }
-
-        if (!temp2.isEmpty() && Float.parseFloat(temperatureForm.getSalon2Temp()) >= 5.0 && Float.parseFloat(temperatureForm.getSalon2Temp()) <= 50.0) {
-            Temperature salon2Temperature = new Temperature();
-            salon2Temperature.setTime(time);
-            salon2Temperature.setValue(Float.parseFloat(temperatureForm.getSalon2Temp()));
-            salon2Temperature.setCenter(getCenter(2));
-            salon2Temperature.setPerson(person);
-            salon2Temperature.setDailyReport(todayReport);
-            dailyTemps.add(salon2Temperature);
-        }
-
-        if (!dailyTemps.isEmpty()) {
-            temperatureRepository.saveAll(dailyTemps);
-        }
-
-        return getTemperatureHistoryList();
-    }
 
     @Override
-    public List<Temperature> getTemperatureHistoryList() {
-        List<Temperature> temperatureList = temperatureRepository
-                .findAll()
-                .stream()
-                .sorted(Comparator.comparing(Temperature::getId).reversed())
-                .toList();
+    public void setDailyTemperatureReport(DailyReport currentReport) {
 
-        DateTimeFormatter date = DateTimeFormatter.ofPattern("yyyy/MM/dd");
-        for (Temperature temperature : temperatureList) {
-            var origDate = temperature.getDailyReport().getDate();
-            temperature.getDailyReport().setPersianDate(date.format(PersianDate.fromGregorian(origDate)));
-        }
-        return temperatureList;
     }
+
+
+    @Override
+    public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
+        /*
+        var center = getHall(centerId);
+        List<Float> weeklyTemperature = new ArrayList<>();
+        for (LocalDate date : weeklyDateList) {
+            weeklyTemperature.add(center.getAverageTemperature().get(date));
+        }*/
+        return null;
+    }
+
 
 }

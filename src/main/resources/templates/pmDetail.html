@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>تاریخچه وظیفه</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
+            <div class="breadcrumb-title pe-3">وظایف</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">جزئیات گردش کار Pm</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="col">
+            <div class="card border shadow-none radius-10">
+                <div class="card-body">
+                    <div class="d-flex align-items-hall gap-3">
+                        <div th:if="${pm.delay} == 0" class="icon-box bg-light-success border-0">
+                            <i class="lni lni-chevron-left"></i>
+                        </div>
+                        <div th:if="${pm.delay} > 0" class="icon-box bg-light-danger border-0">
+                            <i class="lni lni-chevron-left"></i>
+                        </div>
+                        <div class="info">
+                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
+                            </h6>
+                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.title}"></strong></h6>
+                            <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1"
+                               th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.category}"></p>
+                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1"
+                               th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
+                               th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.category}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
+                               th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
+                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
+                               th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
+                            <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
+                            <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div th:if="${not pm.active}" class="col">
+            <div class="card bg-success text-white">
+                <div class="card-body">
+                    <p class="card-text">وظیفه قبلا انجام شده است.</p>
+                </div>
+            </div>
+        </div>
+
+        <div th:if="${pm.active} AND ${permission}" class="col">
+            <div class="card-body">
+                <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn-outline-warning btn-danger">بروزرسانی وظیفه
+                    برای کارتابل منتسب و همچنین مسئول مدیریت وظایف امکان پذیر است. جهت بروزرسانی کلیک کنید.</a>
+            </div>
+        </div>
+
+        <hr/>
+
+        <div class="col">
+            <div th:if="${pm.active} AND ${not permission}" class="card bg-warning text-dark">
+                <div class="card-body">
+                    <p class="card-text">وظیفه در کارتابل دیگر همکاران می باشد.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card-body">
+            <h6 class="mb-0 text-uppercase" align="hall">گردش کار</h6>
+            <hr/>
+            <div class="table-responsive">
+                <table id="example2" class="table table-striped table-bordered">
+                    <thead>
+                    <tr>
+                        <th>ردیف</th>
+                        <th>زمان انتساب گردش کار</th>
+                        <th>زمان اتمام گردش کار</th>
+                        <th>کارتابل</th>
+                        <th>توضیحات</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+
+                    <tr th:if="${pmInterface.isGeneralPm()}" th:each="detail, iter : ${pmDetailList}">
+
+                        <td th:text="${iter.count}"></td>
+
+                        <td th:text="${detail.persianRegisterDate}" data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            th:title="${detail.persianRegisterDayTime}"></td>
+
+                        <td th:if="${detail.active}">اقدام نشده</td>
+
+                        <td th:if="${not detail.active}" th:title="${detail.persianFinishedDayTime}"
+                            data-bs-toggle="tooltip"
+                            data-bs-placement="top"
+                            th:text="${detail.persianFinishedDate}"></td>
+
+                        <td th:text="${detail.persistence.person.name}"></td>
+                        <td th:text="${detail.description}"></td>
+
+                    </tr>
+
+                    </tbody>
+                    <tfoot>
+                    </tfoot>
+                </table>
+            </div>
+        </div>
+
+        <!--attachment table-->
+        <div class="card" align="center">
+            <div class="card-body">
+                <h6 class="mb-0 text-uppercase" align="center">
+                    <strong>لیست پیوست</strong>
+                </h6>
+                <div class="d-flex align-items-hall">
+
+                </div>
+                <div class="card-body">
+                    <table class="table mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>فایل</th>
+                            <th>بارگذاری توسط</th>
+                            <th>عملیات</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr th:each="metadata, iter : ${metadataList}">
+
+                            <td th:text="${iter.count}"></td>
+                            <td>
+
+                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
+                                     class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
+                                     class="d-flex align-items-hall">
+                                    <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}"
+                                     class="d-flex align-items-hall">
+                                    <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}"
+                                     class="d-flex align-items-hall">
+                                    <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                </div>
+
+                            </td>
+
+                            <td th:text="${metadata.persistence.person.name}"/>
+
+                            <td>
+                                <div th:if="${metadata.persistence.person.username == #authentication.getName()}"
+                                     class="col">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
+                                            data-bs-target="#exampleWarningModal">مدیریت فایل های پیوست
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content bg-gradient-info">
+                                                <div class="modal-header border-dark">
+                                                    <h5 class="modal-title text-dark">مدیریت فایل</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-dark">
+                                                    <p>همکار گرامی جهت مشاهده و حذف فایل های خود می توانید از طریق بخش
+                                                        مدیریت فایل واقع در منوی دسترسی سریع (بالا سمت چپ کنار
+                                                        ساعت) اقدام نمایید.
+                                                       </p>
+                                                </div>
+                                                <div class="modal-footer border-dark">
+                                                    <a th:href="@{/document/list}" class="btn btn-dark">مدیریت فایل</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--End attachment table-->
+
+    </main>
+    <!--end page main-->
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+<script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+<script src="/panel/assets/js/table-datatable.js"></script>
+
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+</body>
+
+</html>

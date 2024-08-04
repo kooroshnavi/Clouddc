@@ -1,196 +1,342 @@
 package ir.tic.clouddc.event;
 
-import com.github.mfathi91.time.PersianDateTime;
-import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.center.*;
+import ir.tic.clouddc.document.FileService;
+import ir.tic.clouddc.document.MetaData;
+import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.task.TaskService;
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.DeviceStatus;
+import ir.tic.clouddc.resource.ResourceService;
+import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import java.io.IOException;
+import java.math.RoundingMode;
+import java.sql.SQLException;
+import java.text.DecimalFormat;
+import java.time.format.TextStyle;
+import java.util.*;
 
 @Slf4j
 @Service
-public class EventServiceImpl implements EventService {
+public final class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+    private final EventDetailRepository eventDetailRepository;
+    private final EventCategoryRepository eventCategoryRepository;
+
+    private final LocationStatusEventRepository locationStatusEventRepository;
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
-    private final TaskService taskService;
-    private final EventTypeRepository eventTypeRepository;
+    private final FileService fileService;
+    private final LogService logService;
+    private final ResourceService resourceService;
+
+    private static final int VISIT_EVENT_CATEGORY_ID = 1;
+    private static final int LOCATION_STATUS_EVENT_CATEGORY_ID = 2;
+    private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 3;
+    private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
+    private static final int DEVICE_STATUS_EVENT_CATEGORY_ID = 5;
+
 
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , ReportService reportService
+            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, LocationStatusEventRepository locationStatusEventRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
-            , TaskService taskService
-            , EventTypeRepository eventTypeRepository) {
+            , FileService fileService, LogService logService, ResourceService resourceService) {
         this.eventRepository = eventRepository;
+        this.eventDetailRepository = eventDetailRepository;
+        this.eventCategoryRepository = eventCategoryRepository;
+        this.locationStatusEventRepository = locationStatusEventRepository;
+
         this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
-        this.taskService = taskService;
-        this.eventTypeRepository = eventTypeRepository;
+        this.resourceService = resourceService;
+        this.fileService = fileService;
+        this.logService = logService;
+    }
+
+
+    @Override
+    public LocationStatusForm getLocationStatusForm(Location location) {
+        LocationStatusForm locationStatusForm = new LocationStatusForm();
+        locationStatusForm.setLocation(location);
+        return locationStatusForm;
     }
 
     @Override
-    public void eventRegister(EventForm eventForm) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Optional<DailyReport> report = reportService.findActive(true);
-        var eventType = new EventType(eventForm.getEventType());
-        var registerDate = LocalDateTime.now();
+    public DeviceStatusForm getDeviceStatusForm(Device device) {
+        DeviceStatusForm deviceStatusForm = new DeviceStatusForm();
+        deviceStatusForm.setDevice(device);
+        return deviceStatusForm;
+    }
 
-        Event event = new Event(registerDate
-                , eventForm.isActive()
-                , new EventType(eventForm.getEventType())
-                , centerService.getCenter(eventForm.getCenterId()));
+    @Override
+    public DeviceStatus getCurrentDeviceStatus(Device device) {
+        return resourceService.getCurrentDeviceStatus(device);
+    }
 
-        eventDetailRegister(eventForm, event, registerDate);
+    @Override
+    public List<LocationStatusEvent> getLocationEventList(Location baseLocation) {
 
-        event.setDailyReportList(report.get());
-        event.setType(eventType);
-        eventType.setEvent(event);
-        log.info("event added" + report.get().getEventList());
-        eventRepository.save(event);
+        return locationStatusEventRepository.findAllByLocation(baseLocation);
+    }
+
+    @Override
+    public LocationStatus getCurrentLocationStatus(Location location) {
+        return centerService.getCurrentLocationStatus(location);
+    }
+
+    @Override
+    public List<Utilizer> deviceUtilizerEventData(Utilizer utilizer) {
+        return resourceService.getUtilizerListExcept(utilizer);
+    }
+
+    @Override
+    public List<Center> getCenterList() {
+        return centerService.getCenterList();
+    }
+
+    @Override
+    public void eventSetup(EventLandingForm eventLandingForm
+            , @Nullable DeviceStatusForm deviceStatusForm
+            , @Nullable LocationStatusForm locationStatusForm) throws IOException, SQLException {
+
+        switch (eventLandingForm.getEventCategoryId()) {
+            case VISIT_EVENT_CATEGORY_ID -> {
+                var event = visitEventRegister_1(eventLandingForm);
+                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                eventRepository.save(event);
+            }
+            case LOCATION_STATUS_EVENT_CATEGORY_ID -> {
+                if (!Objects.isNull(locationStatusForm)) {
+                    var event = locationStatusEventRegister_2(locationStatusForm);
+                    eventDetailRegister(event, locationStatusForm.getFile(), locationStatusForm.getDescription());
+                    centerService.updateLocationStatus(locationStatusForm, event);
+                }
+            }
+            case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
+                var event = deviceUtilizerEventRegister_3(eventLandingForm);
+                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                eventRepository.save(event);
+                resourceService.updateDeviceUtilizer(event);
+            }
+            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
+                var event = deviceMovementEventRegister_4(eventLandingForm);
+                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
+                eventRepository.save(event);
+                resourceService.updateDeviceLocation(event);
+            }
+            case DEVICE_STATUS_EVENT_CATEGORY_ID -> {
+                if (!Objects.isNull(deviceStatusForm)) {
+                    var event = deviceStatusEventRegister_5(deviceStatusForm);
+                    eventDetailRegister(event, deviceStatusForm.getFile(), deviceStatusForm.getDescription());
+                    resourceService.updateDeviceStatus(deviceStatusForm, event);
+                }
+            }
+        }
 
     }
 
-    private void eventDetailRegister(EventForm eventForm, Event event, LocalDateTime eventDetailDate) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
+    private VisitEvent visitEventRegister_1(EventLandingForm eventLandingForm) {
+        VisitEvent visitEvent = new VisitEvent();
+        visitEvent.setRegisterDate(UtilService.getDATE());
+        visitEvent.setRegisterTime(UtilService.getTime());
+        visitEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+        visitEvent.setCenter(eventLandingForm.getCenter());
+        visitEvent.setActive(false);
+
+        return visitEvent;
+    }
+
+    private LocationStatusEvent locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
+        var currentStatus = locationStatusForm.getCurrentLocationStatus();
+        LocationStatusEvent locationStatusEvent = new LocationStatusEvent();
+        locationStatusEvent.setLocationStatus(currentStatus);
+        locationStatusEvent.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
+        locationStatusEvent.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
+        locationStatusEvent.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
+        locationStatusEvent.setLocation(locationStatusForm.getLocation());
+        locationStatusEvent.setActive(false);
+
+        return locationStatusEvent;
+    }
+
+    private DeviceUtilizerEvent deviceUtilizerEventRegister_3(EventLandingForm eventLandingForm) {
+        DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
+        deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
+        deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
+        deviceUtilizerEvent.setOldUtilizer(eventLandingForm.getDevice().getUtilizer());
+        deviceUtilizerEvent.setNewUtilizer(resourceService.getUtilizer(eventLandingForm.getUtilizerId()));
+        deviceUtilizerEvent.setDevice(eventLandingForm.getDevice());
+        deviceUtilizerEvent.setActive(false);
+        deviceUtilizerEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+
+        return deviceUtilizerEvent;
+    }
+
+    private DeviceMovementEvent deviceMovementEventRegister_4(EventLandingForm eventLandingForm) throws SQLException {
+        DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
+        deviceMovementEvent.setRegisterDate(UtilService.getDATE());
+        deviceMovementEvent.setRegisterTime(UtilService.getTime());
+        deviceMovementEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+        var destination = centerService.getRefrencedLocation(eventLandingForm.getLocationId());
+        deviceMovementEvent.setDestination(destination);
+        deviceMovementEvent.setSource(eventLandingForm.getDevice().getLocation());
+        deviceMovementEvent.setDevice(eventLandingForm.getDevice());
+        deviceMovementEvent.setActive(false);
+
+        return deviceMovementEvent;
+    }
+
+    private DeviceStatusEvent deviceStatusEventRegister_5(DeviceStatusForm deviceStatusForm) {
+        DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
+        deviceStatusEvent.setRegisterDate(UtilService.getDATE());
+        deviceStatusEvent.setRegisterTime(UtilService.getTime());
+        deviceStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getEventCategoryId()).get());
+        deviceStatusEvent.setDevice(deviceStatusForm.getDevice());
+        deviceStatusEvent.setActive(false);
+
+        return deviceStatusEvent;
+    }
+
+    private void eventDetailRegister(Event event, MultipartFile file, String description) throws IOException {
         EventDetail eventDetail = new EventDetail();
-        eventDetail.setPerson(personService.getPerson(SecurityContextHolder.getContext().getAuthentication().getName()));
-        eventDetail.setDescription(eventForm.getDescription());
-        eventDetail.setUpdated(eventDetailDate);
-        eventDetail.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(eventDetailDate)));
+        eventDetail.setRegisterDate(event.getRegisterDate());
+        eventDetail.setRegisterTime(event.getRegisterTime());
+        var currentPerson = personService.getCurrentPerson();
+        var persistence = logService.persistenceSetup(currentPerson);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("EventUpdate"), currentPerson, persistence);
+        fileService.registerAttachment(file, persistence);
+        eventDetail.setPersistence(persistence);
+        eventDetail.setDescription(description);
         eventDetail.setEvent(event);
-        event.setEventDetailList(eventDetail);
-    }
-
-
-    @Override
-    public Event getEvent(Long eventId) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Event event = eventRepository.findById(eventId).get();
-        event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-        return event;
     }
 
     @Override
-    public List<EventType> getEventTypeList() {
-        return eventTypeRepository.findAll();
+    public List<Event> getEventList(@Nullable Integer categoryId) {
+        List<Event> eventList = new ArrayList<>();
+        if (!Objects.isNull(categoryId)) {
+            var category = eventCategoryRepository.findById(categoryId);
+            if (category.isPresent()) {
+                eventList = eventRepository.findAllByEventCategory(category.get(), Sort.by("registerDate"));
+            }
+        } else {
+            eventList = eventRepository.findAll(Sort.by("registerDate").descending());
+        }
+        for (Event event : eventList) {
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
+        }
+        return eventList;
+    }
+
+    @Override
+    public Event getEventHistory(Long eventId) {
+        var optionalEvent = eventRepository.findById(eventId);
+        Event event;
+        if (optionalEvent.isPresent()) {
+            event = optionalEvent.get();
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
+            loadEventDetailTransients(event.getEventDetail());
+
+            return event;
+        }
+        return null;
+    }
+
+    @Override
+    public MetaData getRelatedMetadata(Long persistenceId) {
+        var metadata = fileService.getRelatedMetadataList(List.of(persistenceId), false);
+        if (!metadata.isEmpty()) {
+            return metadata.get(0);
+        }
+        return null;
+    }
+
+    private void loadEventDetailTransients(EventDetail eventDetail) {
+        eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
+        eventDetail.setPersianDayTime(UtilService.PERSIAN_DAY.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+    }
+
+    @Override
+    public List<EventCategory> getEventCategoryList() {
+        return (List<EventCategory>) eventCategoryRepository.findAll();
+    }
+
+    @Override
+    public List<CenterService.CenterIdNameProjection> getCenterIdAndNameList() {
+        return centerService.getCenterIdAndNameList();
     }
 
     @Override
     public Model modelForEventController(Model model) {
-        var authenticated = SecurityContextHolder.getContext().getAuthentication();
-        var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
-        model.addAttribute("person", person);
-        model.addAttribute("role", authenticated.getAuthorities());
+        model.addAttribute("person", personService.getCurrentPerson());
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
     }
 
     @Override
-    public Model modelForEventRegisterForm(Model model) {
-        model.addAttribute("centerList", centerService.getCenterList());
-        model.addAttribute("eventTypeList", eventTypeRepository.findAll());
-        model.addAttribute("eventForm", new EventForm());
-        return model;
+    public Optional<Center> getCenter(Integer centerId) {
+        return centerService.getCenter(centerId);
     }
 
     @Override
-    public Model modelForEventDetail(Model model, Long eventId) {
-        List<EventDetail> eventDetailList = getEventDetailList(eventId);
-
-        var firstReport = eventDetailList.get(eventDetailList.size() - 1);
-
-        model.addAttribute("eventDetailList", eventDetailList);
-        model.addAttribute("event", this.getEvent(eventId));
-        model.addAttribute("id", eventId);
-        model.addAttribute("eventForm", new EventForm());
-        model.addAttribute("firstReport", firstReport);
-        return model;
-    }
-
-    private List<EventDetail> getEventDetailList(Long eventId) {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-        Event event = eventRepository.findById(eventId).get();
-        for (EventDetail eventDetail : event.getEventDetailList()
-        ) {
-            eventDetail.setPersianDate(dateTime.format
-                    (PersianDateTime
-                            .fromGregorian
-                                    (eventDetail.getUpdated())));
-        }
-
-        return event.getEventDetailList()
-                .stream()
-                .sorted(Comparator.comparing(EventDetail::getId).reversed())
-                .collect(Collectors.toList());
+    public Location getRefrencedLocation(Long locationId) throws SQLException {
+        return centerService.getRefrencedLocation(locationId);
     }
 
     @Override
-    public Model modelForEventList(Model model) {
-        model.addAttribute("centerList", centerService.getCenterList());
-        model.addAttribute("eventTypeList", getEventTypeList());
-        model.addAttribute("eventList", getEventList());
-        return model;
-    }
-
-    @Override
-    public List<Event> getEventList() {
-        DateTimeFormatter dateTime = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
-
-        List<Event> eventList = eventRepository.findAll(Sort.by("active").descending());
-        for (Event event : eventList) {
-            event.setPersianDate(dateTime.format(PersianDateTime.fromGregorian(event.getEventDate())));
-        }
-
-        return eventList;
-    }
-
-    @Override
-    public void updateEvent(Long eventId, EventForm eventForm) {
-        Optional<DailyReport> report = reportService.findActive(true);
-        Event event = eventRepository.findById(eventId).get();
-        eventDetailRegister(eventForm, event, LocalDateTime.now());
-
-        if (!eventForm.isActive()) {
-            event.setActive(false);
-        }
-
-        if (report.get().getEventList().stream().noneMatch(event1 -> event1.getId() == eventId)) {
-            event.setDailyReportList(report.get());
-        }
-
-        eventRepository.save(event);
-
-    }
-
-    @Override
-    public List<Event> getPendingEventList() {
-        return eventRepository.findAllByActive(true);
+    public Optional<Device> getDevice(String serialNumber) {
+        return resourceService.getDeviceBySerialNumber(serialNumber);
     }
 
     @Override
     public long getEventCount() {
         return eventRepository.count();
     }
+
+    @Override
+    public long getActiveEventCount() {
+        return eventRepository.getActiveEventCount(true);
+    }
+
+    @Override
+    public List<Long> getEventTypeCount() {
+        return null;
+    }
+
+    @Override
+    public int getWeeklyRegisteredPercentage() {
+        DecimalFormat decimalFormat = new DecimalFormat("###");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        var percent = (float) 25 * 100;
+        log.info(String.valueOf(percent));
+        var formatted = decimalFormat.format(percent);
+        return Integer.parseInt(formatted);
+    }
+
+    @Override
+    public int getActiveEventPercentage() {
+        DecimalFormat decimalFormat = new DecimalFormat("###");
+        decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
+        float percent = ((float) getActiveEventCount() / getEventCount()) * 100;
+        var formatted = decimalFormat.format(percent);
+        return Integer.parseInt(formatted);
+    }
 }
+

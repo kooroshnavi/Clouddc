@@ -1,12 +1,11 @@
 <!doctype html>
-<html lang="fa" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+<html lang="fa" dir="auto" xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>شرکت ارتباطات زیرساخت</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
-
-    <link th:href="@{/login/css/style.css}" rel="stylesheet">
+    <link href="/login/css/style.css" rel="stylesheet">
 
 </head>
 
@@ -17,7 +16,7 @@
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
                 <h2 class="heading-section">
-                    <strong>سامانه نگه داری و پایش زیرساخت ابر (آزمایشی)</strong>
+                    <strong>سامانه نگه داری و پایش زیرساخت ابر</strong>
                 </h2>
             </div>
         </div>
@@ -27,7 +26,8 @@
             <div class="col-md-6 col-lg-4">
                 <div class="login-wrap p-0">
 
-                    <form class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}" method="Post">
+                    <form id="form" class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}"
+                          method="Post">
 
                         <div th:if="${logout}" class="alert-success">
                             خروج از سیستم انجام شد.
@@ -41,9 +41,11 @@
                         <div th:if="${error2}" class="alert-warning">
                             شماره موبایل را به درستی وارد نمایید.
                         </div>
+
                         <div class="form-group">
-                            <input type="number" size="11" dir="rtl"  th:field="*{address}" name="username" class="form-control" placeholder="تلفن همراه تیک گرام"
-                                   required>
+                            <input type="number" id="phoneNumber" size="11" dir="rtl" th:field="*{address}"
+                                   name="username" class="form-control" placeholder="تلفن همراه تیک گرام"
+                                   required="required">
                         </div>
 
                         <div class="form-group">
@@ -56,10 +58,28 @@
     </div>
 </section>
 
-<script th:src="@{/login/js/jquery.min.js}"></script>
-<script th:src="@{/login/js/popper.js}"></script>
-<script th:src="@{/login/js/bootstrap.min.js}"></script>
-<script th:src="@{/login/js/main.js}"></script>
+<script src="/login/js/jquery.min.js"></script>
+<script src="/login/js/popper.js"></script>
+<script src="/login/js/bootstrap.min.js"></script>
+<script src="/login/js/main.js"></script>
+
+<script th:inline="javascript">
+    const form = document.getElementById('form');
+    form.addEventListener('submit', (e) => {
+        if (phoneNumberSyntax(e) === true) {
+            form.submit()
+        }
+    });
+    function phoneNumberSyntax(e) {
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        if (phoneNumber === "" || phoneNumber.length !== 11) {
+            alert("شماره تلفن همراه را به درستی وارد نمایید.");
+            e.preventDefault();
+        } else {
+            return true;
+        }
+    }
+</script>
 
 </body>
 </html>

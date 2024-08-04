@@ -13,4 +13,5 @@ public interface OtpService {
     String getOtpUid(String key) throws ExecutionException;
 
     String verifyOtp(String otpUid, String requestOtp) throws ExecutionException;
+
 }

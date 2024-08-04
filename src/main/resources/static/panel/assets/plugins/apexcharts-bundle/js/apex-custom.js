@@ -95,23 +95,13 @@ $(function () {
 		},
 		colors: ["#e72e2e", '#0c971a'],
 		series: [{
-			name: "Music",
-			data: [1, 15, 56, 20, 33, 27, 15, 56, 20, 56]
+			name: "سالن شماره یک",
+			data: salon1WeeklyTemp
 		}, {
-			name: "Photos",
-			data: [30, 33, 21, 42, 30, 33, 21, 42, 19, 32]
+			name: "سالن شماره دو",
+			data: salon2WeeklyTemp
 		}],
-		title: {
-			text: 'Multiline Chart',
-			align: 'left',
-			offsetY: 25,
-			offsetX: 20
-		},
-		subtitle: {
-			text: 'Statistics',
-			offsetY: 55,
-			offsetX: 20
-		},
+
 		markers: {
 			size: 4,
 			strokeWidth: 0,
@@ -127,12 +117,12 @@ $(function () {
 		},
 		//labels: ['01/15/2002', '01/16/2002', '01/17/2002', '01/18/2002', '01/19/2002', '01/20/2002'],
 		xaxis: {
-			//type: 'datetime',
-			categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct'],
+			//type: 'text',
+			categories: weeklyDate,
 		},
 		legend: {
 			position: 'top',
-			horizontalAlign: 'right',
+			horizontalAlign: 'left',
 			offsetY: -20
 		}
 	}

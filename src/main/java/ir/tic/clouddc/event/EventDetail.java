@@ -1,55 +1,30 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.log.Workflow;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-public class EventDetail {
+public final class EventDetail extends Workflow {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private Long id;
-
-    @Column
-    private LocalDateTime updated;
+    @OneToOne(cascade = {CascadeType.ALL})
+    @JoinColumn(name = "EventID")
+    private Event event;
 
     @Transient
     private String persianDate;
 
-    @Column
-    @Nationalized
-    private String description;
+    @Transient
+    private String persianDayTime;
 
-    @ManyToOne
-    @JoinColumn(name = "event_id")
-    private Event event;
-
-    @ManyToOne
-    @JoinColumn(name = "person_id")
-    private Person person;
-
-
-    public Long getId() {
-        return id;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public LocalDateTime getUpdated() {
-        return updated;
-    }
-
-    public void setUpdated(LocalDateTime updated) {
-        this.updated = updated;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public String getPersianDate() {
@@ -60,40 +35,11 @@ public class EventDetail {
         this.persianDate = persianDate;
     }
 
-    public String getDescription() {
-        return description;
+    public String getPersianDayTime() {
+        return persianDayTime;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public Person getPerson() {
-        return person;
-    }
-
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
-    @Override
-    public String toString() {
-        return "EventDetail{" +
-                "id=" + id +
-                ", updated=" + updated +
-                ", persianDate='" + persianDate + '\'' +
-                ", description='" + description + '\'' +
-                ", event=" + event +
-                ", person=" + person +
-                '}';
+    public void setPersianDayTime(String persianDayTime) {
+        this.persianDayTime = persianDayTime;
     }
 }

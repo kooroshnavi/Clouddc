@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org">
+
+<!--attachment table-->
+<div class="card" align="center" th:fragment="attachment(metadataList)">
+    <div class="card-body">
+        <h6 class="mb-0 text-uppercase" align="center">
+            <strong>لیست پیوست</strong>
+        </h6>
+        <div class="d-flex align-items-hall">
+
+        </div>
+        <div class="card-body">
+            <table class="table mb-0">
+                <thead class="table-dark">
+                <tr>
+                    <th>ردیف</th>
+                    <th>فایل</th>
+                    <th>بارگذاری توسط</th>
+                    <th>حذف فایل</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="metadata, iter : ${metaDataList}">
+
+                    <td th:text="${iter.count}"></td>
+                    <td>
+
+                        <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
+                            <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
+                            <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                               class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                        </div>
+
+                        <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
+                             class="d-flex align-items-hall">
+                            <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                            <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                               class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                        </div>
+
+                        <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
+                             class="d-flex align-items-hall">
+                            <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
+                            <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                               class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
+                        </div>
+
+                        <div class="d-flex align-items-hall gap-2"
+                             th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}">
+                            <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                            <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                               class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                        </div>
+
+                    </td>
+
+                    <td th:text="${metadata.persistence.person.name}"/>
+                    <td>
+
+                        <form>
+                            <a th:if="${metadata.logHistory.person.id == person.id }"
+                               th:href="@{/document/{metadataId}/delete (metadataId=${metadata.id})}"
+                               class="text-danger" data-bs-toggle="tooltip" data-bs-placement="bottom"
+                               title="حذف فایل"
+                               data-bs-original-title="Delete" aria-label="Delete"><i
+                                    class="bi bi-trash-fill"></i></a>
+                        </form>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<!--attachment table-->
+
+<!--Event table-->
+<div class="card" th:fragment="eventTable">
+    <div class="card-body">
+        <div class="table-responsive">
+            <table id="example2" class="table table-striped table-bordered">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>شناسه</th>
+                    <th>دسته بندی</th>
+                    <th>عنوان</th>
+                    <th>تاریخ ثبت</th>
+                    <th>وضعیت</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="event, iter : ${eventList}">
+
+                    <td th:text="${iter.count}"></td>
+                    <td th:text="${event.id}"></td>
+                    <td th:text="${event.eventCategory.name}"></td>
+
+                    <td th:text="${event.name}">
+                        <div class="col">
+                            <a th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
+                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" title="جزئیات رخداد"></a>
+                        </div>
+                    </td>
+
+                    <td th:text="${event.persianDate}"></td>
+
+                    <td class="clock">
+                        <span th:if="${event.active}" class="badge bg-light-danger text-danger w-100">فعال - در حال پیگیری</span>
+                        <span th:if="${not event.active}"
+                              class="badge bg-light-success text-success w-100">پایان رخداد</span>
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<!--Event table-->
+
+
+<!--Pm table-->
+<div class="card" th:fragment="pmTable">
+
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table mb-0 table-dark table-striped">
+                <thead>
+                <tr>
+                    <th>ردیف</th>
+                    <th>دسته بندی</th>
+                    <th>عنوان Pm</th>
+                    <th>جزئیات آخرین اقدام</th>
+                    <th>سررسید بعدی</th>
+                    <th>کارتابل پیش فرض</th>
+                    <th>جزئیات</th>
+                </tr>
+                </thead>
+                <tbody>
+
+                <tr th:each="pmCatalog, iter : ${locationPmCatalogList}">
+
+                    <td th:text="${iter.count}"></td>
+                    <td th:text="${pmCatalog.pmInterface.pmCategory.name}"></td>
+                    <td th:text="${pmCatalog.pmInterface.name}"></td>
+
+                    <td th:text="${pmCatalog.lastFinishedPm.persianFinishedDate}">
+                        <div class="col">
+                            <a th:href="@{/pm/{pmId}/detailList(pmId=${pmCatalog.lastFinishedPm.id})}"
+                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                               data-bs-placement="bottom" th:text="${pmCatalog.lastFinishedPm.persianFinishedDayTime}"></a>
+                        </div>
+                    </td>
+
+                    <td th:text="${event.persianDate}"></td>
+
+                    <td class="clock">
+                        <span th:if="${event.active}" class="badge bg-light-danger text-danger w-100">فعال - در حال پیگیری</span>
+                        <span th:if="${not event.active}"
+                              class="badge bg-light-success text-success w-100">پایان رخداد</span>
+                    </td>
+
+                </tr>
+
+                </tbody>
+
+            </table>
+        </div>
+    </div>
+</div>
+<!--Pm table-->
+
+
+<div class="mb-3" th:fragment="formDescription(description)">
+    <label for="validationTextarea" class="form-label">توضیحات</label>
+    <textarea class="form-control is-invalid" id="validationTextarea"  placeholder="Required example textarea" required th:field="*{description}"></textarea>
+    <div class="invalid-feedback">توضیحاتی که بعدا در یادآوری رخداد مفید است</div>
+</div>
+
+<div class="mb-3" th:fragment="formFile">
+    <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+    <input class="form-control" type="file" name="attachment" id="attachment">
+</div>
+
+

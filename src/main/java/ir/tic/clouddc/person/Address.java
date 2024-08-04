@@ -1,33 +1,20 @@
 package ir.tic.clouddc.person;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.Nationalized;
 
 @Entity
 @Table(schema = "Person")
 @NoArgsConstructor
-public class Address {
+@Data
+public final class Address {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column
-    private int id;
+    @Column(name = "PersonID")
+    private Integer id;
 
-    @Column
-    @Nationalized // nvarchar
+    @Column(name = "PhoneNumber")
     private String value;
-
-    public int getId() {
-        return id;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
 }

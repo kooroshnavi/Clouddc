@@ -6,9 +6,7 @@ public interface NotificationService {
 
     void sendSuccessLoginMessage(String personAddress, String ipAddress, LocalDateTime dateTime);
 
-    void sendNewTaskAssignedMessage(String personAddress, String taskTitle, LocalDateTime dateTime);
-
-    void sendActiveTaskAssignedMessage(String personAddress, String taskTitle, int delay, LocalDateTime dateTime);
+    void sendPmAssignedMessage(String personAddress, String taskTitle, LocalDateTime dateTime);
 
     void sendScheduleUpdateMessage(String personAddress, String log);
 
@@ -16,5 +14,4 @@ public interface NotificationService {
 
     void sendExceptionMessage(String message, LocalDateTime dateTime);
 
-    void sendTemperatureReminderMessage(LocalDateTime dateTime);
 }

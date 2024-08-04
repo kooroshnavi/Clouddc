@@ -27,7 +27,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     private final OtpService otpService;
     private final PersonService personService;
     private final AddressRepository addressRepository;
-    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");
+    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");  // char role: 0.1.2.3.4
 
     @Autowired
     public OtpAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
@@ -40,7 +40,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
         var otpUid = authentication.getPrincipal().toString();
         var providedOtp = authentication.getCredentials().toString();
-        if (providedOtp.isBlank() || providedOtp.isEmpty() || providedOtp.toCharArray().length < 6) {
+        if (providedOtp.isBlank() || providedOtp.toCharArray().length < 6) {
             throw new BadCredentialsException("Bad Input");
         }
 

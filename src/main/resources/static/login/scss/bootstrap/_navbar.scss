@@ -19,7 +19,7 @@
   position: relative;
   display: flex;
   flex-wrap: wrap; // allow us to do the line break for collapsing content
-  align-items: center;
+  align-items: hall;
   justify-content: space-between; // space out brand from logo
   padding: $navbar-padding-y $navbar-padding-x;
 
@@ -29,7 +29,7 @@
   > .container-fluid {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
+    align-items: hall;
     justify-content: space-between;
   }
 }
@@ -101,7 +101,7 @@
   flex-grow: 1;
   // For always expanded or extra full navbars, ensure content aligns itself
   // properly vertically. Can be easily overridden with flex utilities.
-  align-items: center;
+  align-items: hall;
 }
 
 // Button for toggling the navbar when in its collapsed state
@@ -126,7 +126,7 @@
   height: 1.5em;
   vertical-align: middle;
   content: "";
-  background: no-repeat center center;
+  background: no-repeat hall hall;
   background-size: 100% 100%;
 }
 

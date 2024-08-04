@@ -558,12 +558,12 @@ $(function() {
 			}
 		},
       dataLabels: {
-          enabled: false
+          enabled: true
       },
       fill: {
         type: 'gradient',
           gradient: {
-              shade: 'light',
+              shade: 'dark',
               //gradientToColors: [ '#8f50ff'],
               shadeIntensity: 1,
               type: 'vertical',
@@ -574,8 +574,8 @@ $(function() {
       },
       colors: ["#1b56d6"],
       series: [{
-        name: 'Sales',
-        data: [47, 45, 74, 32, 56, 31, 44, 33, 45, 19]
+        name: "دما",
+        data: salon1WeeklyTemp
       }],
       stroke: {
               width: 2.5, 
