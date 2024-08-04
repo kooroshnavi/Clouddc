@@ -7,6 +7,7 @@ import ir.tic.clouddc.center.LocationStatus;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
+import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.resource.Utilizer;
 import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
@@ -65,4 +66,5 @@ public interface EventService {
 
     List<LocationStatusEvent> getLocationEventList(Location baseLocation);
 
+    List<ResourceService.DeviceIdSerialCategoryProjection> getDeviceMovementEventData_1(Long locationId);
 }

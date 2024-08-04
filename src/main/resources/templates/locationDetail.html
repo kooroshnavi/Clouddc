@@ -78,11 +78,14 @@
                         <th scope="col">نام</th>
                         <th scope="col">مرکز</th>
                         <th th:if="${location.locationCategory.categoryId == 2}" scope="col">سالن</th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}" scope="col">توضیحات
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
+                            scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}" scope="col">توضیحات
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}"
+                            scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}" scope="col">بهره
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}" scope="col">
+                            بهره
                             بردار
                         </th>
                     </tr>
@@ -99,7 +102,9 @@
 
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             th:text="${rack.description}"></td>
-                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده - خالی</td>
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده
+                            - خالی
+                        </td>
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}">
                             <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
@@ -159,7 +164,8 @@
 
                             <td>
                                 <div class="col">
-                                    <a th:text="${device.serialNumber}" th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
+                                    <a th:text="${device.serialNumber}"
+                                       th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                 </div>
@@ -222,7 +228,7 @@
 
         <!--Pm table-->
         <h6 class="mb-0 text-uppercase"
-            th:text="${'لیست Pm های ' + location.locationCategory.category + ' ' + location.name}"></h6>
+            th:text="${'Pm های ' + location.locationCategory.category + ' ' + location.name}"></h6>
         <hr/>
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
 
@@ -269,10 +275,10 @@
                             <td th:if="${not catalog.pmInterface.enabled}">
                                 <div class="col">
                                     <button th:text="${catalog.pmInterface.title}"
-                                       th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="top"
-                                       title="ویرایش Pm روی این مکان" disabled="disabled"></button>
+                                            th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
+                                            class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="ویرایش Pm روی این مکان" disabled="disabled"></button>
                                 </div>
                             </td>
 
@@ -288,7 +294,8 @@
 
                             <td th:if="${not catalog.history}">اقدام نشده</td>
 
-                            <td th:if="${catalog.pmInterface.enabled &&  catalog.enabled}" th:text="${catalog.persianNextDue}"></td>
+                            <td th:if="${catalog.pmInterface.enabled &&  catalog.enabled}"
+                                th:text="${catalog.persianNextDue}"></td>
                             <td th:if="${not catalog.pmInterface.enabled || not catalog.enabled}">
                                 <span class="badge bg-light-danger text-danger w-100">غیرفعال</span>
 
@@ -313,10 +320,19 @@
         <!--Pm table-->
 
         <!--Event table-->
-        <h6 class="mb-0 text-uppercase">رخدادها</h6>
         <hr/>
 
-
+        <h6 class="mb-0 text-uppercase"
+            th:text="${'رخدادهای ' + location.locationCategory.category + ' ' + location.name}"></h6>
+        <hr/>
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <div class="ui-dialog-buttonpane">
+                <a th:href="@{/event/category/{categoryId}/{locationId}/form (locationId=${location.id}, categoryId = 4)}"
+                   class="btn btn-outline-warning"
+                   th:text="'جابجایی تجهیزات ' + ${location.name}">
+                </a>
+            </div>
+        </div>
 
         <div class="card">
             <div class="card-body">

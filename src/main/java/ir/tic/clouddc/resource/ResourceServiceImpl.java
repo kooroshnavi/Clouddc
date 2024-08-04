@@ -44,6 +44,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public List<DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId) {
+       return deviceRepository.getDeviceProjection(locationId);
+    }
+
+    @Override
     public Device validateFormDevice(EventLandingForm eventLandingForm) {
         Optional<Device> currentDevice = getDeviceBySerialNumber(eventLandingForm.getSerialNumber());
         return currentDevice.orElseGet(() -> {

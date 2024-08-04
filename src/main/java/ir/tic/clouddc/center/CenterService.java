@@ -22,8 +22,8 @@ public interface CenterService {
 
         String getName();
     }
-    interface HallIdNameProjection {
-        short getId();
+    interface LocationIdNameProjection {
+        Long getId();
 
         String getName();
     }

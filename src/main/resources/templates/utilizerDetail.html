@@ -130,7 +130,14 @@
 
                             <td th:text="${rack.center.name}"></td>
                             <td th:text="${rack.hall.name}"></td>
-                            <td th:text="${rack.name}"></td>
+                            <td>
+                                <div class="col">
+                                    <a th:text="${rack.name}" th:href="@{/center/location/{locationId}/detail (locationId=${rack.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="جزئیات رک"></a>
+                                </div>
+
+                            </td>
                             <td th:text="${rack.deviceList.size()}"></td>
                         </tr>
 

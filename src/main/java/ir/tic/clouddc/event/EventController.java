@@ -2,11 +2,9 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.LocationStatus;
-import ir.tic.clouddc.resource.DeviceStatus;
-import ir.tic.clouddc.resource.Firewall;
-import ir.tic.clouddc.resource.Server;
-import ir.tic.clouddc.resource.Switch;
+import ir.tic.clouddc.resource.*;
 import jakarta.annotation.Nullable;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +18,7 @@ import java.util.Objects;
 
 @Controller
 @RequestMapping("/event")
+@Slf4j
 public class EventController {
 
     private final EventService eventService;
@@ -28,6 +27,31 @@ public class EventController {
     EventController(EventService eventService) {
         this.eventService = eventService;
     }
+
+
+    @GetMapping("/category/{categoryId}/{locationId}/form")
+    public String showEventForm(Model model, @PathVariable Long locationId, @PathVariable Integer categoryId) {
+        switch (categoryId) {
+            case 2 -> {  // Location CheckList
+
+            }
+            case 4 -> {  // Device Movement
+                List<ResourceService.DeviceIdSerialCategoryProjection> locationDeviceList = eventService.getDeviceMovementEventData_1(locationId);
+                model.addAttribute("deviceMovementEventForm", new DeviceMovementEventForm());
+                model.addAttribute("locationDeviceList", locationDeviceList);
+
+                for (ResourceService.DeviceIdSerialCategoryProjection deviceIdSerialCategoryProjection : locationDeviceList) {
+                    log.info(String.valueOf(deviceIdSerialCategoryProjection.getId()));
+                }
+            }
+
+            default -> {
+                return "404";
+            }
+        }
+        return "movementEvent";
+    }
+
 
     @GetMapping("/category")
     public String eventForm(Model model) {

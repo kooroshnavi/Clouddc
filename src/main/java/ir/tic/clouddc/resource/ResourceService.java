@@ -7,6 +7,16 @@ import java.util.Optional;
 
 public interface ResourceService {
 
+    List<DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId);
+
+    interface DeviceIdSerialCategoryProjection {
+        Long getId();
+        String getSerialNumber();
+        String getCategory();
+        String getModel();
+    }
+
+
     Device validateFormDevice(EventLandingForm eventLandingForm);
 
     Optional<Device> getDevice(Long deviceId);

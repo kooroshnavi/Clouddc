@@ -96,6 +96,11 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<ResourceService.DeviceIdSerialCategoryProjection> getDeviceMovementEventData_1(Long locationId) {
+        return resourceService.getLocationDeviceList(locationId);
+    }
+
+    @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
         return centerService.getCurrentLocationStatus(location);
     }
