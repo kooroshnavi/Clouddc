@@ -2,10 +2,10 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
@@ -17,7 +17,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -86,8 +85,13 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public Location getRefrencedLocation(Long locationId) throws SQLException {
+    public Location getRefrencedLocation(Long locationId) {
         return locationRepository.getReferenceById(locationId);
+    }
+
+    @Override
+    public List<Location> getLocationListExcept(List<Long> locationId) {
+        return locationRepository.getLocationListNotIn(locationId);
     }
 
     @Override

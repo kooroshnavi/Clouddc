@@ -19,7 +19,6 @@ public final class Room extends Location {
     @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 
-
     public Utilizer getUtilizer() {
         return utilizer;
     }

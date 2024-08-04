@@ -73,23 +73,45 @@
             <div class="col-lg-8 mx-auto">
                 <div class="card">
                     <div class="card-header py-3 bg-transparent" align="hall">
-                        <h5 class="mb-0">جابجایی تجهیزات مکان</h5>
+                        <h5 class="mb-0" th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
                     </div>
 
                     <div class="card-body">
                         <div class="border p-3 rounded">
 
-                            <form class="row g-lg-3" th:action="@{/event/register}" th:object="${deviceMovementEventForm}"
+                            <form class="row g-lg-3" th:action="@{/event/register2}" th:object="${deviceMovementEventForm}"
                                   enctype="multipart/form-data" method="POST">
 
                                 <div class="mb-3">
-                                    <label class="form-label">2 کنترل چندگانه را انتخاب کنید</label>
+                                    <label class="form-label">تجهیزات مدنظر جهت جابجایی را انتخاب کنید</label>
                                     <select class="multiple-select" data-placeholder="Choose anything" multiple="multiple" th:field="*{deviceIdList}">
                                         <option th:each="device : ${locationDeviceList}"
                                                 th:value="${device.getId()}"
-                                                th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()}"></option>
+                                                th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
+                                                 + ' - ' + device.getId()}"></option>
                                     </select>
                                 </div>
+
+                                <div class="mb-3">
+                                    <label class="form-label">مکان جدید نصب این تجهیزات</label>
+                                    <label>
+                                        <select class="select2-selection--single" data-placeholder="Choose anything" th:field="*{destLocId}">
+
+                                            <option th:each="room : ${roomList}"
+                                                    th:value="${room.id}"
+                                                    th:text="${room.locationCategory.category + ' ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name + room.getId()}">
+                                            </option>
+
+                                            <option th:each="rack : ${rackList}"
+                                                    th:value="${rack.id}"
+                                                    th:text="${rack.locationCategory.category + ' ' + rack.name + ' - ' +  rack.hall.name + ' - ' + rack.center.name + ' - ' + rack.getUtilizer().name + rack.getId()}">
+                                            </option>
+
+                                        </select>
+                                    </label>
+                                </div>
+
+
 
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>

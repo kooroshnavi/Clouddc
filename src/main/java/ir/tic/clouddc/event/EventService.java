@@ -39,7 +39,7 @@ public interface EventService {
 
     Optional<Center> getCenter(Integer centerId);
 
-    Location getRefrencedLocation(Long locationId) throws SQLException;
+    Location getRefrencedLocation(Long locationId);
     Optional<Device> getDevice(String serialNumber);
 
     long getEventCount();
@@ -67,4 +67,6 @@ public interface EventService {
     List<LocationStatusEvent> getLocationEventList(Location baseLocation);
 
     List<ResourceService.DeviceIdSerialCategoryProjection> getDeviceMovementEventData_1(Long locationId);
+
+    List<Location> getDeviceMovementEventData_2(Long locationId);
 }

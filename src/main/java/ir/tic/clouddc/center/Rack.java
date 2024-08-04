@@ -26,7 +26,6 @@ public final class Rack extends Location {
     @Column(name = "Description")
     private String description;
 
-
     public Hall getHall() {
         return hall;
     }

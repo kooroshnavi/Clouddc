@@ -101,6 +101,11 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<Location> getDeviceMovementEventData_2(Long locationId) {
+       return centerService.getLocationListExcept(List.of(locationId));
+    }
+
+    @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
         return centerService.getCurrentLocationStatus(location);
     }
@@ -301,7 +306,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Location getRefrencedLocation(Long locationId) throws SQLException {
+    public Location getRefrencedLocation(Long locationId) {
         return centerService.getRefrencedLocation(locationId);
     }
 

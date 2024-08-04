@@ -1,7 +1,6 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.LocationStatus;
+import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.resource.*;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +12,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -31,24 +31,48 @@ public class EventController {
 
     @GetMapping("/category/{categoryId}/{locationId}/form")
     public String showEventForm(Model model, @PathVariable Long locationId, @PathVariable Integer categoryId) {
+        List<Rack> rackList = new ArrayList<>();
+        List<Room> roomList = new ArrayList<>();
+
         switch (categoryId) {
             case 2 -> {  // Location CheckList
 
             }
             case 4 -> {  // Device Movement
                 List<ResourceService.DeviceIdSerialCategoryProjection> locationDeviceList = eventService.getDeviceMovementEventData_1(locationId);
+                List<Location> destinationList = eventService.getDeviceMovementEventData_2(locationId);
                 model.addAttribute("deviceMovementEventForm", new DeviceMovementEventForm());
                 model.addAttribute("locationDeviceList", locationDeviceList);
+                model.addAttribute("location", eventService.getRefrencedLocation(locationId));
 
-                for (ResourceService.DeviceIdSerialCategoryProjection deviceIdSerialCategoryProjection : locationDeviceList) {
-                    log.info(String.valueOf(deviceIdSerialCategoryProjection.getId()));
+                for (Location location : destinationList) {
+                    if (location instanceof Rack rack) {
+                        rackList.add(rack);
+                    } else if (location instanceof Room room) {
+                        roomList.add(room);
+                    }
                 }
+                model.addAttribute("rackList", rackList);
+                model.addAttribute("roomList", roomList);
             }
 
             default -> {
                 return "404";
             }
         }
+        return "movementEvent";
+    }
+
+    @PostMapping("/register2")
+    public String register2(Model model, @ModelAttribute("attachment") MultipartFile file
+            , @ModelAttribute("deviceMovementEventForm") DeviceMovementEventForm deviceMovementEventForm) {
+
+        for (Long id : deviceMovementEventForm.getDeviceIdList()) {
+            log.info(String.valueOf(id));
+        }
+
+        log.info(String.valueOf(deviceMovementEventForm.getDestLocId()));
+
         return "movementEvent";
     }
 
