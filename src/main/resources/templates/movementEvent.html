@@ -25,6 +25,8 @@
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
     <link href="/panel/md.bootstrappersiandatetimepicker/dist/mds.bs.datetimepicker.style.css" rel="stylesheet"/>
+    <link href="/JalaliDatePicker/JalaliDatePicker_1.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/JalaliDatePicker/JalaliDatePicker.min_2.js"></script>
 
 
     <!--Theme Styles-->
@@ -72,19 +74,24 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
-                    <div class="card-header py-3 bg-transparent" align="hall">
-                        <h5 class="mb-0" th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    <div class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
                     </div>
 
                     <div class="card-body">
                         <div class="border p-3 rounded">
 
-                            <form class="row g-lg-3" th:action="@{/event/register2}" th:object="${deviceMovementEventForm}"
+                            <form class="row g-lg-3" th:action="@{/event/register2}" th:object="${eventForm}"
                                   enctype="multipart/form-data" method="POST">
+
+                                <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
+                                <input type="hidden" name="DeviceMovement_sourceLocId" th:value="${location.id}"/>
 
                                 <div class="mb-3">
                                     <label class="form-label">تجهیزات مدنظر جهت جابجایی را انتخاب کنید</label>
-                                    <select class="multiple-select" data-placeholder="Choose anything" multiple="multiple" th:field="*{deviceIdList}">
+                                    <select class="multiple-select" data-placeholder="Choose anything"
+                                            multiple="multiple" th:field="*{deviceMovement_deviceIdList}">
                                         <option th:each="device : ${locationDeviceList}"
                                                 th:value="${device.getId()}"
                                                 th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
@@ -93,30 +100,37 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label class="form-label">مکان جدید نصب این تجهیزات</label>
-                                    <label>
-                                        <select class="select2-selection--single" data-placeholder="Choose anything" th:field="*{destLocId}">
+                                    <label class="form-label">مقصد جابجایی</label>
+                                    <select class="single-select" th:field="*{deviceMovement_destLocId}">
 
-                                            <option th:each="room : ${roomList}"
-                                                    th:value="${room.id}"
-                                                    th:text="${room.locationCategory.category + ' ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name + room.getId()}">
-                                            </option>
+                                        <option th:each="room : ${roomList}"
+                                                th:value="${room.id}"
+                                                th:text="${room.locationCategory.category + ' - ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name + room.getId()}">
+                                        </option>
 
-                                            <option th:each="rack : ${rackList}"
-                                                    th:value="${rack.id}"
-                                                    th:text="${rack.locationCategory.category + ' ' + rack.name + ' - ' +  rack.hall.name + ' - ' + rack.center.name + ' - ' + rack.getUtilizer().name + rack.getId()}">
-                                            </option>
+                                        <option th:each="rack : ${rackList}"
+                                                th:value="${rack.id}"
+                                                th:text="${rack.locationCategory.category + ' - ' + rack.name + ' - ' +  rack.hall.name  + ' - ' + rack.getUtilizer().name + rack.getId()}">
+                                        </option>
 
-                                        </select>
-                                    </label>
+                                    </select>
                                 </div>
 
-
+                                <div class="mb-3">
+                                    <div class="form-label">
+                                        <label>تاریخ اتمام رخداد</label>
+                                        <input required="required" type="text" data-jdp
+                                               data-jdp-miladi-input="miladi_date" data-jdp-max-date="today"
+                                               placeholder="نمایش تاریخ تا امروز"/>
+                                    </div>
+                                </div>
+                                <input type="hidden" th:field="*{date}" id="miladi_date"/>
 
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
                                     <textarea required="required" class="form-control" th:field="*{description}"
-                                              placeholder="خلاصه ای از اینکه چه اقدامی باید انجام شود" rows="4"
+                                              placeholder="علت جابجایی - اگر پیرو نامه یا پیام پیپرلس است به شماره و فرستنده آن اشاره کنید تا در آینده دسترسی به سوابق آسان باشد."
+                                              rows="4"
                                               cols="4"></textarea>
                                 </div>
                                 <hr/>
@@ -137,19 +151,20 @@
                                         <div class="modal-dialog modal-lg modal-dialog-centered">
                                             <div class="modal-content bg-warning">
                                                 <div class="modal-header border-dark">
-                                                    <h5 class="modal-title text-dark">همکار گرامی، نظر به اهمیت ثبت
-                                                        اطلاعات صحیح و قابل استناد،</h5>
+                                                    <h5 class="modal-title text-dark">همکار گرامی،</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body text-dark">
-                                                    <p>لطفا در ثبت و ویرایش Pm ها دقت لازم را مبذول نمایید باتشکر</p>
+                                                    <p>بهره بردار تجهیزات ثبت شده جهت جابجایی مطابق با رک یا اتاق مقصد،
+                                                        بروز می شود.</p>
                                                 </div>
                                                 <div class="modal-footer border-dark">
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                         بستن
                                                     </button>
-                                                    <button type="submit" class="btn btn-dark">ثبت وظیفه جدید</button>
+                                                    <button type="submit" class="btn btn-dark">ثبت رخداد جابجایی
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -160,6 +175,7 @@
                             </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div><!--end row-->
@@ -196,6 +212,7 @@
 <script src="/panel/assets/js/form-select2.js"></script>
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
+<script src="/JalaliDatePicker/JalaliDatePickerGeorgianResponse_3.js"></script>
 
 </body>
 

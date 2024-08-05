@@ -14,15 +14,14 @@ import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 public interface EventService {
 
 
-    void eventSetup(EventLandingForm eventLandingForm
-            , @Nullable DeviceStatusForm deviceStatusForm
-            , @Nullable LocationStatusForm locationStatusForm) throws IOException, SQLException;
+    void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException, SQLException;
 
 
     List<EventCategory> getEventCategoryList();
@@ -66,7 +65,7 @@ public interface EventService {
 
     List<LocationStatusEvent> getLocationEventList(Location baseLocation);
 
-    List<ResourceService.DeviceIdSerialCategoryProjection> getDeviceMovementEventData_1(Long locationId);
+    List<ResourceService.DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId);
 
     List<Location> getDeviceMovementEventData_2(Long locationId);
 }

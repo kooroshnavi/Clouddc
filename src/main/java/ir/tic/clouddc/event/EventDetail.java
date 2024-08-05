@@ -2,9 +2,13 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.log.Workflow;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
+@Getter
+@Setter
 @Table(schema = "Event")
 @NoArgsConstructor
 public final class EventDetail extends Workflow {
@@ -18,28 +22,4 @@ public final class EventDetail extends Workflow {
 
     @Transient
     private String persianDayTime;
-
-    public Event getEvent() {
-        return event;
-    }
-
-    public void setEvent(Event event) {
-        this.event = event;
-    }
-
-    public String getPersianDate() {
-        return persianDate;
-    }
-
-    public void setPersianDate(String persianDate) {
-        this.persianDate = persianDate;
-    }
-
-    public String getPersianDayTime() {
-        return persianDayTime;
-    }
-
-    public void setPersianDayTime(String persianDayTime) {
-        this.persianDayTime = persianDayTime;
-    }
 }

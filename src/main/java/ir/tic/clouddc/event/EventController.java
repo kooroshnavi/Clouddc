@@ -2,6 +2,7 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.resource.*;
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -31,20 +33,14 @@ public class EventController {
 
     @GetMapping("/category/{categoryId}/{locationId}/form")
     public String showEventForm(Model model, @PathVariable Long locationId, @PathVariable Integer categoryId) {
-        List<Rack> rackList = new ArrayList<>();
-        List<Room> roomList = new ArrayList<>();
 
         switch (categoryId) {
-            case 2 -> {  // Location CheckList
 
-            }
             case 4 -> {  // Device Movement
-                List<ResourceService.DeviceIdSerialCategoryProjection> locationDeviceList = eventService.getDeviceMovementEventData_1(locationId);
+                List<Rack> rackList = new ArrayList<>();
+                List<Room> roomList = new ArrayList<>();
+                List<ResourceService.DeviceIdSerialCategoryProjection> locationDeviceList = eventService.getLocationDeviceList(locationId);
                 List<Location> destinationList = eventService.getDeviceMovementEventData_2(locationId);
-                model.addAttribute("deviceMovementEventForm", new DeviceMovementEventForm());
-                model.addAttribute("locationDeviceList", locationDeviceList);
-                model.addAttribute("location", eventService.getRefrencedLocation(locationId));
-
                 for (Location location : destinationList) {
                     if (location instanceof Rack rack) {
                         rackList.add(rack);
@@ -54,24 +50,38 @@ public class EventController {
                 }
                 model.addAttribute("rackList", rackList);
                 model.addAttribute("roomList", roomList);
+                model.addAttribute("locationDeviceList", locationDeviceList);
+                model.addAttribute("location", eventService.getRefrencedLocation(locationId));
             }
 
             default -> {
                 return "404";
             }
         }
+
+        model.addAttribute("eventForm", new EventForm());
+        model.addAttribute("categoryId", categoryId);
+
         return "movementEvent";
     }
 
     @PostMapping("/register2")
     public String register2(Model model, @ModelAttribute("attachment") MultipartFile file
-            , @ModelAttribute("deviceMovementEventForm") DeviceMovementEventForm deviceMovementEventForm) {
+            , @ModelAttribute("deviceMovementEventForm") EventForm eventForm) throws SQLException, IOException {
 
-        for (Long id : deviceMovementEventForm.getDeviceIdList()) {
-            log.info(String.valueOf(id));
+        var nextDue = eventForm.getDate();
+        var validDate = LocalDate.parse(nextDue);
+        if (validDate.isAfter(UtilService.getDATE())) {
+            return "403";
         }
 
-        log.info(String.valueOf(deviceMovementEventForm.getDestLocId()));
+        switch (eventForm.getEventCategoryId()) {
+            case 4 -> {
+                eventService.eventRegister(eventForm, validDate);
+            }
+        }
+
+        log.info(String.valueOf(eventForm.getDeviceMovement_destLocID()));
 
         return "movementEvent";
     }
@@ -180,7 +190,7 @@ public class EventController {
                 eventLandingForm.setFile(file);
             }
         }
-        eventService.eventSetup(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
+        eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
         eventService.getEventList(null);
         return "redirect:eventListView";
     }

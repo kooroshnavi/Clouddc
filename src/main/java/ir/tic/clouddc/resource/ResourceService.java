@@ -31,7 +31,7 @@ public interface ResourceService {
 
     void updateDeviceUtilizer(DeviceUtilizerEvent event);
 
-    void updateDeviceLocation(DeviceMovementEvent event);
+    void updateDeviceLocation(DeviceMovementEvent event, Utilizer destinationUtilizer);
 
     List<Utilizer> getUtilizerListExcept(Utilizer utilizer);
 

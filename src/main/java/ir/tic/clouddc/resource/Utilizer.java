@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;

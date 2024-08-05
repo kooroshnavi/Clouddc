@@ -1,8 +1,6 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.Rack;
-import ir.tic.clouddc.center.Room;
 import ir.tic.clouddc.event.*;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
@@ -150,15 +148,10 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void updateDeviceLocation(DeviceMovementEvent event) {
-        var device = event.getDevice();
-        device.setLocation(event.getDestination());
-        if (device.getLocation() instanceof Rack rack) {
-            device.setUtilizer(rack.getUtilizer());
-        } else if (device.getLocation() instanceof Room room) {
-            device.setUtilizer(room.getUtilizer());
-        }
-        deviceRepository.saveAndFlush(device);
+    public void updateDeviceLocation(DeviceMovementEvent event, Utilizer destinationUtilizer) {
+        var deviceList = event.getDeviceList();
+        var destinationLocation = event.getDestination();
+        deviceRepository.updateDeviceLocationAndUtilizer(deviceList, destinationLocation, destinationUtilizer);
     }
 
     @Override

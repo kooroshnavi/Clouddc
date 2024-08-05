@@ -2,10 +2,19 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
 @Entity
+@Getter
+@Setter
 @Table(schema = "Event")
 @NoArgsConstructor
 public final class DeviceMovementEvent extends Event {
@@ -18,31 +27,16 @@ public final class DeviceMovementEvent extends Event {
     @JoinColumn(name = "DestinationLocationID")
     private Location destination;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
-    @JoinColumn(name = "DeviceID")
-    private Device device;
+    @Column(name = "MovementDate")
+    private LocalDate movementDate;
 
-    public Location getSource() {
-        return source;
-    }
+    @ManyToMany
+    private List<Device> deviceList;
 
-    public void setSource(Location source) {
-        this.source = source;
-    }
-
-    public Location getDestination() {
-        return destination;
-    }
-
-    public void setDestination(Location destination) {
-        this.destination = destination;
-    }
-
-    public Device getDevice() {
-        return device;
-    }
-
-    public void setDevice(Device device) {
-        this.device = device;
-    }
+    @ElementCollection
+    @CollectionTable(name = "DeviceMovementBalance", schema = "Event",
+            joinColumns = {@JoinColumn(name = "EventID", referencedColumnName = "id")})
+    @MapKeyColumn(name = "UtilizerID")
+    @Column(name = "Balance")
+    private Map<Integer, Integer> utilizerBalance;
 }
