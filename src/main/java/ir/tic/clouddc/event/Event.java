@@ -31,7 +31,7 @@ public abstract class Event {
     @JoinColumn(name = "EventCategoryID")
     private EventCategory eventCategory;
 
-    @OneToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "EventDetailID")
     private EventDetail eventDetail;
 

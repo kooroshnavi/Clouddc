@@ -26,7 +26,7 @@ public abstract class Workflow {
     @Column(name = "Description")
     private String description;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 

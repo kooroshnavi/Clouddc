@@ -32,7 +32,7 @@ public final class LogHistory {
     @JoinColumn(name = "PersonID")
     private Person person;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 

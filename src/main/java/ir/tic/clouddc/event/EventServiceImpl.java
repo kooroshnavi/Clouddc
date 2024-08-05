@@ -3,12 +3,16 @@ package ir.tic.clouddc.event;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
+import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.resource.*;
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.DeviceStatus;
+import ir.tic.clouddc.resource.ResourceService;
+import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.utils.UtilService;
-import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -139,11 +143,15 @@ public final class EventServiceImpl implements EventService {
                 eventRepository.save(event);
                 resourceService.updateDeviceUtilizer(event);
             }*/
-        /* case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
+            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
                 var event = deviceMovementEventRegister_4(eventForm, validDate);
-                eventDetailRegister(event, eventForm);
-                eventRepository.save(event);
-            }*/
+                var eventDetail = eventDetailRegister(event, eventForm);
+                var persistedDetail = eventDetailRepository.save(eventDetail);
+
+                if (eventForm.getMultipartFile() != null) {
+                    fileService.registerAttachment(eventForm.getMultipartFile(), persistedDetail.getPersistence());
+                }
+            }
             case DEVICE_STATUS_EVENT_CATEGORY_ID -> {/*
                 if (!Objects.isNull(deviceStatusForm)) {
                     var event = deviceStatusEventRegister_5(deviceStatusForm);
@@ -155,6 +163,7 @@ public final class EventServiceImpl implements EventService {
 
         }
     }
+
     private VisitEvent visitEventRegister_1(EventLandingForm eventLandingForm) {
         VisitEvent visitEvent = new VisitEvent();
         visitEvent.setRegisterDate(UtilService.getDATE());
@@ -193,13 +202,14 @@ public final class EventServiceImpl implements EventService {
     }
 
     private DeviceMovementEvent deviceMovementEventRegister_4(EventForm eventForm, LocalDate validDate) {
-        var destinationLocation = centerService.getRefrencedLocation(eventForm.getDeviceMovement_destLocId());
+        var optionalLocation = centerService.getLocation(eventForm.getDeviceMovement_destLocId());
         Utilizer destinationUtilizer;
-        if (destinationLocation instanceof Rack rack) {
+        if (optionalLocation.get() instanceof Rack rack) {
             destinationUtilizer = rack.getUtilizer();
         } else {
-            destinationUtilizer = ((Room) destinationLocation).getUtilizer();
+            destinationUtilizer = ((Room) optionalLocation.get()).getUtilizer();
         }
+        var destinationLocation = optionalLocation.get();
 
         DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
         deviceMovementEvent.setRegisterDate(UtilService.getDATE());
@@ -215,6 +225,7 @@ public final class EventServiceImpl implements EventService {
         for (Long deviceId : eventForm.getDeviceMovement_deviceIdList()) {
             referencedDeviceList.add(resourceService.getReferencedDevice(deviceId));
         }
+        deviceMovementEvent.setDeviceList(referencedDeviceList);
 
         // 2. affectedUtilizerList
         List<Utilizer> affectedUtilizerList = referencedDeviceList
@@ -225,26 +236,29 @@ public final class EventServiceImpl implements EventService {
 
 
         // 3. init utilizerBalance Map
+        Map<Integer, Integer> utilizerBalance = new HashMap<>();
         for (Utilizer activeUtilizer : affectedUtilizerList) {
-            deviceMovementEvent.getUtilizerBalance().put(activeUtilizer.getId(), 0);
+            utilizerBalance.put(activeUtilizer.getId(), 0);
         }
 
         if (affectedUtilizerList.stream().noneMatch(Utilizer -> Objects.equals(Utilizer.getId(), destinationUtilizer.getId()))) {
-            deviceMovementEvent.getUtilizerBalance().put(destinationUtilizer.getId(), 0);
+            utilizerBalance.put(destinationUtilizer.getId(), 0);
         }
 
         // 4. update utilizerBalance
         for (Device device : referencedDeviceList) {
             if (!Objects.equals(device.getUtilizer().getId(), destinationUtilizer.getId())) {
-                var currentBalance = deviceMovementEvent.getUtilizerBalance().get(device.getUtilizer().getId());
+                var currentBalance = utilizerBalance.get(device.getUtilizer().getId());
                 currentBalance -= 1;
-                deviceMovementEvent.getUtilizerBalance().put(device.getUtilizer().getId(), currentBalance);
+                utilizerBalance.put(device.getUtilizer().getId(), currentBalance);
 
-                var destBalance = deviceMovementEvent.getUtilizerBalance().get(destinationUtilizer.getId());
+                var destBalance = utilizerBalance.get(destinationUtilizer.getId());
                 destBalance += 1;
-                deviceMovementEvent.getUtilizerBalance().put(destinationUtilizer.getId(), destBalance);
+                utilizerBalance.put(destinationUtilizer.getId(), destBalance);
             }
         }
+
+        deviceMovementEvent.setUtilizerBalance(utilizerBalance);
 
         resourceService.updateDeviceLocation(deviceMovementEvent, destinationUtilizer);
 
@@ -262,32 +276,33 @@ public final class EventServiceImpl implements EventService {
         return deviceStatusEvent;
     }
 
-    private void eventDetailRegister(Event event, EventForm eventForm) throws IOException {
+    private EventDetail eventDetailRegister(Event event, EventForm eventForm) throws IOException {
         EventDetail eventDetail = new EventDetail();
         eventDetail.setRegisterDate(event.getRegisterDate());
         eventDetail.setRegisterTime(event.getRegisterTime());
-        var currentPerson = personService.getCurrentPerson();
-        var persistence = logService.persistenceSetup(currentPerson);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("EventUpdate"), currentPerson, persistence);
-        if (eventForm.getMultipartFile() != null){
-            fileService.registerAttachment(eventForm.getMultipartFile(), persistence);
-        }
+        var persistence = getPersistence();
+
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setEvent(event);
+        event.setEventDetail(eventDetail);
+
+        return eventDetail;
+    }
+
+    private Persistence getPersistence() {
+        var currentPerson = personService.getCurrentPerson();
+        var persistence = logService.persistenceSetup(currentPerson);
+        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get("EventRegister"), true);
+        persistence.setLogHistoryList(List.of(logHistory));
+        return persistence;
     }
 
     @Override
-    public List<Event> getEventList(@Nullable Integer categoryId) {
-        List<Event> eventList = new ArrayList<>();
-        if (!Objects.isNull(categoryId)) {
-            var category = eventCategoryRepository.findById(categoryId);
-            if (category.isPresent()) {
-                eventList = eventRepository.findAllByEventCategory(category.get(), Sort.by("registerDate"));
-            }
-        } else {
-            eventList = eventRepository.findAll(Sort.by("registerDate").descending());
-        }
+    public List<Event> getEventList(Integer categoryId) {
+        List<Event> eventList;
+        var category = eventCategoryRepository.getReferenceById(categoryId);
+        eventList = eventRepository.findAllByEventCategory(category, Sort.by("registerDate"));
         for (Event event : eventList) {
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());

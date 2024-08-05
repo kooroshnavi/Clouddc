@@ -66,7 +66,7 @@ public class EventController {
     }
 
     @PostMapping("/register2")
-    public String register2(Model model, @ModelAttribute("attachment") MultipartFile file
+    public String register2(Model model, @RequestParam("attachment") MultipartFile file
             , @ModelAttribute("deviceMovementEventForm") EventForm eventForm) throws SQLException, IOException {
 
         var nextDue = eventForm.getDate();
@@ -75,15 +75,19 @@ public class EventController {
             return "403";
         }
 
+        if (!file.isEmpty()) {
+            eventForm.setMultipartFile(file);
+        }
+
         switch (eventForm.getEventCategoryId()) {
             case 4 -> {
                 eventService.eventRegister(eventForm, validDate);
+                log.info("Event Registered Successfully");
             }
         }
 
-        log.info(String.valueOf(eventForm.getDeviceMovement_destLocID()));
 
-        return "movementEvent";
+        return "404";
     }
 
 
@@ -190,7 +194,7 @@ public class EventController {
                 eventLandingForm.setFile(file);
             }
         }
-        eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
+     //   eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
         eventService.getEventList(null);
         return "redirect:eventListView";
     }
@@ -204,7 +208,7 @@ public class EventController {
 
     @GetMapping("/list")
     public String showEventList(Model model) {
-        List<Event> eventList = eventService.getEventList(null);
+        List<Event> eventList = eventService.getEventList(4);
         model.addAttribute("eventList", eventList);
         return "eventListView";
     }

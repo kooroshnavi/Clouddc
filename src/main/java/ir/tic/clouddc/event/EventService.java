@@ -9,7 +9,6 @@ import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
 import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.resource.Utilizer;
-import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
@@ -23,7 +22,6 @@ public interface EventService {
 
     void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException, SQLException;
 
-
     List<EventCategory> getEventCategoryList();
 
     List<CenterService.CenterIdNameProjection> getCenterIdAndNameList();
@@ -34,7 +32,7 @@ public interface EventService {
 
     MetaData getRelatedMetadata(Long persistenceId);
 
-    List<Event> getEventList(@Nullable Integer categoryId);
+    List<Event> getEventList(Integer categoryId);
 
     Optional<Center> getCenter(Integer centerId);
 

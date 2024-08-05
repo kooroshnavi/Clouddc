@@ -87,7 +87,7 @@
                         <tr th:each="event, iter : ${eventList}">
 
                             <td th:text="${iter.count}" dir="rtl"></td>
-                            <td th:text="${event.eventCategory.name}" dir="rtl"></td>
+                            <td th:text="${event.eventCategory.title}" dir="rtl"></td>
                             <td th:text="${event.persianRegisterDate}" data-bs-toggle="tooltip" data-bs-placement="top"
                                 th:title="${event.persianRegisterDayTime}" dir="rtl"></td>
 

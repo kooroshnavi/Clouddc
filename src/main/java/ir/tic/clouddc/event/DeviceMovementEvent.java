@@ -2,7 +2,6 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.resource.Device;
-import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -19,23 +18,27 @@ import java.util.Map;
 @NoArgsConstructor
 public final class DeviceMovementEvent extends Event {
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "SourceLocationID")
     private Location source;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "DestinationLocationID")
     private Location destination;
 
     @Column(name = "MovementDate")
     private LocalDate movementDate;
 
-    @ManyToMany
+    @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "MovementEventDevice", schema = "Event",
+            joinColumns = {@JoinColumn(name = "EventID")},
+            inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
     private List<Device> deviceList;
 
     @ElementCollection
     @CollectionTable(name = "DeviceMovementBalance", schema = "Event",
-            joinColumns = {@JoinColumn(name = "EventID", referencedColumnName = "id")})
+            joinColumns = {@JoinColumn(name = "EventID", referencedColumnName = "EventID")})
     @MapKeyColumn(name = "UtilizerID")
     @Column(name = "Balance")
     private Map<Integer, Integer> utilizerBalance;

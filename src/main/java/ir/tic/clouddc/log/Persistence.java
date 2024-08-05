@@ -22,7 +22,7 @@ public final class Persistence {
     @JoinColumn(name = "PersonID")
     private Person person;
 
-    @OneToMany(mappedBy = "persistence")
+    @OneToMany(mappedBy = "persistence", cascade = CascadeType.ALL)
     private List<LogHistory> logHistoryList;
 
     public Persistence(Long id) {
@@ -32,4 +32,5 @@ public final class Persistence {
     public Persistence(Person person) {
         this.person = person;
     }
+
 }

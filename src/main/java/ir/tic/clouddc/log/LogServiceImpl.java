@@ -30,7 +30,9 @@ public final class LogServiceImpl implements LogService {
 
     @Override
     public Persistence persistenceSetup(Person person) {
-        return new Persistence(person);
+        Persistence persistence = new Persistence();
+        persistence.setPerson(person);
+        return persistence;
     }
 
     @Override

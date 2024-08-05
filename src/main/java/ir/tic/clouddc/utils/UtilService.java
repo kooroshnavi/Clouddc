@@ -38,7 +38,7 @@ public final class UtilService {
             entry("PmUpdate", "بروزرسانی Pm"),
             entry("SupervisorPmTermination", "بستن PmDetail توسط Supervisor"),
             entry("DisableAttachment", "حذف فایل پیوست"),
-            entry("EventUpdate", "ثبت و بروزرسانی یک رخداد"),
+            entry("EventRegister", "ثبت رخداد"),
             entry("CatalogRegister", "ثبت کاتالوگ"),
             entry("CatalogUpdate", "بروزرسانی کاتالوگ")
     );

@@ -42,13 +42,13 @@ public abstract class Device {
     @JoinColumn(name = "SupplierID")
     private Supplier supplier;
 
-    @OneToMany(mappedBy = "device")
+    @ManyToMany(mappedBy = "deviceList")
     private List<DeviceMovementEvent> deviceMovementEventList;
 
-    @OneToMany(mappedBy = "device")
+    @OneToMany
     private List<DeviceUtilizerEvent> deviceUtilizerEventList;
 
-    @OneToMany(mappedBy = "device")
+    @OneToMany
     private List<DeviceStatusEvent> deviceStatusEventList;
 
     @OneToMany(mappedBy = "device")
