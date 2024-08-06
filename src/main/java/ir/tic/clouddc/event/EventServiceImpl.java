@@ -112,7 +112,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Utilizer> deviceUtilizerEventData(Utilizer utilizer) {
+    public List<ResourceService.UtilizerIdNameProjection> getUtilizerEventData_1(Utilizer utilizer) {
         return resourceService.getUtilizerListExcept(utilizer);
     }
 

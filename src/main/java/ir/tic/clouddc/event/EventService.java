@@ -53,7 +53,7 @@ public interface EventService {
 
     LocationStatus getCurrentLocationStatus(Location location);
 
-    List<Utilizer> deviceUtilizerEventData(Utilizer utilizer);
+    List<ResourceService.UtilizerIdNameProjection> getUtilizerEventData_1(Utilizer utilizer);
 
     List<Center> getCenterList();
 
@@ -66,4 +66,6 @@ public interface EventService {
     List<ResourceService.DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId);
 
     List<Location> getDeviceMovementEventData_2(Long locationId);
+
+    Optional<Location> getLocation(Long locationId);
 }

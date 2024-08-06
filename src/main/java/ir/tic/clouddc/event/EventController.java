@@ -34,6 +34,8 @@ public class EventController {
     @GetMapping("/category/{categoryId}/{locationId}/form")
     public String showEventForm(Model model, @PathVariable Long locationId, @PathVariable Integer categoryId) {
 
+        var location = eventService.getLocation(locationId);
+
         switch (categoryId) {
 
             case 4 -> {  // Device Movement
@@ -41,17 +43,30 @@ public class EventController {
                 List<Room> roomList = new ArrayList<>();
                 List<ResourceService.DeviceIdSerialCategoryProjection> locationDeviceList = eventService.getLocationDeviceList(locationId);
                 List<Location> destinationList = eventService.getDeviceMovementEventData_2(locationId);
-                for (Location location : destinationList) {
-                    if (location instanceof Rack rack) {
+                for (Location destinationLocation : destinationList) {
+                    if (destinationLocation instanceof Rack rack) {
                         rackList.add(rack);
-                    } else if (location instanceof Room room) {
+                    } else if (destinationLocation instanceof Room room) {
                         roomList.add(room);
                     }
                 }
                 model.addAttribute("rackList", rackList);
                 model.addAttribute("roomList", roomList);
                 model.addAttribute("locationDeviceList", locationDeviceList);
-                model.addAttribute("location", eventService.getRefrencedLocation(locationId));
+            }
+
+            case 3 -> {
+                Utilizer currentUtilizer;
+                if (location instanceof Rack rack) {
+                    currentUtilizer = rack.getUtilizer();
+                } else if (location instanceof Room room) {
+                    currentUtilizer = room.getUtilizer();
+                } else {
+                    currentUtilizer = null;
+                }
+                List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerEventData_1(currentUtilizer);
+                model.addAttribute("currentUtilizer", currentUtilizer);
+                model.addAttribute("utilizerList", utilizerList);
             }
 
             default -> {
@@ -59,6 +74,7 @@ public class EventController {
             }
         }
 
+        model.addAttribute("location", location);
         model.addAttribute("eventForm", new EventForm());
         model.addAttribute("categoryId", categoryId);
 
@@ -85,7 +101,6 @@ public class EventController {
                 log.info("Event Registered Successfully");
             }
         }
-
 
         return "404";
     }
@@ -155,7 +170,7 @@ public class EventController {
 
                         switch (eventLandingForm.getEventCategoryId()) {
                             case 3 ->   // Device utilizer event
-                                    model.addAttribute("utilizerList", eventService.deviceUtilizerEventData(device.get().getUtilizer()));
+                                    model.addAttribute("utilizerList", eventService.getUtilizerEventData_1(device.get().getUtilizer()));
                             case 4 ->
                                     model.addAttribute("centerList", eventService.getCenterList());   // Device movement event
                             case 5 -> { // Device status event
@@ -194,7 +209,7 @@ public class EventController {
                 eventLandingForm.setFile(file);
             }
         }
-     //   eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
+        //   eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
         eventService.getEventList(null);
         return "redirect:eventListView";
     }

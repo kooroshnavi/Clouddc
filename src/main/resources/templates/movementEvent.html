@@ -86,9 +86,10 @@
                                   enctype="multipart/form-data" method="POST">
 
                                 <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
-                                <input type="hidden" name="DeviceMovement_sourceLocId" th:value="${location.id}"/>
+                                <input th:if="${categoryId == 4}" type="hidden" name="DeviceMovement_sourceLocId" th:value="${location.id}"/>
+                                <input th:if="${categoryId == 3}" type="hidden" name="utilizer_oldUtilizer" th:value="${currentUtilizer}"/>
 
-                                <div class="mb-3">
+                                <div th:if="${categoryId == 4}" class="mb-3">
                                     <label class="form-label">تجهیزات مدنظر جهت جابجایی را انتخاب کنید</label>
                                     <select class="multiple-select" data-placeholder="Choose anything"
                                             multiple="multiple" th:field="*{deviceMovement_deviceIdList}">
@@ -99,7 +100,7 @@
                                     </select>
                                 </div>
 
-                                <div class="mb-3">
+                                <div th:if="${categoryId == 4}" class="mb-3">
                                     <label class="form-label">مقصد جابجایی</label>
                                     <select class="single-select" th:field="*{deviceMovement_destLocId}">
 
@@ -116,9 +117,34 @@
                                     </select>
                                 </div>
 
+                                <div th:if="${categoryId == 3}" class="mb-3">
+                                    <label class="form-label">بهره بردار فعلی</label>
+                                    <select class="single-select" th:field="*{utilizer_oldUtilizer}">
+
+                                        <option
+                                                th:value="${currentUtilizer.id}"
+                                                th:text="${currentUtilizer.name}" disabled="disabled"></option>
+
+                                    </select>
+                                </div>
+
+                                <div th:if="${categoryId == 3}" class="mb-3">
+                                    <label class="form-label">مقصد جابجایی</label>
+                                    <select class="single-select" th:field="*{utilizer_newUtilizer}">
+
+                                        <option th:each="utilizer : ${utilizerList}"
+                                                th:value="${utilizer.id}"
+                                                th:text="${utilizer.name}">
+                                        </option>
+
+                                    </select>
+                                </div>
+
+
+
                                 <div class="mb-3">
                                     <div class="form-label">
-                                        <label>تاریخ اتمام رخداد</label>
+                                        <label>تاریخ اتمام رخداد یا انجام این تغییر</label>
                                         <input required="required" type="text" data-jdp
                                                data-jdp-miladi-input="miladi_date" data-jdp-max-date="today"
                                                placeholder="نمایش تاریخ تا امروز"/>

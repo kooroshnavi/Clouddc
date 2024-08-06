@@ -155,8 +155,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Utilizer> getUtilizerListExcept(Utilizer utilizer) {
-        return utilizerRepository.findAllByIdNotIn(List.of(utilizer.getId()));
+    public List<UtilizerIdNameProjection> getUtilizerListExcept(Utilizer utilizer) {
+        return utilizerRepository.getUtilizerProjectionExcept(List.of(utilizer.getId()));
     }
 
     @Override

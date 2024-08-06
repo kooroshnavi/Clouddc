@@ -197,6 +197,7 @@
                             <th>نام رک</th>
                             <th>تعداد تجهیز نصب شده</th>
                             <th>بهره بردار</th>
+                            <th>عملیات</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -206,15 +207,21 @@
                             <td th:text="${counter.count}"></td>
 
                             <td>
-
                                 <a th:text="${rack.name}"
                                    th:href="@{/center/location/{locationId}/detail (locationId=${rack.id})}"
                                    class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
 
-                            <td th:text="${rack.deviceList.size()} "></td>
+                            <td th:text="${rack.deviceList.size()}"></td>
                             <td th:text="${rack.utilizer.name} "></td>
+
+                            <td>
+                                <a
+                                   th:href="@{/event/category/{categoryId}/{locationId}/form (locationId=${rack.id} , categoryId = 3)}"
+                                   class="btn btn-outline-danger px-10 radius-30" data-bs-toggle="tooltip"
+                                   data-bs-placement="bottom" title="تغییر بهره بردار">بهره بردار اشتباه است؟</a>
+                            </td>
 
                         </tr>
 
@@ -325,14 +332,17 @@
         <h6 class="mb-0 text-uppercase"
             th:text="${'رخدادهای ' + location.locationCategory.category + ' ' + location.name}"></h6>
         <hr/>
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+        <div th:if="${location.locationCategory.categoryId != 1}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
             <div class="ui-dialog-buttonpane">
                 <a th:href="@{/event/category/{categoryId}/{locationId}/form (locationId=${location.id}, categoryId = 4)}"
                    class="btn btn-outline-warning"
                    th:text="'جابجایی تجهیزات ' + ${location.name}">
                 </a>
             </div>
+
         </div>
+
+
 
         <div class="card">
             <div class="card-body">

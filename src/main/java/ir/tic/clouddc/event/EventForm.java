@@ -8,13 +8,17 @@ import java.util.List;
 @Data
 public class EventForm {   //// DTO
 
-    private Integer eventCategoryId;   /// 2. Location CheckList 3.Device Utilizer 4. Device Movement  5. Device Checklist
+    private Integer eventCategoryId;   /// 2. Location CheckList 3.Utilizer   4. Device Movement     5. Device Checklist
 
     private Long locationChecklist_LocationId;
 
-    private Integer deviceUtilizer_newUtilizer;
+    private Integer utilizer_oldUtilizer;
 
-    private List<Long> deviceUtilizer_deviceIdList;
+    private Integer utilizer_newUtilizer;
+
+    private Long utilizer_locationId;
+
+    private Long utilizer_deviceId;
 
     private List<Long> DeviceMovement_deviceIdList;
 

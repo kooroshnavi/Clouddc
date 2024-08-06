@@ -16,6 +16,11 @@ public interface ResourceService {
         String getModel();
     }
 
+    interface UtilizerIdNameProjection {
+        Integer getId();
+        String getName();
+    }
+
 
     Device validateFormDevice(EventLandingForm eventLandingForm);
 
@@ -33,7 +38,7 @@ public interface ResourceService {
 
     void updateDeviceLocation(DeviceMovementEvent event, Utilizer destinationUtilizer);
 
-    List<Utilizer> getUtilizerListExcept(Utilizer utilizer);
+    List<UtilizerIdNameProjection> getUtilizerListExcept(Utilizer utilizer);
 
     DeviceStatus getCurrentDeviceStatus(Device device);
     
