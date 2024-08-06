@@ -3,13 +3,17 @@ package ir.tic.clouddc.center;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
+@Getter
+@Setter
 public final class Rack extends Location {
 
     @ManyToOne(cascade = CascadeType.MERGE)
@@ -25,37 +29,4 @@ public final class Rack extends Location {
 
     @Column(name = "Description")
     private String description;
-
-    public Hall getHall() {
-        return hall;
-    }
-
-    public void setHall(Hall hall) {
-        this.hall = hall;
-    }
-
-    public List<Device> getDeviceList() {
-        return deviceList;
-    }
-
-    public void setDeviceList(List<Device> deviceList) {
-        this.deviceList = deviceList;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Utilizer getUtilizer() {
-        return utilizer;
-    }
-
-    public void setUtilizer(Utilizer utilizer) {
-        this.utilizer = utilizer;
-    }
-
 }

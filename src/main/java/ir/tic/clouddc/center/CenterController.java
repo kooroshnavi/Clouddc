@@ -1,14 +1,13 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
-
-import java.time.LocalDate;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 
 @Slf4j
 @Controller
@@ -53,21 +52,6 @@ public class CenterController {
         return "404";
 
 
-    }
-
-    @PostMapping("/location/catalog/register")
-    public String registerCatalog(@ModelAttribute("catalogForm") CatalogForm catalogForm) {
-        var nextDue = catalogForm.getNextDue();
-        var validDate = LocalDate.parse(nextDue);
-        log.info(String.valueOf(validDate));
-        if (validDate.isBefore(LocalDate.now())) {
-            return "403";
-        }
-
-        centerService.registerNewCatalog(catalogForm, validDate);
-
-        //  redirectAttributes.addAttribute("locationId", catalogForm.getLocationId());
-        return "500";
     }
 
     @ModelAttribute

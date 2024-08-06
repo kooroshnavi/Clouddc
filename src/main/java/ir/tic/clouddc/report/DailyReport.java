@@ -2,14 +2,17 @@ package ir.tic.clouddc.report;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
 @Table(schema = "Report")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class DailyReport {
 
     @Id

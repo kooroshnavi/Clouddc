@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 @Entity
-@Getter
-@Setter
 @Table(schema = "Event")
 @NoArgsConstructor
+@Getter
+@Setter
 public final class DeviceStatusEvent extends Event {
 
     @Column(name = "DualPowerChanged")

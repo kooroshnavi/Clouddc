@@ -2,7 +2,6 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.LocationStatusEvent;
 import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.pm.CatalogForm;
 import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
@@ -11,7 +10,6 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CenterService {
-    LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate validNextDue);
 
     Location getRefrencedLocation(Long locationId);
 

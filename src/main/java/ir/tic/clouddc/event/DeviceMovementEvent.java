@@ -12,10 +12,10 @@ import java.util.List;
 import java.util.Map;
 
 @Entity
-@Getter
-@Setter
 @Table(schema = "Event")
 @NoArgsConstructor
+@Getter
+@Setter
 public final class DeviceMovementEvent extends Event {
 
     @ManyToOne
@@ -36,8 +36,8 @@ public final class DeviceMovementEvent extends Event {
             inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
     private List<Device> deviceList;
 
-    @ElementCollection
-    @CollectionTable(name = "DeviceMovementBalance", schema = "Event",
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "UtilizerDeviceBalance", schema = "Event",
             joinColumns = {@JoinColumn(name = "EventID", referencedColumnName = "EventID")})
     @MapKeyColumn(name = "UtilizerID")
     @Column(name = "Balance")

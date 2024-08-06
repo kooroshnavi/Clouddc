@@ -14,7 +14,7 @@ import java.util.Map;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class DeviceUtilizerEvent extends Event {
+public class LocationUtilizerEvent extends Event {
 
     @ManyToOne
     @JoinColumn(name = "OldUtilizerID")
@@ -34,5 +34,4 @@ public final class DeviceUtilizerEvent extends Event {
     @MapKeyColumn(name = "UtilizerID")
     @Column(name = "Balance")
     private Map<Integer, Integer> utilizerBalance;
-
 }

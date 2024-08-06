@@ -1,17 +1,18 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Rack;
-import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Utilizer {
 
     @Id

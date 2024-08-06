@@ -1,15 +1,17 @@
 package ir.tic.clouddc.resource;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Entity
-@NoArgsConstructor
 @Table(schema = "Resource")
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public class Supplier {
 
     @Id

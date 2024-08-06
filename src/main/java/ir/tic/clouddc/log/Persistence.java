@@ -2,15 +2,17 @@ package ir.tic.clouddc.log;
 
 import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Log")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Persistence {
 
     @Id
@@ -32,5 +34,4 @@ public final class Persistence {
     public Persistence(Person person) {
         this.person = person;
     }
-
 }

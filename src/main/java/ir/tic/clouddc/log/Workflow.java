@@ -2,13 +2,18 @@ package ir.tic.clouddc.log;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public abstract class Workflow {
 
     @Id

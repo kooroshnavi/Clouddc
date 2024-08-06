@@ -2,12 +2,15 @@ package ir.tic.clouddc.document;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(schema = "Document")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Attachment {
 
     @Id

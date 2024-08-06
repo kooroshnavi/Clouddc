@@ -6,12 +6,17 @@ import ir.tic.clouddc.event.DeviceStatusEvent;
 import ir.tic.clouddc.event.DeviceUtilizerEvent;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public abstract class Device {
 
     @Id

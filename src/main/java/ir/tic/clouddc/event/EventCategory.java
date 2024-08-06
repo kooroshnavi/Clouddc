@@ -2,14 +2,17 @@ package ir.tic.clouddc.event;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class EventCategory {
 
     @Id

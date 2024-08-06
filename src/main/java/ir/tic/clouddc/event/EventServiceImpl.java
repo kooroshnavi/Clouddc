@@ -45,7 +45,7 @@ public final class EventServiceImpl implements EventService {
 
     private static final int VISIT_EVENT_CATEGORY_ID = 1;
     private static final int LOCATION_STATUS_EVENT_CATEGORY_ID = 2;
-    private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 3;
+    private static final int UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final int DEVICE_STATUS_EVENT_CATEGORY_ID = 5;
 
@@ -107,6 +107,11 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Optional<Location> getLocation(Long locationId) {
+        return centerService.getLocation(locationId);
+    }
+
+    @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
         return centerService.getCurrentLocationStatus(location);
     }
@@ -137,7 +142,7 @@ public final class EventServiceImpl implements EventService {
                     centerService.updateLocationStatus(locationStatusForm, event);
                 }
             }*/
-        /*    case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
+         /*   case UTILIZER_EVENT_CATEGORY_ID -> {
                 var event = deviceUtilizerEventRegister_3(eventLandingForm);
                 eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
                 eventRepository.save(event);

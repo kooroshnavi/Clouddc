@@ -6,8 +6,6 @@ import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.pm.PmInterface;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -70,19 +68,6 @@ public class CenterServiceImpl implements CenterService {
         }
     }*/
 
-    @Override
-    public LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate nextDue) {
-        LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
-        locationPmCatalog.setLocation(locationRepository.getReferenceById(catalogForm.getLocationId()));
-        locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
-        locationPmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
-        locationPmCatalog.setEnabled(true);
-        locationPmCatalog.setHistory(false);
-        locationPmCatalog.setActive(false);
-        locationPmCatalog.setNextDueDate(UtilService.validateNextDue(nextDue));
-
-        return locationPmCatalogRepository.save(locationPmCatalog);
-    }
 
     @Override
     public Location getRefrencedLocation(Long locationId) {

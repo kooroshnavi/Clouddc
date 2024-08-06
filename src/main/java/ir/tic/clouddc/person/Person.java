@@ -2,15 +2,17 @@ package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.center.LocationPmCatalog;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Person")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Person {
 
     @Id
@@ -35,8 +37,4 @@ public final class Person {
     @MapsId
     @JoinColumn(name = "AddressID")
     private Address address;
-
-    public Person(Integer id) {
-        this.id = id;
-    }
 }

@@ -1,8 +1,8 @@
 package ir.tic.clouddc.document;
 
-import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.util.List;
@@ -26,11 +25,14 @@ public class FileServiceImpl implements FileService {
 
     private final LogService logService;
 
+    private final PersonService personService;
+
 
     @Autowired
-    public FileServiceImpl(MetaDataRepository metaDataRepository, LogService logService) {
+    public FileServiceImpl(MetaDataRepository metaDataRepository, LogService logService, PersonService personService) {
         this.metaDataRepository = metaDataRepository;
         this.logService = logService;
+        this.personService = personService;
     }
 
     @Override
@@ -90,7 +92,7 @@ public class FileServiceImpl implements FileService {
         log.info(String.valueOf(documentOwnerId));
         log.info(String.valueOf(requesterId));
         var persistence = metaDataRepository.fetchMetaDataPersistence(metadataId);
-        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), new Person(requesterId), persistence);
+        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), personService.getReferencedPerson(requesterId), persistence);
         log.info(String.valueOf(metadataId));
     }
 

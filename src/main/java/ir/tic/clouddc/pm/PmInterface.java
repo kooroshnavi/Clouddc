@@ -3,14 +3,17 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Pm")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class PmInterface {
 
     @Id
