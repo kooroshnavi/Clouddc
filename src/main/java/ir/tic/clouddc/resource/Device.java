@@ -2,10 +2,9 @@ package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.event.DeviceMovementEvent;
-import ir.tic.clouddc.event.DeviceStatusEvent;
+import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceUtilizerEvent;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -54,7 +53,7 @@ public abstract class Device {
     private List<DeviceUtilizerEvent> deviceUtilizerEventList;
 
     @OneToMany
-    private List<DeviceStatusEvent> deviceStatusEventList;
+    private List<DeviceCheckList> deviceCheckListList;
 
     @OneToMany(mappedBy = "device")
     private List<DevicePmCatalog> devicePmCatalogList;

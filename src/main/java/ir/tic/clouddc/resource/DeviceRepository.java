@@ -19,10 +19,22 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("select device.id as id, device.serialNumber as serialNumber, device.deviceCategory.category as category, device.deviceCategory.model as model" +
             " from Device device" +
             " where device.location.id = :locationId")
-    List<ResourceService.DeviceIdSerialCategoryProjection> getDeviceProjection(@Param("locationId") Long locationId);
+    List<ResourceService.DeviceIdSerialCategory_Projection1> getDeviceProjection(@Param("locationId") Long locationId);
 
     @Transactional
     @Modifying
-    @Query("update Device d set d.location = :location, d.utilizer = :utilizer where d in :deviceList")
-    void updateDeviceLocationAndUtilizer(List<Device> deviceList, @Param("location") Location destinationLocation, @Param("utilizer") Utilizer destinationUtilizer);
+    @Query("update Device d set d.location = :location, d.utilizer = :utilizer where d.id in :deviceIdList")
+    void updateDeviceLocationAndUtilizer(List<Long> deviceIdList, @Param("location") Location destinationLocation, @Param("utilizer") Utilizer destinationUtilizer);
+
+    @Query("select" +
+            " device.id as deviceId," +
+            " device.utilizer.id as deviceUtilizerId" +
+            " from Device device" +
+            " where device.location.id = :locationId")
+    List<ResourceService.DeviceIdUtilizerId_Projection2> getProjection2List(@Param("locationId") Long locationId);
+
+    @Transactional
+    @Modifying
+    @Query("update Device d set d.utilizer = :newUtilizer where d.id in :deviceIdList")
+    void updateDeviceUtilizer(List<Long> deviceIdList, @Param("newUtilizer") Utilizer newUtilizer);
 }

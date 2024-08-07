@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class LocationStatusEvent extends Event {
+public final class LocationCheckList extends Event {
 
     @Column(name = "DoorChanged")
     private boolean doorChanged;  // order 0

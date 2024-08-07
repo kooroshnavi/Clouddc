@@ -12,7 +12,6 @@ import ir.tic.clouddc.resource.Utilizer;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
@@ -20,7 +19,7 @@ import java.util.Optional;
 public interface EventService {
 
 
-    void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException, SQLException;
+    void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException;
 
     List<EventCategory> getEventCategoryList();
 
@@ -32,7 +31,7 @@ public interface EventService {
 
     MetaData getRelatedMetadata(Long persistenceId);
 
-    List<Event> getEventList(Integer categoryId);
+    List<Event> getEventList();
 
     Optional<Center> getCenter(Integer centerId);
 
@@ -61,11 +60,13 @@ public interface EventService {
 
     DeviceStatus getCurrentDeviceStatus(Device device);
 
-    List<LocationStatusEvent> getLocationEventList(Location baseLocation);
+    List<LocationCheckList> getLocationEventList(Location baseLocation);
 
-    List<ResourceService.DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId);
+    List<ResourceService.DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId);
 
     List<Location> getDeviceMovementEventData_2(Long locationId);
 
     Optional<Location> getLocation(Long locationId);
+
+    Device getReferencedDevice(Long deviceId);
 }

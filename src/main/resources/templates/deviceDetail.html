@@ -187,6 +187,52 @@
         <!--Pm table-->
 
         <!--Event table-->
+        <hr/>
+
+        <h6 class="mb-0 text-uppercase">رخدادهای این تجهیز</h6>
+        <hr/>
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <div class="ui-dialog-buttonpane">
+                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 5)}"
+                   class="btn btn-outline-warning">تغییر بهره بردار تجهیز</a>
+            </div>
+
+        </div>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table id="example3" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>شناسه</th>
+                            <th>تاریخ ثبت</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="event, iter : ${eventList}">
+
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${event.id}"></td>
+
+                            <td th:text="${event.persianRegisterDate}">
+                                <div class="col">
+                                    <a th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
+                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" th:text="${event.persianRegisterDayTime}"></a>
+                                </div>
+                            </td>
+
+                        </tr>
+
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
         <!--Event table-->
 
         <!--File attachment form -->

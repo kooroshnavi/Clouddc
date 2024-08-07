@@ -31,20 +31,44 @@ public class EventController {
     }
 
 
-    @GetMapping("/category/{categoryId}/{locationId}/form")
-    public String showEventForm(Model model, @PathVariable Long locationId, @PathVariable Integer categoryId) {
+    @GetMapping("/category/{categoryId}/{targetId}/form")
+    public String showEventForm(Model model, @PathVariable Long targetId, @PathVariable Integer categoryId) {
 
-        var optionalLocation = eventService.getLocation(locationId);
+        switch (categoryId) {
 
-        if (optionalLocation.isPresent()) {
-            var location = optionalLocation.get();
+            case 3 -> { // Location Utilizer
+                var optionalLocation = eventService.getLocation(targetId);
+                if (optionalLocation.isPresent()) {
+                    var location = optionalLocation.get();
+                    Utilizer currentUtilizer;
+                    if (location instanceof Rack rack) {
+                        log.info("Rack found");
+                        currentUtilizer = rack.getUtilizer();
+                    } else if (location instanceof Room room) {
+                        currentUtilizer = room.getUtilizer();
+                    } else {
+                        return "404";
+                    }
 
-            switch (categoryId) {
-                case 4 -> {  // Device Movement
+                    log.info(String.valueOf(currentUtilizer.getId()));
+
+                    List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerEventData_1(currentUtilizer);
+                    model.addAttribute("currentUtilizer", currentUtilizer);
+                    model.addAttribute("utilizerList", utilizerList);
+                    model.addAttribute("location", location);
+                } else {
+                    return "404";
+                }
+            }
+
+            case 4 -> {  // Device Movement from a location
+                var optionalLocation = eventService.getLocation(targetId);
+                if (optionalLocation.isPresent()) {
+                    var location = optionalLocation.get();
                     List<Rack> rackList = new ArrayList<>();
                     List<Room> roomList = new ArrayList<>();
-                    List<ResourceService.DeviceIdSerialCategoryProjection> locationDeviceList = eventService.getLocationDeviceList(locationId);
-                    List<Location> destinationList = eventService.getDeviceMovementEventData_2(locationId);
+                    List<ResourceService.DeviceIdSerialCategory_Projection1> locationDeviceList = eventService.getLocationDeviceList(targetId);
+                    List<Location> destinationList = eventService.getDeviceMovementEventData_2(targetId);
                     for (Location destinationLocation : destinationList) {
                         if (destinationLocation instanceof Rack rack) {
                             rackList.add(rack);
@@ -55,41 +79,36 @@ public class EventController {
                     model.addAttribute("rackList", rackList);
                     model.addAttribute("roomList", roomList);
                     model.addAttribute("locationDeviceList", locationDeviceList);
-                }
-
-                case 3 -> {
-                    log.info(String.valueOf(categoryId));
-                    Utilizer currentUtilizer;
-                    if (location instanceof Rack rack) {
-                        currentUtilizer = rack.getUtilizer();
-                    } else if (location instanceof Room room) {
-                        currentUtilizer = room.getUtilizer();
-                    } else {
-                        currentUtilizer = null;
-                    }
-                    List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerEventData_1(currentUtilizer);
-                    model.addAttribute("currentUtilizer", currentUtilizer);
-                    model.addAttribute("utilizerList", utilizerList);
-                }
-
-                default -> {
+                    model.addAttribute("location", location);
+                } else {
                     return "404";
                 }
             }
 
-            model.addAttribute("location", location);
-            model.addAttribute("eventForm", new EventForm());
-            model.addAttribute("categoryId", categoryId);
+            case 5 -> {
+                Device device = eventService.getReferencedDevice(targetId);
+                var currentUtilizer = device.getUtilizer();
+                List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerEventData_1(currentUtilizer);
+                model.addAttribute("currentUtilizer", currentUtilizer);
+                model.addAttribute("utilizerList", utilizerList);
+                model.addAttribute("device", device);
+            }
 
-            return "movementEvent";
+            default -> {
+                return "404";
+            }
+
         }
 
-        return "404";
+        model.addAttribute("eventForm", new EventForm());
+        model.addAttribute("categoryId", categoryId);
+
+        return "movementEvent";
     }
 
     @PostMapping("/register2")
     public String register2(Model model, @RequestParam("attachment") MultipartFile file
-            , @ModelAttribute("deviceMovementEventForm") EventForm eventForm) throws SQLException, IOException {
+            , @ModelAttribute("deviceMovementEventForm") EventForm eventForm) throws IOException {
 
         var nextDue = eventForm.getDate();
         var validDate = LocalDate.parse(nextDue);
@@ -102,9 +121,10 @@ public class EventController {
         }
 
         eventService.eventRegister(eventForm, validDate);
+
         log.info("Event Registered Successfully");
 
-        return "404";
+        return "redirect:/event/list";
     }
 
 
@@ -212,20 +232,20 @@ public class EventController {
             }
         }
         //   eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
-        eventService.getEventList(null);
+        eventService.getEventList();
         return "redirect:eventListView";
     }
 
     @GetMapping("/category/{categoryId}/list")
     public String showCategoryEventList(Model model, @PathVariable int categoryId) {
-        List<Event> eventList = eventService.getEventList(categoryId);
-        model.addAttribute("eventList", eventList);
+     //   List<Event> eventList = eventService.getEventList(categoryId);
+       // model.addAttribute("eventList", eventList);
         return "eventListView";
     }
 
     @GetMapping("/list")
     public String showEventList(Model model) {
-        List<Event> eventList = eventService.getEventList(4);
+        List<Event> eventList = eventService.getEventList();
         model.addAttribute("eventList", eventList);
         return "eventListView";
     }
@@ -240,7 +260,7 @@ public class EventController {
         if (baseEvent instanceof VisitEvent event) {
             model.addAttribute("visitEvent", event);
         }
-        if (baseEvent instanceof LocationStatusEvent event) {
+        if (baseEvent instanceof LocationCheckList event) {
             model.addAttribute("locationStatusEvent", event);
         }
         if (baseEvent instanceof DeviceUtilizerEvent event) {
@@ -249,7 +269,7 @@ public class EventController {
         if (baseEvent instanceof DeviceMovementEvent event) {
             model.addAttribute("deviceMovementEvent", event);
         }
-        if (baseEvent instanceof DeviceStatusEvent event) {
+        if (baseEvent instanceof DeviceCheckList event) {
             model.addAttribute("deviceStatusEvent", event);
         }
 

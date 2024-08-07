@@ -8,20 +8,15 @@ import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.ReportService;
-import ir.tic.clouddc.resource.Device;
-import ir.tic.clouddc.resource.DeviceStatus;
-import ir.tic.clouddc.resource.ResourceService;
-import ir.tic.clouddc.resource.Utilizer;
+import ir.tic.clouddc.resource.*;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.math.RoundingMode;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.TextStyle;
@@ -43,11 +38,14 @@ public final class EventServiceImpl implements EventService {
     private final LogService logService;
     private final ResourceService resourceService;
 
+
     private static final int VISIT_EVENT_CATEGORY_ID = 1;
-    private static final int LOCATION_STATUS_EVENT_CATEGORY_ID = 2;
-    private static final int UTILIZER_EVENT_CATEGORY_ID = 3;
+    private static final int LOCATION_CHECKLIST_EVENT_CATEGORY_ID = 2;
+    private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
-    private static final int DEVICE_STATUS_EVENT_CATEGORY_ID = 5;
+    private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 5;
+    private static final int DEVICE_CHECKLIST_EVENT_CATEGORY_ID = 6;
+    private final ResourceServiceImpl resourceServiceImpl;
 
 
     @Autowired
@@ -56,7 +54,8 @@ public final class EventServiceImpl implements EventService {
             , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, LocationStatusEventRepository locationStatusEventRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
-            , FileService fileService, LogService logService, ResourceService resourceService) {
+            , FileService fileService,
+            LogService logService, ResourceService resourceService, ResourceServiceImpl resourceServiceImpl) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
@@ -68,6 +67,7 @@ public final class EventServiceImpl implements EventService {
         this.resourceService = resourceService;
         this.fileService = fileService;
         this.logService = logService;
+        this.resourceServiceImpl = resourceServiceImpl;
     }
 
 
@@ -91,13 +91,13 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<LocationStatusEvent> getLocationEventList(Location baseLocation) {
+    public List<LocationCheckList> getLocationEventList(Location baseLocation) {
 
         return locationStatusEventRepository.findAllByLocation(baseLocation);
     }
 
     @Override
-    public List<ResourceService.DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId) {
+    public List<ResourceService.DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId) {
         return resourceService.getLocationDeviceList(locationId);
     }
 
@@ -109,6 +109,11 @@ public final class EventServiceImpl implements EventService {
     @Override
     public Optional<Location> getLocation(Long locationId) {
         return centerService.getLocation(locationId);
+    }
+
+    @Override
+    public Device getReferencedDevice(Long deviceId) {
+        return resourceService.getReferencedDevice(deviceId);
     }
 
     @Override
@@ -127,7 +132,9 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException, SQLException {
+    public void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException {
+        Event event;
+        EventDetail eventDetail;
 
         switch (eventForm.getEventCategoryId()) {
           /*  case VISIT_EVENT_CATEGORY_ID -> {
@@ -148,24 +155,29 @@ public final class EventServiceImpl implements EventService {
                 eventRepository.save(event);
                 resourceService.updateDeviceUtilizer(event);
             }*/
+
+            case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> {
+                locationUtilizerEventRegister_3(eventForm, validDate);
+            }
+
             case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
-                var event = deviceMovementEventRegister_4(eventForm, validDate);
-                var eventDetail = eventDetailRegister(event, eventForm);
-                var persistedDetail = eventDetailRepository.save(eventDetail);
+                deviceMovementEventRegister_4(eventForm, validDate);
 
-                if (eventForm.getMultipartFile() != null) {
-                    fileService.registerAttachment(eventForm.getMultipartFile(), persistedDetail.getPersistence());
-                }
             }
-            case DEVICE_STATUS_EVENT_CATEGORY_ID -> {/*
-                if (!Objects.isNull(deviceStatusForm)) {
-                    var event = deviceStatusEventRegister_5(deviceStatusForm);
-                    eventDetailRegister(event, deviceStatusForm.getFile(), deviceStatusForm.getDescription());
-                    resourceService.updateDeviceStatus(deviceStatusForm, event);
-                }
-            }*/
+            case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
+                event = deviceUtilizerEventRegister_5(eventForm, validDate);
             }
+            default -> throw new NoSuchElementException();
+        }
 
+    }
+
+    private void eventPersist(EventForm eventForm, Event event) throws IOException {
+        EventDetail eventDetail;
+        eventDetail = eventDetailRegister(event, eventForm);
+        var persistedDetail = eventDetailRepository.save(eventDetail);
+        if (eventForm.getMultipartFile() != null) {
+            fileService.registerAttachment(eventForm.getMultipartFile(), persistedDetail.getPersistence());
         }
     }
 
@@ -180,113 +192,190 @@ public final class EventServiceImpl implements EventService {
         return visitEvent;
     }
 
-    private LocationStatusEvent locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
+    private LocationCheckList locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
         var currentStatus = locationStatusForm.getCurrentLocationStatus();
-        LocationStatusEvent locationStatusEvent = new LocationStatusEvent();
-        locationStatusEvent.setLocationStatus(currentStatus);
-        locationStatusEvent.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
-        locationStatusEvent.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
-        locationStatusEvent.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
-        locationStatusEvent.setLocation(locationStatusForm.getLocation());
-        locationStatusEvent.setActive(false);
+        LocationCheckList locationCheckList = new LocationCheckList();
+        locationCheckList.setLocationStatus(currentStatus);
+        locationCheckList.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
+        locationCheckList.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
+        locationCheckList.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
+        locationCheckList.setLocation(locationStatusForm.getLocation());
+        locationCheckList.setActive(false);
 
-        return locationStatusEvent;
+        return locationCheckList;
     }
 
-    private DeviceUtilizerEvent deviceUtilizerEventRegister_3(EventLandingForm eventLandingForm) {
+    private void locationUtilizerEventRegister_3(EventForm eventForm, LocalDate validDate) throws IOException {
+        var optionalLocation = centerService.getLocation(eventForm.getUtilizer_locationId());
+        var newUtilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_newUtilizerId());
+
+        LocationUtilizerEvent locationUtilizerEvent = new LocationUtilizerEvent();
+        locationUtilizerEvent.setRegisterDate(UtilService.getDATE());
+        locationUtilizerEvent.setRegisterTime(UtilService.getTime());
+        locationUtilizerEvent.setOldUtilizer(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()));
+        locationUtilizerEvent.setNewUtilizer(newUtilizer);
+        locationUtilizerEvent.setActive(false);
+        locationUtilizerEvent.setEventDate(validDate);
+        locationUtilizerEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
+
+        if (optionalLocation.isPresent()) {
+            var location = optionalLocation.get();
+            if (location instanceof Rack rack) {
+                rack.setUtilizer(newUtilizer);
+                locationUtilizerEvent.setLocation(rack);
+            } else if (location instanceof Room room) {
+                room.setUtilizer(newUtilizer);
+                locationUtilizerEvent.setLocation(room);
+            }
+
+            List<ResourceService.DeviceIdUtilizerId_Projection2> referencedDeviceList = resourceService.getDeviceProjection2(location.getId());
+
+            List<Integer> affectedUtilizerIdList = referencedDeviceList
+                    .stream()
+                    .map(ResourceService.DeviceIdUtilizerId_Projection2::getDeviceUtilizerId)
+                    .distinct()
+                    .toList();
+
+            List<Integer> utilizerIdList = referencedDeviceList
+                    .stream()
+                    .map(ResourceService.DeviceIdUtilizerId_Projection2::getDeviceUtilizerId)
+                    .toList();
+
+            locationUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), utilizerIdList));
+
+            List<Long> deviceIdList = referencedDeviceList
+                    .stream()
+                    .map(ResourceService.DeviceIdUtilizerId_Projection2::getDeviceId)
+                    .toList();
+
+            eventPersist(eventForm, locationUtilizerEvent);
+
+            resourceService.updateDeviceUtilizer(deviceIdList, newUtilizer);
+        }
+        // event persist
+
+        //    centerService.updateLocationUtilizer(location.getId(), newUtilizer);
+    }
+
+    private void deviceMovementEventRegister_4(EventForm eventForm, LocalDate validDate) throws IOException {
+        var optionalLocation = centerService.getLocation(eventForm.getDeviceMovement_destLocId());
+        Utilizer destinationUtilizer;
+
+        if (optionalLocation.isPresent()) {
+            var destinationLocation = optionalLocation.get();
+
+            if (destinationLocation instanceof Rack rack) {
+                destinationUtilizer = rack.getUtilizer();
+            } else if (destinationLocation instanceof Room room) {
+                destinationUtilizer = room.getUtilizer();
+            }
+            else {
+                throw new NoSuchElementException();
+            }
+
+            DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
+            deviceMovementEvent.setRegisterDate(UtilService.getDATE());
+            deviceMovementEvent.setRegisterTime(UtilService.getTime());
+            deviceMovementEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
+            deviceMovementEvent.setActive(false);
+            deviceMovementEvent.setEventDate(validDate);
+            deviceMovementEvent.setSource(centerService.getRefrencedLocation(eventForm.getDeviceMovement_sourceLocId()));
+            deviceMovementEvent.setDestination(destinationLocation);
+
+            // 1. referencedDeviceList
+            List<Device> referencedDeviceList = new ArrayList<>();
+            for (Long deviceId : eventForm.getDeviceMovement_deviceIdList()) {
+                var optionalDevice = resourceService.getDevice(deviceId);
+                if (optionalDevice.isPresent()) {
+                    var device = optionalDevice.get();
+                    referencedDeviceList.add(device);
+                }
+            }
+
+            // 2. affectedUtilizerIdList
+            List<Integer> affectedUtilizerIdList = referencedDeviceList
+                    .stream()
+                    .map(Device::getUtilizer)
+                    .map(Utilizer::getId)
+                    .distinct()
+                    .toList();
+            List<Integer> utilizerIdList = referencedDeviceList
+                    .stream()
+                    .map(Device::getUtilizer)
+                    .map(Utilizer::getId)
+                    .toList();
+
+            deviceMovementEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, destinationUtilizer.getId(), utilizerIdList));
+
+            for (Device device : referencedDeviceList) {
+                device.setLocation(destinationLocation);
+                device.setUtilizer(destinationUtilizer);
+            }
+            deviceMovementEvent.setDeviceList(referencedDeviceList);
+
+   /*     List<Long> deviceIdList = referencedDeviceList
+                .stream()
+                .map(Device::getId)
+                .toList();*/
+
+            eventPersist(eventForm, deviceMovementEvent);
+        }
+        //     resourceService.updateDeviceLocation(deviceIdList, destinationUtilizer, destinationLocation);
+    }
+
+    private DeviceUtilizerEvent deviceUtilizerEventRegister_5(EventForm eventForm, LocalDate validDate) {
+        var newUtilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_newUtilizerId());
+        var device = resourceService.getReferencedDevice(eventForm.getUtilizer_deviceId());
         DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
         deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
         deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
-        deviceUtilizerEvent.setOldUtilizer(eventLandingForm.getDevice().getUtilizer());
-        deviceUtilizerEvent.setNewUtilizer(resourceService.getUtilizer(eventLandingForm.getUtilizerId()));
-        deviceUtilizerEvent.setDevice(eventLandingForm.getDevice());
+        deviceUtilizerEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
+        deviceUtilizerEvent.setDevice(device);
         deviceUtilizerEvent.setActive(false);
-        deviceUtilizerEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
+        deviceUtilizerEvent.setOldUtilizer(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()));
+        deviceUtilizerEvent.setNewUtilizer(newUtilizer);
+        deviceUtilizerEvent.setEventDate(validDate);
+
+        List<Integer> affectedUtilizerIdList = List.of(device.getUtilizer().getId());
+        deviceUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), affectedUtilizerIdList));
+
+        resourceService.updateDeviceUtilizer(List.of(device.getId()), newUtilizer);
 
         return deviceUtilizerEvent;
     }
 
-    private DeviceMovementEvent deviceMovementEventRegister_4(EventForm eventForm, LocalDate validDate) {
-        var optionalLocation = centerService.getLocation(eventForm.getDeviceMovement_destLocId());
-        Utilizer destinationUtilizer;
-        if (optionalLocation.get() instanceof Rack rack) {
-            destinationUtilizer = rack.getUtilizer();
-        } else {
-            destinationUtilizer = ((Room) optionalLocation.get()).getUtilizer();
-        }
-        var destinationLocation = optionalLocation.get();
-
-        DeviceMovementEvent deviceMovementEvent = new DeviceMovementEvent();
-        deviceMovementEvent.setRegisterDate(UtilService.getDATE());
-        deviceMovementEvent.setRegisterTime(UtilService.getTime());
-        deviceMovementEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
-        deviceMovementEvent.setActive(false);
-        deviceMovementEvent.setMovementDate(validDate);
-        deviceMovementEvent.setSource(centerService.getRefrencedLocation(eventForm.getDeviceMovement_sourceLocId()));
-        deviceMovementEvent.setDestination(destinationLocation);
-
-        // 1. referencedDeviceList
-        List<Device> referencedDeviceList = new ArrayList<>();
-        for (Long deviceId : eventForm.getDeviceMovement_deviceIdList()) {
-            referencedDeviceList.add(resourceService.getReferencedDevice(deviceId));
-        }
-        deviceMovementEvent.setDeviceList(referencedDeviceList);
-
-        // 2. affectedUtilizerList
-        List<Utilizer> affectedUtilizerList = referencedDeviceList
-                .stream()
-                .map(Device::getUtilizer)
-                .distinct()
-                .toList();
-
-
+    private static Map<Integer, Integer> getUtilizerBalanceMap(List<Integer> affectedUtilizerIdList, Integer newUtilizerId, List<Integer> utilizerIdList) {
         // 3. init utilizerBalance Map
         Map<Integer, Integer> utilizerBalance = new HashMap<>();
-        for (Utilizer activeUtilizer : affectedUtilizerList) {
-            utilizerBalance.put(activeUtilizer.getId(), 0);
+        for (Integer utilizerId : affectedUtilizerIdList) {
+            utilizerBalance.put(utilizerId, 0);
         }
 
-        if (affectedUtilizerList.stream().noneMatch(Utilizer -> Objects.equals(Utilizer.getId(), destinationUtilizer.getId()))) {
-            utilizerBalance.put(destinationUtilizer.getId(), 0);
+        if (affectedUtilizerIdList.stream().noneMatch(UtilizerId -> Objects.equals(UtilizerId, newUtilizerId))) {
+            utilizerBalance.put(newUtilizerId, 0);
         }
 
         // 4. update utilizerBalance
-        for (Device device : referencedDeviceList) {
-            if (!Objects.equals(device.getUtilizer().getId(), destinationUtilizer.getId())) {
-                var currentBalance = utilizerBalance.get(device.getUtilizer().getId());
+        for (Integer utilizerId : utilizerIdList) {
+            if (!Objects.equals(utilizerId, newUtilizerId)) {
+                var currentBalance = utilizerBalance.get(utilizerId);
                 currentBalance -= 1;
-                utilizerBalance.put(device.getUtilizer().getId(), currentBalance);
+                utilizerBalance.put(utilizerId, currentBalance);
 
-                var destBalance = utilizerBalance.get(destinationUtilizer.getId());
+                var destBalance = utilizerBalance.get(newUtilizerId);
                 destBalance += 1;
-                utilizerBalance.put(destinationUtilizer.getId(), destBalance);
+                utilizerBalance.put(newUtilizerId, destBalance);
             }
         }
-
-        deviceMovementEvent.setUtilizerBalance(utilizerBalance);
-
-        resourceService.updateDeviceLocation(deviceMovementEvent, destinationUtilizer);
-
-        return deviceMovementEvent;
+        return utilizerBalance;
     }
 
-    private DeviceStatusEvent deviceStatusEventRegister_5(DeviceStatusForm deviceStatusForm) {
-        DeviceStatusEvent deviceStatusEvent = new DeviceStatusEvent();
-        deviceStatusEvent.setRegisterDate(UtilService.getDATE());
-        deviceStatusEvent.setRegisterTime(UtilService.getTime());
-        deviceStatusEvent.setEventCategory(eventCategoryRepository.findById(deviceStatusForm.getEventCategoryId()).get());
-        deviceStatusEvent.setDevice(deviceStatusForm.getDevice());
-        deviceStatusEvent.setActive(false);
-
-        return deviceStatusEvent;
-    }
 
     private EventDetail eventDetailRegister(Event event, EventForm eventForm) throws IOException {
         EventDetail eventDetail = new EventDetail();
         eventDetail.setRegisterDate(event.getRegisterDate());
         eventDetail.setRegisterTime(event.getRegisterTime());
         var persistence = getPersistence();
-
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setEvent(event);
@@ -300,14 +389,14 @@ public final class EventServiceImpl implements EventService {
         var persistence = logService.persistenceSetup(currentPerson);
         LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get("EventRegister"), true);
         persistence.setLogHistoryList(List.of(logHistory));
+
         return persistence;
     }
 
     @Override
-    public List<Event> getEventList(Integer categoryId) {
+    public List<Event> getEventList() {
         List<Event> eventList;
-        var category = eventCategoryRepository.getReferenceById(categoryId);
-        eventList = eventRepository.findAllByEventCategory(category, Sort.by("registerDate"));
+        eventList = eventRepository.getEventList();
         for (Event event : eventList) {
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());

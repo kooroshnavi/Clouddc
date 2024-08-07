@@ -1,12 +1,14 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationStatusEvent;
+import ir.tic.clouddc.event.LocationCheckList;
 import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
+import ir.tic.clouddc.resource.Utilizer;
+import ir.tic.clouddc.resource.UtilizerRepository;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,6 +20,7 @@ import org.springframework.ui.Model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -38,9 +41,13 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationStatusRepository locationStatusRepository;
 
+    private final UtilizerRepository utilizerRepository;
+
+
+
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository, UtilizerRepository utilizerRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
         this.notificationService = notificationService;
@@ -48,6 +55,7 @@ public class CenterServiceImpl implements CenterService {
         this.locationRepository = locationRepository;
         this.locationPmCatalogRepository = locationPmCatalogRepository;
         this.locationStatusRepository = locationStatusRepository;
+        this.utilizerRepository = utilizerRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -77,6 +85,35 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public List<Location> getLocationListExcept(List<Long> locationId) {
         return locationRepository.getLocationListNotIn(locationId);
+    }
+
+    @Override
+    public void updateLocationUtilizer(Long locationId, Utilizer newUtilizer) {
+        var optionalLocation = locationRepository.findById(locationId);
+        if (optionalLocation.isPresent()) {
+            log.info("Updating utilizer");
+            Location location = optionalLocation.get();
+            log.info(String.valueOf(location.getId()));
+
+            if (location instanceof Rack rack) {
+                log.info("Instance of Rack found");
+                rack.setUtilizer(newUtilizer);
+                locationRepository.saveAndFlush(rack);
+            } else if (location instanceof Room room) {
+                log.info("Instance of Room found");
+                room.setUtilizer(newUtilizer);
+               // locationRepository.saveAndFlush(room);
+            } else if (location instanceof Hall hall) {
+                log.info("Instance of Hall found!!!");
+            }
+            else {
+                log.warn(String.valueOf(location.getClass()));
+                log.info("Instance of unknown location");
+            }
+        } else {
+            log.info("No location found");
+            throw new NoSuchElementException();
+        }
     }
 
     @Override
@@ -149,7 +186,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event) {
+    public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationCheckList event) {
         List<LocationStatus> locationStatusList = new ArrayList<>();
         var location = locationStatusForm.getLocation();
         var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();

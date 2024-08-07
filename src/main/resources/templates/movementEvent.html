@@ -60,9 +60,9 @@
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
+                        <li th:if="${categoryId == 3}" class="breadcrumb-item active" aria-current="page">تغییر بهره بردار</li>
                         <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a></li>
                         <li th:if="${categoryId == 4}" class="breadcrumb-item active" aria-current="page">جابجایی تجهیز</li>
-                        <li th:if="${categoryId == 3}" class="breadcrumb-item active" aria-current="page">تغییر بهره بردار</li>
                     </ol>
                 </nav>
             </div>
@@ -73,14 +73,15 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
-                    <div th:if="${categoryId == 4}" class="card-header py-3 bg-transparent" align="center">
-                        <h5 class="mb-0"
-                            th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
-                    </div>
 
                     <div th:if="${categoryId == 3}" class="card-header py-3 bg-transparent" align="center">
                         <h5 class="mb-0"
                             th:text="${ 'تغییر بهره بردار ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
+
+                    <div th:if="${categoryId == 4}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
                     </div>
 
 
@@ -90,6 +91,33 @@
                                   enctype="multipart/form-data" method="POST">
 
                                 <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
+
+                                <div th:if="${categoryId == 3 || categoryId == 5}" class="mb-3">
+                                    <label class="form-label">بهره بردار فعلی</label>
+                                    <label>
+                                        <select class="select2-selection--single">
+                                            <option th:text="${currentUtilizer.name}" disabled="disabled"></option>
+                                        </select>
+                                    </label>
+                                </div>
+
+                                <div th:if="${categoryId == 3 || categoryId == 5}" class="mb-3">
+                                    <label class="form-label">بهره بردار جدید</label>
+                                    <label>
+                                        <select class="single-select" th:field="*{utilizer_newUtilizerId}">
+                                            <option th:each="utilizer : ${utilizerList}"
+                                                    th:value="${utilizer.id}"
+                                                    th:text="${utilizer.name}">
+                                            </option>
+                                        </select>
+                                    </label>
+                                </div>
+
+                                <input th:if="${categoryId == 3 || categoryId == 5}" type="hidden" name="utilizer_oldUtilizerId" th:value="${currentUtilizer.id}"/>
+                                <input th:if="${categoryId == 3}" type="hidden" name="utilizer_locationId" th:value="${location.id}"/>
+                                <input th:if="${categoryId == 5}" type="hidden" name="utilizer_deviceId" th:value="${device.id}"/>
+
+
                                 <input th:if="${categoryId == 4}" type="hidden" name="DeviceMovement_sourceLocId" th:value="${location.id}"/>
 
 
@@ -121,28 +149,6 @@
                                     </select>
                                 </div>
 
-                                <div th:if="${categoryId == 3}" class="mb-3">
-                                    <label class="form-label">بهره بردار فعلی</label>
-                                    <label>
-                                        <select class="select2-selection--single" th:field="*{utilizer_oldUtilizer}">
-                                            <option th:value="${currentUtilizer.id}" th:text="${currentUtilizer.name}" disabled="disabled"></option>
-                                        </select>
-                                    </label>
-                                </div>
-
-                                <div th:if="${categoryId == 3}" class="mb-3">
-                                    <label class="form-label">بهره بردار جدید</label>
-                                    <label>
-                                        <select class="single-select" th:field="*{utilizer_newUtilizer}">
-                                            <option th:each="utilizer : ${utilizerList}"
-                                                    th:value="${utilizer.id}"
-                                                    th:text="${utilizer.name}">
-                                            </option>
-                                        </select>
-                                    </label>
-                                </div>
-
-                                <input th:if="${categoryId == 3}" type="hidden" name="utilizer_locationId" th:value="${location.id}"/>
 
                                 <div class="mb-3">
                                     <div class="form-label">
@@ -186,6 +192,7 @@
                                                 <div class="modal-body text-dark">
                                                     <p th:if="${categoryId == 3}">این رک و تجهیزات نصب شده در آن متعلق به بهره بردار جدید خواهد بود. در صورت لزوم می توانید بهره بردار هر تجهیز را جداگانه تغییر دهید.</p>
                                                     <p th:if="${categoryId == 4}">بهره بردار تجهیزات ثبت شده جهت جابجایی مطابق با رک یا اتاق مقصد، بروز می شود.</p>
+                                                    <p th:if="${categoryId == 5}">بهره بردار این تجهیز به روز می شود.</p>
                                                 </div>
                                                 <div class="modal-footer border-dark">
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">

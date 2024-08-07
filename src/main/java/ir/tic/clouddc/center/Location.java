@@ -1,6 +1,6 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationStatusEvent;
+import ir.tic.clouddc.event.LocationCheckList;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -36,7 +36,7 @@ public abstract class Location {
     private Center center;
 
     @OneToMany(mappedBy = "location")
-    private List<LocationStatusEvent> eventList;
+    private List<LocationCheckList> eventList;
 
     @OneToMany(mappedBy = "location")
     private List<LocationStatus> locationStatusList;

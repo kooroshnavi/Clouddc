@@ -37,9 +37,8 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void registerAttachment(MultipartFile file, Persistence persistence) throws IOException {
-        if (!file.isEmpty()) {
-            attachmentRegister(file, persistence);
-        }
+
+        attachmentRegister(file, persistence);
     }
 
     private void attachmentRegister(MultipartFile file, Persistence persistence) throws IOException {

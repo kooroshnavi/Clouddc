@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.event.*;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
@@ -42,8 +43,18 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId) {
+    public List<DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId) {
        return deviceRepository.getDeviceProjection(locationId);
+    }
+
+    @Override
+    public Utilizer getReferencedUtilizer(Integer utilizerId) {
+        return utilizerRepository.getReferenceById(utilizerId);
+    }
+
+    @Override
+    public List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId) {
+        return deviceRepository.getProjection2List(locationId);
     }
 
     @Override
@@ -117,7 +128,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event) {
+    public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event) {
         List<DeviceStatus> deviceStatusList = new ArrayList<>();
         var device = event.getDevice();
         var currentDeviceStatus = getCurrentDeviceStatus(device);
@@ -141,17 +152,13 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void updateDeviceUtilizer(DeviceUtilizerEvent event) {
-        var device = event.getDevice();
-        device.setUtilizer(event.getNewUtilizer());
-        deviceRepository.saveAndFlush(device);
+    public void updateDeviceUtilizer(List<Long> deviceIdList, Utilizer newUtilizer) {
+        deviceRepository.updateDeviceUtilizer(deviceIdList, newUtilizer);
     }
 
     @Override
-    public void updateDeviceLocation(DeviceMovementEvent event, Utilizer destinationUtilizer) {
-        var deviceList = event.getDeviceList();
-        var destinationLocation = event.getDestination();
-        deviceRepository.updateDeviceLocationAndUtilizer(deviceList, destinationLocation, destinationUtilizer);
+    public void updateDeviceLocation(List<Long> deviceIdList, Utilizer destinationUtilizer, Location destinationLocation) {
+        deviceRepository.updateDeviceLocationAndUtilizer(deviceIdList, destinationLocation, destinationUtilizer);
     }
 
     @Override

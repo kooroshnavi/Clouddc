@@ -1,23 +1,40 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.event.*;
+import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.event.DeviceCheckList;
+import ir.tic.clouddc.event.DeviceStatusForm;
+import ir.tic.clouddc.event.EventLandingForm;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ResourceService {
 
-    List<DeviceIdSerialCategoryProjection> getLocationDeviceList(Long locationId);
+    List<DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId);
 
-    interface DeviceIdSerialCategoryProjection {
+    Utilizer getReferencedUtilizer(Integer utilizerId);
+
+    List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
+
+    interface DeviceIdSerialCategory_Projection1 {
         Long getId();
+
         String getSerialNumber();
+
         String getCategory();
+
         String getModel();
+    }
+
+    interface DeviceIdUtilizerId_Projection2 {
+        Long getDeviceId();
+
+        Integer getDeviceUtilizerId();
     }
 
     interface UtilizerIdNameProjection {
         Integer getId();
+
         String getName();
     }
 
@@ -31,15 +48,17 @@ public interface ResourceService {
     Device getReferencedDevice(Long deviceId);
 
     Utilizer getUtilizer(int utilizerId);
+
     List<Utilizer> getUtilizerList();
-    void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event);
 
-    void updateDeviceUtilizer(DeviceUtilizerEvent event);
+    void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event);
 
-    void updateDeviceLocation(DeviceMovementEvent event, Utilizer destinationUtilizer);
+    void updateDeviceUtilizer(List<Long> deviceIdList, Utilizer utilizer);
+
+    void updateDeviceLocation(List<Long> deviceIdList, Utilizer destinationUtilizer, Location destinationLocation);
 
     List<UtilizerIdNameProjection> getUtilizerListExcept(Utilizer utilizer);
 
     DeviceStatus getCurrentDeviceStatus(Device device);
-    
+
 }

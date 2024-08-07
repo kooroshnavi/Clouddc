@@ -16,11 +16,11 @@ import java.util.Map;
 @Setter
 public final class DeviceUtilizerEvent extends Event {
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "OldUtilizerID")
     private Utilizer oldUtilizer;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "NewUtilizerID")
     private Utilizer newUtilizer;
 

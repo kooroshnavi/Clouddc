@@ -20,7 +20,7 @@ public final class Rack extends Location {
     @JoinColumn(name = "HallID")
     private Hall hall;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 

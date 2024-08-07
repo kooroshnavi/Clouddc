@@ -218,9 +218,9 @@
 
                             <td>
                                 <a
-                                   th:href="@{/event/category/{categoryId}/{locationId}/form (locationId=${rack.id}, categoryId = 3)}"
+                                   th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${rack.id}, categoryId = 3)}"
                                    class="btn btn-outline-danger px-10 radius-30" data-bs-toggle="tooltip"
-                                   data-bs-placement="bottom" title="تغییر بهره بردار">بهره بردار اشتباه است؟</a>
+                                   data-bs-placement="bottom" title="تغییر بهره بردار">رک متعلق به بهره بردار دیگری است</a>
                             </td>
 
                         </tr>
@@ -333,16 +333,20 @@
             th:text="${'رخدادهای ' + location.locationCategory.category + ' ' + location.name}"></h6>
         <hr/>
         <div th:if="${location.locationCategory.categoryId != 1}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <div class="ui-dialog-buttonpane">
-                <a th:href="@{/event/category/{categoryId}/{locationId}/form (locationId=${location.id}, categoryId = 4)}"
+            <div th:if="${location.locationCategory.categoryId == 2}" class="ui-dialog-buttonpane">
+                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${rack.id}, categoryId = 4)}"
+                   class="btn btn-outline-warning"
+                   th:text="'جابجایی تجهیزات ' + ${location.name}">
+                </a>
+            </div>
+            <div th:if="${location.locationCategory.categoryId == 3}" class="ui-dialog-buttonpane">
+                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${room.id}, categoryId = 4)}"
                    class="btn btn-outline-warning"
                    th:text="'جابجایی تجهیزات ' + ${location.name}">
                 </a>
             </div>
 
         </div>
-
-
 
         <div class="card">
             <div class="card-body">

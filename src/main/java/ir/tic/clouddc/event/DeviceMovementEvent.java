@@ -7,9 +7,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
 @Entity
 @Table(schema = "Event")
@@ -26,9 +24,6 @@ public final class DeviceMovementEvent extends Event {
     @JoinColumn(name = "DestinationLocationID")
     private Location destination;
 
-    @Column(name = "MovementDate")
-    private LocalDate movementDate;
-
     @ManyToMany(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
     @JoinTable(
             name = "MovementEventDevice", schema = "Event",
@@ -36,10 +31,5 @@ public final class DeviceMovementEvent extends Event {
             inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
     private List<Device> deviceList;
 
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "UtilizerDeviceBalance", schema = "Event",
-            joinColumns = {@JoinColumn(name = "EventID", referencedColumnName = "EventID")})
-    @MapKeyColumn(name = "UtilizerID")
-    @Column(name = "Balance")
-    private Map<Integer, Integer> utilizerBalance;
+
 }

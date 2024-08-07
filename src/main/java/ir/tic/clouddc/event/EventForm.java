@@ -12,9 +12,9 @@ public class EventForm {   //// DTO
 
     private Long locationChecklist_LocationId;
 
-    private Integer utilizer_oldUtilizer;
+    private Integer utilizer_oldUtilizerId;
 
-    private Integer utilizer_newUtilizer;
+    private Integer utilizer_newUtilizerId;
 
     private Long utilizer_locationId;
 

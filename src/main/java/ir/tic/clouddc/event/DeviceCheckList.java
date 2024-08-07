@@ -12,7 +12,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class DeviceStatusEvent extends Event {
+public final class DeviceCheckList extends Event {
 
     @Column(name = "DualPowerChanged")
     private boolean dualPowerChanged;  // order 0

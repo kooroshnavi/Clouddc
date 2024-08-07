@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface LocationStatusEventRepository extends JpaRepository<LocationStatusEvent, Long> {
-    List<LocationStatusEvent> findAllByLocation(Location location);
+public interface LocationStatusEventRepository extends JpaRepository<LocationCheckList, Long> {
+    List<LocationCheckList> findAllByLocation(Location location);
 }
