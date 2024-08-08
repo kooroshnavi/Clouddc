@@ -9,8 +9,6 @@ import java.util.List;
 @Repository
 public interface UtilizerRepository extends JpaRepository<Utilizer, Integer> {
 
-    List<Utilizer> findAllByIdNotIn(List<Integer> utilizerList);
-
-    @Query("select u.id as id, u.name as name from Utilizer u where u.id not in :idList")
+    @Query("select u.id as id, u.name as name from Utilizer u where u.id not in :idList and u.genuineUtilizer")
     List<ResourceService.UtilizerIdNameProjection> getUtilizerProjectionExcept(List<Integer> idList);
 }

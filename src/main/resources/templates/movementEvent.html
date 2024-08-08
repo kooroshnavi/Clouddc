@@ -84,6 +84,11 @@
                             th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
                     </div>
 
+                    <div th:if="${categoryId == 5}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'تغییر بهره بردار  ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h5>
+                    </div>
+
 
                     <div class="card-body">
                         <div class="border p-3 rounded">
@@ -92,7 +97,7 @@
 
                                 <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
 
-                                <div th:if="${categoryId == 3 || categoryId == 5}" class="mb-3">
+                                <div th:if="${categoryId == 2 || categoryId == 3 || categoryId == 5}" class="mb-3">
                                     <label class="form-label">بهره بردار فعلی</label>
                                     <label>
                                         <select class="select2-selection--single">
@@ -101,7 +106,7 @@
                                     </label>
                                 </div>
 
-                                <div th:if="${categoryId == 3 || categoryId == 5}" class="mb-3">
+                                <div th:if="${(categoryId == 2 && not currentUtilizer.genuineUtilizer) || categoryId == 3 || categoryId == 5}" class="mb-3">
                                     <label class="form-label">بهره بردار جدید</label>
                                     <label>
                                         <select class="single-select" th:field="*{utilizer_newUtilizerId}">
@@ -113,19 +118,34 @@
                                     </label>
                                 </div>
 
-                                <input th:if="${categoryId == 3 || categoryId == 5}" type="hidden" name="utilizer_oldUtilizerId" th:value="${currentUtilizer.id}"/>
-                                <input th:if="${categoryId == 3}" type="hidden" name="utilizer_locationId" th:value="${location.id}"/>
+                                <input th:if="${(categoryId == 2 && currentUtilizer.genuineUtilizer) || categoryId == 3 || categoryId == 5}" type="hidden" name="utilizer_oldUtilizerId" th:value="${currentUtilizer.id}"/>
+                                <input th:if="${categoryId == 2 || categoryId == 3}" type="hidden" name="utilizer_locationId" th:value="${location.id}"/>
                                 <input th:if="${categoryId == 5}" type="hidden" name="utilizer_deviceId" th:value="${device.id}"/>
 
 
                                 <input th:if="${categoryId == 4}" type="hidden" name="DeviceMovement_sourceLocId" th:value="${location.id}"/>
 
 
+                                <div th:if="${categoryId == 2}" class="mb-3">
+                                    <label class="form-label">
+                                         تجهیزات جدید مدنظر را جهت نصب در این مکان انتخاب کنید. صرفا مواردی که قبلا در بخش
+                                        <a href="resource/device/register"> ثبت تجهیزات جدید </a>
+                                    تعریف شده اند و تاکنون در مکانی نصب نشده اند در این لیست قابل مشاهده و انتخاب هستند.
+                                    </label>
+                                    <select class="multiple-select" data-placeholder="Choose anything"
+                                            multiple="multiple" th:field="*{deviceIdList}">
+                                        <option th:each="device : ${deviceList}"
+                                                th:value="${device.getId()}"
+                                                th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
+                                                 + ' - ' + device.getId()}"></option>
+                                    </select>
+                                </div>
+
                                 <div th:if="${categoryId == 4}" class="mb-3">
                                     <label class="form-label">تجهیزات مدنظر جهت جابجایی را انتخاب کنید</label>
                                     <select class="multiple-select" data-placeholder="Choose anything"
-                                            multiple="multiple" th:field="*{deviceMovement_deviceIdList}">
-                                        <option th:each="device : ${locationDeviceList}"
+                                            multiple="multiple" th:field="*{deviceIdList}">
+                                        <option th:each="device : ${deviceList}"
                                                 th:value="${device.getId()}"
                                                 th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
                                                  + ' - ' + device.getId()}"></option>
@@ -152,7 +172,7 @@
 
                                 <div class="mb-3">
                                     <div class="form-label">
-                                        <label>تاریخ اتمام رخداد یا انجام این تغییر</label>
+                                        <label>تاریخ رخداد یا اتمام انجام این تغییر</label>
                                         <input required="required" type="text" data-jdp
                                                data-jdp-miladi-input="miladi_date" data-jdp-max-date="today"
                                                placeholder="تاریخ وقوع رخداد"/>

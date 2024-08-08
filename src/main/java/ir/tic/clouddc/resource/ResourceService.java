@@ -1,6 +1,5 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
 import ir.tic.clouddc.event.EventLandingForm;
@@ -15,6 +14,8 @@ public interface ResourceService {
     Utilizer getReferencedUtilizer(Integer utilizerId);
 
     List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
+
+    List<DeviceIdSerialCategory_Projection1> getNewDeviceList();
 
     interface DeviceIdSerialCategory_Projection1 {
         Long getId();
@@ -49,15 +50,11 @@ public interface ResourceService {
 
     Utilizer getUtilizer(int utilizerId);
 
-    List<Utilizer> getUtilizerList();
-
     void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event);
 
     void updateDeviceUtilizer(List<Long> deviceIdList, Utilizer utilizer);
 
-    void updateDeviceLocation(List<Long> deviceIdList, Utilizer destinationUtilizer, Location destinationLocation);
-
-    List<UtilizerIdNameProjection> getUtilizerListExcept(Utilizer utilizer);
+    List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList);
 
     DeviceStatus getCurrentDeviceStatus(Device device);
 

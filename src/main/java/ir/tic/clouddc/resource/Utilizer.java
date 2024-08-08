@@ -26,6 +26,9 @@ public final class Utilizer {
     @Column(name = "Messenger")
     private boolean messenger;
 
+    @Column(name = "GenuineUtilizer")
+    private boolean genuineUtilizer;
+
     @OneToMany(mappedBy = "utilizer")
     private List<Rack> rackList;
 

@@ -10,8 +10,6 @@ public class EventForm {   //// DTO
 
     private Integer eventCategoryId;   /// 2. Location CheckList 3.Utilizer   4. Device Movement     5. Device Checklist
 
-    private Long locationChecklist_LocationId;
-
     private Integer utilizer_oldUtilizerId;
 
     private Integer utilizer_newUtilizerId;
@@ -20,7 +18,7 @@ public class EventForm {   //// DTO
 
     private Long utilizer_deviceId;
 
-    private List<Long> DeviceMovement_deviceIdList;
+    private List<Long> deviceIdList;
 
     private Long DeviceMovement_sourceLocId;
 

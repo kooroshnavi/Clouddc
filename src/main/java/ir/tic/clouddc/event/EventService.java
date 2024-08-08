@@ -8,7 +8,6 @@ import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
 import ir.tic.clouddc.resource.ResourceService;
-import ir.tic.clouddc.resource.Utilizer;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
@@ -52,7 +51,7 @@ public interface EventService {
 
     LocationStatus getCurrentLocationStatus(Location location);
 
-    List<ResourceService.UtilizerIdNameProjection> getUtilizerEventData_1(Utilizer utilizer);
+    List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList);
 
     List<Center> getCenterList();
 
@@ -69,4 +68,6 @@ public interface EventService {
     Optional<Location> getLocation(Long locationId);
 
     Device getReferencedDevice(Long deviceId);
+
+    List<ResourceService.DeviceIdSerialCategory_Projection1> getNewDeviceList();
 }

@@ -36,6 +36,33 @@ public class EventController {
 
         switch (categoryId) {
 
+            case 2 -> { // New Device Installation
+                var optionalLocation = eventService.getLocation(targetId);
+                if (optionalLocation.isPresent()) {
+                    var location = optionalLocation.get();
+                    Utilizer currentUtilizer;
+                    if (location instanceof Rack rack) {
+                        currentUtilizer = rack.getUtilizer();
+                    } else if (location instanceof Room room) {
+                        currentUtilizer = room.getUtilizer();
+                    } else {
+                        return "404";
+                    }
+                    if (!currentUtilizer.isGenuineUtilizer()) {
+                        List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerList(List.of(0));
+                        model.addAttribute("utilizerList", utilizerList);
+                    }
+                    List<ResourceService.DeviceIdSerialCategory_Projection1> newDeviceList = eventService.getNewDeviceList();
+
+                    log.info(String.valueOf(newDeviceList.size()));
+
+                    model.addAttribute("currentUtilizer", currentUtilizer);
+                    model.addAttribute("location", location);
+                    model.addAttribute("deviceList", newDeviceList);
+                }
+
+            }
+
             case 3 -> { // Location Utilizer
                 var optionalLocation = eventService.getLocation(targetId);
                 if (optionalLocation.isPresent()) {
@@ -50,9 +77,8 @@ public class EventController {
                         return "404";
                     }
 
-                    log.info(String.valueOf(currentUtilizer.getId()));
 
-                    List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerEventData_1(currentUtilizer);
+                    List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerList(List.of(currentUtilizer.getId()));
                     model.addAttribute("currentUtilizer", currentUtilizer);
                     model.addAttribute("utilizerList", utilizerList);
                     model.addAttribute("location", location);
@@ -78,7 +104,7 @@ public class EventController {
                     }
                     model.addAttribute("rackList", rackList);
                     model.addAttribute("roomList", roomList);
-                    model.addAttribute("locationDeviceList", locationDeviceList);
+                    model.addAttribute("deviceList", locationDeviceList);
                     model.addAttribute("location", location);
                 } else {
                     return "404";
@@ -88,7 +114,7 @@ public class EventController {
             case 5 -> {
                 Device device = eventService.getReferencedDevice(targetId);
                 var currentUtilizer = device.getUtilizer();
-                List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerEventData_1(currentUtilizer);
+                List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerList(List.of(currentUtilizer.getId()));
                 model.addAttribute("currentUtilizer", currentUtilizer);
                 model.addAttribute("utilizerList", utilizerList);
                 model.addAttribute("device", device);
@@ -192,7 +218,7 @@ public class EventController {
 
                         switch (eventLandingForm.getEventCategoryId()) {
                             case 3 ->   // Device utilizer event
-                                    model.addAttribute("utilizerList", eventService.getUtilizerEventData_1(device.get().getUtilizer()));
+                                    model.addAttribute("utilizerList", eventService.getUtilizerList(List.of(device.get().getUtilizer().getId())));
                             case 4 ->
                                     model.addAttribute("centerList", eventService.getCenterList());   // Device movement event
                             case 5 -> { // Device status event
@@ -238,8 +264,8 @@ public class EventController {
 
     @GetMapping("/category/{categoryId}/list")
     public String showCategoryEventList(Model model, @PathVariable int categoryId) {
-     //   List<Event> eventList = eventService.getEventList(categoryId);
-       // model.addAttribute("eventList", eventList);
+        //   List<Event> eventList = eventService.getEventList(categoryId);
+        // model.addAttribute("eventList", eventList);
         return "eventListView";
     }
 

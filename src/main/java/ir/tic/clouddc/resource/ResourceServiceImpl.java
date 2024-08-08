@@ -1,10 +1,11 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.event.*;
-import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.event.DeviceCheckList;
+import ir.tic.clouddc.event.DeviceStatusForm;
+import ir.tic.clouddc.event.EventLandingForm;
 import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -44,7 +45,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId) {
-       return deviceRepository.getDeviceProjection(locationId);
+       return deviceRepository.getProjection2ForLocationDeviceList(locationId);
     }
 
     @Override
@@ -55,6 +56,11 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId) {
         return deviceRepository.getProjection2List(locationId);
+    }
+
+    @Override
+    public List<DeviceIdSerialCategory_Projection1> getNewDeviceList() {
+        return deviceRepository.getProjection2ForNewDeviceList(1001);
     }
 
     @Override
@@ -111,11 +117,6 @@ public class ResourceServiceImpl implements ResourceService {
         return optionalUtilizer.orElse(null);
     }
 
-    @Override
-    public List<Utilizer> getUtilizerList() {
-        return utilizerRepository.findAll();
-    }
-
 
     @Override
     public Optional<Device> getDeviceBySerialNumber(String serialNumber) {
@@ -157,13 +158,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void updateDeviceLocation(List<Long> deviceIdList, Utilizer destinationUtilizer, Location destinationLocation) {
-        deviceRepository.updateDeviceLocationAndUtilizer(deviceIdList, destinationLocation, destinationUtilizer);
-    }
-
-    @Override
-    public List<UtilizerIdNameProjection> getUtilizerListExcept(Utilizer utilizer) {
-        return utilizerRepository.getUtilizerProjectionExcept(List.of(utilizer.getId()));
+    public List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList) {
+        return utilizerRepository.getUtilizerProjectionExcept(utilizerIdList);
     }
 
     @Override

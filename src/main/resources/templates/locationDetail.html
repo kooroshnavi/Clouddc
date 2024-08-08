@@ -218,9 +218,8 @@
 
                             <td>
                                 <a
-                                   th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${rack.id}, categoryId = 3)}"
-                                   class="btn btn-outline-danger px-10 radius-30" data-bs-toggle="tooltip"
-                                   data-bs-placement="bottom" title="تغییر بهره بردار">رک متعلق به بهره بردار دیگری است</a>
+                                        th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${rack.id}, categoryId = 3)}"
+                                        class="btn btn-outline-danger px-10 radius-30">تغییر بهره بردار</a>
                             </td>
 
                         </tr>
@@ -332,17 +331,19 @@
         <h6 class="mb-0 text-uppercase"
             th:text="${'رخدادهای ' + location.locationCategory.category + ' ' + location.name}"></h6>
         <hr/>
-        <div th:if="${location.locationCategory.categoryId != 1}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <div th:if="${location.locationCategory.categoryId == 2}" class="ui-dialog-buttonpane">
-                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${rack.id}, categoryId = 4)}"
+        <div th:if="${location.assignable}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+             class="col">
+            <div class="ui-dialog-buttonpane">
+                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 4)}"
                    class="btn btn-outline-warning"
-                   th:text="'جابجایی تجهیزات ' + ${location.name}">
+                   th:text="${'جابجایی تجهیزات  ' + location.locationCategory.category + ' ' + location.name}">
                 </a>
             </div>
-            <div th:if="${location.locationCategory.categoryId == 3}" class="ui-dialog-buttonpane">
-                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${room.id}, categoryId = 4)}"
-                   class="btn btn-outline-warning"
-                   th:text="'جابجایی تجهیزات ' + ${location.name}">
+
+            <div class="ui-dialog-buttonpane">
+                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 2)}"
+                   class="btn btn-outline-primary"
+                   th:text="${'نصب تجهیزات جدید در  ' + location.locationCategory.category + ' ' + location.name}">
                 </a>
             </div>
 

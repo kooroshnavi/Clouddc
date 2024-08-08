@@ -30,6 +30,4 @@ public final class DeviceMovementEvent extends Event {
             joinColumns = {@JoinColumn(name = "EventID")},
             inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
     private List<Device> deviceList;
-
-
 }

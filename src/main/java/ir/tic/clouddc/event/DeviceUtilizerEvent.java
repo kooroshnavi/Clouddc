@@ -7,8 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.Map;
-
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
@@ -27,12 +25,4 @@ public final class DeviceUtilizerEvent extends Event {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "DeviceID")
     private Device device;
-
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "UtilizerDeviceBalance", schema = "Event",
-            joinColumns = {@JoinColumn(name = "EventID", referencedColumnName = "EventID")})
-    @MapKeyColumn(name = "UtilizerID")
-    @Column(name = "Balance")
-    private Map<Integer, Integer> utilizerBalance;
-
 }

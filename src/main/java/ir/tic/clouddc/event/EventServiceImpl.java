@@ -40,7 +40,7 @@ public final class EventServiceImpl implements EventService {
 
 
     private static final int VISIT_EVENT_CATEGORY_ID = 1;
-    private static final int LOCATION_CHECKLIST_EVENT_CATEGORY_ID = 2;
+    private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 5;
@@ -117,13 +117,18 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<ResourceService.DeviceIdSerialCategory_Projection1> getNewDeviceList() {
+        return resourceService.getNewDeviceList();
+    }
+
+    @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
         return centerService.getCurrentLocationStatus(location);
     }
 
     @Override
-    public List<ResourceService.UtilizerIdNameProjection> getUtilizerEventData_1(Utilizer utilizer) {
-        return resourceService.getUtilizerListExcept(utilizer);
+    public List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList) {
+        return resourceService.getUtilizerListExcept(utilizerIdList);
     }
 
     @Override
@@ -149,12 +154,9 @@ public final class EventServiceImpl implements EventService {
                     centerService.updateLocationStatus(locationStatusForm, event);
                 }
             }*/
-         /*   case UTILIZER_EVENT_CATEGORY_ID -> {
-                var event = deviceUtilizerEventRegister_3(eventLandingForm);
-                eventDetailRegister(event, eventLandingForm.getFile(), eventLandingForm.getDescription());
-                eventRepository.save(event);
-                resourceService.updateDeviceUtilizer(event);
-            }*/
+            case NewDevice_Installation_EVENT_CATEGORY_ID -> {
+                newDeviceInstallationEventRegister_2(eventForm, validDate);
+            }
 
             case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> {
                 locationUtilizerEventRegister_3(eventForm, validDate);
@@ -165,10 +167,14 @@ public final class EventServiceImpl implements EventService {
 
             }
             case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
-                event = deviceUtilizerEventRegister_5(eventForm, validDate);
+                deviceUtilizerEventRegister_5(eventForm, validDate);
             }
             default -> throw new NoSuchElementException();
         }
+
+    }
+
+    private void newDeviceInstallationEventRegister_2(EventForm eventForm, LocalDate validDate) {
 
     }
 
@@ -268,8 +274,7 @@ public final class EventServiceImpl implements EventService {
                 destinationUtilizer = rack.getUtilizer();
             } else if (destinationLocation instanceof Room room) {
                 destinationUtilizer = room.getUtilizer();
-            }
-            else {
+            } else {
                 throw new NoSuchElementException();
             }
 
@@ -284,7 +289,7 @@ public final class EventServiceImpl implements EventService {
 
             // 1. referencedDeviceList
             List<Device> referencedDeviceList = new ArrayList<>();
-            for (Long deviceId : eventForm.getDeviceMovement_deviceIdList()) {
+            for (Long deviceId : eventForm.getDeviceIdList()) {
                 var optionalDevice = resourceService.getDevice(deviceId);
                 if (optionalDevice.isPresent()) {
                     var device = optionalDevice.get();
@@ -323,25 +328,28 @@ public final class EventServiceImpl implements EventService {
         //     resourceService.updateDeviceLocation(deviceIdList, destinationUtilizer, destinationLocation);
     }
 
-    private DeviceUtilizerEvent deviceUtilizerEventRegister_5(EventForm eventForm, LocalDate validDate) {
+    private void deviceUtilizerEventRegister_5(EventForm eventForm, LocalDate validDate) throws IOException {
         var newUtilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_newUtilizerId());
-        var device = resourceService.getReferencedDevice(eventForm.getUtilizer_deviceId());
-        DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
-        deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
-        deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
-        deviceUtilizerEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
-        deviceUtilizerEvent.setDevice(device);
-        deviceUtilizerEvent.setActive(false);
-        deviceUtilizerEvent.setOldUtilizer(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()));
-        deviceUtilizerEvent.setNewUtilizer(newUtilizer);
-        deviceUtilizerEvent.setEventDate(validDate);
+        var optionalDevice = resourceService.getDevice(eventForm.getUtilizer_deviceId());
 
-        List<Integer> affectedUtilizerIdList = List.of(device.getUtilizer().getId());
-        deviceUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), affectedUtilizerIdList));
+        if (optionalDevice.isPresent()) {
+            var device = optionalDevice.get();
+            DeviceUtilizerEvent deviceUtilizerEvent = new DeviceUtilizerEvent();
+            deviceUtilizerEvent.setRegisterDate(UtilService.getDATE());
+            deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
+            deviceUtilizerEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
+            deviceUtilizerEvent.setActive(false);
+            deviceUtilizerEvent.setOldUtilizer(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()));
+            deviceUtilizerEvent.setNewUtilizer(newUtilizer);
+            deviceUtilizerEvent.setEventDate(validDate);
+            List<Integer> affectedUtilizerIdList = List.of(device.getUtilizer().getId());
+            deviceUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), affectedUtilizerIdList));
+            device.setUtilizer(newUtilizer);
+            deviceUtilizerEvent.setDevice(device);
 
-        resourceService.updateDeviceUtilizer(List.of(device.getId()), newUtilizer);
+            eventPersist(eventForm, deviceUtilizerEvent);
+        }
 
-        return deviceUtilizerEvent;
     }
 
     private static Map<Integer, Integer> getUtilizerBalanceMap(List<Integer> affectedUtilizerIdList, Integer newUtilizerId, List<Integer> utilizerIdList) {

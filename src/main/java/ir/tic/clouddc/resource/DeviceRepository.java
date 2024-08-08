@@ -1,6 +1,5 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.center.Location;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -19,12 +18,13 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Query("select device.id as id, device.serialNumber as serialNumber, device.deviceCategory.category as category, device.deviceCategory.model as model" +
             " from Device device" +
             " where device.location.id = :locationId")
-    List<ResourceService.DeviceIdSerialCategory_Projection1> getDeviceProjection(@Param("locationId") Long locationId);
+    List<ResourceService.DeviceIdSerialCategory_Projection1> getProjection2ForLocationDeviceList(@Param("locationId") Long locationId);
 
-    @Transactional
-    @Modifying
-    @Query("update Device d set d.location = :location, d.utilizer = :utilizer where d.id in :deviceIdList")
-    void updateDeviceLocationAndUtilizer(List<Long> deviceIdList, @Param("location") Location destinationLocation, @Param("utilizer") Utilizer destinationUtilizer);
+    @Query("select device.id as id, device.serialNumber as serialNumber, device.deviceCategory.category as category, device.deviceCategory.model as model" +
+            " from Device device" +
+            " where device.utilizer.id = :unassignedId")
+    List<ResourceService.DeviceIdSerialCategory_Projection1> getProjection2ForNewDeviceList(@Param("unassignedId") Integer unassignedUtilizerId);
+
 
     @Query("select" +
             " device.id as deviceId," +
@@ -37,4 +37,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
     @Modifying
     @Query("update Device d set d.utilizer = :newUtilizer where d.id in :deviceIdList")
     void updateDeviceUtilizer(List<Long> deviceIdList, @Param("newUtilizer") Utilizer newUtilizer);
+
+
 }
