@@ -25,6 +25,4 @@ public class LocationUtilizerEvent extends Event {
     @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "LocationID")
     private Location location;
-
-
 }

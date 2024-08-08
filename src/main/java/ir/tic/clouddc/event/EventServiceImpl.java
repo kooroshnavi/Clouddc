@@ -174,8 +174,59 @@ public final class EventServiceImpl implements EventService {
 
     }
 
-    private void newDeviceInstallationEventRegister_2(EventForm eventForm, LocalDate validDate) {
+    private void newDeviceInstallationEventRegister_2(EventForm eventForm, LocalDate validDate) throws IOException {
+        Utilizer utilizer;
+        Location location;
+        NewDeviceInstallationEvent newDeviceInstallationEvent = new NewDeviceInstallationEvent();
+        newDeviceInstallationEvent.setRegisterDate(UtilService.getDATE());
+        newDeviceInstallationEvent.setRegisterTime(UtilService.getTime());
+        newDeviceInstallationEvent.setActive(false);
+        newDeviceInstallationEvent.setEventDate(validDate);
+        newDeviceInstallationEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
 
+        if (eventForm.getUtilizer_oldUtilizerId() != null) {
+            utilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId());
+            location = centerService.getRefrencedLocation(eventForm.getUtilizer_locationId());
+            newDeviceInstallationEvent.setInstallationUtilizer(utilizer);
+            newDeviceInstallationEvent.setInstallationLocation(location);
+        } else {
+            utilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_newUtilizerId());
+            var optionalLocation = centerService.getLocation(eventForm.getUtilizer_locationId());
+            if (optionalLocation.isPresent()) {
+                location = optionalLocation.get();
+                if (location instanceof Rack rack) {
+                    rack.setUtilizer(utilizer);
+                    newDeviceInstallationEvent.setInstallationLocation(rack);
+                } else if (location instanceof Room room) {
+                    room.setUtilizer(utilizer);
+                    newDeviceInstallationEvent.setInstallationLocation(room);
+                }
+
+            } else {
+                throw new NoSuchElementException();
+            }
+        }
+
+        List<Device> referencedDeviceList = new ArrayList<>();
+        for (Long deviceId : eventForm.getDeviceIdList()) {
+            var optionalDevice = resourceService.getDevice(deviceId);
+            if (optionalDevice.isPresent()) {
+                var device = optionalDevice.get();
+                device.setUtilizer(utilizer);
+                device.setLocation(location);
+                referencedDeviceList.add(device);
+            }
+            else {
+                throw new NoSuchElementException();
+            }
+        }
+        newDeviceInstallationEvent.setDeviceList(referencedDeviceList);
+
+        Map<Integer, Integer> utilizerBalance = new HashMap<>();
+        utilizerBalance.put(utilizer.getId(), referencedDeviceList.size());
+        newDeviceInstallationEvent.setUtilizerBalance(utilizerBalance);
+
+        eventPersist(eventForm, newDeviceInstallationEvent);
     }
 
     private void eventPersist(EventForm eventForm, Event event) throws IOException {
@@ -187,16 +238,6 @@ public final class EventServiceImpl implements EventService {
         }
     }
 
-    private VisitEvent visitEventRegister_1(EventLandingForm eventLandingForm) {
-        VisitEvent visitEvent = new VisitEvent();
-        visitEvent.setRegisterDate(UtilService.getDATE());
-        visitEvent.setRegisterTime(UtilService.getTime());
-        visitEvent.setEventCategory(eventCategoryRepository.findById(eventLandingForm.getEventCategoryId()).get());
-        visitEvent.setCenter(eventLandingForm.getCenter());
-        visitEvent.setActive(false);
-
-        return visitEvent;
-    }
 
     private LocationCheckList locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
         var currentStatus = locationStatusForm.getCurrentLocationStatus();
@@ -257,6 +298,9 @@ public final class EventServiceImpl implements EventService {
             eventPersist(eventForm, locationUtilizerEvent);
 
             resourceService.updateDeviceUtilizer(deviceIdList, newUtilizer);
+        }
+        else {
+            throw new NoSuchElementException();
         }
         // event persist
 
@@ -325,6 +369,9 @@ public final class EventServiceImpl implements EventService {
 
             eventPersist(eventForm, deviceMovementEvent);
         }
+        else {
+            throw new NoSuchElementException();
+        }
         //     resourceService.updateDeviceLocation(deviceIdList, destinationUtilizer, destinationLocation);
     }
 
@@ -349,7 +396,9 @@ public final class EventServiceImpl implements EventService {
 
             eventPersist(eventForm, deviceUtilizerEvent);
         }
-
+        else {
+            throw new NoSuchElementException();
+        }
     }
 
     private static Map<Integer, Integer> getUtilizerBalanceMap(List<Integer> affectedUtilizerIdList, Integer newUtilizerId, List<Integer> utilizerIdList) {
