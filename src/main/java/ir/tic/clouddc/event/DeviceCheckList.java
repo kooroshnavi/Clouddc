@@ -3,15 +3,8 @@ package ir.tic.clouddc.event;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DeviceStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Table(schema = "Event")
-@NoArgsConstructor
-@Getter
-@Setter
+
 public final class DeviceCheckList extends Event {
 
     @Column(name = "DualPowerChanged")

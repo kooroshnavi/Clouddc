@@ -1,6 +1,7 @@
 package ir.tic.clouddc.event;
 
 
+import ir.tic.clouddc.resource.Device;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -8,6 +9,7 @@ import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Map;
 
 @Entity
@@ -35,7 +37,7 @@ public abstract class Event {
     @Column(name = "EventDate")
     private LocalDate eventDate;
 
-    @ManyToOne(cascade = {CascadeType.DETACH, CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST})
     @JoinColumn(name = "EventCategoryID")
     private EventCategory eventCategory;
 
@@ -49,6 +51,13 @@ public abstract class Event {
     @MapKeyColumn(name = "UtilizerID")
     @Column(name = "Balance")
     private Map<Integer, Integer> utilizerBalance;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "EventDevice", schema = "Event",
+            joinColumns = {@JoinColumn(name = "EventID")},
+            inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
+    private List<Device> deviceList;
 
     @Transient
     private String persianRegisterDate;

@@ -23,9 +23,6 @@ public final class EventCategory {
     @Column(name = "Title")
     private String title;
 
-    @Column(name = "Target")
-    private int target;  /// Center - Location - Device
-
     @OneToMany(mappedBy = "eventCategory")
     private List<Event> eventList;
 }

@@ -3,15 +3,8 @@ package ir.tic.clouddc.event;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationStatus;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
-@Entity
-@Table(schema = "Event")
-@NoArgsConstructor
-@Getter
-@Setter
+
 public final class LocationCheckList extends Event {
 
     @Column(name = "DoorChanged")

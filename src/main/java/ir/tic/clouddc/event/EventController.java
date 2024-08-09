@@ -54,8 +54,6 @@ public class EventController {
                     }
                     List<ResourceService.DeviceIdSerialCategory_Projection1> newDeviceList = eventService.getNewDeviceList();
 
-                    log.info(String.valueOf(newDeviceList.size()));
-
                     model.addAttribute("currentUtilizer", currentUtilizer);
                     model.addAttribute("location", location);
                     model.addAttribute("deviceList", newDeviceList);
@@ -137,8 +135,8 @@ public class EventController {
             , @ModelAttribute("deviceMovementEventForm") EventForm eventForm) throws IOException {
 
         var nextDue = eventForm.getDate();
-        var validDate = LocalDate.parse(nextDue);
-        if (validDate.isAfter(UtilService.getDATE())) {
+        var georgianDate = LocalDate.parse(nextDue);
+        if (georgianDate.isAfter(UtilService.getDATE())) {
             return "403";
         }
 
@@ -146,7 +144,7 @@ public class EventController {
             eventForm.setMultipartFile(file);
         }
 
-        eventService.eventRegister(eventForm, validDate);
+        eventService.eventRegister(eventForm, georgianDate);
 
         log.info("Event Registered Successfully");
 
@@ -283,9 +281,6 @@ public class EventController {
 
         model.addAttribute("baseEvent", baseEvent);
 
-        if (baseEvent instanceof VisitEvent event) {
-            model.addAttribute("visitEvent", event);
-        }
         if (baseEvent instanceof LocationCheckList event) {
             model.addAttribute("locationStatusEvent", event);
         }
