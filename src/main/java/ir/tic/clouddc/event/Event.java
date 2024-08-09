@@ -1,7 +1,9 @@
 package ir.tic.clouddc.event;
 
 
+import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -54,10 +56,24 @@ public abstract class Event {
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(
+            name = "EventLocation", schema = "Event",
+            joinColumns = {@JoinColumn(name = "EventID")},
+            inverseJoinColumns = {@JoinColumn(name = "LocationID")})
+    private List<Location> locationList;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(
             name = "EventDevice", schema = "Event",
             joinColumns = {@JoinColumn(name = "EventID")},
             inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
     private List<Device> deviceList;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "EventUtilizer", schema = "Event",
+            joinColumns = {@JoinColumn(name = "EventID")},
+            inverseJoinColumns = {@JoinColumn(name = "UtilizerID")})
+    private List<Utilizer> utilizerList;
 
     @Transient
     private String persianRegisterDate;

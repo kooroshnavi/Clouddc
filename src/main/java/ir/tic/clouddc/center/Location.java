@@ -1,6 +1,6 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationCheckList;
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,13 +34,10 @@ public abstract class Location {
     @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "CenterID")
     private Center center;
-
-    @OneToMany(mappedBy = "location")
-    private List<LocationCheckList> eventList;
-
-    @OneToMany(mappedBy = "location")
-    private List<LocationStatus> locationStatusList;
-
+    
     @OneToMany(mappedBy = "location")
     private List<LocationPmCatalog> locationPmCatalogList;
+
+    @ManyToMany(mappedBy = "locationList")
+    private List<Event> eventList;
 }

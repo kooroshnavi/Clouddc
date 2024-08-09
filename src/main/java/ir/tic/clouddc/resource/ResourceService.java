@@ -9,13 +9,15 @@ import java.util.Optional;
 
 public interface ResourceService {
 
-    List<DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId);
+    List<DeviceIdSerialCategory_Projection1> getLocationDeviceListProjection(Long locationId);
 
     Utilizer getReferencedUtilizer(Integer utilizerId);
 
     List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
 
     List<DeviceIdSerialCategory_Projection1> getNewDeviceList();
+
+    List<Device> getLocationDeviceList(Long locationId);
 
     interface DeviceIdSerialCategory_Projection1 {
         Long getId();
@@ -51,8 +53,6 @@ public interface ResourceService {
     Utilizer getUtilizer(int utilizerId);
 
     void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event);
-
-    void updateDeviceUtilizer(List<Long> deviceIdList, Utilizer utilizer);
 
     List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList);
 

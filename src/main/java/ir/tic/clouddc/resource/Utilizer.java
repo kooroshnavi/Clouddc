@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -34,4 +35,7 @@ public final class Utilizer {
 
     @OneToMany(mappedBy = "utilizer")
     private List<Device> deviceList;
+
+    @ManyToMany(mappedBy = "utilizerList")
+    private List<Event> eventList;
 }

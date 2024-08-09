@@ -1,8 +1,6 @@
 package ir.tic.clouddc.resource;
 
-import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -33,10 +31,6 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
             " where device.location.id = :locationId")
     List<ResourceService.DeviceIdUtilizerId_Projection2> getProjection2List(@Param("locationId") Long locationId);
 
-    @Transactional
-    @Modifying
-    @Query("update Device d set d.utilizer = :newUtilizer where d.id in :deviceIdList")
-    void updateDeviceUtilizer(List<Long> deviceIdList, @Param("newUtilizer") Utilizer newUtilizer);
-
-
+    @Query("select device from Device device where device.location.id = :locationId")
+    List<Device> getLocationDeviceList(@Param("locationId") Long locationId);
 }

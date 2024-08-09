@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -44,7 +43,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId) {
+    public List<DeviceIdSerialCategory_Projection1> getLocationDeviceListProjection(Long locationId) {
        return deviceRepository.getProjection2ForLocationDeviceList(locationId);
     }
 
@@ -61,6 +60,11 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<DeviceIdSerialCategory_Projection1> getNewDeviceList() {
         return deviceRepository.getProjection2ForNewDeviceList(1001);
+    }
+
+    @Override
+    public List<Device> getLocationDeviceList(Long locationId) {
+        return deviceRepository.getLocationDeviceList(locationId);
     }
 
     @Override
@@ -130,8 +134,8 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event) {
-        List<DeviceStatus> deviceStatusList = new ArrayList<>();
-        var device = event.getDevice();
+       /* List<DeviceStatus> deviceStatusList = new ArrayList<>();
+      //  var device = event.getDevice();
         var currentDeviceStatus = getCurrentDeviceStatus(device);
         currentDeviceStatus.setActive(false);
         deviceStatusList.add(currentDeviceStatus);
@@ -149,13 +153,9 @@ public class ResourceServiceImpl implements ResourceService {
 
         deviceStatusList.add(newDeviceStatus);
 
-        deviceStatusRepository.saveAllAndFlush(deviceStatusList);
+        deviceStatusRepository.saveAllAndFlush(deviceStatusList);*/
     }
 
-    @Override
-    public void updateDeviceUtilizer(List<Long> deviceIdList, Utilizer newUtilizer) {
-        deviceRepository.updateDeviceUtilizer(deviceIdList, newUtilizer);
-    }
 
     @Override
     public List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList) {

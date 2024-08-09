@@ -98,7 +98,7 @@ public final class EventServiceImpl implements EventService {
 
     @Override
     public List<ResourceService.DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId) {
-        return resourceService.getLocationDeviceList(locationId);
+        return resourceService.getLocationDeviceListProjection(locationId);
     }
 
     @Override
@@ -152,7 +152,7 @@ public final class EventServiceImpl implements EventService {
             }
 
             case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> {
-            //    locationUtilizerEventRegister_3(eventForm, validDate);
+                locationUtilizerEventRegister_3(eventForm, validDate);
             }
 
             case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
@@ -169,6 +169,7 @@ public final class EventServiceImpl implements EventService {
     private void newDeviceInstallationEventRegister_2(EventForm eventForm, LocalDate validDate) throws IOException {
         Utilizer utilizer;
         Location location;
+
         NewDeviceInstallationEvent newDeviceInstallationEvent = new NewDeviceInstallationEvent();
         newDeviceInstallationEvent.setRegisterDate(UtilService.getDATE());
         newDeviceInstallationEvent.setRegisterTime(UtilService.getTime());
@@ -183,6 +184,7 @@ public final class EventServiceImpl implements EventService {
             newDeviceInstallationEvent.setInstallationLocation(location);
         } else {
             utilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_newUtilizerId());
+            newDeviceInstallationEvent.setInstallationUtilizer(utilizer);
             var optionalLocation = centerService.getLocation(eventForm.getUtilizer_locationId());
             if (optionalLocation.isPresent()) {
                 location = optionalLocation.get();
@@ -207,12 +209,13 @@ public final class EventServiceImpl implements EventService {
                 device.setUtilizer(utilizer);
                 device.setLocation(location);
                 referencedDeviceList.add(device);
-            }
-            else {
+            } else {
                 throw new NoSuchElementException();
             }
         }
         newDeviceInstallationEvent.setDeviceList(referencedDeviceList);
+        newDeviceInstallationEvent.setLocationList(List.of(location));
+        newDeviceInstallationEvent.setUtilizerList(List.of(utilizer));
 
         Map<Integer, Integer> utilizerBalance = new HashMap<>();
         utilizerBalance.put(utilizer.getId(), referencedDeviceList.size());
@@ -234,11 +237,11 @@ public final class EventServiceImpl implements EventService {
     private LocationCheckList locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
         var currentStatus = locationStatusForm.getCurrentLocationStatus();
         LocationCheckList locationCheckList = new LocationCheckList();
-        locationCheckList.setLocationStatus(currentStatus);
-        locationCheckList.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
-        locationCheckList.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
-        locationCheckList.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
-        locationCheckList.setLocation(locationStatusForm.getLocation());
+        // locationCheckList.setLocationStatus(currentStatus);
+        // locationCheckList.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
+        // locationCheckList.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
+        // locationCheckList.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
+        //locationCheckList.setLocation(locationStatusForm.getLocation());
         locationCheckList.setActive(false);
 
         return locationCheckList;
@@ -261,40 +264,41 @@ public final class EventServiceImpl implements EventService {
             var location = optionalLocation.get();
             if (location instanceof Rack rack) {
                 rack.setUtilizer(newUtilizer);
-                locationUtilizerEvent.setLocation(rack);
+                locationUtilizerEvent.setLocationList(List.of(rack));
             } else if (location instanceof Room room) {
                 room.setUtilizer(newUtilizer);
-                locationUtilizerEvent.setLocation(room);
-            }
-            else {
+                locationUtilizerEvent.setLocationList(List.of(room));
+            } else {
                 throw new NoSuchElementException();
             }
 
-            List<ResourceService.DeviceIdUtilizerId_Projection2> referencedDeviceList = resourceService.getDeviceProjection2(location.getId());
+            List<Device> referencedDeviceList = resourceService.getLocationDeviceList(location.getId());
 
             List<Integer> affectedUtilizerIdList = referencedDeviceList
                     .stream()
-                    .map(ResourceService.DeviceIdUtilizerId_Projection2::getDeviceUtilizerId)
+                    .map(Device::getUtilizer)
+                    .map(Utilizer::getId)
                     .distinct()
                     .toList();
 
             List<Integer> utilizerIdList = referencedDeviceList
                     .stream()
-                    .map(ResourceService.DeviceIdUtilizerId_Projection2::getDeviceUtilizerId)
+                    .map(Device::getUtilizer)
+                    .map(Utilizer::getId)
                     .toList();
 
             locationUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), utilizerIdList));
 
-            List<Long> deviceIdList = referencedDeviceList
-                    .stream()
-                    .map(ResourceService.DeviceIdUtilizerId_Projection2::getDeviceId)
-                    .toList();
+            for (Device device : referencedDeviceList) {
+                device.setUtilizer(newUtilizer);
+            }
+            // many to many for inverse-side reference
+            locationUtilizerEvent.setDeviceList(referencedDeviceList);
+            locationUtilizerEvent.setLocationList(List.of(location));
+            locationUtilizerEvent.setUtilizerList(List.of(newUtilizer, locationUtilizerEvent.getOldUtilizer()));
 
             eventPersist(eventForm, locationUtilizerEvent);
-
-            resourceService.updateDeviceUtilizer(deviceIdList, newUtilizer);
-        }
-        else {
+        } else {
             throw new NoSuchElementException();
         }
         // event persist
@@ -355,16 +359,18 @@ public final class EventServiceImpl implements EventService {
                 device.setLocation(destinationLocation);
                 device.setUtilizer(destinationUtilizer);
             }
-            deviceMovementEvent.setDeviceList(referencedDeviceList);
 
-   /*     List<Long> deviceIdList = referencedDeviceList
-                .stream()
-                .map(Device::getId)
-                .toList();*/
+            // many to many for inverse-side reference
+            deviceMovementEvent.setDeviceList(referencedDeviceList);
+            deviceMovementEvent.setLocationList(List.of(destinationLocation, deviceMovementEvent.getSource()));
+            List<Utilizer> utilizerList = new ArrayList<>();
+            for (Integer utilizerId : affectedUtilizerIdList) {
+                utilizerList.add(resourceService.getReferencedUtilizer(utilizerId));
+            }
+            deviceMovementEvent.setUtilizerList(utilizerList);
 
             eventPersist(eventForm, deviceMovementEvent);
-        }
-        else {
+        } else {
             throw new NoSuchElementException();
         }
         //     resourceService.updateDeviceLocation(deviceIdList, destinationUtilizer, destinationLocation);
@@ -390,8 +396,7 @@ public final class EventServiceImpl implements EventService {
             deviceUtilizerEvent.setDeviceList(List.of(device));
 
             eventPersist(eventForm, deviceUtilizerEvent);
-        }
-        else {
+        } else {
             throw new NoSuchElementException();
         }
     }
