@@ -1,7 +1,11 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.center.*;
-import ir.tic.clouddc.resource.*;
+import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.center.Room;
+import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.ResourceService;
+import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
@@ -16,7 +20,6 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 @Controller
 @RequestMapping("/event")
@@ -152,33 +155,11 @@ public class EventController {
     }
 
 
-    @GetMapping("/category")
-    public String eventForm(Model model) {
-        return "eventLandingPage";   /// 1. Category Selection
-    }
-
-    @GetMapping("/category/target/{target}/form")
-    public String showEventLandingForm(Model model, @PathVariable String target) {
-        EventLandingForm eventLandingForm = new EventLandingForm();
-        eventLandingForm.setTarget(target);
-        model.addAttribute("eventLandingForm", eventLandingForm);
-
-        switch (target) {
-            case "Center" -> {
-                List<CenterService.CenterIdNameProjection> centerIdAndNameList = eventService.getCenterIdAndNameList();
-                model.addAttribute("centerIdAndNameList", centerIdAndNameList);
-            }
-            case "Location" -> model.addAttribute("centerList", eventService.getCenterList());
-        }
-
-        return "eventLandingForm";    /// 2.    Input desired serial number (device) OR choose location for status OR center for visit
-    }
-
     @PostMapping("/form/detail")
     public String showEventStatusModel(Model model
             , @Nullable @ModelAttribute("eventLandingForm") EventLandingForm eventLandingForm
             , @Nullable EventLandingForm fromImportantDevicePmForm) throws SQLException {
-
+/*
         if (!Objects.isNull(eventLandingForm)) {
             switch (eventLandingForm.getTarget()) {
                 case "Center" -> {
@@ -237,28 +218,11 @@ public class EventController {
             model.addAttribute("eventLandingForm", eventLandingForm);
         }
 
+
+ */
         return "eventStatusForm";   /// 3.  update status form
     }
 
-    @PostMapping("/register")
-    public String eventRegisterPost(Model model, @ModelAttribute("eventRegisterForm") EventLandingForm eventLandingForm   /// general event
-            , @Nullable @ModelAttribute("deviceStatusForm") DeviceStatusForm deviceStatusForm   /// device status event
-            , @Nullable @ModelAttribute("locationStatusForm") LocationStatusForm locationStatusForm /// location status event
-            , @RequestParam("attachment") MultipartFile file) throws IOException, SQLException {
-
-        if (!file.isEmpty()) {
-            if (!Objects.isNull(locationStatusForm)) {
-                locationStatusForm.setFile(file);
-            } else if (!Objects.isNull(deviceStatusForm)) {
-                deviceStatusForm.setFile(file);
-            } else {
-                eventLandingForm.setFile(file);
-            }
-        }
-        //   eventService.eventRegister(eventLandingForm, deviceStatusForm, locationStatusForm);         //    4.  Event register
-        eventService.getEventList();
-        return "redirect:eventListView";
-    }
 
     @GetMapping("/category/{categoryId}/list")
     public String showCategoryEventList(Model model, @PathVariable int categoryId) {

@@ -133,7 +133,7 @@
                                     تعریف شده اند و تاکنون در مکانی نصب نشده اند در این لیست قابل مشاهده و انتخاب هستند.
                                     </label>
                                     <select class="multiple-select" data-placeholder="Choose anything"
-                                            multiple="multiple" th:field="*{deviceIdList}">
+                                            multiple="multiple" th:field="*{deviceIdList}" required="required">
                                         <option th:each="device : ${deviceList}"
                                                 th:value="${device.getId()}"
                                                 th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
@@ -144,7 +144,7 @@
                                 <div th:if="${categoryId == 4}" class="mb-3">
                                     <label class="form-label">تجهیزات مدنظر جهت جابجایی را انتخاب کنید</label>
                                     <select class="multiple-select" data-placeholder="Choose anything"
-                                            multiple="multiple" th:field="*{deviceIdList}">
+                                            multiple="multiple" th:field="*{deviceIdList}" required="required">
                                         <option th:each="device : ${deviceList}"
                                                 th:value="${device.getId()}"
                                                 th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()

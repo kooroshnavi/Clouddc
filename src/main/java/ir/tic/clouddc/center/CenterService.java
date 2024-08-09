@@ -3,7 +3,6 @@ package ir.tic.clouddc.center;
 import ir.tic.clouddc.event.LocationCheckList;
 import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.report.DailyReport;
-import ir.tic.clouddc.resource.Utilizer;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
@@ -15,8 +14,6 @@ public interface CenterService {
     Location getRefrencedLocation(Long locationId);
 
     List<Location> getLocationListExcept(List<Long> locationId);
-
-    void updateLocationUtilizer(Long locationId, Utilizer newUtilizer);
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {

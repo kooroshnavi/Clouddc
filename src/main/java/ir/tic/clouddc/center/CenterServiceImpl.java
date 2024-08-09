@@ -7,7 +7,6 @@ import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
-import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.resource.UtilizerRepository;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
@@ -20,7 +19,6 @@ import org.springframework.ui.Model;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -39,22 +37,19 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationPmCatalogRepository locationPmCatalogRepository;
 
-    private final LocationStatusRepository locationStatusRepository;
-
     private final UtilizerRepository utilizerRepository;
 
 
 
 
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository, UtilizerRepository utilizerRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, UtilizerRepository utilizerRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
         this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
         this.locationPmCatalogRepository = locationPmCatalogRepository;
-        this.locationStatusRepository = locationStatusRepository;
         this.utilizerRepository = utilizerRepository;
     }
 /*
@@ -87,34 +82,6 @@ public class CenterServiceImpl implements CenterService {
         return locationRepository.getLocationListNotIn(locationId);
     }
 
-    @Override
-    public void updateLocationUtilizer(Long locationId, Utilizer newUtilizer) {
-        var optionalLocation = locationRepository.findById(locationId);
-        if (optionalLocation.isPresent()) {
-            log.info("Updating utilizer");
-            Location location = optionalLocation.get();
-            log.info(String.valueOf(location.getId()));
-
-            if (location instanceof Rack rack) {
-                log.info("Instance of Rack found");
-                rack.setUtilizer(newUtilizer);
-                locationRepository.saveAndFlush(rack);
-            } else if (location instanceof Room room) {
-                log.info("Instance of Room found");
-                room.setUtilizer(newUtilizer);
-               // locationRepository.saveAndFlush(room);
-            } else if (location instanceof Hall hall) {
-                log.info("Instance of Hall found!!!");
-            }
-            else {
-                log.warn(String.valueOf(location.getClass()));
-                log.info("Instance of unknown location");
-            }
-        } else {
-            log.info("No location found");
-            throw new NoSuchElementException();
-        }
-    }
 
     @Override
     public List<LocationPmCatalog> getLocationCatalogList(Location baseLocation) {
@@ -123,8 +90,8 @@ public class CenterServiceImpl implements CenterService {
 
     @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
-        var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
-        if (locationStatus.isPresent()) {
+        //var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
+     /*   if (locationStatus.isPresent()) {
             return locationStatus.get();
         } else {
             LocationStatus defaultLocationStatus = new LocationStatus();
@@ -132,7 +99,8 @@ public class CenterServiceImpl implements CenterService {
             defaultLocationStatus.setVentilation(true);
             defaultLocationStatus.setPower(true);
             return defaultLocationStatus;
-        }
+        }*/
+        return null;
     }
 
     @Override
@@ -189,7 +157,7 @@ public class CenterServiceImpl implements CenterService {
     public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationCheckList event) {
         List<LocationStatus> locationStatusList = new ArrayList<>();
         var location = locationStatusForm.getLocation();
-        var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();
+       /* var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();
         if (currentStatus.isPresent()) {
             currentStatus.get().setActive(false);
             locationStatusList.add(currentStatus.get());
@@ -205,7 +173,11 @@ public class CenterServiceImpl implements CenterService {
         locationStatusList.add(locationStatus);
 
         locationStatusRepository.saveAllAndFlush(locationStatusList);
+
+        */
     }
+
+
 
 
     @Override

@@ -30,7 +30,6 @@ public final class EventServiceImpl implements EventService {
     private final EventDetailRepository eventDetailRepository;
     private final EventCategoryRepository eventCategoryRepository;
 
-    private final LocationStatusEventRepository locationStatusEventRepository;
     private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
@@ -51,7 +50,7 @@ public final class EventServiceImpl implements EventService {
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, LocationStatusEventRepository locationStatusEventRepository, ReportService reportService
+            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, ReportService reportService
             , CenterService centerService
             , PersonService personService
             , FileService fileService,
@@ -59,7 +58,6 @@ public final class EventServiceImpl implements EventService {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
-        this.locationStatusEventRepository = locationStatusEventRepository;
 
         this.reportService = reportService;
         this.centerService = centerService;
@@ -87,13 +85,14 @@ public final class EventServiceImpl implements EventService {
 
     @Override
     public DeviceStatus getCurrentDeviceStatus(Device device) {
-        return resourceService.getCurrentDeviceStatus(device);
+        return null;
+        //resourceService.getCurrentDeviceStatus(device);
     }
 
     @Override
     public List<LocationCheckList> getLocationEventList(Location baseLocation) {
 
-        return locationStatusEventRepository.findAllByLocation(baseLocation);
+        return null;
     }
 
     @Override
@@ -195,7 +194,6 @@ public final class EventServiceImpl implements EventService {
                     room.setUtilizer(utilizer);
                     newDeviceInstallationEvent.setInstallationLocation(room);
                 }
-
             } else {
                 throw new NoSuchElementException();
             }
@@ -214,8 +212,8 @@ public final class EventServiceImpl implements EventService {
             }
         }
         newDeviceInstallationEvent.setDeviceList(referencedDeviceList);
-        newDeviceInstallationEvent.setLocationList(List.of(location));
-        newDeviceInstallationEvent.setUtilizerList(List.of(utilizer));
+        newDeviceInstallationEvent.setLocationList(List.of(location)); // new device installed @ this location
+        newDeviceInstallationEvent.setUtilizerList(List.of(utilizer)); // new device installed for this utilizer
 
         Map<Integer, Integer> utilizerBalance = new HashMap<>();
         utilizerBalance.put(utilizer.getId(), referencedDeviceList.size());
@@ -360,11 +358,11 @@ public final class EventServiceImpl implements EventService {
                 device.setUtilizer(destinationUtilizer);
             }
 
-            // many to many for inverse-side reference
+            // many to many for inverse-side references
             deviceMovementEvent.setDeviceList(referencedDeviceList);
             deviceMovementEvent.setLocationList(List.of(destinationLocation, deviceMovementEvent.getSource()));
             List<Utilizer> utilizerList = new ArrayList<>();
-            for (Integer utilizerId : affectedUtilizerIdList) {
+            for (Integer utilizerId : deviceMovementEvent.getUtilizerBalance().keySet()) {
                 utilizerList.add(resourceService.getReferencedUtilizer(utilizerId));
             }
             deviceMovementEvent.setUtilizerList(utilizerList);
@@ -393,7 +391,10 @@ public final class EventServiceImpl implements EventService {
             List<Integer> affectedUtilizerIdList = List.of(device.getUtilizer().getId());
             deviceUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), affectedUtilizerIdList));
             device.setUtilizer(newUtilizer);
+
+            deviceUtilizerEvent.setLocationList(List.of(device.getLocation()));
             deviceUtilizerEvent.setDeviceList(List.of(device));
+            deviceUtilizerEvent.setUtilizerList(List.of(newUtilizer, deviceUtilizerEvent.getOldUtilizer()));
 
             eventPersist(eventForm, deviceUtilizerEvent);
         } else {

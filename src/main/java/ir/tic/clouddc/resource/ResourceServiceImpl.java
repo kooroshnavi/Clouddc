@@ -29,17 +29,15 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final PersonService personService;
 
-    private final DeviceStatusRepository deviceStatusRepository;
 
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, DeviceStatusRepository deviceStatusRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
         this.deviceRepository = deviceRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
-        this.deviceStatusRepository = deviceStatusRepository;
     }
 
     @Override
@@ -164,7 +162,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public DeviceStatus getCurrentDeviceStatus(Device device) {
-        var currentStatus = deviceStatusRepository.findByDeviceAndActive(device, true);
+      /*  var currentStatus = deviceStatusRepository.findByDeviceAndActive(device, true);
         if (currentStatus.isPresent()) {
             return currentStatus.get();
         } else {
@@ -176,7 +174,8 @@ public class ResourceServiceImpl implements ResourceService {
             defaultDeviceStatus.setStorage(true);
             defaultDeviceStatus.setPort(true);
             return defaultDeviceStatus;
-        }
+        }*/
+        return null;
     }
 
 
