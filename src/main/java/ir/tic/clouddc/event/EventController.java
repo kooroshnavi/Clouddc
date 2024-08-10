@@ -55,7 +55,7 @@ public class EventController {
                         List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerList(List.of(0));
                         model.addAttribute("utilizerList", utilizerList);
                     }
-                    List<ResourceService.DeviceIdSerialCategory_Projection1> newDeviceList = eventService.getNewDeviceList();
+                    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> newDeviceList = eventService.getNewDeviceList();
 
                     model.addAttribute("currentUtilizer", currentUtilizer);
                     model.addAttribute("location", location);
@@ -94,7 +94,7 @@ public class EventController {
                     var location = optionalLocation.get();
                     List<Rack> rackList = new ArrayList<>();
                     List<Room> roomList = new ArrayList<>();
-                    List<ResourceService.DeviceIdSerialCategory_Projection1> locationDeviceList = eventService.getLocationDeviceList(targetId);
+                    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> locationDeviceList = eventService.getLocationDeviceList(targetId);
                     List<Location> destinationList = eventService.getDeviceMovementEventData_2(targetId);
                     for (Location destinationLocation : destinationList) {
                         if (destinationLocation instanceof Rack rack) {
@@ -135,7 +135,7 @@ public class EventController {
 
     @PostMapping("/register2")
     public String register2(Model model, @RequestParam("attachment") MultipartFile file
-            , @ModelAttribute("deviceMovementEventForm") EventForm eventForm) throws IOException {
+            , @ModelAttribute("eventForm") EventForm eventForm) throws IOException {
 
         var nextDue = eventForm.getDate();
         var georgianDate = LocalDate.parse(nextDue);

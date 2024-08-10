@@ -30,7 +30,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>فایل های آپلود شده کاربر</title>
+    <title>ثبت تجهیز جدید</title>
 </head>
 
 <body>
@@ -73,7 +73,8 @@
                 </h6>
                 <hr/>
                 <h6 class="mb-0 text-uppercase" align="center">
-                    <strong class="mb-0 text-bg-primary">همکار گرامی، جهت مشاهده و انتخاب تجهیزات در فرم نصب تجهیزات جدید، ابتدا می بایست مشخصات آن را در فرم ذیل ثبت نمایید.</strong>
+                    <strong class="mb-0 text-bg-primary">همکار گرامی، جهت مشاهده و انتخاب تجهیزات در فرم نصب تجهیزات
+                        جدید، ابتدا می بایست مشخصات آن را در فرم ذیل ثبت نمایید.</strong>
                 </h6>
                 <div class="d-flex align-items-hall">
                 </div>
@@ -81,93 +82,95 @@
 
                 <div class="card-body">
 
-                    <form class="row g-lg-3" th:action="@{/event/register2}" th:object="${eventForm}"
+                    <form class="row g-lg-3" th:action="@{/resource/register}" th:object="${deviceRegisterForm}"
                           enctype="multipart/form-data" method="POST">
-
-                        <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
 
                         <div>
                             <label for="search">انتخاب نوع تجهیز: </label><select id="search" name="state">
-                                <option value="" class="selected">نوع تجهیز</option>
-                                <option value="Srv">سرور</option>
-                                <option value="Sw">سوئیچ</option>
-                                <option value="Fw">فایروال</option>
-                                <option value="Enc">انکلوژر</option>
-                            </select>
+                            <option value="" class="selected">نوع تجهیز</option>
+                            <option value="Srv">سرور</option>
+                            <option value="Sw">سوئیچ</option>
+                            <option value="Fw">فایروال</option>
+                            <option value="Enc">انکلوژر</option>
+                        </select>
                         </div>
 
-                        <div id="Srv"> <em>مدل سرور:</em>
-                            <select class="single-select" th:field="*{deviceMovement_destLocId}">
+                        <div id="Srv"><em>مدل سرور:</em>
+                            <select class="single-select" th:field="*{deviceCategoryId}">
 
-                                <option th:each="room : ${roomList}"
-                                        th:value="${room.id}"
-                                        th:text="${room.locationCategory.category + ' - ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name + room.getId()}">
+                                <option th:each="category1 : ${deviceCategoryList}"
+                                    th:if="${category1.categoryId == 5}"    th:value="${category1.id}"
+                                        th:text="${category1.id + ' - ' + category1.vendor + ' - ' + category1.model + ' - ' + category1.factorSize + ' ' + category1.factor}">
                                 </option>
 
                             </select>
                         </div>
 
-                        <div id="Sw"> <em>مدل سوئیچ:</em>
-                            <select>
-                                <option value="item1">GP</option>
-                                <option value="item2">Allied Health</option>
-                                <option value="item3">Specialist</option>
+                        <div id="Sw"><em>مدل سوئیچ:</em>
+                            <select class="single-select" th:field="*{deviceCategoryId}">
+
+                                <option th:each="category2 : ${deviceCategoryList}"
+                                        th:if="${category2.categoryId == 6}"    th:value="${category2.id}"
+                                        th:text="${category2.id + ' - ' + category2.vendor + ' - ' + category2.model}">
+                                </option>
+
                             </select>
                         </div>
 
-                        <div id="Fw"> <em>مدل فایروال:</em>
-                            <select>
-                                <option value="item1">GP</option>
-                                <option value="item2">Allied Health</option>
-                                <option value="item3">Specialist</option>
+                        <div id="Fw"><em>مدل فایروال:</em>
+                            <select class="single-select" th:field="*{deviceCategoryId}">
+
+                                <option th:each="category3 : ${deviceCategoryList}"
+                                        th:if="${category3.categoryId == 7}"    th:value="${category3.id}"
+                                        th:text="${category3.id + ' - ' + category3.vendor + ' - ' + category3.model}">
+                                </option>
+
                             </select>
                         </div>
 
-                        <div id="Enc"> <em>مدل انکلوژر:</em>
-                            <select>
-                                <option value="item1">GP</option>
-                                <option value="item2">Allied Health</option>
-                                <option value="item3">Specialist</option>
+                        <div id="Enc"><em>مدل انکلوژر:</em>
+                            <select class="single-select" th:field="*{deviceCategoryId}">
+
+                                <option th:each="category4 : ${deviceCategoryList}"
+                                        th:if="${category4.categoryId == 8}"    th:value="${category4.id}"
+                                        th:text="${category4.id + ' - ' + category4.vendor + ' - ' + category4.model + ' - ' + category4.factorSize + ' ' + category4.factor}">
+                                </option>
+
                             </select>
                         </div>
 
-                        <div class="col-12">
-                            <label class="form-label">توضیحات</label>
-                            <textarea class="form-control"
-                                      placeholder="توضیحات پیرامون این تجهیز (اختیاری)"
-                                      rows="4"
-                                      cols="4"></textarea>
+                        <div class="mb-3">
+                        <label for="input" class="form-check">شماره سریال تجهیز</label>
+                        <input type="text" class="form-control" id="input" maxlength="40" required="required" dir="ltr" placeholder="SerialNumber"
+                               onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                               oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
                         </div>
-                        <hr/>
-
-                        <div class="col-12">
-                            <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
-                            <input class="form-control" type="file" name="attachment" id="attachment">
-                        </div>
-                        <hr/>
 
                         <div class="col">
+                            <button type="submit" class="btn btn-dark">تایید
+                            </button>
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-warning" data-bs-toggle="modal"
-                                    data-bs-target="#exampleWarningModal">ثبت
+                                    data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید
                             </button>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
-                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                <div class="modal-dialog modal-lg modal-dialog">
                                     <div class="modal-content bg-warning">
                                         <div class="modal-header border-dark">
-                                            <h5 class="modal-title text-dark">همکار گرامی، پس از ثبت رخداد</h5>
+                                            <h5 class="modal-title text-dark">همکار گرامی</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                     aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-dark">
-                                            <p>مکان و بهره بردار تجهیزات انتخاب شده جهت نصب؛ طبق اطلاعات فرم بروز می شود.</p>
+                                            <p>لطفا از مدل انتخابی و شماره سریال ثبت شده مطمئن شوید.</p>
+                                            <p>پس از تایید جهت ثبت نهایی تجهیز (اختصاص مکان و بهره بردار) به صفحه رک یا اتاق مربوطه مراجعه و از طریق گزینه 'نصب تجهیزات جدید' اقدام نمایید.</p>
                                         </div>
                                         <div class="modal-footer border-dark">
                                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                 بستن
                                             </button>
-                                            <button type="submit" class="btn btn-dark">ثبت رخداد
+                                            <button type="submit" class="btn btn-dark">تایید
                                             </button>
                                         </div>
                                     </div>
@@ -175,54 +178,42 @@
                             </div>
                         </div>
                         <hr/>
-
                     </form>
 
 
-
-
-
-
-
+                    <h6 class="mb-0 text-uppercase" align="center">
+                        <strong>اطلاعات تجهیزات ذیل پس از یک هفته در صورت عدم ثبت مکان نصب؛ حذف خواهد شد.</strong>
+                    </h6>
                     <table class="table mb-0">
                         <thead class="table-dark">
                         <tr>
                             <th>ردیف</th>
                             <th>نوع</th>
-                            <th>شماره سریال</th>
                             <th>مدل</th>
+                            <th>شماره سریال</th>
                             <th>وضعیت</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        <tr th:each="metadata, iter : ${metadataList}">
+                        <tr th:each="device, iter : ${unassignedDeviceList}">
 
                             <td th:text="${iter.count}"></td>
 
-                            <td th:switch="${metadata.type}">
-                                <div th:case="*"
-                                     class="d-flex align-items-hall">
-                                    <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
-                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                            <td>
+                                <div th:text="${device.category}"
+                                     class="d-flex align-items-center">
                                 </div>
                             </td>
 
-                            <td th:text="${metadata.persianUploadDate}"/>
+                            <td th:if="${device.categoryId == 5}" th:text="${device.vendor + ' - ' + device.model + ' - ' + device.factorSize + ' ' + device.factor}"/>
+                            <td th:if="${device.categoryId != 5}" th:text="${device.vendor + ' - ' + device.model}"/>
 
-                            <td th:if="${not metadata.enabled}" th:text="${metadata.persianRemoveDate}"/>
-                            <td th:if="${metadata.enabled}">فعال</td>
+                            <td th:text="${device.serialNumber}"></td>
 
-                            <td th:if="${metadata.enabled}">
-                                <a th:href="@{/document/{metadataId}/disable (metadataId=${metadata.id})}"
-                                   class="font-weight-bold text-bg-danger">غیرفعالسازی فایل</a>
+                            <td>
+                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت نهایی</button>
                             </td>
-                            <td th:if="${not metadata.enabled}">
-                                <button type="button" class="btn btn-outline-warning" disabled="disabled">در انتظار حذف
-                                </button>
-                            </td>
-
                         </tr>
                         </tbody>
                     </table>
@@ -268,9 +259,9 @@
 <script src="/panel/assets/js/app.js"></script>
 
 <script>
-    $(document).ready(function() {
+    $(document).ready(function () {
         hideAll();
-        $("#search").change(function(e) {
+        $("#search").change(function (e) {
             hideAll();
             $(e.target.options).removeClass();
             var $selectedOption = $(e.target.options[e.target.options.selectedIndex]);
@@ -284,6 +275,26 @@
         $("#Sw").hide();
         $("#Fw").hide();
         $("#Enc").hide();
+    }
+</script>
+
+<script>
+    function clsAlphaNoOnly(e) {  // Accept only alpha numerics, no special characters
+        var regex = new RegExp("^[a-zA-Z0-9]+$");
+        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+        if (str === 32) {
+            return false;
+        }
+        if (regex.test(str)) {
+            return true;
+        }
+
+        e.preventDefault();
+        return false;
+    }
+
+    function clsAlphaNoOnly2() {  // Accept only alpha numerics, no special characters
+        return clsAlphaNoOnly(this.event); // window.event
     }
 </script>
 

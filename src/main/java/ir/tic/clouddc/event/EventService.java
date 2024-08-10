@@ -61,7 +61,7 @@ public interface EventService {
 
     List<LocationCheckList> getLocationEventList(Location baseLocation);
 
-    List<ResourceService.DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId);
+    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceList(Long locationId);
 
     List<Location> getDeviceMovementEventData_2(Long locationId);
 
@@ -69,5 +69,5 @@ public interface EventService {
 
     Device getReferencedDevice(Long deviceId);
 
-    List<ResourceService.DeviceIdSerialCategory_Projection1> getNewDeviceList();
+    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
 }

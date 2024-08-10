@@ -2,15 +2,17 @@ package ir.tic.clouddc.resource;
 
 
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/resource")
+@Slf4j
 public class ResourceController {
 
     private final ResourceService resourceService;
@@ -46,10 +48,30 @@ public class ResourceController {
     }
 
     @GetMapping("/device/unassigned")
-    public String newDeviceView(Model model){
+    public String newDeviceView(Model model) {
+
+        List<DeviceCategory> deviceCategoryList = resourceService.getdeviceCategoryList();
+        List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> unassignedDeviceList = resourceService.getNewDeviceList();
+
+        model.addAttribute("deviceRegisterForm", new DeviceRegisterForm());
+        model.addAttribute("deviceCategoryList", deviceCategoryList);
+        model.addAttribute("unassignedDeviceList", unassignedDeviceList);
 
         return "newDeviceView";
+    }
 
+    @PostMapping("/register")
+    public String registerDevice(@ModelAttribute("deviceRegisterForm") DeviceRegisterForm deviceRegisterForm) {
+
+        boolean exist = resourceService.checkDeviceExistence(deviceRegisterForm.getSerialNumber());
+
+        if (!exist) {
+            log.info("Registering new device");
+        }
+
+        log.info(deviceRegisterForm.toString());
+
+        return "redirect:/resource/device/unassigned";
     }
 
 }

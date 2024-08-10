@@ -13,15 +13,24 @@ public interface DeviceRepository extends JpaRepository<Device, Long> {
 
     Optional<Device> findBySerialNumber(String serialNumber);
 
-    @Query("select device.id as id, device.serialNumber as serialNumber, device.deviceCategory.category as category, device.deviceCategory.model as model" +
-            " from Device device" +
-            " where device.location.id = :locationId")
-    List<ResourceService.DeviceIdSerialCategory_Projection1> getProjection2ForLocationDeviceList(@Param("locationId") Long locationId);
+    boolean existsBySerialNumber(String serialNumber);
 
     @Query("select device.id as id, device.serialNumber as serialNumber, device.deviceCategory.category as category, device.deviceCategory.model as model" +
             " from Device device" +
+            " where device.location.id = :locationId")
+    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getProjection2ForLocationDeviceList(@Param("locationId") Long locationId);
+
+    @Query("select device.id as id," +
+            " device.serialNumber as serialNumber," +
+            " device.deviceCategory.category as category," +
+            " device.deviceCategory.model as model," +
+            " device.deviceCategory.vendor as vendor," +
+            " device.deviceCategory.factor as factor," +
+            " device.deviceCategory.factorSize as factorSize," +
+            " device.deviceCategory.categoryId as categoryId" +
+            " from Device device" +
             " where device.utilizer.id = :unassignedId")
-    List<ResourceService.DeviceIdSerialCategory_Projection1> getProjection2ForNewDeviceList(@Param("unassignedId") Integer unassignedUtilizerId);
+    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getProjection2ForNewDeviceList(@Param("unassignedId") Integer unassignedUtilizerId);
 
 
     @Query("select" +

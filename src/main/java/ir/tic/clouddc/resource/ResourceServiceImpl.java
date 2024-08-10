@@ -21,6 +21,8 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final DeviceRepository deviceRepository;
 
+    private final DeviceCategoryRepository deviceCategoryRepository;
+
     private final CenterService centerService;
 
     private final UtilizerRepository utilizerRepository;
@@ -32,8 +34,9 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, DeviceCategoryRepository deviceCategoryRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
         this.deviceRepository = deviceRepository;
+        this.deviceCategoryRepository = deviceCategoryRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
@@ -41,7 +44,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<DeviceIdSerialCategory_Projection1> getLocationDeviceListProjection(Long locationId) {
+    public List<DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceListProjection(Long locationId) {
        return deviceRepository.getProjection2ForLocationDeviceList(locationId);
     }
 
@@ -56,13 +59,23 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<DeviceIdSerialCategory_Projection1> getNewDeviceList() {
+    public List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
         return deviceRepository.getProjection2ForNewDeviceList(1001);
     }
 
     @Override
     public List<Device> getLocationDeviceList(Long locationId) {
         return deviceRepository.getLocationDeviceList(locationId);
+    }
+
+    @Override
+    public List<DeviceCategory> getdeviceCategoryList() {
+        return deviceCategoryRepository.getList();
+    }
+
+    @Override
+    public boolean checkDeviceExistence(String serialNumber) {
+        return deviceRepository.existsBySerialNumber(serialNumber);
     }
 
     @Override

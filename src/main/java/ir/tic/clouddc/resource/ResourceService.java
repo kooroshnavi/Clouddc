@@ -9,17 +9,21 @@ import java.util.Optional;
 
 public interface ResourceService {
 
-    List<DeviceIdSerialCategory_Projection1> getLocationDeviceListProjection(Long locationId);
+    List<DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceListProjection(Long locationId);
 
     Utilizer getReferencedUtilizer(Integer utilizerId);
 
     List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
 
-    List<DeviceIdSerialCategory_Projection1> getNewDeviceList();
+    List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
 
     List<Device> getLocationDeviceList(Long locationId);
 
-    interface DeviceIdSerialCategory_Projection1 {
+    List<DeviceCategory> getdeviceCategoryList();
+
+    boolean checkDeviceExistence(String serialNumber);
+
+    interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 
         String getSerialNumber();
@@ -27,6 +31,14 @@ public interface ResourceService {
         String getCategory();
 
         String getModel();
+
+        String getVendor();
+
+        String getFactor();
+
+        Integer getFactorSize();
+
+        Integer getCategoryId();
     }
 
     interface DeviceIdUtilizerId_Projection2 {

@@ -94,7 +94,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ResourceService.DeviceIdSerialCategory_Projection1> getLocationDeviceList(Long locationId) {
+    public List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceList(Long locationId) {
         return resourceService.getLocationDeviceListProjection(locationId);
     }
 
@@ -114,7 +114,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ResourceService.DeviceIdSerialCategory_Projection1> getNewDeviceList() {
+    public List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
         return resourceService.getNewDeviceList();
     }
 
