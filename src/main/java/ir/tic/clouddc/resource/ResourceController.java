@@ -45,4 +45,11 @@ public class ResourceController {
         return "404";
     }
 
+    @GetMapping("/device/unassigned")
+    public String newDeviceView(Model model){
+
+        return "newDeviceView";
+
+    }
+
 }

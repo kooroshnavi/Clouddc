@@ -36,8 +36,6 @@ public final class EventServiceImpl implements EventService {
     private final FileService fileService;
     private final LogService logService;
     private final ResourceService resourceService;
-
-
     private static final int VISIT_EVENT_CATEGORY_ID = 1;
     private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
