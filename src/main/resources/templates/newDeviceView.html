@@ -7,7 +7,10 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
@@ -35,6 +38,18 @@
 
 <body>
 
+<script th:if="${newDevice}">
+    document.addEventListener('DOMContentLoaded', function() {
+        round_success_noti();
+    });
+</script>
+
+<script th:if="${exist}">
+    document.addEventListener('DOMContentLoaded', function() {
+        warning_noti();
+    });
+</script>
+
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -49,7 +64,7 @@
     <!--start content-->
     <main class="page-content">
         <!--breadcrumb-->
-        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
             <div class="breadcrumb-title pe-3">منابع</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
@@ -76,65 +91,33 @@
                     <strong class="mb-0 text-bg-primary">همکار گرامی، جهت مشاهده و انتخاب تجهیزات در فرم نصب تجهیزات
                         جدید، ابتدا می بایست مشخصات آن را در فرم ذیل ثبت نمایید.</strong>
                 </h6>
-                <div class="d-flex align-items-hall">
+                <div class="d-flex align-items-center">
                 </div>
                 <hr/>
+
+
 
                 <div class="card-body">
 
                     <form class="row g-lg-3" th:action="@{/resource/register}" th:object="${deviceRegisterForm}"
-                          enctype="multipart/form-data" method="POST">
+                          enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
-                        <div>
-                            <label for="search">انتخاب نوع تجهیز: </label><select id="search" name="state">
-                            <option value="" class="selected">نوع تجهیز</option>
-                            <option value="Srv">سرور</option>
-                            <option value="Sw">سوئیچ</option>
-                            <option value="Fw">فایروال</option>
-                            <option value="Enc">انکلوژر</option>
-                        </select>
-                        </div>
-
-                        <div id="Srv"><em>مدل سرور:</em>
+                        <div class="mb-3">
+                            <label class="form-label">انتخاب نوع تجهیز از میان مدل های موجود</label>
                             <select class="single-select" th:field="*{deviceCategoryId}">
 
-                                <option th:each="category1 : ${deviceCategoryList}"
-                                    th:if="${category1.categoryId == 5}"    th:value="${category1.id}"
-                                        th:text="${category1.id + ' - ' + category1.vendor + ' - ' + category1.model + ' - ' + category1.factorSize + ' ' + category1.factor}">
+                                <option th:each="category : ${deviceCategoryList}"
+                                        th:if="${category.categoryId == 5 || category.categoryId == 8}"
+                                        th:value="${category.id}"
+                                        th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model + ' - ' + category.factorSize + ' ' + category.factor}">
                                 </option>
 
-                            </select>
-                        </div>
-
-                        <div id="Sw"><em>مدل سوئیچ:</em>
-                            <select class="single-select" th:field="*{deviceCategoryId}">
-
-                                <option th:each="category2 : ${deviceCategoryList}"
-                                        th:if="${category2.categoryId == 6}"    th:value="${category2.id}"
-                                        th:text="${category2.id + ' - ' + category2.vendor + ' - ' + category2.model}">
+                                <option th:each="category : ${deviceCategoryList}"
+                                        th:if="${category.categoryId != 5 && category.categoryId != 8}"
+                                        th:value="${category.id}"
+                                        th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model}">
                                 </option>
 
-                            </select>
-                        </div>
-
-                        <div id="Fw"><em>مدل فایروال:</em>
-                            <select class="single-select" th:field="*{deviceCategoryId}">
-
-                                <option th:each="category3 : ${deviceCategoryList}"
-                                        th:if="${category3.categoryId == 7}"    th:value="${category3.id}"
-                                        th:text="${category3.id + ' - ' + category3.vendor + ' - ' + category3.model}">
-                                </option>
-
-                            </select>
-                        </div>
-
-                        <div id="Enc"><em>مدل انکلوژر:</em>
-                            <select class="single-select" th:field="*{deviceCategoryId}">
-
-                                <option th:each="category4 : ${deviceCategoryList}"
-                                        th:if="${category4.categoryId == 8}"    th:value="${category4.id}"
-                                        th:text="${category4.id + ' - ' + category4.vendor + ' - ' + category4.model + ' - ' + category4.factorSize + ' ' + category4.factor}">
-                                </option>
 
                             </select>
                         </div>
@@ -146,9 +129,8 @@
                                oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
                         </div>
 
+
                         <div class="col">
-                            <button type="submit" class="btn btn-dark">تایید
-                            </button>
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                     data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید
@@ -170,7 +152,7 @@
                                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                 بستن
                                             </button>
-                                            <button type="submit" class="btn btn-dark">تایید
+                                            <button type="submit" id="submit" class="btn btn-dark">تایید
                                             </button>
                                         </div>
                                     </div>
@@ -250,33 +232,22 @@
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+
+<!--notification js -->
+
+
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
+<script src="/panel/assets/js/form-select2.js"></script>
+
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
-
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
-
-<script>
-    $(document).ready(function () {
-        hideAll();
-        $("#search").change(function (e) {
-            hideAll();
-            $(e.target.options).removeClass();
-            var $selectedOption = $(e.target.options[e.target.options.selectedIndex]);
-            $selectedOption.addClass('selected');
-            $('#' + $selectedOption.val()).show();
-        });
-    });
-
-    function hideAll() {
-        $("#Srv").hide();
-        $("#Sw").hide();
-        $("#Fw").hide();
-        $("#Enc").hide();
-    }
-</script>
 
 <script>
     function clsAlphaNoOnly(e) {  // Accept only alpha numerics, no special characters
@@ -288,11 +259,9 @@
         if (regex.test(str)) {
             return true;
         }
-
         e.preventDefault();
         return false;
     }
-
     function clsAlphaNoOnly2() {  // Accept only alpha numerics, no special characters
         return clsAlphaNoOnly(this.event); // window.event
     }
