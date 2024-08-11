@@ -23,6 +23,8 @@ public interface ResourceService {
 
     boolean checkDeviceExistence(String serialNumber);
 
+    void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm);
+
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 

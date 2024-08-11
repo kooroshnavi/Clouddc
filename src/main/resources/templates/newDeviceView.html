@@ -84,7 +84,7 @@
         <div class="card" align="center">
             <div class="card-body">
                 <h6 class="mb-0 text-uppercase" align="center">
-                    <strong>ثبت تجهیزات جدید الورود</strong>
+                    <strong>ثبت تجهیزات جدید الورود به مرکز</strong>
                 </h6>
                 <hr/>
                 <h6 class="mb-0 text-uppercase" align="center">
@@ -163,10 +163,10 @@
                     </form>
 
 
-                    <h6 class="mb-0 text-uppercase" align="center">
+                    <h6 th:if="${not unassignedDeviceList.isEmpty()}" class="mb-0 text-uppercase" align="center">
                         <strong>اطلاعات تجهیزات ذیل پس از یک هفته در صورت عدم ثبت مکان نصب؛ حذف خواهد شد.</strong>
                     </h6>
-                    <table class="table mb-0">
+                    <table th:if="${not unassignedDeviceList.isEmpty()}" class="table mb-0">
                         <thead class="table-dark">
                         <tr>
                             <th>ردیف</th>
@@ -194,7 +194,7 @@
                             <td th:text="${device.serialNumber}"></td>
 
                             <td>
-                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت نهایی</button>
+                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت مکان</button>
                             </td>
                         </tr>
                         </tbody>

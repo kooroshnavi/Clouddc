@@ -24,7 +24,7 @@ function warning_noti() {
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
 		icon: 'bx bx-error',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'خطا در انجام عملیات'
 	});
 }
 
@@ -108,7 +108,7 @@ function round_success_noti() {
 		delayIndicator: false,
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'عملیات با موفقیت انجام شد.'
 	});
 }
 /* Notifications With Images*/

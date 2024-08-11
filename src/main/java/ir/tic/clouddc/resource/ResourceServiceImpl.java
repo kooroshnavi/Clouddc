@@ -10,6 +10,7 @@ import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -20,6 +21,8 @@ import java.util.Optional;
 public class ResourceServiceImpl implements ResourceService {
 
     private final DeviceRepository deviceRepository;
+
+    private final UnassignedDeviceRepository unassignedDeviceRepository;
 
     private final DeviceCategoryRepository deviceCategoryRepository;
 
@@ -34,8 +37,9 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, DeviceCategoryRepository deviceCategoryRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
         this.deviceRepository = deviceRepository;
+        this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
@@ -60,7 +64,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
-        return deviceRepository.getProjection2ForNewDeviceList(1001);
+        return unassignedDeviceRepository.getProjection2ForNewDeviceList();
     }
 
     @Override
@@ -75,7 +79,20 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public boolean checkDeviceExistence(String serialNumber) {
-        return deviceRepository.existsBySerialNumber(serialNumber);
+        boolean deviceExist = deviceRepository.existsBySerialNumber(serialNumber);
+        boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
+
+        return deviceExist || UnassignedDeviceExist;
+    }
+
+    @Override
+    public void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm) {
+        UnassignedDevice unassignedDevice = new UnassignedDevice();
+        unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
+        unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
+        unassignedDevice.setRemovalDate(UtilService.getDATE().plusDays(7));
+
+        unassignedDeviceRepository.saveAndFlush(unassignedDevice);
     }
 
     @Override

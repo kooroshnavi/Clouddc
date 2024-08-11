@@ -28,19 +28,19 @@ public abstract class Device {
     @Column(name = "Priority")
     private boolean priorityDevice;    /// DeviceForm
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "DeviceCategoryID")
     private DeviceCategory deviceCategory;   /// DeviceForm
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;    /// DeviceUtilizerEvent
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "LocationID")
     private Location location;   /// DeviceMovementEvent
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "SupplierID")
     private Supplier supplier;
 

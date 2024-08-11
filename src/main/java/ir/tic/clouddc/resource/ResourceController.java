@@ -9,7 +9,6 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
@@ -69,14 +68,12 @@ public class ResourceController {
 
         if (!exist) {
             log.info("Registering new device");
-            log.info(deviceRegisterForm.toString());
+            resourceService.registerUnassignedDevice(deviceRegisterForm);
             redirectAttributes.addFlashAttribute("newDevice", true);
         }
         else {
             redirectAttributes.addFlashAttribute("exist", true);
         }
-
-
         return "redirect:/resource/device/unassigned";
     }
 
