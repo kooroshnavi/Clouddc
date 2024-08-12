@@ -14,6 +14,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -134,7 +135,7 @@ public class EventController {
     }
 
     @PostMapping("/register2")
-    public String eventRegisterPost(Model model, @RequestParam("attachment") MultipartFile file
+    public String eventRegisterPost(RedirectAttributes redirectAttributes, @RequestParam("attachment") MultipartFile file
             , @ModelAttribute("eventForm") EventForm eventForm) throws IOException {
 
         var nextDue = eventForm.getDate();
@@ -149,11 +150,26 @@ public class EventController {
 
         eventService.eventRegister(eventForm, georgianDate);
 
-        log.info("Event Registered Successfully");
+        redirectAttributes.addFlashAttribute("eventRegisterSuccessful", true);
 
-        return "redirect:/event/list";
+        switch (eventForm.getEventCategoryId()) {
+            case 2, 3 -> {
+                redirectAttributes.addAttribute("locationId", eventForm.getUtilizer_locationId());
+                return "redirect:/center/location/{locationId}/detail";
+            }
+            case 4 -> {
+                redirectAttributes.addAttribute("locationId", eventForm.getDeviceMovement_destLocId());
+                return "redirect:/center/location/{locationId}/detail";
+            }
+            case 5 -> {
+                redirectAttributes.addAttribute("deviceId", eventForm.getUtilizer_deviceId());
+                return "redirect:/resource/device/{deviceId}/detail";
+            }
+            default -> {
+                return "404";
+            }
+        }
     }
-
 
     @PostMapping("/form/detail")
     public String showEventStatusModel(Model model

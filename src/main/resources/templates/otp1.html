@@ -27,7 +27,7 @@
                 <div class="login-wrap p-0">
 
                     <form id="form" class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}"
-                          method="Post">
+                          method="Post" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div th:if="${logout}" class="alert-success">
                             خروج از سیستم انجام شد.
@@ -49,7 +49,7 @@
                         </div>
 
                         <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary submit px-3">بررسی</button>
+                            <button type="submit" id="submit" class="form-control btn btn-primary submit px-3">بررسی</button>
                         </div>
                     </form>
                 </div>

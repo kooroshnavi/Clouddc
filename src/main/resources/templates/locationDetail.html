@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
@@ -37,6 +38,12 @@
 </head>
 
 <body>
+
+<script th:if="${eventRegisterSuccessful}">
+    document.addEventListener('DOMContentLoaded', function() {
+        pos5_success_noti();
+    });
+</script>
 
 
 <!--start wrapper-->
@@ -418,6 +425,11 @@
 <script src="/panel/assets/js/jquery-ui.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<!--notification js -->
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>

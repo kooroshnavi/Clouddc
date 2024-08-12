@@ -103,7 +103,7 @@
                                     <div class="card-body">
 
                                         <form class="row g-3" th:action="@{/pm/update}"
-                                              enctype="multipart/form-data"  th:object="${pmUpdateForm}" method="POST">
+                                              enctype="multipart/form-data"  th:object="${pmUpdateForm}" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
 
                                             <div class="col-12">
@@ -161,7 +161,7 @@
                                                                 <button type="button" class="btn btn-secondary"
                                                                         data-bs-dismiss="modal">لغو
                                                                 </button>
-                                                                <button type="submit" class="btn btn-primary">بروزرسانی
+                                                                <button type="submit" id="submit" class="btn btn-primary">بروزرسانی
                                                                     وظیفه
                                                                 </button>
                                                             </div>

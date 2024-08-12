@@ -87,7 +87,7 @@
 
                             <form class="row g-3" th:action="@{/pm/catalog/register}"
                                   th:object="${catalogForm}"
-                                  method="POST">
+                                  method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                                 <div th:if="${not update}" class="mb-3">
                                     <label class="form-label">انتخاب Pm</label>
@@ -156,7 +156,7 @@
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                         بستن
                                                     </button>
-                                                    <button type="submit" class="btn btn-dark">بروزرسانی</button>
+                                                    <button type="submit" id="submit" class="btn btn-dark">بروزرسانی</button>
                                                 </div>
                                             </div>
                                         </div>
