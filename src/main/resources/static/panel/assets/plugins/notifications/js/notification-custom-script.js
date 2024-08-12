@@ -82,7 +82,7 @@ function round_warning_noti() {
 		icon: 'bx bx-error',
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'خطا در انجام عملیات'
 	});
 }
 
@@ -194,7 +194,7 @@ function pos3_warning_noti() {
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
 		size: 'mini',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'خطا در انجام عملیات'
 	});
 }
 
@@ -216,7 +216,7 @@ function pos5_success_noti() {
 		icon: 'bx bx-check-circle',
 		continueDelayOnInactiveTab: false,
 		position: 'bottom right',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'عملیات با موفقیت انجام شد'
 	});
 }
 /* Animated Notifications*/

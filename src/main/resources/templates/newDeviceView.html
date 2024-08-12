@@ -40,13 +40,13 @@
 
 <script th:if="${newDevice}">
     document.addEventListener('DOMContentLoaded', function() {
-        round_success_noti();
+        pos5_success_noti();
     });
 </script>
 
 <script th:if="${exist}">
     document.addEventListener('DOMContentLoaded', function() {
-        warning_noti();
+        pos3_warning_noti();
     });
 </script>
 
@@ -129,16 +129,23 @@
                                oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
                         </div>
 
+                        <div th:if="${exist}">
+                            <h6 class="mb-0 text-uppercase" align="center">
+                                <strong class="mb-0 text-bg-warning">شماره سریال تکراری است</strong>
+                            </h6>
+                            <br>
+                            <a th:if="${!existedUnassigned}" th:href="@{/resource/device/{deviceId}/detail  (deviceId = ${existedDeviceId})}" th:text="${' جزئیات تجهیز با شماره سریال ' + existedSerialNumber}">مشاهده تجهیز با شماره سریال ارائه شده</a>
+                        </div>
 
                         <div class="col">
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
                                     data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید
                             </button>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog">
-                                    <div class="modal-content bg-warning">
+                                    <div class="modal-content text-bg-primary">
                                         <div class="modal-header border-dark">
                                             <h5 class="modal-title text-dark">همکار گرامی</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal"

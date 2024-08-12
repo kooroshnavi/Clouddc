@@ -74,24 +74,6 @@ public final class EventServiceImpl implements EventService {
         return locationStatusForm;
     }
 
-    @Override
-    public DeviceStatusForm getDeviceStatusForm(Device device) {
-        DeviceStatusForm deviceStatusForm = new DeviceStatusForm();
-        deviceStatusForm.setDevice(device);
-        return deviceStatusForm;
-    }
-
-    @Override
-    public DeviceStatus getCurrentDeviceStatus(Device device) {
-        return null;
-        //resourceService.getCurrentDeviceStatus(device);
-    }
-
-    @Override
-    public List<LocationCheckList> getLocationEventList(Location baseLocation) {
-
-        return null;
-    }
 
     @Override
     public List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceList(Long locationId) {
@@ -126,11 +108,6 @@ public final class EventServiceImpl implements EventService {
     @Override
     public List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList) {
         return resourceService.getUtilizerListExcept(utilizerIdList);
-    }
-
-    @Override
-    public List<Center> getCenterList() {
-        return centerService.getCenterList();
     }
 
     @Override
@@ -198,17 +175,27 @@ public final class EventServiceImpl implements EventService {
         }
 
         List<Device> referencedDeviceList = new ArrayList<>();
-        for (Long deviceId : eventForm.getDeviceIdList()) {
-            var optionalDevice = resourceService.getDevice(deviceId);
-            if (optionalDevice.isPresent()) {
-                var device = optionalDevice.get();
-                device.setUtilizer(utilizer);
-                device.setLocation(location);
-                referencedDeviceList.add(device);
-            } else {
-                throw new NoSuchElementException();
+        Supplier supplier = resourceService.getReferencedDefaultSupplier();
+
+        for (Integer unassignedDeviceId : eventForm.getUnassignedDeviceIdList()) {
+            var unassignedDevice = resourceService.getReferencedUnassignedDevice(unassignedDeviceId);
+            Device device;
+            switch (unassignedDevice.getDeviceCategory().getCategoryId()) {
+                case 5 -> device = new Server();
+                case 6 -> device = new Switch();
+                case 7 -> device = new Firewall();
+                default -> device = new Enclosure();
             }
+            device.setPriorityDevice(false);
+            device.setDeviceCategory(unassignedDevice.getDeviceCategory());
+            device.setSerialNumber(unassignedDevice.getSerialNumber());
+            device.setUtilizer(utilizer);
+            device.setLocation(location);
+            device.setSupplier(supplier);
+
+            referencedDeviceList.add(device);
         }
+
         newDeviceInstallationEvent.setDeviceList(referencedDeviceList);
         newDeviceInstallationEvent.setLocationList(List.of(location)); // new device installed @ this location
         newDeviceInstallationEvent.setUtilizerList(List.of(utilizer)); // new device installed for this utilizer
@@ -218,6 +205,8 @@ public final class EventServiceImpl implements EventService {
         newDeviceInstallationEvent.setUtilizerBalance(utilizerBalance);
 
         eventPersist(eventForm, newDeviceInstallationEvent);
+
+        resourceService.deleteUnassignedList(eventForm.getUnassignedDeviceIdList());
     }
 
     private void eventPersist(EventForm eventForm, Event event) throws IOException {
@@ -504,21 +493,6 @@ public final class EventServiceImpl implements EventService {
         model.addAttribute("person", personService.getCurrentPerson());
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
-    }
-
-    @Override
-    public Optional<Center> getCenter(Integer centerId) {
-        return centerService.getCenter(centerId);
-    }
-
-    @Override
-    public Location getRefrencedLocation(Long locationId) {
-        return centerService.getRefrencedLocation(locationId);
-    }
-
-    @Override
-    public Optional<Device> getDevice(String serialNumber) {
-        return resourceService.getDeviceBySerialNumber(serialNumber);
     }
 
     @Override

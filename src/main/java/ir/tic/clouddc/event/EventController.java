@@ -134,7 +134,7 @@ public class EventController {
     }
 
     @PostMapping("/register2")
-    public String register2(Model model, @RequestParam("attachment") MultipartFile file
+    public String eventRegisterPost(Model model, @RequestParam("attachment") MultipartFile file
             , @ModelAttribute("eventForm") EventForm eventForm) throws IOException {
 
         var nextDue = eventForm.getDate();

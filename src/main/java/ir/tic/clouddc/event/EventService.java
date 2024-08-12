@@ -32,11 +32,6 @@ public interface EventService {
 
     List<Event> getEventList();
 
-    Optional<Center> getCenter(Integer centerId);
-
-    Location getRefrencedLocation(Long locationId);
-    Optional<Device> getDevice(String serialNumber);
-
     long getEventCount();
 
     long getActiveEventCount();
@@ -52,14 +47,6 @@ public interface EventService {
     LocationStatus getCurrentLocationStatus(Location location);
 
     List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList);
-
-    List<Center> getCenterList();
-
-    DeviceStatusForm getDeviceStatusForm(Device device);
-
-    DeviceStatus getCurrentDeviceStatus(Device device);
-
-    List<LocationCheckList> getLocationEventList(Location baseLocation);
 
     List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceList(Long locationId);
 

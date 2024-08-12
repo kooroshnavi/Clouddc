@@ -11,7 +11,8 @@ import java.util.Optional;
 @Repository
 public interface DeviceRepository extends JpaRepository<Device, Long> {
 
-    Optional<Device> findBySerialNumber(String serialNumber);
+    @Query("select d.id from Device d where d.serialNumber = :serialNumber")
+    Optional<Long> getDeviceIdBySerialNumber(@Param("serialNumber") String serialNumber);
 
     boolean existsBySerialNumber(String serialNumber);
 

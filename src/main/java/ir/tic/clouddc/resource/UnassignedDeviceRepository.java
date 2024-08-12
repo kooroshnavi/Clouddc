@@ -11,7 +11,6 @@ public interface UnassignedDeviceRepository extends JpaRepository<UnassignedDevi
 
     boolean existsBySerialNumber(String serialNumber);
 
-
     @Query("select device.id as id," +
             " device.serialNumber as serialNumber," +
             " device.deviceCategory.category as category," +
@@ -22,5 +21,4 @@ public interface UnassignedDeviceRepository extends JpaRepository<UnassignedDevi
             " device.deviceCategory.categoryId as categoryId" +
             " from UnassignedDevice device")
     List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getProjection2ForNewDeviceList();
-
 }

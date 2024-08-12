@@ -25,14 +25,11 @@ public class ResourceController {
 
     @GetMapping("/device/{deviceId}/detail")
     public String showDeviceDetail(Model model, @PathVariable Long deviceId) throws EntityNotFoundException {
-        var device = resourceService.getDevice(deviceId);
-        if (device.isPresent()) {
-            model.addAttribute("device", device.get());
-            model.addAttribute("catalogList", device.get().getDevicePmCatalogList());
-            return "deviceDetail";
-        }
+        var device = resourceService.getReferencedDevice(deviceId);
+        model.addAttribute("device", device);
+        model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
-        return "404";
+        return "deviceDetail";
     }
 
     @GetMapping("/utilizer/{utilizerId}/detail")
@@ -62,7 +59,7 @@ public class ResourceController {
     }
 
     @PostMapping("/register")
-    public String registerDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") DeviceRegisterForm deviceRegisterForm) {
+    public String registerNewDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") DeviceRegisterForm deviceRegisterForm) {
 
         boolean exist = resourceService.checkDeviceExistence(deviceRegisterForm.getSerialNumber());
 
@@ -70,9 +67,16 @@ public class ResourceController {
             log.info("Registering new device");
             resourceService.registerUnassignedDevice(deviceRegisterForm);
             redirectAttributes.addFlashAttribute("newDevice", true);
-        }
-        else {
+        } else {
+            var existedDeviceId = resourceService.getDeviceIdBySerialNumber(deviceRegisterForm.getSerialNumber());
+            if (existedDeviceId.isPresent()) {
+                redirectAttributes.addFlashAttribute("existedDeviceId", existedDeviceId.get());
+                redirectAttributes.addFlashAttribute("existedUnassigned", false);
+            } else {
+                redirectAttributes.addFlashAttribute("existedUnassigned", true);
+            }
             redirectAttributes.addFlashAttribute("exist", true);
+            redirectAttributes.addFlashAttribute("existedSerialNumber", deviceRegisterForm.getSerialNumber());
         }
         return "redirect:/resource/device/unassigned";
     }

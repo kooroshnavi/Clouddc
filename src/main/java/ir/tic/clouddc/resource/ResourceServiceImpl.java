@@ -7,6 +7,7 @@ import ir.tic.clouddc.event.EventLandingForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,6 +27,8 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final DeviceCategoryRepository deviceCategoryRepository;
 
+    private final SupplierRepository supplierRepository;
+
     private final CenterService centerService;
 
     private final UtilizerRepository utilizerRepository;
@@ -35,12 +38,12 @@ public class ResourceServiceImpl implements ResourceService {
     private final PersonService personService;
 
 
-
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
+        this.supplierRepository = supplierRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
@@ -49,7 +52,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceListProjection(Long locationId) {
-       return deviceRepository.getProjection2ForLocationDeviceList(locationId);
+        return deviceRepository.getProjection2ForLocationDeviceList(locationId);
     }
 
     @Override
@@ -96,16 +99,20 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Device validateFormDevice(EventLandingForm eventLandingForm) {
-        Optional<Device> currentDevice = getDeviceBySerialNumber(eventLandingForm.getSerialNumber());
-        return currentDevice.orElseGet(() -> {
-            try {
-                return registerNewDevice(eventLandingForm);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    public UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId) {
+        return unassignedDeviceRepository.getReferenceById(unassignedDeviceId);
     }
+
+    @Override
+    public Supplier getReferencedDefaultSupplier() {
+        return supplierRepository.getReferenceById(1000);
+    }
+
+    @Override
+    public void deleteUnassignedList(List<Integer> assignedIdList) {
+        unassignedDeviceRepository.deleteAllById(assignedIdList);
+    }
+
 
     @Override
     public Optional<Device> getDevice(Long deviceId) {
@@ -151,12 +158,12 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Override
-    public Optional<Device> getDeviceBySerialNumber(String serialNumber) {
-        return deviceRepository.findBySerialNumber(serialNumber);
+    public Optional<Long> getDeviceIdBySerialNumber(String serialNumber) {
+        return deviceRepository.getDeviceIdBySerialNumber(serialNumber);
     }
 
     @Override
-    public Device getReferencedDevice(Long deviceId) {
+    public Device getReferencedDevice(Long deviceId) throws EntityNotFoundException {
         return deviceRepository.getReferenceById(deviceId);
     }
 

@@ -2,7 +2,7 @@ package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
-import ir.tic.clouddc.event.EventLandingForm;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +24,12 @@ public interface ResourceService {
     boolean checkDeviceExistence(String serialNumber);
 
     void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm);
+
+    UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId);
+
+    Supplier getReferencedDefaultSupplier();
+
+    void deleteUnassignedList(List<Integer> unassignedDeviceIdList);
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
@@ -55,14 +61,11 @@ public interface ResourceService {
         String getName();
     }
 
-
-    Device validateFormDevice(EventLandingForm eventLandingForm);
-
     Optional<Device> getDevice(Long deviceId);
 
-    Optional<Device> getDeviceBySerialNumber(String serialNumber);
+    Optional<Long> getDeviceIdBySerialNumber(String serialNumber);
 
-    Device getReferencedDevice(Long deviceId);
+    Device getReferencedDevice(Long deviceId) throws EntityNotFoundException;
 
     Utilizer getUtilizer(int utilizerId);
 
