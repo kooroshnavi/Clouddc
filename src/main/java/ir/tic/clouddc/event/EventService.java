@@ -1,12 +1,10 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.center.Center;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationStatus;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
-import ir.tic.clouddc.resource.DeviceStatus;
 import ir.tic.clouddc.resource.ResourceService;
 import org.springframework.ui.Model;
 
@@ -50,11 +48,13 @@ public interface EventService {
 
     List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceList(Long locationId);
 
-    List<Location> getDeviceMovementEventData_2(Long locationId);
+    List<Location> getLocationListExcept(Long locationId);
 
     Optional<Location> getLocation(Long locationId);
 
     Device getReferencedDevice(Long deviceId);
 
     List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
+
+    List<Location> getLocationList();
 }

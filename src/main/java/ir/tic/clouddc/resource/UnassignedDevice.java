@@ -1,5 +1,6 @@
 package ir.tic.clouddc.resource;
 
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,4 +30,8 @@ public final class UnassignedDevice {
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "DeviceCategoryID")
     private DeviceCategory deviceCategory;
+
+    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PersistenceID")
+    private Persistence persistence;
 }

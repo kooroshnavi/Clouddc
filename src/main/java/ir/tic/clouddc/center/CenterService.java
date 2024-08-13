@@ -15,6 +15,8 @@ public interface CenterService {
 
     List<Location> getLocationListExcept(List<Long> locationId);
 
+    List<Location> getLocationList();
+
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {
         short getId();

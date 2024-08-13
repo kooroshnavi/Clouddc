@@ -20,6 +20,12 @@ public class EventForm {   //// DTO
 
     private List<Long> deviceIdList;
 
+    private Long general_locationId;
+
+    private Integer general_category;
+
+    private boolean general_activation;
+
     private List<Integer> unassignedDeviceIdList;
 
     private Long DeviceMovement_sourceLocId;

@@ -43,9 +43,8 @@ public abstract class Event {
     @JoinColumn(name = "EventCategoryID")
     private EventCategory eventCategory;
 
-    @OneToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "EventDetailID")
-    private EventDetail eventDetail;
+    @OneToMany(cascade = CascadeType.ALL)
+    private List<EventDetail> eventDetailList;
 
     @ElementCollection(fetch = FetchType.LAZY)
     @CollectionTable(name = "UtilizerDeviceBalance", schema = "Event",

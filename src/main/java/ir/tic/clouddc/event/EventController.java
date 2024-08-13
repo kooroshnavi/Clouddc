@@ -21,6 +21,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 @RequestMapping("/event")
@@ -39,6 +40,16 @@ public class EventController {
     public String showEventForm(Model model, @PathVariable Long targetId, @PathVariable Integer categoryId) {
 
         switch (categoryId) {
+
+            case 1 -> { // General Event
+                Optional<Location> optionalLocation = eventService.getLocation(targetId);
+                if (optionalLocation.isPresent()) {
+                    var location = optionalLocation.get();
+                    model.addAttribute("location", location);
+                } else {
+                    return "404";
+                }
+            }
 
             case 2 -> { // New Device Installation
                 var optionalLocation = eventService.getLocation(targetId);
@@ -79,7 +90,6 @@ public class EventController {
                         return "404";
                     }
 
-
                     List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerList(List.of(currentUtilizer.getId()));
                     model.addAttribute("currentUtilizer", currentUtilizer);
                     model.addAttribute("utilizerList", utilizerList);
@@ -96,7 +106,7 @@ public class EventController {
                     List<Rack> rackList = new ArrayList<>();
                     List<Room> roomList = new ArrayList<>();
                     List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> locationDeviceList = eventService.getLocationDeviceList(targetId);
-                    List<Location> destinationList = eventService.getDeviceMovementEventData_2(targetId);
+                    List<Location> destinationList = eventService.getLocationListExcept(targetId);
                     for (Location destinationLocation : destinationList) {
                         if (destinationLocation instanceof Rack rack) {
                             rackList.add(rack);
@@ -153,6 +163,10 @@ public class EventController {
         redirectAttributes.addFlashAttribute("eventRegisterSuccessful", true);
 
         switch (eventForm.getEventCategoryId()) {
+            case 1 -> {
+                redirectAttributes.addAttribute("locationId", eventForm.getGeneral_locationId());
+                return "redirect:/center/location/{locationId}/detail";
+            }
             case 2, 3 -> {
                 redirectAttributes.addAttribute("locationId", eventForm.getUtilizer_locationId());
                 return "redirect:/center/location/{locationId}/detail";
@@ -257,7 +271,7 @@ public class EventController {
     @GetMapping("/{eventId}/detail")
     public String viewEventDetail(Model model, @PathVariable Long eventId) {
         Event baseEvent = eventService.getEventHistory(eventId);
-        model.addAttribute("metaData", List.of(eventService.getRelatedMetadata(baseEvent.getEventDetail().getPersistence().getId())));
+       // model.addAttribute("metaData", List.of(eventService.getRelatedMetadata(baseEvent.getEventDetailList().getPersistence().getId())));
 
         model.addAttribute("baseEvent", baseEvent);
 

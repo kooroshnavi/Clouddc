@@ -92,7 +92,7 @@
                                 <div th:if="${not update}" class="mb-3">
                                     <label class="form-label">انتخاب Pm</label>
                                     <label>
-                                        <select class="single-select" th:field="*{pmInterfaceId}">
+                                        <select class="single-select" th:field="*{pmInterfaceId}" required="required">
                                             <option th:each="pmInterface : ${pmInterfaceList}"
                                                     th:value="${pmInterface.id}"
                                                     th:text="${pmInterface.title + ' با دوره تکرار ' + pmInterface.period}"></option>

@@ -1,11 +1,14 @@
 package ir.tic.clouddc.log;
 
 import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -24,14 +27,12 @@ public final class Persistence {
     @JoinColumn(name = "PersonID")
     private Person person;
 
-    @OneToMany(mappedBy = "persistence", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "persistence", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<LogHistory> logHistoryList;
 
-    public Persistence(Long id) {
-        this.id = id;
-    }
-
-    public Persistence(Person person) {
-        this.person = person;
+    public Persistence(LocalDate date, LocalTime time, Person owner, String logMessageKey) {
+        this.setPerson(owner);
+        LogHistory logHistory = new LogHistory(date, time, owner, this, UtilService.LOG_MESSAGE.get(logMessageKey), true);
+        this.setLogHistoryList(List.of(logHistory));
     }
 }

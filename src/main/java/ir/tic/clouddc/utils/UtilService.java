@@ -40,7 +40,8 @@ public final class UtilService {
             entry("DisableAttachment", "حذف فایل پیوست"),
             entry("EventRegister", "ثبت رخداد"),
             entry("CatalogRegister", "ثبت کاتالوگ"),
-            entry("CatalogUpdate", "بروزرسانی کاتالوگ")
+            entry("CatalogUpdate", "بروزرسانی کاتالوگ"),
+            entry("UnassignedDeviceRegister", "ثبت تجهیز جدید")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(
@@ -58,6 +59,16 @@ public final class UtilService {
             entry(7, 2),
             entry(8, 2),
             entry(9, 2)
+    );
+
+    public static final Map<Integer, String> GENERAL_EVENT_CATEGORY_ID = Map.ofEntries(
+            entry(1, "اختلال برق"),
+            entry(2, "اختلال سیستم برودتی پکیج ها و فن ها"),
+            entry(3, "مشکل درب و قفل"),
+            entry(4, "اختلال سیستم روشنایی"),
+            entry(5, "مفقودی هرگونه تجهیز، ماژول، دیگر وسایل و ابزار"),
+            entry(6, "اختلال عملکرد تجهیزات ایمنی شامل اطفاء حریق و کپسول آتش نشانی"),
+            entry(7, "بازدید از مرکز یا هرگونه مراسم مرتبط")
     );
 
     public static String getCurrentDate() {

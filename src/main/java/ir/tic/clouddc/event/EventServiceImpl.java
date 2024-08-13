@@ -36,7 +36,7 @@ public final class EventServiceImpl implements EventService {
     private final FileService fileService;
     private final LogService logService;
     private final ResourceService resourceService;
-    private static final int VISIT_EVENT_CATEGORY_ID = 1;
+    private static final int General_Event_Category_ID = 1;
     private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
@@ -81,7 +81,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Location> getDeviceMovementEventData_2(Long locationId) {
+    public List<Location> getLocationListExcept(Long locationId) {
         return centerService.getLocationListExcept(List.of(locationId));
     }
 
@@ -98,6 +98,11 @@ public final class EventServiceImpl implements EventService {
     @Override
     public List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
         return resourceService.getNewDeviceList();
+    }
+
+    @Override
+    public List<Location> getLocationList() {
+        return centerService.getLocationList();
     }
 
     @Override
@@ -121,6 +126,11 @@ public final class EventServiceImpl implements EventService {
                     centerService.updateLocationStatus(locationStatusForm, event);
                 }
             }*/
+
+            case General_Event_Category_ID -> {
+                generalEventRegister_1(eventForm, validDate);
+            }
+
             case NewDevice_Installation_EVENT_CATEGORY_ID -> {
                 newDeviceInstallationEventRegister_2(eventForm, validDate);
             }
@@ -138,6 +148,19 @@ public final class EventServiceImpl implements EventService {
             }
             default -> throw new NoSuchElementException();
         }
+    }
+
+    private void generalEventRegister_1(EventForm eventForm, LocalDate validDate) throws IOException {
+        GeneralEvent generalEvent = new GeneralEvent();
+        generalEvent.setRegisterDate(UtilService.getDATE());
+        generalEvent.setRegisterTime(UtilService.getTime());
+        generalEvent.setEventDate(validDate);
+        generalEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
+        generalEvent.setGeneralCategoryId(eventForm.getGeneral_category());
+        generalEvent.setActive(eventForm.isGeneral_activation());
+        generalEvent.setLocationList(List.of(centerService.getRefrencedLocation(eventForm.getGeneral_locationId())));
+
+        eventPersist(eventForm, generalEvent);
     }
 
     private void newDeviceInstallationEventRegister_2(EventForm eventForm, LocalDate validDate) throws IOException {
@@ -424,7 +447,7 @@ public final class EventServiceImpl implements EventService {
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setEvent(event);
-        event.setEventDetail(eventDetail);
+        event.setEventDetailList(List.of(eventDetail));
 
         return eventDetail;
     }
@@ -457,7 +480,7 @@ public final class EventServiceImpl implements EventService {
             event = optionalEvent.get();
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
-            loadEventDetailTransients(event.getEventDetail());
+            loadEventDetailTransients(event.getEventDetailList());
 
             return event;
         }
@@ -473,9 +496,12 @@ public final class EventServiceImpl implements EventService {
         return null;
     }
 
-    private void loadEventDetailTransients(EventDetail eventDetail) {
-        eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
-        eventDetail.setPersianDayTime(UtilService.PERSIAN_DAY.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+    private void loadEventDetailTransients(List<EventDetail> eventDetailList) {
+        for (EventDetail eventDetail : eventDetailList
+        ) {
+            eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
+            eventDetail.setPersianDayTime(UtilService.PERSIAN_DAY.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+        }
     }
 
     @Override

@@ -60,6 +60,7 @@
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
+                        <li th:if="${categoryId == 1}" class="breadcrumb-item active" aria-current="page">رخداد عمومی</li>
                         <li th:if="${categoryId == 2}" class="breadcrumb-item active" aria-current="page">نصب تجهیزات جدید</li>
                         <li th:if="${categoryId == 3}" class="breadcrumb-item active" aria-current="page">تغییر بهره بردار مکان</li>
                         <li th:if="${categoryId == 4}" class="breadcrumb-item active" aria-current="page">جابجایی تجهیزات</li>
@@ -74,6 +75,11 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
+
+                    <div th:if="${categoryId == 1}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'ثبت رخداد عمومی در ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
 
                     <div th:if="${categoryId == 2}" class="card-header py-3 bg-transparent" align="center">
                         <h5 class="mb-0"
@@ -102,6 +108,29 @@
                                   enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                                 <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
+
+                                <div th:if="${categoryId == 1}" class="mb-3">
+                                    <label class="form-label">دسته بندی</label>
+                                    <select class="single-select" th:field="*{general_category}">
+
+                                        <option th:value="${1}">اختلال برق</option>
+                                        <option th:value="${2}">اختلال سیستم برودت شامل پکیج ها و فن ها</option>
+                                        <option th:value="${3}">مشکل درب و قفل</option>
+                                        <option th:value="${4}">اختلال سیستم روشنایی</option>
+                                        <option th:value="${5}">مفقودی هرگونه تجهیز، ماژول، دیگر وسایل و ابزار</option>
+                                        <option th:value="${6}">اختلال عملکرد سیستم ایمنی شامل تجهیزات اطفاء حریق و کپسول آتش نشانی</option>
+                                        <option th:value="${7}">بازدید از مرکز یا هرگونه مراسم مرتبط</option>
+
+                                    </select>
+                                </div>
+
+                                <div th:if="${categoryId == 1}" class="form-check mb-3">
+                                    <input type="checkbox" class="form-check-input" id="validationFormCheck1" th:field="*{!general_activation}">
+                                    <label class="form-check-label" for="validationFormCheck1">پایان رخداد</label>
+                                    <div class="invalid-feedback">رخداد فعال و در حال پیگیری است</div>
+                                </div>
+
+                                <input th:if="${categoryId == 1}" type="hidden" name="general_locationId" th:value="${location.id}"/>
 
                                 <div th:if="${categoryId == 2 || categoryId == 3 || categoryId == 5}" class="mb-3">
                                     <label class="form-label">بهره بردار فعلی</label>
@@ -188,7 +217,7 @@
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
                                     <textarea required="required" class="form-control" th:field="*{description}"
-                                              placeholder="علت رخداد - اگر پیرو نامه یا پیام پیپرلس است به شماره و فرستنده آن اشاره کنید تا در آینده دسترسی به سوابق آسان باشد."
+                                              placeholder="شرح رخداد همراه با شماره - نامه، پیام پیپرلس، مجوز - در صورت وجود. اگر رسید امضا کرده اید تصویر آن را پیوست کنید"
                                               rows="4"
                                               cols="4"></textarea>
                                 </div>

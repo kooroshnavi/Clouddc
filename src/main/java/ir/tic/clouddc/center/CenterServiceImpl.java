@@ -82,6 +82,10 @@ public class CenterServiceImpl implements CenterService {
         return locationRepository.getLocationListNotIn(locationId);
     }
 
+    @Override
+    public List<Location> getLocationList() {
+        return locationRepository.getLocationList();
+    }
 
     @Override
     public List<LocationPmCatalog> getLocationCatalogList(Location baseLocation) {

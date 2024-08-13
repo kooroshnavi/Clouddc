@@ -4,7 +4,9 @@ import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
 import ir.tic.clouddc.event.EventLandingForm;
+import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
@@ -94,6 +96,8 @@ public class ResourceServiceImpl implements ResourceService {
         unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
         unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
         unassignedDevice.setRemovalDate(UtilService.getDATE().plusDays(7));
+        Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(),"UnassignedDeviceRegister");
+        unassignedDevice.setPersistence(persistence);
 
         unassignedDeviceRepository.saveAndFlush(unassignedDevice);
     }
@@ -112,7 +116,6 @@ public class ResourceServiceImpl implements ResourceService {
     public void deleteUnassignedList(List<Integer> assignedIdList) {
         unassignedDeviceRepository.deleteAllById(assignedIdList);
     }
-
 
     @Override
     public Optional<Device> getDevice(Long deviceId) {

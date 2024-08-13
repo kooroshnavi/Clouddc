@@ -180,10 +180,10 @@
                         </thead>
                         <tbody>
                         <tr>
-                            <td th:text="${baseEvent.eventDetail.persianRegisterDate}"/>
-                            <td th:text="${baseEvent.eventDetail.persianRegisterDayTime}"/>
-                            <td th:text="${baseEvent.eventDetail.persistence.person.name} "/>
-                            <td th:text="${baseEvent.eventDetail.description}"/>
+                            <td th:text="${baseEvent.getEventDetailList.persianRegisterDate}"/>
+                            <td th:text="${baseEvent.getEventDetailList.persianRegisterDayTime}"/>
+                            <td th:text="${baseEvent.getEventDetailList.persistence.person.name} "/>
+                            <td th:text="${baseEvent.getEventDetailList.description}"/>
 
                             <td th:if="${baseEvent.eventCategory.id == 3}"
                                 th:text="${deviceUtilizerEvent.oldUtilizer.name}"/>
