@@ -55,7 +55,7 @@
     <main class="page-content">
         <!--breadcrumb-->
 
-        <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
             <div class="breadcrumb-title pe-3">رخداد</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
@@ -102,32 +102,27 @@
                     </div>
 
 
-                    <div class="card-body">
+                    <div class="card-body" dir="rtl">
                         <div class="border p-3 rounded">
-                            <form class="row g-lg-3" th:action="@{/event/register2}" th:object="${eventForm}"
+                            <form class="was-validated" th:action="@{/event/register2}" th:object="${eventForm}"
                                   enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                                 <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
 
                                 <div th:if="${categoryId == 1}" class="mb-3">
                                     <label class="form-label">دسته بندی</label>
-                                    <select class="single-select" th:field="*{general_category}">
+                                    <select class="single-select" th:field="*{general_category}" id="validationFormCheck2" required="required">
 
                                         <option th:value="${1}">اختلال برق</option>
                                         <option th:value="${2}">اختلال سیستم برودت شامل پکیج ها و فن ها</option>
                                         <option th:value="${3}">مشکل درب و قفل</option>
                                         <option th:value="${4}">اختلال سیستم روشنایی</option>
-                                        <option th:value="${5}">مفقودی هرگونه تجهیز، ماژول، دیگر وسایل و ابزار</option>
+                                        <option th:value="${5}">مفقودی هرگونه تجهیز، ماژول، ابزار و دیگر وسایل</option>
                                         <option th:value="${6}">اختلال عملکرد سیستم ایمنی شامل تجهیزات اطفاء حریق و کپسول آتش نشانی</option>
                                         <option th:value="${7}">بازدید از مرکز یا هرگونه مراسم مرتبط</option>
 
                                     </select>
-                                </div>
-
-                                <div th:if="${categoryId == 1}" class="form-check mb-3">
-                                    <input type="checkbox" class="form-check-input" id="validationFormCheck1" th:field="*{!general_activation}">
-                                    <label class="form-check-label" for="validationFormCheck1">پایان رخداد</label>
-                                    <div class="invalid-feedback">رخداد فعال و در حال پیگیری است</div>
+                                    <hr/>
                                 </div>
 
                                 <input th:if="${categoryId == 1}" type="hidden" name="general_locationId" th:value="${location.id}"/>
@@ -139,6 +134,7 @@
                                             <option th:text="${currentUtilizer.name}" selected="selected" disabled="disabled"></option>
                                         </select>
                                     </label>
+                                    <hr/>
                                 </div>
 
                                 <div th:if="${(categoryId == 2 && not currentUtilizer.genuineUtilizer) || categoryId == 3 || categoryId == 5}" class="mb-3">
@@ -151,6 +147,7 @@
                                             </option>
                                         </select>
                                     </label>
+                                    <hr/>
                                 </div>
 
                                 <input th:if="${(categoryId == 2 && currentUtilizer.genuineUtilizer) || categoryId == 3 || categoryId == 5}" type="hidden" name="utilizer_oldUtilizerId" th:value="${currentUtilizer.id}"/>
@@ -174,6 +171,7 @@
                                                 th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
                                                  + ' - ' + device.getId()}"></option>
                                     </select>
+                                    <hr/>
                                 </div>
 
                                 <div th:if="${categoryId == 4}" class="mb-3">
@@ -185,6 +183,7 @@
                                                 th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
                                                  + ' - ' + device.getId()}"></option>
                                     </select>
+                                    <hr/>
                                 </div>
 
                                 <div th:if="${categoryId == 4}" class="mb-3">
@@ -202,6 +201,7 @@
                                         </option>
 
                                     </select>
+                                    <hr/>
                                 </div>
 
                                 <div class="mb-3">
@@ -211,23 +211,41 @@
                                                data-jdp-miladi-input="miladi_date" data-jdp-max-date="today"
                                                placeholder="تاریخ وقوع رخداد"/>
                                     </div>
+                                    <hr/>
                                 </div>
                                 <input type="hidden" th:field="*{date}" id="miladi_date"/>
 
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
-                                    <textarea required="required" class="form-control" th:field="*{description}"
-                                              placeholder="شرح رخداد همراه با شماره - نامه، پیام پیپرلس، مجوز - در صورت وجود. اگر رسید امضا کرده اید تصویر آن را پیوست کنید"
+                                    <textarea required="required" minlength="5" class="form-control" th:field="*{description}"
+                                              placeholder="شرح رخداد - در صورت اقدام پیرو نامه، پیام پیپرلس یا مجوز، به شماره آن اشاره نمایید. اگر رسید امضا کرده اید تصویر آن را پیوست کنید."
                                               rows="4"
                                               cols="4"></textarea>
+                                    <hr/>
                                 </div>
-                                <hr/>
+
 
                                 <div class="col-12">
                                     <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
                                     <input class="form-control" type="file" name="attachment" id="attachment">
+                                    <hr/>
                                 </div>
-                                <hr/>
+
+                                <div th:if="${categoryId == 1}" class="form-check mb-sm-5">
+                                    <input type="checkbox" class="form-check-input" id="validationFormCheck1" th:field="*{general_activation}">
+                                    <label class="form-check-label" for="validationFormCheck1">پایان رخداد</label>
+                                    <hr/>
+                                </div>
+
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
+                                        <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                        <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                    </div>
+                                    <hr/>
+                                </div>
+
 
                                 <div class="col">
                                     <!-- Button trigger modal -->

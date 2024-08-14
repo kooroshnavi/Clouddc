@@ -157,7 +157,7 @@ public final class EventServiceImpl implements EventService {
         generalEvent.setEventDate(validDate);
         generalEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
         generalEvent.setGeneralCategoryId(eventForm.getGeneral_category());
-        generalEvent.setActive(eventForm.isGeneral_activation());
+        generalEvent.setActive(!eventForm.isGeneral_activation());
         generalEvent.setLocationList(List.of(centerService.getRefrencedLocation(eventForm.getGeneral_locationId())));
 
         eventPersist(eventForm, generalEvent);

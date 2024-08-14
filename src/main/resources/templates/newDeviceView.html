@@ -95,11 +95,9 @@
                 </div>
                 <hr/>
 
-
-
                 <div class="card-body">
 
-                    <form class="row g-lg-3" th:action="@{/resource/register}" th:object="${deviceRegisterForm}"
+                    <form class="was-validated" th:action="@{/resource/register}" th:object="${deviceRegisterForm}"
                           enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div class="mb-3">
@@ -118,7 +116,6 @@
                                         th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model}">
                                 </option>
 
-
                             </select>
                         </div>
 
@@ -135,6 +132,15 @@
                             </h6>
                             <br>
                             <a th:if="${!existedUnassigned}" th:href="@{/resource/device/{deviceId}/detail  (deviceId = ${existedDeviceId})}" th:text="${' جزئیات تجهیز با شماره سریال ' + existedSerialNumber}">مشاهده تجهیز با شماره سریال ارائه شده</a>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
+                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                            </div>
+                            <hr/>
                         </div>
 
                         <div class="col">
