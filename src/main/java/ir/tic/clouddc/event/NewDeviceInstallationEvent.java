@@ -14,11 +14,11 @@ import lombok.Setter;
 @Setter
 public class NewDeviceInstallationEvent extends Event {
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name = "InstallationLocation")
     private Location installationLocation;
 
-    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinColumn(name = "InstallationUtilizer")
     private Utilizer installationUtilizer;
 }

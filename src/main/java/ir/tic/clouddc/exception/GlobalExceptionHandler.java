@@ -48,7 +48,6 @@ public class GlobalExceptionHandler {
         return "404";
     }
 
-
     @ExceptionHandler(EntityNotFoundException.class)
     public String noValue(EntityNotFoundException entityNotFoundException) {
         log.error(entityNotFoundException.getMessage());

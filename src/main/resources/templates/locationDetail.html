@@ -112,7 +112,7 @@
                         <li>
                             <hr class="dropdown-divider">
                         </li>
-                        <li> <a th:href="@{/event/location/{locationId}/list (locationId=${location.id})}"
+                        <li> <a th:href="@{/event/{typeId}/{targetId}/list (typeId=${1}, targetId=${location.id})}"
                                 class="btn btn-outline-primary">لیست رخدادهای مکان</a></li>
                     </ul>
                 </div>

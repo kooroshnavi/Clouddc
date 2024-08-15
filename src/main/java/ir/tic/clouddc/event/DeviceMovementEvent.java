@@ -1,10 +1,7 @@
 package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Location;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,11 +13,11 @@ import lombok.Setter;
 @Setter
 public final class DeviceMovementEvent extends Event {
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "SourceLocationID")
     private Location source;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "DestinationLocationID")
     private Location destination;
 }

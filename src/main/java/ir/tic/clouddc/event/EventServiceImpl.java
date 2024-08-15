@@ -6,10 +6,11 @@ import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.log.Workflow;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.ReportService;
 import ir.tic.clouddc.resource.*;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,6 @@ public final class EventServiceImpl implements EventService {
     private final EventRepository eventRepository;
     private final EventDetailRepository eventDetailRepository;
     private final EventCategoryRepository eventCategoryRepository;
-
-    private final ReportService reportService;
     private final CenterService centerService;
     private final PersonService personService;
     private final FileService fileService;
@@ -42,28 +41,24 @@ public final class EventServiceImpl implements EventService {
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 5;
     private static final int DEVICE_CHECKLIST_EVENT_CATEGORY_ID = 6;
-    private final ResourceServiceImpl resourceServiceImpl;
 
 
     @Autowired
     public EventServiceImpl(
             EventRepository eventRepository
-            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository, ReportService reportService
+            , EventDetailRepository eventDetailRepository, EventCategoryRepository eventCategoryRepository
             , CenterService centerService
             , PersonService personService
             , FileService fileService,
-            LogService logService, ResourceService resourceService, ResourceServiceImpl resourceServiceImpl) {
+            LogService logService, ResourceService resourceService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
-
-        this.reportService = reportService;
         this.centerService = centerService;
         this.personService = personService;
         this.resourceService = resourceService;
         this.fileService = fileService;
         this.logService = logService;
-        this.resourceServiceImpl = resourceServiceImpl;
     }
 
 
@@ -106,6 +101,20 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    public Location getReferencedLocation(Long locationId) throws EntityNotFoundException {
+        try {
+            return centerService.getRefrencedLocation(locationId);
+        } catch (EntityNotFoundException e) {
+            throw new EntityNotFoundException(e);
+        }
+    }
+
+    @Override
+    public Utilizer getReferencedUtilizer(Integer utilizerId) {
+        return resourceService.getReferencedUtilizer(utilizerId);
+    }
+
+    @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
         return centerService.getCurrentLocationStatus(location);
     }
@@ -127,25 +136,12 @@ public final class EventServiceImpl implements EventService {
                 }
             }*/
 
-            case General_Event_Category_ID -> {
-                generalEventRegister_1(eventForm, validDate);
-            }
+            case General_Event_Category_ID -> generalEventRegister_1(eventForm, validDate);
+            case NewDevice_Installation_EVENT_CATEGORY_ID -> newDeviceInstallationEventRegister_2(eventForm, validDate);
+            case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> locationUtilizerEventRegister_3(eventForm, validDate);
+            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> deviceMovementEventRegister_4(eventForm, validDate);
+            case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> deviceUtilizerEventRegister_5(eventForm, validDate);
 
-            case NewDevice_Installation_EVENT_CATEGORY_ID -> {
-                newDeviceInstallationEventRegister_2(eventForm, validDate);
-            }
-
-            case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> {
-                locationUtilizerEventRegister_3(eventForm, validDate);
-            }
-
-            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> {
-                deviceMovementEventRegister_4(eventForm, validDate);
-
-            }
-            case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> {
-                deviceUtilizerEventRegister_5(eventForm, validDate);
-            }
             default -> throw new NoSuchElementException();
         }
     }
@@ -207,7 +203,8 @@ public final class EventServiceImpl implements EventService {
                 case 5 -> device = new Server();
                 case 6 -> device = new Switch();
                 case 7 -> device = new Firewall();
-                default -> device = new Enclosure();
+                case 8 -> device = new Enclosure();
+                default -> throw new NoSuchElementException();
             }
             device.setPriorityDevice(false);
             device.setDeviceCategory(unassignedDevice.getDeviceCategory());
@@ -478,25 +475,36 @@ public final class EventServiceImpl implements EventService {
         Event event;
         if (optionalEvent.isPresent()) {
             event = optionalEvent.get();
-            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
-            loadEventDetailTransients(event.getEventDetailList());
+            loadEventTransients_1(List.of(event));
+            loadEventTransients_2(event.getEventDetailList());
 
             return event;
         }
-        return null;
+        throw new NoSuchElementException();
     }
 
     @Override
-    public MetaData getRelatedMetadata(Long persistenceId) {
-        var metadata = fileService.getRelatedMetadataList(List.of(persistenceId), false);
-        if (!metadata.isEmpty()) {
-            return metadata.get(0);
-        }
-        return null;
+    public List<MetaData> getRelatedMetadataList(List<EventDetail> eventDetailList) {
+        List<Long> persistenceIdList = eventDetailList
+                .stream()
+                .map(Workflow::getPersistence)
+                .map(Persistence::getId)
+                .distinct()
+                .toList();
+
+        return fileService.getRelatedMetadataList(persistenceIdList, false);
     }
 
-    private void loadEventDetailTransients(List<EventDetail> eventDetailList) {
+    @Override
+    public List<Event> loadEventTransients_1(List<Event> eventList) {
+        for (Event event : eventList) {
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
+        }
+        return eventList;
+    }
+
+    private void loadEventTransients_2(List<EventDetail> eventDetailList) {
         for (EventDetail eventDetail : eventDetailList
         ) {
             eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));

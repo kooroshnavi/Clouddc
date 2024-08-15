@@ -3,6 +3,7 @@ package ir.tic.clouddc.event;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.center.Room;
+import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.resource.Utilizer;
@@ -261,32 +262,56 @@ public class EventController {
         return "eventListView";
     }
 
-    @GetMapping("/list")
-    public String showEventList(Model model) {
-        List<Event> eventList = eventService.getEventList();
-        model.addAttribute("eventList", eventList);
+    @GetMapping("/{typeId}/{targetId}/list")
+    public String targetEventList(Model model, @PathVariable Long targetId, @PathVariable Integer typeId) {
+        List<Event> eventList;
+        switch (typeId) {
+            case 0 -> eventList = eventService.getEventList();
+            case 1 -> {
+                var location = eventService.getReferencedLocation(targetId);
+                eventList = location.getEventList();
+            }
+            case 2 -> {
+                var device = eventService.getReferencedDevice(targetId);
+                eventList = device.getDeviceEventList();
+            }
+            case 3 -> {
+                var utilizer = eventService.getReferencedUtilizer(targetId.intValue());
+                eventList = utilizer.getEventList();
+            }
+            default -> {
+                return "404";
+            }
+        }
+        List<Event> finalEventList = eventService.loadEventTransients_1(eventList);
+        model.addAttribute("eventList", finalEventList);
+
         return "eventListView";
     }
 
     @GetMapping("/{eventId}/detail")
     public String viewEventDetail(Model model, @PathVariable Long eventId) {
         Event baseEvent = eventService.getEventHistory(eventId);
-       // model.addAttribute("metaData", List.of(eventService.getRelatedMetadata(baseEvent.getEventDetailList().getPersistence().getId())));
+        var evetDetailList = baseEvent.getEventDetailList();
+        List<MetaData> metaDataList = eventService.getRelatedMetadataList(evetDetailList);
 
+        if (baseEvent instanceof GeneralEvent generalEvent) {
+            model.addAttribute("generalEvent", generalEvent);
+        } else if (baseEvent instanceof NewDeviceInstallationEvent newDeviceInstallationEvent) {
+            model.addAttribute("newDeviceInstallationEvent", newDeviceInstallationEvent);
+        } else if (baseEvent instanceof LocationUtilizerEvent locationUtilizerEvent) {
+            model.addAttribute("locationUtilizerEvent", locationUtilizerEvent);
+        } else if (baseEvent instanceof DeviceMovementEvent deviceMovementEvent) {
+            model.addAttribute("deviceMovementEvent", deviceMovementEvent);
+        } else if (baseEvent instanceof DeviceUtilizerEvent deviceUtilizerEvent) {
+            model.addAttribute("deviceUtilizerEvent", deviceUtilizerEvent);
+        } else {
+            return "404";
+
+        }
         model.addAttribute("baseEvent", baseEvent);
-
-        if (baseEvent instanceof LocationCheckList event) {
-            model.addAttribute("locationStatusEvent", event);
-        }
-        if (baseEvent instanceof DeviceUtilizerEvent event) {
-            model.addAttribute("deviceUtilizerEvent", event);
-        }
-        if (baseEvent instanceof DeviceMovementEvent event) {
-            model.addAttribute("deviceMovementEvent", event);
-        }
-        if (baseEvent instanceof DeviceCheckList event) {
-            model.addAttribute("deviceStatusEvent", event);
-        }
+        model.addAttribute("eventDetailList", evetDetailList);
+        model.addAttribute("metaData", metaDataList);
 
         return "eventDetailList";
     }

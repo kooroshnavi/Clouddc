@@ -77,27 +77,14 @@
                                     <th scope="col">شناسه رخداد</th>
                                     <th scope="col">دسته بندی</th>
                                     <th scope="col">تاریخ ثبت</th>
-
-                                    <th th:if="${baseEvent.eventCategory.target == 'Device'}" scope="col">سریال تجهیز
-                                    </th>
-
-                                    <th th:if="${baseEvent.eventCategory.target == 'Center'}"
-                                        scope="col">مرکز
-                                    </th>
-
-                                    <th th:if="${baseEvent.eventCategory.target == 'Location'}"
-                                        scope="col">نوع مکان
-                                    </th>
-                                    <th th:if="${baseEvent.eventCategory.target == 'Location'}"
-                                        scope="col">نام
-                                    </th>
+                                    <th scope="col">گزارش شده توسط</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
                                 <tr>
                                     <td th:text="${baseEvent.id}"/>
-                                    <td th:text="${baseEvent.eventCategory.name}"/>
+                                    <td th:text="${baseEvent.eventCategory.title}"/>
                                     <td th:text="${baseEvent.persianRegisterDate}" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
                                         th:title="${baseEvent.persianRegisterDayTime}" dir="rtl"/>
@@ -110,6 +97,7 @@
                                                data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                         </div>
                                     </td>
+
                                     <td th:if="${baseEvent.eventCategory.id == 4}"
                                         th:text="${deviceMovementEvent.device.serialNumber}">
                                         <div class="col">
@@ -118,6 +106,7 @@
                                                data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                         </div>
                                     </td>
+
                                     <td th:if="${baseEvent.eventCategory.id == 5}"
                                         th:text="${deviceCheckList.device.serialNumber}">
                                         <div class="col">

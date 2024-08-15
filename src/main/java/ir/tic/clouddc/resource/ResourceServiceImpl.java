@@ -4,7 +4,6 @@ import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
 import ir.tic.clouddc.event.EventLandingForm;
-import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
@@ -58,7 +57,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Utilizer getReferencedUtilizer(Integer utilizerId) {
+    public Utilizer getReferencedUtilizer(Integer utilizerId) throws EntityNotFoundException {
         return utilizerRepository.getReferenceById(utilizerId);
     }
 

@@ -11,7 +11,7 @@ public interface ResourceService {
 
     List<DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceListProjection(Long locationId);
 
-    Utilizer getReferencedUtilizer(Integer utilizerId);
+    Utilizer getReferencedUtilizer(Integer utilizerId) throws EntityNotFoundException;
 
     List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
 

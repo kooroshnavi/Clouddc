@@ -6,6 +6,7 @@ import ir.tic.clouddc.center.LocationStatus;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.ResourceService;
+import ir.tic.clouddc.resource.Utilizer;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
@@ -26,7 +27,7 @@ public interface EventService {
 
     Event getEventHistory(Long eventId);
 
-    MetaData getRelatedMetadata(Long persistenceId);
+    List<MetaData> getRelatedMetadataList(List<EventDetail> eventDetailList);
 
     List<Event> getEventList();
 
@@ -57,4 +58,10 @@ public interface EventService {
     List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
 
     List<Location> getLocationList();
+
+    Location getReferencedLocation(Long locationId);
+
+    Utilizer getReferencedUtilizer(Integer utilizerId);
+
+    List<Event> loadEventTransients_1(List<Event> eventList);
 }

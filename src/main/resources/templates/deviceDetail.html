@@ -109,7 +109,7 @@
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
-                            <li><a th:href="@{/event/device/{deviceId}/list (deviceId=${device.id})}"
+                            <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${2}, targetId=${device.id})}"
                                    class="btn btn-outline-primary">لیست رخدادهای تجهیز</a></li>
                         </ul>
                     </div>

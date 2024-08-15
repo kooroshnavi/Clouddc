@@ -13,11 +13,11 @@ import lombok.Setter;
 @Setter
 public final class DeviceUtilizerEvent extends Event {
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "OldUtilizerID")
     private Utilizer oldUtilizer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(cascade = CascadeType.MERGE, fetch = FetchType.LAZY)
     @JoinColumn(name = "NewUtilizerID")
     private Utilizer newUtilizer;
 }
