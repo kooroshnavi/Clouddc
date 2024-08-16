@@ -88,26 +88,23 @@
 
                         <li>
                             <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 1)}"
-                               class="btn btn-outline-dark">ثبت رخداد عمومی</a></li>
-                        <hr/>
+                               class="btn btn-outline-dark">1. ثبت رخداد عمومی</a></li>
 
                         <li th:if="${location.assignable}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
                             <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 2)}"
-                               class="btn btn-outline-success"
-                               th:text="${'نصب تجهیزات جدید در  ' + location.locationCategory.category + ' ' + location.name}">
+                               class="btn btn-outline-dark"
+                               th:text="${'2. نصب تجهیزات جدید در  ' + location.locationCategory.category + ' ' + location.name}">
                             </a></li>
-                        <hr/>
 
                         <li th:if="${location.assignable}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
                             <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 3)}"
-                               class="btn btn-outline-dark">تغییر بهره بردار</a></li>
+                               class="btn btn-outline-dark">3. تغییر بهره بردار</a></li>
 
                         <li th:if="${location.assignable}" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
                             <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 4)}"
-                               class="btn btn-outline-warning"
-                               th:text="${'جابجایی تجهیزات  ' + location.locationCategory.category + ' ' + location.name}">
+                               class="btn btn-outline-dark"
+                               th:text="${'4. جابجایی تجهیزات  ' + location.locationCategory.category + ' ' + location.name}">
                             </a></li>
-                        <hr/>
 
                         <li>
                             <hr class="dropdown-divider">

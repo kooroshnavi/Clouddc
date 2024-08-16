@@ -12,6 +12,7 @@ import org.springframework.ui.Model;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface EventService {
@@ -64,4 +65,6 @@ public interface EventService {
     Utilizer getReferencedUtilizer(Integer utilizerId);
 
     List<Event> loadEventTransients_1(List<Event> eventList);
+
+    Map<Utilizer, Integer> getBalanceReference(Event baseEvent);
 }

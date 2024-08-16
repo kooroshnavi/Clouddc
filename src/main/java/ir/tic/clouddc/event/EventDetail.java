@@ -13,7 +13,7 @@ import lombok.Setter;
 @Setter
 public final class EventDetail extends Workflow {
 
-    @OneToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "EventID")
     private Event event;
 

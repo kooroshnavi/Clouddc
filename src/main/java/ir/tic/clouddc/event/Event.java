@@ -43,7 +43,7 @@ public abstract class Event {
     @JoinColumn(name = "EventCategoryID")
     private EventCategory eventCategory;
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
     private List<EventDetail> eventDetailList;
 
     @ElementCollection(fetch = FetchType.LAZY)
@@ -79,5 +79,8 @@ public abstract class Event {
 
     @Transient
     private String persianRegisterDayTime;
+
+    @Transient
+    private String persianEventDate;
 }
 

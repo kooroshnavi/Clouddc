@@ -22,6 +22,7 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Controller
@@ -294,6 +295,7 @@ public class EventController {
         Event baseEvent = eventService.getEventHistory(eventId);
         var evetDetailList = baseEvent.getEventDetailList();
         List<MetaData> metaDataList = eventService.getRelatedMetadataList(evetDetailList);
+        Map<Utilizer, Integer> balanceReferenceMap = eventService.getBalanceReference(baseEvent);
 
         if (baseEvent instanceof GeneralEvent generalEvent) {
             model.addAttribute("generalEvent", generalEvent);
@@ -307,13 +309,13 @@ public class EventController {
             model.addAttribute("deviceUtilizerEvent", deviceUtilizerEvent);
         } else {
             return "404";
-
         }
         model.addAttribute("baseEvent", baseEvent);
         model.addAttribute("eventDetailList", evetDetailList);
-        model.addAttribute("metaData", metaDataList);
+        model.addAttribute("balanceReferenceMap", balanceReferenceMap);
+        model.addAttribute("metaDataList", metaDataList);
 
-        return "eventDetailList";
+        return "eventDetailView";
     }
 
     @ModelAttribute

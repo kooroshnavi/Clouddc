@@ -498,10 +498,23 @@ public final class EventServiceImpl implements EventService {
     @Override
     public List<Event> loadEventTransients_1(List<Event> eventList) {
         for (Event event : eventList) {
+            event.setPersianEventDate(UtilService.getFormattedPersianDate(event.getEventDate()));
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
         }
         return eventList;
+    }
+
+    @Override
+    public Map<Utilizer, Integer> getBalanceReference(Event baseEvent) {
+        Map<Utilizer, Integer> balanceMap = new HashMap<>();
+        Map<Integer, Integer> balanceId = baseEvent.getUtilizerBalance();
+        Set<Integer> utilizerIdSet = balanceId.keySet();
+        for (Integer utilizerId : utilizerIdSet) {
+            var utilizer = resourceService.getReferencedUtilizer(utilizerId);
+            balanceMap.put(utilizer, balanceId.get(utilizerId));
+        }
+        return balanceMap;
     }
 
     private void loadEventTransients_2(List<EventDetail> eventDetailList) {
