@@ -136,11 +136,13 @@ public final class EventServiceImpl implements EventService {
                 }
             }*/
 
-            case General_Event_Category_ID -> generalEventRegister_1(eventForm, validDate);
-            case NewDevice_Installation_EVENT_CATEGORY_ID -> newDeviceInstallationEventRegister_2(eventForm, validDate);
+            case General_Event_Category_ID -> generalEventRegister_1(eventForm, validDate); // No balance
+            case NewDevice_Installation_EVENT_CATEGORY_ID ->
+                    newDeviceInstallationEventRegister_2(eventForm, validDate); // balance: +
             case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> locationUtilizerEventRegister_3(eventForm, validDate);
             case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> deviceMovementEventRegister_4(eventForm, validDate);
-            case DEVICE_UTILIZER_EVENT_CATEGORY_ID -> deviceUtilizerEventRegister_5(eventForm, validDate);
+            case DEVICE_UTILIZER_EVENT_CATEGORY_ID ->
+                    deviceUtilizerEventRegister_5(eventForm, validDate); // balance: -1 -> +1
 
             default -> throw new NoSuchElementException();
         }
@@ -286,29 +288,49 @@ public final class EventServiceImpl implements EventService {
                     .distinct()
                     .toList();
 
-            List<Integer> utilizerIdList = referencedDeviceList
-                    .stream()
-                    .map(Device::getUtilizer)
-                    .map(Utilizer::getId)
-                    .toList();
+            boolean hasBalance;
+            hasBalance = isBalance(newUtilizer, affectedUtilizerIdList);
 
-            locationUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), utilizerIdList));
+            if (hasBalance) {
+                List<Integer> utilizerIdList = referencedDeviceList
+                        .stream()
+                        .map(Device::getUtilizer)
+                        .map(Utilizer::getId)
+                        .toList();
 
-            for (Device device : referencedDeviceList) {
-                device.setUtilizer(newUtilizer);
+                locationUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), utilizerIdList));
+
+                Iterator<Device> deviceIterator = referencedDeviceList.iterator();
+                while (deviceIterator.hasNext()) {
+                    var device = deviceIterator.next();
+                    if (Objects.equals(device.getUtilizer().getId(), newUtilizer.getId())) {
+                        deviceIterator.remove();
+                    } else {
+                        device.setUtilizer(newUtilizer);
+                    }
+                }
+                locationUtilizerEvent.setDeviceList(referencedDeviceList);
             }
             // many to many for inverse-side reference
-            locationUtilizerEvent.setDeviceList(referencedDeviceList);
+
             locationUtilizerEvent.setLocationList(List.of(location));
             locationUtilizerEvent.setUtilizerList(List.of(newUtilizer, locationUtilizerEvent.getOldUtilizer()));
 
             eventPersist(eventForm, locationUtilizerEvent);
+
         } else {
             throw new NoSuchElementException();
         }
-        // event persist
+    }
 
-        //    centerService.updateLocationUtilizer(location.getId(), newUtilizer);
+    private static boolean isBalance(Utilizer newUtilizer, List<Integer> affectedUtilizerIdList) {
+        boolean hasBalance;
+        if (affectedUtilizerIdList.size() == 1 && Objects.equals(affectedUtilizerIdList.get(0), newUtilizer.getId())) {
+            hasBalance = false;
+        } else {
+            hasBalance = true;
+        }
+        return hasBalance;
     }
 
     private void deviceMovementEventRegister_4(EventForm eventForm, LocalDate validDate) throws IOException {
@@ -317,7 +339,6 @@ public final class EventServiceImpl implements EventService {
 
         if (optionalLocation.isPresent()) {
             var destinationLocation = optionalLocation.get();
-
             if (destinationLocation instanceof Rack rack) {
                 destinationUtilizer = rack.getUtilizer();
             } else if (destinationLocation instanceof Room room) {
@@ -352,33 +373,43 @@ public final class EventServiceImpl implements EventService {
                     .map(Utilizer::getId)
                     .distinct()
                     .toList();
-            List<Integer> utilizerIdList = referencedDeviceList
-                    .stream()
-                    .map(Device::getUtilizer)
-                    .map(Utilizer::getId)
-                    .toList();
 
-            deviceMovementEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, destinationUtilizer.getId(), utilizerIdList));
+            boolean hasBalance;
+            hasBalance = isBalance(destinationUtilizer, affectedUtilizerIdList);
+
+            if (hasBalance) {
+                List<Integer> utilizerIdList = referencedDeviceList
+                        .stream()
+                        .map(Device::getUtilizer)
+                        .map(Utilizer::getId)
+                        .toList();
+
+                deviceMovementEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, destinationUtilizer.getId(), utilizerIdList));
+
+                List<Utilizer> utilizerList = new ArrayList<>();
+                for (Integer utilizerId : deviceMovementEvent.getUtilizerBalance().keySet()) {
+                    utilizerList.add(resourceService.getReferencedUtilizer(utilizerId));
+                }
+                deviceMovementEvent.setUtilizerList(utilizerList);
+            } else {
+                deviceMovementEvent.setUtilizerList(List.of(destinationUtilizer));
+            }
 
             for (Device device : referencedDeviceList) {
                 device.setLocation(destinationLocation);
-                device.setUtilizer(destinationUtilizer);
+                if (hasBalance) {
+                    device.setUtilizer(destinationUtilizer);
+                }
             }
 
             // many to many for inverse-side references
             deviceMovementEvent.setDeviceList(referencedDeviceList);
             deviceMovementEvent.setLocationList(List.of(destinationLocation, deviceMovementEvent.getSource()));
-            List<Utilizer> utilizerList = new ArrayList<>();
-            for (Integer utilizerId : deviceMovementEvent.getUtilizerBalance().keySet()) {
-                utilizerList.add(resourceService.getReferencedUtilizer(utilizerId));
-            }
-            deviceMovementEvent.setUtilizerList(utilizerList);
 
             eventPersist(eventForm, deviceMovementEvent);
         } else {
             throw new NoSuchElementException();
         }
-        //     resourceService.updateDeviceLocation(deviceIdList, destinationUtilizer, destinationLocation);
     }
 
     private void deviceUtilizerEventRegister_5(EventForm eventForm, LocalDate validDate) throws IOException {
@@ -509,10 +540,12 @@ public final class EventServiceImpl implements EventService {
     public Map<Utilizer, Integer> getBalanceReference(Event baseEvent) {
         Map<Utilizer, Integer> balanceMap = new HashMap<>();
         Map<Integer, Integer> balanceId = baseEvent.getUtilizerBalance();
-        Set<Integer> utilizerIdSet = balanceId.keySet();
-        for (Integer utilizerId : utilizerIdSet) {
-            var utilizer = resourceService.getReferencedUtilizer(utilizerId);
-            balanceMap.put(utilizer, balanceId.get(utilizerId));
+        if (!balanceId.isEmpty()) {
+            Set<Integer> utilizerIdSet = balanceId.keySet();
+            for (Integer utilizerId : utilizerIdSet) {
+                var utilizer = resourceService.getReferencedUtilizer(utilizerId);
+                balanceMap.put(utilizer, balanceId.get(utilizerId));
+            }
         }
         return balanceMap;
     }

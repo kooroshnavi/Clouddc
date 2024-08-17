@@ -20,6 +20,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -148,10 +149,12 @@ public class EventController {
 
     @PostMapping("/register2")
     public String eventRegisterPost(RedirectAttributes redirectAttributes, @RequestParam("attachment") MultipartFile file
-            , @ModelAttribute("eventForm") EventForm eventForm) throws IOException {
+            , @ModelAttribute("eventForm") EventForm eventForm) throws IOException, DateTimeParseException {
 
+        LocalDate georgianDate;
         var nextDue = eventForm.getDate();
-        var georgianDate = LocalDate.parse(nextDue);
+        georgianDate = LocalDate.parse(nextDue);
+
         if (georgianDate.isAfter(UtilService.getDATE())) {
             return "403";
         }

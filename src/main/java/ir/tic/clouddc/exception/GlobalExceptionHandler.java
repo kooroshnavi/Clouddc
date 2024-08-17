@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import java.io.FileNotFoundException;
 import java.sql.SQLException;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -52,6 +53,12 @@ public class GlobalExceptionHandler {
     public String noValue(EntityNotFoundException entityNotFoundException) {
         log.error(entityNotFoundException.getMessage());
         notificationService.sendExceptionMessage(entityNotFoundException.getMessage(), LocalDateTime.of(UtilService.getDATE(), UtilService.getTime()));
+        return "404";
+    }
+
+    @ExceptionHandler(DateTimeParseException.class)
+    public String dateError(DateTimeParseException dateTimeParseException) {
+        log.error(dateTimeParseException.getMessage());
         return "404";
     }
 
