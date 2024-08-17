@@ -298,11 +298,28 @@
                             </tfoot>
                         </table>
                     </div>
-
-
             </div>
         </div>
-        <hr/>
+
+        <!--5, Description-->
+        <div th:if="${baseEvent.eventCategory.id != 1 && !baseEvent.eventDetailList.get(0).description.isEmpty() && !baseEvent.eventDetailList.get(0).description.isBlank()}" class="card radius-10">
+            <div class="card-body">
+                <h6 class="mb-0 text-md-center" align="center">
+                    <strong>توضیحات</strong>
+                </h6>
+                <div class="my-3 border-top"></div>
+                <div class="accordion accordion-flush" id="accordionFlushExample">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="flush-headingOne">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#flush-collapseOne" aria-expanded="false" aria-controls="flush-collapseOne">توضیحات گزارش کننده رخداد</button>
+                        </h2>
+                        <div id="flush-collapseOne" class="accordion-collapse collapse" aria-labelledby="flush-headingOne" data-bs-parent="#accordionFlushExample">
+                            <div class="accordion-body" th:text="${baseEvent.eventDetailList.get(0).description}"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <!--attachment table-->
         <div th:if="${!metaDataList.isEmpty()}" class="col">

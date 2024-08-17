@@ -139,8 +139,8 @@ public final class EventServiceImpl implements EventService {
             case General_Event_Category_ID -> generalEventRegister_1(eventForm, validDate); // No balance
             case NewDevice_Installation_EVENT_CATEGORY_ID ->
                     newDeviceInstallationEventRegister_2(eventForm, validDate); // balance: +
-            case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> locationUtilizerEventRegister_3(eventForm, validDate);
-            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> deviceMovementEventRegister_4(eventForm, validDate);
+            case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> locationUtilizerEventRegister_3(eventForm, validDate); // balance being checked on every event
+            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> deviceMovementEventRegister_4(eventForm, validDate); // balance being checked on every event
             case DEVICE_UTILIZER_EVENT_CATEGORY_ID ->
                     deviceUtilizerEventRegister_5(eventForm, validDate); // balance: -1 -> +1
 
