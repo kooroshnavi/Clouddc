@@ -6,6 +6,75 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        html,
+        body {
+        }
+        .glow-on-hover {
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background: #111;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px;
+            left:-2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:active {
+            color: #6a1a21;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:active:after {
+            background: transparent;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:hover:before {
+            opacity: 1;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #6a1a21;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+    </style>
     <!--plugins-->
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
@@ -19,10 +88,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
 
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
@@ -68,20 +135,18 @@
             </div>
         </div>
         <!--end breadcrumb-->
+
         <h3 class="mb-0 text-bg-light">مشخصات تجهیز</h3>
         <hr/>
+
         <div class="card">
             <div class="card-body">
 
-                <div class="col" align="left">
-                    <div class="btn-group">
-                        <button type="button" class="btn btn-primary" disabled="disabled">رخدادهای این تجهیز</button>
-                        <button type="button" class="btn btn-outline-primary dropdown-toggle dropdown-toggle-split"
-                                data-bs-toggle="dropdown" aria-expanded="false"><span class="visually-hidden"></span>
-                        </button>
-                        <ul
-                                class="dropdown-menu">
+                <div class="col" align="right">
+                    <div class="dropdown">
+                        <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">رخدادهای این تجهیز</button>
 
+                        <ul class="dropdown-menu">
                             <li>
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 1)}"
                                    class="btn btn-outline-dark">ثبت رخداد عمومی</a>
@@ -110,11 +175,12 @@
                                 <hr class="dropdown-divider">
                             </li>
                             <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${2}, targetId=${device.id})}"
-                                   class="btn btn-outline-primary">لیست رخدادهای تجهیز</a></li>
+                                   class="btn btn-outline-primary">تاریخچه</a></li>
                         </ul>
                     </div>
                 </div>
 
+                <br>
 
                 <table class="table mb-0">
                     <thead class="table-dark">
@@ -141,7 +207,7 @@
                             <div class="col">
                                 <a th:text="${device.utilizer.name}"
                                    th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${device.utilizer.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                   class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
@@ -150,7 +216,7 @@
                             <div class="col">
                                 <a th:text="${device.location.locationCategory.category} + ' ' + ${device.location.name}"
                                    th:href="@{/center/location/{locationId}/detail (locationId=${device.location.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="جزئیات محل نصب"></a>
                             </div>
                         </td>

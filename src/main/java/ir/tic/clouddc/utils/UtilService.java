@@ -39,6 +39,7 @@ public final class UtilService {
             entry("SupervisorPmTermination", "بستن PmDetail توسط Supervisor"),
             entry("DisableAttachment", "حذف فایل پیوست"),
             entry("EventRegister", "ثبت رخداد"),
+            entry("EventUpdate", "بروزرسانی رخداد"),
             entry("CatalogRegister", "ثبت کاتالوگ"),
             entry("CatalogUpdate", "بروزرسانی کاتالوگ"),
             entry("UnassignedDeviceRegister", "ثبت تجهیز جدید")

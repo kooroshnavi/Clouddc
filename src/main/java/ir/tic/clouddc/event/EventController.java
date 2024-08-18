@@ -147,23 +147,26 @@ public class EventController {
         return "movementEvent";
     }
 
-    @PostMapping("/register2")
+    @PostMapping("/register")
     public String eventRegisterPost(RedirectAttributes redirectAttributes, @RequestParam("attachment") MultipartFile file
             , @ModelAttribute("eventForm") EventForm eventForm) throws IOException, DateTimeParseException {
-
-        LocalDate georgianDate;
-        var nextDue = eventForm.getDate();
-        georgianDate = LocalDate.parse(nextDue);
-
-        if (georgianDate.isAfter(UtilService.getDATE())) {
-            return "403";
-        }
 
         if (!file.isEmpty()) {
             eventForm.setMultipartFile(file);
         }
 
-        eventService.eventRegister(eventForm, georgianDate);
+        if (eventForm.getEventId() == null) {
+            LocalDate georgianDate;
+            var nextDue = eventForm.getDate();
+            georgianDate = LocalDate.parse(nextDue);
+            if (georgianDate.isAfter(UtilService.getDATE())) {
+                return "403";
+            }
+            eventService.registerEvent(eventForm, georgianDate);
+        }
+        else {
+            eventService.updateGeneralEvent(eventForm);
+        }
 
         redirectAttributes.addFlashAttribute("eventRegisterSuccessful", true);
 
@@ -301,6 +304,7 @@ public class EventController {
         Map<Utilizer, Integer> balanceReferenceMap = eventService.getBalanceReference(baseEvent);
 
         if (baseEvent instanceof GeneralEvent generalEvent) {
+            generalEvent.setCategory(UtilService.GENERAL_EVENT_CATEGORY_ID.get(generalEvent.getGeneralCategoryId()));
             model.addAttribute("generalEvent", generalEvent);
         } else if (baseEvent instanceof NewDeviceInstallationEvent newDeviceInstallationEvent) {
             model.addAttribute("newDeviceInstallationEvent", newDeviceInstallationEvent);
@@ -312,6 +316,9 @@ public class EventController {
             model.addAttribute("deviceUtilizerEvent", deviceUtilizerEvent);
         } else {
             return "404";
+        }
+        if (baseEvent.isActive()) {
+            model.addAttribute("eventForm", new EventForm());
         }
         model.addAttribute("baseEvent", baseEvent);
         model.addAttribute("eventDetailList", evetDetailList);

@@ -125,7 +125,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException {
+    public void registerEvent(EventForm eventForm, LocalDate validDate) throws IOException {
         switch (eventForm.getEventCategoryId()) {
 
         /*    case LOCATION_STATUS_EVENT_CATEGORY_ID -> {
@@ -139,8 +139,10 @@ public final class EventServiceImpl implements EventService {
             case General_Event_Category_ID -> generalEventRegister_1(eventForm, validDate); // No balance
             case NewDevice_Installation_EVENT_CATEGORY_ID ->
                     newDeviceInstallationEventRegister_2(eventForm, validDate); // balance: +
-            case LOCATION_UTILIZER_EVENT_CATEGORY_ID -> locationUtilizerEventRegister_3(eventForm, validDate); // balance being checked on every event
-            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID -> deviceMovementEventRegister_4(eventForm, validDate); // balance being checked on every event
+            case LOCATION_UTILIZER_EVENT_CATEGORY_ID ->
+                    locationUtilizerEventRegister_3(eventForm, validDate); // balance being checked on every event
+            case DEVICE_MOVEMENT_EVENT_CATEGORY_ID ->
+                    deviceMovementEventRegister_4(eventForm, validDate); // balance being checked on every event
             case DEVICE_UTILIZER_EVENT_CATEGORY_ID ->
                     deviceUtilizerEventRegister_5(eventForm, validDate); // balance: -1 -> +1
 
@@ -233,13 +235,15 @@ public final class EventServiceImpl implements EventService {
 
     private void eventPersist(EventForm eventForm, Event event) throws IOException {
         EventDetail eventDetail;
+        if (eventForm.getEventCategoryId() == General_Event_Category_ID) {
+            event.setActive(!eventForm.isGeneral_activation());
+        }
         eventDetail = eventDetailRegister(event, eventForm);
         var persistedDetail = eventDetailRepository.save(eventDetail);
         if (eventForm.getMultipartFile() != null) {
             fileService.registerAttachment(eventForm.getMultipartFile(), persistedDetail.getPersistence());
         }
     }
-
 
     private LocationCheckList locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
         var currentStatus = locationStatusForm.getCurrentLocationStatus();
@@ -466,24 +470,32 @@ public final class EventServiceImpl implements EventService {
         return utilizerBalance;
     }
 
-
-    private EventDetail eventDetailRegister(Event event, EventForm eventForm) throws IOException {
+    private EventDetail eventDetailRegister(Event event, EventForm eventForm) {
         EventDetail eventDetail = new EventDetail();
-        eventDetail.setRegisterDate(event.getRegisterDate());
-        eventDetail.setRegisterTime(event.getRegisterTime());
-        var persistence = getPersistence();
+        eventDetail.setRegisterDate(UtilService.getDATE());
+        eventDetail.setRegisterTime(UtilService.getTime());
+        Persistence persistence;
+        if (eventForm.getEventId() != null) {
+            persistence = getPersistence("EventUpdate");
+        } else {
+            persistence = getPersistence("EventRegister");
+        }
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
         eventDetail.setEvent(event);
-        event.setEventDetailList(List.of(eventDetail));
+        if (event.getEventDetailList() != null) {
+            event.getEventDetailList().add(eventDetail);
+        } else {
+            event.setEventDetailList(List.of(eventDetail));
+        }
 
         return eventDetail;
     }
 
-    private Persistence getPersistence() {
+    private Persistence getPersistence(String logMessageKey) {
         var currentPerson = personService.getCurrentPerson();
         var persistence = logService.persistenceSetup(currentPerson);
-        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get("EventRegister"), true);
+        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get(logMessageKey), true);
         persistence.setLogHistoryList(List.of(logHistory));
 
         return persistence;
@@ -550,17 +562,23 @@ public final class EventServiceImpl implements EventService {
         return balanceMap;
     }
 
+    @Override
+    public void updateGeneralEvent(EventForm eventForm) throws IOException {
+        var event = eventRepository.getReferenceById(eventForm.getEventId());
+        eventPersist(eventForm, event);
+    }
+
     private void loadEventTransients_2(List<EventDetail> eventDetailList) {
         for (EventDetail eventDetail : eventDetailList
         ) {
-            eventDetail.setPersianDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
-            eventDetail.setPersianDayTime(UtilService.PERSIAN_DAY.get(eventDetail.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+            eventDetail.setPersianRegisterDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
+            eventDetail.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(eventDetail.getRegisterDate(), eventDetail.getRegisterTime()));
         }
     }
 
     @Override
     public List<EventCategory> getEventCategoryList() {
-        return (List<EventCategory>) eventCategoryRepository.findAll();
+        return eventCategoryRepository.findAll();
     }
 
     @Override

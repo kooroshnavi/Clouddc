@@ -15,11 +15,4 @@ public final class EventDetail extends Workflow {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "EventID")
-    private Event event;
-
-    @Transient
-    private String persianDate;
-
-    @Transient
-    private String persianDayTime;
-}
+    private Event event;}

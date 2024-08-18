@@ -10,6 +10,8 @@ public class EventForm {   //// DTO
 
     private Integer eventCategoryId;   /// 2. Location CheckList 3.Utilizer   4. Device Movement     5. Device Checklist
 
+    private Long eventId;  // active event update
+
     private Integer utilizer_oldUtilizerId;
 
     private Integer utilizer_newUtilizerId;

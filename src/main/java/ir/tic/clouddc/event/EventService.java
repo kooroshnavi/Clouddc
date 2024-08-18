@@ -17,8 +17,7 @@ import java.util.Optional;
 
 public interface EventService {
 
-
-    void eventRegister(EventForm eventForm, LocalDate validDate) throws IOException;
+    void registerEvent(EventForm eventForm, LocalDate validDate) throws IOException;
 
     List<EventCategory> getEventCategoryList();
 
@@ -67,4 +66,6 @@ public interface EventService {
     List<Event> loadEventTransients_1(List<Event> eventList);
 
     Map<Utilizer, Integer> getBalanceReference(Event baseEvent);
+
+    void updateGeneralEvent(EventForm eventForm) throws IOException;
 }

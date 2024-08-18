@@ -104,7 +104,7 @@
 
                     <div class="card-body" dir="rtl">
                         <div class="border p-3 rounded">
-                            <form class="was-validated" th:action="@{/event/register2}" th:object="${eventForm}"
+                            <form class="was-validated" th:action="@{/event/register}" th:object="${eventForm}"
                                   enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                                 <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
