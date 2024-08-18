@@ -119,6 +119,7 @@
                             <thead>
                             <tr>
                                 <th th:if="${baseEvent.eventCategory.id == 1}">نوع رخداد عمومی</th>
+                                <th th:if="${baseEvent.eventCategory.id == 1}">مکان</th>
                                 <th th:if="${baseEvent.eventCategory.id == 1}">وضعیت</th>
 
                                 <th th:if="${baseEvent.eventCategory.id == 2}">تعداد تجهیز نصب شده</th>
@@ -139,24 +140,54 @@
                                 <th th:if="${baseEvent.eventCategory.id == 5}">مدل</th>
                                 <th th:if="${baseEvent.eventCategory.id == 5}">بهره بردار قدیم</th>
                                 <th th:if="${baseEvent.eventCategory.id == 5}">بهره بردار جدید</th>
+                                <th th:if="${baseEvent.eventCategory.id == 5}">مکان تجهیز در هنگام ثبت رخداد</th>
 
                             </tr>
                             </thead>
                             <tbody>
                             <tr>
                                 <td th:if="${baseEvent.eventCategory.id == 1}" th:text="${generalEvent.category}"/>
+
+                                <td th:if="${baseEvent.eventCategory.id == 1 && baseEvent.locationList.get(0).locationCategory.categoryId == 1}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${hall.center.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 1 && baseEvent.locationList.get(0).locationCategory.categoryId == 2}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${rack1.hall.name + ' - ' + rack1.center.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 1 && baseEvent.locationList.get(0).locationCategory.categoryId == 3}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${room1.center.name}" dir="rtl"/>
                                 <td th:if="${baseEvent.eventCategory.id == 1 && baseEvent.active}">فعال</td>
                                 <td th:if="${baseEvent.eventCategory.id == 1 && !baseEvent.active}">خاتمه یافته</td>
 
+
                                 <td th:if="${baseEvent.eventCategory.id == 2}"
                                     th:text="${baseEvent.deviceList.size()}"/>
-                                <td th:if="${baseEvent.eventCategory.id == 2}"
-                                    th:text="${newDeviceInstallationEvent.installationLocation.locationCategory.category + ' ' + newDeviceInstallationEvent.installationLocation.name}"/>
+
+                                <td th:if="${baseEvent.eventCategory.id == 2 && baseEvent.locationList.get(0).locationCategory.categoryId == 2}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${rack1.hall.name + ' - ' + rack1.center.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 2 && baseEvent.locationList.get(0).locationCategory.categoryId == 3}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${room1.center.name}" dir="rtl"/>
+
                                 <td th:if="${baseEvent.eventCategory.id == 2}"
                                     th:text="${newDeviceInstallationEvent.installationUtilizer.name}"/>
 
-                                <td th:if="${baseEvent.eventCategory.id == 3}"
-                                    th:text="${locationUtilizerEvent.locationList.get(0).locationCategory.category + ' ' + locationUtilizerEvent.locationList.get(0).name}"/>
+                                <td th:if="${baseEvent.eventCategory.id == 3 && baseEvent.locationList.get(0).locationCategory.categoryId == 2}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${rack1.hall.name + ' - ' + rack1.center.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 3 && baseEvent.locationList.get(0).locationCategory.categoryId == 3}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${room1.center.name}" dir="rtl"/>
+
                                 <td th:if="${baseEvent.eventCategory.id == 3}"
                                     th:text="${locationUtilizerEvent.oldUtilizer.name}"/>
                                 <td th:if="${baseEvent.eventCategory.id == 3}"
@@ -164,10 +195,28 @@
 
                                 <td th:if="${baseEvent.eventCategory.id == 4}"
                                     th:text="${baseEvent.deviceList.size()}"/>
-                                <td th:if="${baseEvent.eventCategory.id == 4}"
-                                    th:text="${deviceMovementEvent.source.locationCategory.category + ' ' + deviceMovementEvent.source.name}"/>
-                                <td th:if="${baseEvent.eventCategory.id == 4}"
-                                    th:text="${deviceMovementEvent.destination.locationCategory.category + ' ' + deviceMovementEvent.destination.name}"/>
+
+                                <td th:if="${baseEvent.eventCategory.id == 4 && baseEvent.locationList.get(0).locationCategory.categoryId == 2}"
+                                    th:text="${deviceMovementEvent.source.locationCategory.category + ' ' + deviceMovementEvent.source.name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${sourceRack.name + ' - ' + sourceRack.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 4 && baseEvent.locationList.get(0).locationCategory.categoryId == 3}"
+                                    th:text="${deviceMovementEvent.source.locationCategory.category + ' ' + deviceMovementEvent.source.name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${sourceRoom.name}" dir="rtl"/>
+
+                                <td th:if="${baseEvent.eventCategory.id == 4 && baseEvent.locationList.get(1).locationCategory.categoryId == 2}"
+                                    th:text="${deviceMovementEvent.destination.locationCategory.category + ' ' + deviceMovementEvent.destination.name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${destRack.name + ' - ' + destRack.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 4 && baseEvent.locationList.get(1).locationCategory.categoryId == 3}"
+                                    th:text="${deviceMovementEvent.destination.locationCategory.category + ' ' + deviceMovementEvent.destination.name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${destRoom.name}" dir="rtl"/>
 
 
                                 <td th:if="${baseEvent.eventCategory.id == 5}"
@@ -188,6 +237,16 @@
                                     th:text="${deviceUtilizerEvent.oldUtilizer.name}"/>
                                 <td th:if="${baseEvent.eventCategory.id == 5}"
                                     th:text="${deviceUtilizerEvent.newUtilizer.name}"/>
+
+                                <td th:if="${baseEvent.eventCategory.id == 5 && baseEvent.locationList.get(0).locationCategory.categoryId == 2}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${rack1.hall.name + ' - ' + rack1.center.name}" dir="rtl"/>
+                                <td th:if="${baseEvent.eventCategory.id == 5 && baseEvent.locationList.get(0).locationCategory.categoryId == 3}" th:text="${baseEvent.locationList.get(0).locationCategory.category + ' ' + baseEvent.locationList.get(0).name}"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${room1.center.name}" dir="rtl"/>
+
                             </tr>
                             </tbody>
                             <tfoot>
@@ -233,7 +292,7 @@
                                 <div class="col">
                                     <a th:text="${device.serialNumber}"
                                        th:href="@{/resource/device/{deviceId}/detail (deviceId=${device.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                       class="btn btn-outline-secondary px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                 </div>
                             </td>

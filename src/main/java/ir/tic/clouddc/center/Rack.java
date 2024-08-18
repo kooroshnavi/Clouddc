@@ -16,7 +16,7 @@ import java.util.List;
 @Setter
 public final class Rack extends Location {
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinColumn(name = "HallID")
     private Hall hall;
 

@@ -1,5 +1,6 @@
 package ir.tic.clouddc.event;
 
+import ir.tic.clouddc.center.Hall;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.center.Room;
@@ -163,8 +164,7 @@ public class EventController {
                 return "403";
             }
             eventService.registerEvent(eventForm, georgianDate);
-        }
-        else {
+        } else {
             eventService.updateGeneralEvent(eventForm);
         }
 
@@ -302,6 +302,33 @@ public class EventController {
         var evetDetailList = baseEvent.getEventDetailList();
         List<MetaData> metaDataList = eventService.getRelatedMetadataList(evetDetailList);
         Map<Utilizer, Integer> balanceReferenceMap = eventService.getBalanceReference(baseEvent);
+
+        var locationList = baseEvent.getLocationList();
+        Location location = locationList.get(0);
+
+        if (locationList.size() == 1) {
+            if (location instanceof Hall hall) {
+                model.addAttribute("hall", hall);
+            } else if (location instanceof Rack rack) {
+                model.addAttribute("rack1", rack);
+            } else if (location instanceof Room room) {
+                model.addAttribute("room1", room);
+            }
+        } else {
+            if (location instanceof Rack rack) {
+                model.addAttribute("sourceRack", rack);
+            } else if (location instanceof Room room) {
+                model.addAttribute("sourceRoom", room);
+            }
+
+            var location2 = locationList.get(1);
+            if (location2 instanceof Rack rack) {
+                model.addAttribute("destRack", rack);
+            } else if (location2 instanceof Room room) {
+                model.addAttribute("destRoom", room);
+            }
+        }
+
 
         if (baseEvent instanceof GeneralEvent generalEvent) {
             generalEvent.setCategory(UtilService.GENERAL_EVENT_CATEGORY_ID.get(generalEvent.getGeneralCategoryId()));

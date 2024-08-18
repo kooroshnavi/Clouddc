@@ -63,7 +63,7 @@
             position: absolute;
             width: 100%;
             height: 100%;
-            background: #6a1a21;
+            background: #5c636a;
             left: 0;
             top: 0;
             border-radius: 10px;
@@ -136,7 +136,7 @@
         </div>
         <!--end breadcrumb-->
 
-        <h3 class="mb-0 text-bg-light">مشخصات تجهیز</h3>
+        <h3 class="mb-0 text-bg-secondary">مشخصات تجهیز</h3>
         <hr/>
 
         <div class="card">
@@ -147,33 +147,31 @@
                         <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">رخدادهای این تجهیز</button>
 
                         <ul class="dropdown-menu">
-                            <li>
-                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 1)}"
-                                   class="btn btn-outline-dark">ثبت رخداد عمومی</a>
-                                <hr/>
-                            </li>
 
                             <li>
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 5)}"
-                                   class="btn btn-outline-warning">تغییر بهره بردار</a>
+                                   class="btn btn-outline-dark">1. تغییر بهره بردار</a>
                                 <hr/>
                             </li>
 
                             <li>
-                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                   class="btn btn-outline-dark" disabled="disabled">قطعی لینک (در حال توسعه)</a>
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 6)}"
+                                   class="btn btn-outline-danger" disabled="disabled">2. چک لیست (در حال توسعه)</button>
                                 <hr/>
                             </li>
 
                             <li>
-                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                   class="btn btn-outline-dark" disabled="disabled">جابجایی ماژول (در حال توسعه)</a>
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
+                                   class="btn btn-outline-danger" disabled="disabled">3. قطعی لینک (در حال توسعه)</button>
                                 <hr/>
                             </li>
 
                             <li>
-                                <hr class="dropdown-divider">
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
+                                   class="btn btn-outline-danger" disabled="disabled">4. جابجایی ماژول (در حال توسعه)</button>
+                                <hr/>
                             </li>
+
                             <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${2}, targetId=${device.id})}"
                                    class="btn btn-outline-primary">تاریخچه</a></li>
                         </ul>

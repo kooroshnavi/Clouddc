@@ -408,7 +408,7 @@ public final class EventServiceImpl implements EventService {
 
             // many to many for inverse-side references
             deviceMovementEvent.setDeviceList(referencedDeviceList);
-            deviceMovementEvent.setLocationList(List.of(destinationLocation, deviceMovementEvent.getSource()));
+            deviceMovementEvent.setLocationList(List.of(deviceMovementEvent.getSource(), destinationLocation));
 
             eventPersist(eventForm, deviceMovementEvent);
         } else {
