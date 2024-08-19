@@ -9,6 +9,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Controller
@@ -49,11 +50,22 @@ public class ResourceController {
     public String newDeviceView(Model model) {
 
         List<DeviceCategory> deviceCategoryList = resourceService.getdeviceCategoryList();
-        List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> unassignedDeviceList = resourceService.getNewDeviceList();
+        List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> unassignedDeviceList =
+                resourceService.getNewDeviceList()
+                        .stream()
+                        .sorted(Comparator.comparing(ResourceService.DeviceIdSerialCategoryVendor_Projection1::getId).reversed())
+                        .toList();
 
         model.addAttribute("deviceRegisterForm", new DeviceRegisterForm());
         model.addAttribute("deviceCategoryList", deviceCategoryList);
         model.addAttribute("unassignedDeviceList", unassignedDeviceList);
+
+        if (!model.containsAttribute("newDevice")) {
+            model.addAttribute("newDevice", false);
+        }
+        if (!model.containsAttribute("exist")) {
+            model.addAttribute("exist", false);
+        }
 
         return "newDeviceView";
     }
@@ -64,7 +76,6 @@ public class ResourceController {
         boolean exist = resourceService.checkDeviceExistence(deviceRegisterForm.getSerialNumber());
 
         if (!exist) {
-            log.info("Registering new device");
             resourceService.registerUnassignedDevice(deviceRegisterForm);
             redirectAttributes.addFlashAttribute("newDevice", true);
         } else {

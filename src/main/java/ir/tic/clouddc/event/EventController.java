@@ -23,10 +23,7 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Controller
 @RequestMapping("/event")
@@ -77,8 +74,9 @@ public class EventController {
                     model.addAttribute("currentUtilizer", currentUtilizer);
                     model.addAttribute("location", location);
                     model.addAttribute("deviceList", newDeviceList);
+                } else {
+                    return "404";
                 }
-
             }
 
             case 3 -> { // Location Utilizer
@@ -87,7 +85,6 @@ public class EventController {
                     var location = optionalLocation.get();
                     Utilizer currentUtilizer;
                     if (location instanceof Rack rack) {
-                        log.info("Rack found");
                         currentUtilizer = rack.getUtilizer();
                     } else if (location instanceof Room room) {
                         currentUtilizer = room.getUtilizer();
@@ -173,25 +170,133 @@ public class EventController {
 
         switch (eventForm.getEventCategoryId()) {
             case 1 -> {
-                redirectAttributes.addAttribute("locationId", eventForm.getGeneral_locationId());
-                return "redirect:/center/location/{locationId}/detail";
+                redirectAttributes.addAttribute("targetId", eventForm.getGeneral_locationId());
+                redirectAttributes.addAttribute("typeId", 1);
+                return "redirect:/event/{typeId}/{targetId}/list";
             }
             case 2, 3 -> {
-                redirectAttributes.addAttribute("locationId", eventForm.getUtilizer_locationId());
-                return "redirect:/center/location/{locationId}/detail";
+                redirectAttributes.addAttribute("targetId", eventForm.getUtilizer_locationId());
+                redirectAttributes.addAttribute("typeId", 1);
+                return "redirect:/event/{typeId}/{targetId}/list";
             }
             case 4 -> {
-                redirectAttributes.addAttribute("locationId", eventForm.getDeviceMovement_destLocId());
-                return "redirect:/center/location/{locationId}/detail";
+                redirectAttributes.addAttribute("targetId", eventForm.getDeviceMovement_destLocId());
+                redirectAttributes.addAttribute("typeId", 1);
+                return "redirect:/event/{typeId}/{targetId}/list";
             }
             case 5 -> {
-                redirectAttributes.addAttribute("deviceId", eventForm.getUtilizer_deviceId());
-                return "redirect:/resource/device/{deviceId}/detail";
+                redirectAttributes.addAttribute("targetId", eventForm.getUtilizer_deviceId());
+                redirectAttributes.addAttribute("typeId", 2);
+                return "redirect:/event/{typeId}/{targetId}/list";
             }
             default -> {
                 return "404";
             }
         }
+    }
+
+    @GetMapping("/{typeId}/{targetId}/list")
+    public String targetEventList(Model model,
+                                  @PathVariable Long targetId,
+                                  @PathVariable Integer typeId) {
+        List<Event> eventList;
+        switch (typeId) {
+            case 0 -> eventList = eventService.getEventList();
+            case 1 -> {
+                var location = eventService.getReferencedLocation(targetId);
+                eventList = location.getEventList();
+                model.addAttribute("locationCategoryName", location.getLocationCategory().getCategory() + " " + location.getName());
+            }
+            case 2 -> {
+                var device = eventService.getReferencedDevice(targetId);
+                eventList = device.getDeviceEventList();
+                model.addAttribute("deviceCategorySerialNumber", device.getDeviceCategory().getCategory() + " " + device.getSerialNumber());
+
+            }
+            case 3 -> {
+                var utilizer = eventService.getReferencedUtilizer(targetId.intValue());
+                eventList = utilizer.getEventList();
+                model.addAttribute("utilizerName", utilizer.getName());
+            }
+            default -> {
+                return "404";
+            }
+        }
+        List<Event> finalEventList = eventService
+                .loadEventTransients_1(eventList)
+                .stream()
+                .sorted(Comparator.comparing(Event::getId).reversed()) // Newest to oldest
+                .toList();
+        model.addAttribute("eventList", finalEventList);
+        model.addAttribute("typeId", typeId);
+        model.addAttribute("targetId", targetId);
+
+        if (!model.containsAttribute("eventRegisterSuccessful")) {
+            model.addAttribute("eventRegisterSuccessful", false);
+        }
+
+        return "eventListView";
+    }
+
+    @GetMapping("/{eventId}/detail")
+    public String viewEventDetail(Model model, @PathVariable Long eventId) {
+        Event baseEvent = eventService.getEventHistory(eventId);
+        var evetDetailList = baseEvent.getEventDetailList();
+        List<MetaData> metaDataList = eventService.getRelatedMetadataList(evetDetailList);
+        Map<Utilizer, Integer> balanceReferenceMap = eventService.getBalanceReference(baseEvent);
+
+        var locationList = baseEvent.getLocationList();
+        var listSize = locationList.size();
+
+        if (listSize == 1) {
+            var location = Hibernate.unproxy(locationList.get(0), Location.class);
+            if (location instanceof Hall hall) {
+                model.addAttribute("hall", hall);
+            } else if (location instanceof Rack rack) {
+                model.addAttribute("rack1", rack);
+            } else if (location instanceof Room room) {
+                model.addAttribute("room1", room);
+            }
+        } else {
+            var source = Hibernate.unproxy(locationList.get(0), Location.class);
+            var destination = Hibernate.unproxy(locationList.get(1), Location.class);
+
+            if (source instanceof Rack rack) {
+                model.addAttribute("sourceRack", rack);
+            } else if (source instanceof Room room) {
+                model.addAttribute("sourceRoom", room);
+            }
+
+            if (destination instanceof Rack rack) {
+                model.addAttribute("destRack", rack);
+            } else if (destination instanceof Room room) {
+                model.addAttribute("destRoom", room);
+            }
+        }
+
+        if (baseEvent instanceof GeneralEvent generalEvent) {
+            generalEvent.setCategory(UtilService.GENERAL_EVENT_CATEGORY_ID.get(generalEvent.getGeneralCategoryId()));
+            model.addAttribute("generalEvent", generalEvent);
+        } else if (baseEvent instanceof NewDeviceInstallationEvent newDeviceInstallationEvent) {
+            model.addAttribute("newDeviceInstallationEvent", newDeviceInstallationEvent);
+        } else if (baseEvent instanceof LocationUtilizerEvent locationUtilizerEvent) {
+            model.addAttribute("locationUtilizerEvent", locationUtilizerEvent);
+        } else if (baseEvent instanceof DeviceMovementEvent deviceMovementEvent) {
+            model.addAttribute("deviceMovementEvent", deviceMovementEvent);
+        } else if (baseEvent instanceof DeviceUtilizerEvent deviceUtilizerEvent) {
+            model.addAttribute("deviceUtilizerEvent", deviceUtilizerEvent);
+        } else {
+            return "404";
+        }
+        if (baseEvent.isActive()) {
+            model.addAttribute("eventForm", new EventForm());
+        }
+        model.addAttribute("baseEvent", baseEvent);
+        model.addAttribute("eventDetailList", evetDetailList);
+        model.addAttribute("balanceReferenceMap", balanceReferenceMap);
+        model.addAttribute("metaDataList", metaDataList);
+
+        return "eventDetailView";
     }
 
     @PostMapping("/form/detail")
@@ -267,99 +372,6 @@ public class EventController {
         //   List<Event> eventList = eventService.getEventList(categoryId);
         // model.addAttribute("eventList", eventList);
         return "eventListView";
-    }
-
-    @GetMapping("/{typeId}/{targetId}/list")
-    public String targetEventList(Model model, @PathVariable Long targetId, @PathVariable Integer typeId) {
-        List<Event> eventList;
-        switch (typeId) {
-            case 0 -> eventList = eventService.getEventList();
-            case 1 -> {
-               var location = eventService.getReferencedLocation(targetId);
-                eventList = location.getEventList();
-                model.addAttribute("locationCategoryName", location.getLocationCategory().getCategory() + " " + location.getName());
-            }
-            case 2 -> {
-               var device = eventService.getReferencedDevice(targetId);
-                eventList = device.getDeviceEventList();
-                model.addAttribute("deviceCategorySerialNumber", device.getDeviceCategory().getCategory() + " " + device.getSerialNumber());
-
-            }
-            case 3 -> {
-               var utilizer = eventService.getReferencedUtilizer(targetId.intValue());
-                eventList = utilizer.getEventList();
-                model.addAttribute("utilizerName", utilizer.getName());
-            }
-            default -> {
-                return "404";
-            }
-        }
-        List<Event> finalEventList = eventService.loadEventTransients_1(eventList);
-        model.addAttribute("eventList", finalEventList);
-        model.addAttribute("typeId", typeId);
-
-        return "eventListView";
-    }
-
-    @GetMapping("/{eventId}/detail")
-    public String viewEventDetail(Model model, @PathVariable Long eventId) {
-        Event baseEvent = eventService.getEventHistory(eventId);
-        var evetDetailList = baseEvent.getEventDetailList();
-        List<MetaData> metaDataList = eventService.getRelatedMetadataList(evetDetailList);
-        Map<Utilizer, Integer> balanceReferenceMap = eventService.getBalanceReference(baseEvent);
-
-        var locationList = baseEvent.getLocationList();
-        var listSize = locationList.size();
-
-        if (listSize == 1) {
-            var location = Hibernate.unproxy(locationList.get(0), Location.class);
-            if (location instanceof Hall hall) {
-                model.addAttribute("hall", hall);
-            } else if (location instanceof Rack rack) {
-                model.addAttribute("rack1", rack);
-            } else if (location instanceof Room room) {
-                model.addAttribute("room1", room);
-            }
-        } else {
-            var source = Hibernate.unproxy(locationList.get(0), Location.class);
-            var destination = Hibernate.unproxy(locationList.get(1), Location.class);
-
-            if (source instanceof Rack rack) {
-                model.addAttribute("sourceRack", rack);
-            } else if (source instanceof Room room) {
-                model.addAttribute("sourceRoom", room);
-            }
-
-            if (destination instanceof Rack rack) {
-                model.addAttribute("destRack", rack);
-            } else if (destination instanceof Room room) {
-                model.addAttribute("destRoom", room);
-            }
-        }
-
-        if (baseEvent instanceof GeneralEvent generalEvent) {
-            generalEvent.setCategory(UtilService.GENERAL_EVENT_CATEGORY_ID.get(generalEvent.getGeneralCategoryId()));
-            model.addAttribute("generalEvent", generalEvent);
-        } else if (baseEvent instanceof NewDeviceInstallationEvent newDeviceInstallationEvent) {
-            model.addAttribute("newDeviceInstallationEvent", newDeviceInstallationEvent);
-        } else if (baseEvent instanceof LocationUtilizerEvent locationUtilizerEvent) {
-            model.addAttribute("locationUtilizerEvent", locationUtilizerEvent);
-        } else if (baseEvent instanceof DeviceMovementEvent deviceMovementEvent) {
-            model.addAttribute("deviceMovementEvent", deviceMovementEvent);
-        } else if (baseEvent instanceof DeviceUtilizerEvent deviceUtilizerEvent) {
-            model.addAttribute("deviceUtilizerEvent", deviceUtilizerEvent);
-        } else {
-            return "404";
-        }
-        if (baseEvent.isActive()) {
-            model.addAttribute("eventForm", new EventForm());
-        }
-        model.addAttribute("baseEvent", baseEvent);
-        model.addAttribute("eventDetailList", evetDetailList);
-        model.addAttribute("balanceReferenceMap", balanceReferenceMap);
-        model.addAttribute("metaDataList", metaDataList);
-
-        return "eventDetailView";
     }
 
     @ModelAttribute

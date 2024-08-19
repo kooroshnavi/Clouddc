@@ -158,7 +158,6 @@
                                                     aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-dark">
-                                            <p>لطفا از مدل انتخابی و شماره سریال ثبت شده مطمئن شوید.</p>
                                             <p>پس از تایید جهت ثبت نهایی تجهیز (اختصاص مکان و بهره بردار) به صفحه رک یا اتاق مربوطه مراجعه و از طریق گزینه 'نصب تجهیزات جدید' اقدام نمایید.</p>
                                         </div>
                                         <div class="modal-footer border-dark">
@@ -184,8 +183,8 @@
                         <tr>
                             <th>ردیف</th>
                             <th>نوع</th>
-                            <th>مدل</th>
                             <th>شماره سریال</th>
+                            <th>مدل</th>
                             <th>وضعیت</th>
                         </tr>
                         </thead>
@@ -193,22 +192,29 @@
                         <tbody>
                         <tr th:each="device, iter : ${unassignedDeviceList}">
 
-                            <td th:text="${iter.count}"></td>
-
-                            <td>
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${iter.count}"></td>
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success">
                                 <div th:text="${device.category}"
                                      class="d-flex align-items-center">
                                 </div>
                             </td>
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${device.serialNumber}"></td>
+
+                            <td th:unless="${newDevice && iter.first}" th:text="${iter.count}"></td>
+                            <td th:unless="${newDevice && iter.first}">
+                                <div th:text="${device.category}"
+                                     class="d-flex align-items-center">
+                                </div>
+                            </td>
+                            <td th:unless="${newDevice && iter.first}" th:text="${device.serialNumber}"></td>
 
                             <td th:if="${device.categoryId == 5}" th:text="${device.vendor + ' - ' + device.model + ' - ' + device.factorSize + ' ' + device.factor}"/>
                             <td th:if="${device.categoryId != 5}" th:text="${device.vendor + ' - ' + device.model}"/>
 
-                            <td th:text="${device.serialNumber}"></td>
-
                             <td>
                                 <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت مکان</button>
                             </td>
+
                         </tr>
                         </tbody>
                     </table>

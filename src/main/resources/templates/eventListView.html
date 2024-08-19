@@ -7,6 +7,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
@@ -22,7 +24,6 @@
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
 
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -34,6 +35,12 @@
 </head>
 
 <body>
+
+<script th:if="${eventRegisterSuccessful}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -55,7 +62,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">گزارشات ثبت شده</li>
+                        <li class="breadcrumb-item active" aria-current="page">تاریخچه</li>
                     </ol>
                 </nav>
             </div>
@@ -63,17 +70,24 @@
         </div>
         <!--end breadcrumb-->
 
-        <h3 th:if="${typeId == 0}" class="mb-0 text-uppercase" align="center">لیست رخدادهای گزارش شده</h3>
+        <h4 th:if="${typeId == 0}" class="mb-0 text-uppercase" align="center">لیست رخدادهای گزارش شده</h4>
         <br th:if="${typeId == 0}">
         <h6 th:if="${typeId == 0}" class="mb-0 text-uppercase" align="center">
-            <strong class="mb-0 text-bg-warning">جهت مشاهده رخدادهای مربوط به یک مکان، تجهیز یا بهره بردار مشخص، به صفحه مربوطه مراجعه و گزینه رخدادها --> تاریخچه را انتخاب کنید.</strong>
+            <strong class="mb-0 text-bg-warning">جهت مشاهده رخدادهای ثبت شده یک مکان، تجهیز یا بهره بردار مشخص، به صفحه مربوطه مراجعه و گزینه رخدادها --> تاریخچه را انتخاب کنید.</strong>
         </h6>
-        <h3 th:if="${typeId == 1}" th:text="${'رخدادهای گزارش شده ' + locationCategoryName}" class="mb-0 text-uppercase" align="center"></h3>
-        <h3 th:if="${typeId == 2}" th:text="${'رخدادهای گزارش شده ' + deviceCategorySerialNumber}" class="mb-0 text-uppercase" align="center"></h3>
-        <h3 th:if="${typeId == 3}" th:text="${'رخدادهای گزارش شده بهره بردار: ' + utilizerName}" class="mb-0 text-uppercase" align="center"></h3>
+        <h4 th:if="${typeId == 1}" th:text="${'رخدادهای گزارش شده ' + locationCategoryName}" class="mb-0 text-uppercase" align="center"></h4>
+        <h4 th:if="${typeId == 2}" th:text="${'رخدادهای گزارش شده ' + deviceCategorySerialNumber}" class="mb-0 text-uppercase" align="center"></h4>
+        <h4 th:if="${typeId == 3}" th:text="${'رخدادهای گزارش شده بهره بردار: ' + utilizerName}" class="mb-0 text-uppercase" align="center"></h4>
+        <br>
+        <h5 class="mb-0 text-uppercase" align="center">
+            <strong class="mb-0 text-bg-info">جهت ثبت رخداد به صفحه مکان یا تجهیز مدنظر مراجعه نمایید.</strong>
+        </h5>
         <br>
         <h6 class="mb-0 text-uppercase" align="center">
-            <strong class="mb-0 text-bg-info">جهت ثبت رخداد به صفحه مکان یا تجهیز مدنظر مراجعه نمایید.</strong>
+            <a type="button" th:if="${typeId == 1}" th:href="@{/center/location/{locationId}/detail (locationId=${targetId})}" class="btn - btn-outline-primary">صفحه مربوط به این مکان</a>
+        </h6>
+        <h6 class="mb-0 text-uppercase" align="center">
+            <a type="button" th:if="${typeId == 2}" th:href="@{/resource/device/{deviceId}/detail (deviceId=${targetId})}" class="btn - btn-outline-secondary">صفحه مربوط به این تجهیز</a>
         </h6>
         <br>
         <div class="card">
@@ -85,8 +99,8 @@
                         <tr>
                             <th>ردیف</th>
                             <th>دسته بندی</th>
-                            <th>تاریخ وقوع</th>
                             <th>تاریخ ثبت گزارش</th>
+                            <th>تاریخ وقوع</th>
                             <th>وضعیت</th>
                         </tr>
                         </thead>
@@ -94,12 +108,19 @@
 
                         <tr th:each="event, iter : ${eventList}">
 
-                            <td th:text="${iter.count}" dir="rtl"></td>
-                            <td th:text="${event.eventCategory.title}" dir="rtl"></td>
-                            <td th:text="${event.persianEventDate}" data-bs-toggle="tooltip" data-bs-placement="top"
-                                th:title="${event.persianEventDay}" dir="rtl"></td>
-                            <td th:text="${event.persianRegisterDate}" data-bs-toggle="tooltip" data-bs-placement="top"
+                            <td th:if="${eventRegisterSuccessful && iter.first}" class="text-bg-success" th:text="${iter.count}" dir="rtl"></td>
+                            <td th:if="${eventRegisterSuccessful && iter.first}" class="text-bg-success" th:text="${event.eventCategory.title}" dir="rtl"></td>
+                            <td th:if="${eventRegisterSuccessful && iter.first}" class="text-bg-success" th:text="${event.persianRegisterDate}" data-bs-toggle="tooltip" data-bs-placement="top"
                                 th:title="${event.persianRegisterDayTime}" dir="rtl"></td>
+                            <td th:if="${eventRegisterSuccessful && iter.first}" class="text-bg-success" th:text="${event.persianEventDate}" data-bs-toggle="tooltip" data-bs-placement="top"
+                                th:title="${event.persianEventDay}" dir="rtl"></td>
+
+                            <td th:unless="${eventRegisterSuccessful && iter.first}" th:text="${iter.count}" dir="rtl"></td>
+                            <td th:unless="${eventRegisterSuccessful && iter.first}" th:text="${event.eventCategory.title}" dir="rtl"></td>
+                            <td th:unless="${eventRegisterSuccessful && iter.first}" th:text="${event.persianRegisterDate}" data-bs-toggle="tooltip" data-bs-placement="top"
+                                th:title="${event.persianRegisterDayTime}" dir="rtl"></td>
+                            <td th:unless="${eventRegisterSuccessful && iter.first}" th:text="${event.persianEventDate}" data-bs-toggle="tooltip" data-bs-placement="top"
+                                th:title="${event.persianEventDay}" dir="rtl"></td>
 
                             <td dir="rtl">
                                 <div class="col">
@@ -146,6 +167,10 @@
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<!--notification js -->
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
