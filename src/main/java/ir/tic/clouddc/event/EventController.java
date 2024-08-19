@@ -11,6 +11,7 @@ import ir.tic.clouddc.resource.Utilizer;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -261,7 +262,6 @@ public class EventController {
         return "eventStatusForm";   /// 3.  update status form
     }
 
-
     @GetMapping("/category/{categoryId}/list")
     public String showCategoryEventList(Model model, @PathVariable int categoryId) {
         //   List<Event> eventList = eventService.getEventList(categoryId);
@@ -275,16 +275,20 @@ public class EventController {
         switch (typeId) {
             case 0 -> eventList = eventService.getEventList();
             case 1 -> {
-                var location = eventService.getReferencedLocation(targetId);
+               var location = eventService.getReferencedLocation(targetId);
                 eventList = location.getEventList();
+                model.addAttribute("locationCategoryName", location.getLocationCategory().getCategory() + " " + location.getName());
             }
             case 2 -> {
-                var device = eventService.getReferencedDevice(targetId);
+               var device = eventService.getReferencedDevice(targetId);
                 eventList = device.getDeviceEventList();
+                model.addAttribute("deviceCategorySerialNumber", device.getDeviceCategory().getCategory() + " " + device.getSerialNumber());
+
             }
             case 3 -> {
-                var utilizer = eventService.getReferencedUtilizer(targetId.intValue());
+               var utilizer = eventService.getReferencedUtilizer(targetId.intValue());
                 eventList = utilizer.getEventList();
+                model.addAttribute("utilizerName", utilizer.getName());
             }
             default -> {
                 return "404";
@@ -292,6 +296,7 @@ public class EventController {
         }
         List<Event> finalEventList = eventService.loadEventTransients_1(eventList);
         model.addAttribute("eventList", finalEventList);
+        model.addAttribute("typeId", typeId);
 
         return "eventListView";
     }
@@ -304,9 +309,10 @@ public class EventController {
         Map<Utilizer, Integer> balanceReferenceMap = eventService.getBalanceReference(baseEvent);
 
         var locationList = baseEvent.getLocationList();
-        Location location = locationList.get(0);
+        var listSize = locationList.size();
 
-        if (locationList.size() == 1) {
+        if (listSize == 1) {
+            var location = Hibernate.unproxy(locationList.get(0), Location.class);
             if (location instanceof Hall hall) {
                 model.addAttribute("hall", hall);
             } else if (location instanceof Rack rack) {
@@ -315,20 +321,21 @@ public class EventController {
                 model.addAttribute("room1", room);
             }
         } else {
-            if (location instanceof Rack rack) {
+            var source = Hibernate.unproxy(locationList.get(0), Location.class);
+            var destination = Hibernate.unproxy(locationList.get(1), Location.class);
+
+            if (source instanceof Rack rack) {
                 model.addAttribute("sourceRack", rack);
-            } else if (location instanceof Room room) {
+            } else if (source instanceof Room room) {
                 model.addAttribute("sourceRoom", room);
             }
 
-            var location2 = locationList.get(1);
-            if (location2 instanceof Rack rack) {
+            if (destination instanceof Rack rack) {
                 model.addAttribute("destRack", rack);
-            } else if (location2 instanceof Room room) {
+            } else if (destination instanceof Room room) {
                 model.addAttribute("destRoom", room);
             }
         }
-
 
         if (baseEvent instanceof GeneralEvent generalEvent) {
             generalEvent.setCategory(UtilService.GENERAL_EVENT_CATEGORY_ID.get(generalEvent.getGeneralCategoryId()));

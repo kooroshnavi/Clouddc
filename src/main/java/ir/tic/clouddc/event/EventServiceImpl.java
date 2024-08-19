@@ -177,20 +177,15 @@ public final class EventServiceImpl implements EventService {
         if (eventForm.getUtilizer_oldUtilizerId() != null) {
             utilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId());
             location = centerService.getRefrencedLocation(eventForm.getUtilizer_locationId());
-            newDeviceInstallationEvent.setInstallationUtilizer(utilizer);
-            newDeviceInstallationEvent.setInstallationLocation(location);
         } else {
             utilizer = resourceService.getReferencedUtilizer(eventForm.getUtilizer_newUtilizerId());
-            newDeviceInstallationEvent.setInstallationUtilizer(utilizer);
             var optionalLocation = centerService.getLocation(eventForm.getUtilizer_locationId());
             if (optionalLocation.isPresent()) {
                 location = optionalLocation.get();
                 if (location instanceof Rack rack) {
                     rack.setUtilizer(utilizer);
-                    newDeviceInstallationEvent.setInstallationLocation(rack);
                 } else if (location instanceof Room room) {
                     room.setUtilizer(utilizer);
-                    newDeviceInstallationEvent.setInstallationLocation(room);
                 }
             } else {
                 throw new NoSuchElementException();
@@ -265,8 +260,6 @@ public final class EventServiceImpl implements EventService {
         LocationUtilizerEvent locationUtilizerEvent = new LocationUtilizerEvent();
         locationUtilizerEvent.setRegisterDate(UtilService.getDATE());
         locationUtilizerEvent.setRegisterTime(UtilService.getTime());
-        locationUtilizerEvent.setOldUtilizer(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()));
-        locationUtilizerEvent.setNewUtilizer(newUtilizer);
         locationUtilizerEvent.setActive(false);
         locationUtilizerEvent.setEventDate(validDate);
         locationUtilizerEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
@@ -315,10 +308,11 @@ public final class EventServiceImpl implements EventService {
                 }
                 locationUtilizerEvent.setDeviceList(referencedDeviceList);
             }
-            // many to many for inverse-side reference
+            // many to many for inverse-side reference - Holds important event data
 
             locationUtilizerEvent.setLocationList(List.of(location));
-            locationUtilizerEvent.setUtilizerList(List.of(newUtilizer, locationUtilizerEvent.getOldUtilizer()));
+            locationUtilizerEvent.setUtilizerList  // 0: old  1: new
+                    (List.of(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()), newUtilizer));
 
             eventPersist(eventForm, locationUtilizerEvent);
 
@@ -357,8 +351,6 @@ public final class EventServiceImpl implements EventService {
             deviceMovementEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
             deviceMovementEvent.setActive(false);
             deviceMovementEvent.setEventDate(validDate);
-            deviceMovementEvent.setSource(centerService.getRefrencedLocation(eventForm.getDeviceMovement_sourceLocId()));
-            deviceMovementEvent.setDestination(destinationLocation);
 
             // 1. referencedDeviceList
             List<Device> referencedDeviceList = new ArrayList<>();
@@ -408,7 +400,7 @@ public final class EventServiceImpl implements EventService {
 
             // many to many for inverse-side references
             deviceMovementEvent.setDeviceList(referencedDeviceList);
-            deviceMovementEvent.setLocationList(List.of(deviceMovementEvent.getSource(), destinationLocation));
+            deviceMovementEvent.setLocationList(List.of(centerService.getRefrencedLocation(eventForm.getDeviceMovement_sourceLocId()), destinationLocation));
 
             eventPersist(eventForm, deviceMovementEvent);
         } else {
@@ -427,16 +419,17 @@ public final class EventServiceImpl implements EventService {
             deviceUtilizerEvent.setRegisterTime(UtilService.getTime());
             deviceUtilizerEvent.setEventCategory(eventCategoryRepository.getReferenceById(eventForm.getEventCategoryId()));
             deviceUtilizerEvent.setActive(false);
-            deviceUtilizerEvent.setOldUtilizer(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId()));
-            deviceUtilizerEvent.setNewUtilizer(newUtilizer);
             deviceUtilizerEvent.setEventDate(validDate);
             List<Integer> affectedUtilizerIdList = List.of(device.getUtilizer().getId());
-            deviceUtilizerEvent.setUtilizerBalance(getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), affectedUtilizerIdList));
+            deviceUtilizerEvent.setUtilizerBalance
+                    (getUtilizerBalanceMap(affectedUtilizerIdList, newUtilizer.getId(), affectedUtilizerIdList));
             device.setUtilizer(newUtilizer);
 
             deviceUtilizerEvent.setLocationList(List.of(device.getLocation()));
             deviceUtilizerEvent.setDeviceList(List.of(device));
-            deviceUtilizerEvent.setUtilizerList(List.of(newUtilizer, deviceUtilizerEvent.getOldUtilizer()));
+            deviceUtilizerEvent.setUtilizerList  // 0: old   1: new
+                    (List.of(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId())
+                    , newUtilizer));
 
             eventPersist(eventForm, deviceUtilizerEvent);
         } else {
@@ -539,16 +532,6 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<Event> loadEventTransients_1(List<Event> eventList) {
-        for (Event event : eventList) {
-            event.setPersianEventDate(UtilService.getFormattedPersianDate(event.getEventDate()));
-            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
-            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
-        }
-        return eventList;
-    }
-
-    @Override
     public Map<Utilizer, Integer> getBalanceReference(Event baseEvent) {
         Map<Utilizer, Integer> balanceMap = new HashMap<>();
         Map<Integer, Integer> balanceId = baseEvent.getUtilizerBalance();
@@ -566,6 +549,17 @@ public final class EventServiceImpl implements EventService {
     public void updateGeneralEvent(EventForm eventForm) throws IOException {
         var event = eventRepository.getReferenceById(eventForm.getEventId());
         eventPersist(eventForm, event);
+    }
+
+    @Override
+    public List<Event> loadEventTransients_1(List<Event> eventList) {
+        for (Event event : eventList) {
+            event.setPersianEventDate(UtilService.getFormattedPersianDate(event.getEventDate()));
+            event.setPersianEventDay(UtilService.PERSIAN_DAY.get(event.getEventDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())));
+            event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
+            event.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(event.getRegisterDate(), event.getRegisterTime()));
+        }
+        return eventList;
     }
 
     private void loadEventTransients_2(List<EventDetail> eventDetailList) {

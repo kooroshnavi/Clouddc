@@ -82,5 +82,8 @@ public abstract class Event {
 
     @Transient
     private String persianEventDate;
+
+    @Transient
+    private String persianEventDay;
 }
 
