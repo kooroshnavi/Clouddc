@@ -1,13 +1,11 @@
 package ir.tic.clouddc.center;
 
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 @Slf4j
 @Controller
@@ -17,7 +15,7 @@ public class CenterController {
     private final CenterService centerService;
 
     @Autowired
-    public CenterController(CenterService centerService ) {
+    public CenterController(CenterService centerService) {
         this.centerService = centerService;
     }
 
@@ -50,13 +48,31 @@ public class CenterController {
         }
 
         return "404";
+    }
 
+    @GetMapping("/rack/{rackId}/deviceOrder")
+    private String rackDeviceOrderingView(Model model, @PathVariable Long rackId) {
+        var location = Hibernate.unproxy(centerService.getRefrencedLocation(rackId), Location.class);
+        if (location instanceof Rack rack) {
+            model.addAttribute("rack", rack);
+            model.addAttribute("rackDeviceOrderForm", new RackDeviceOrderForm());
 
+            return "rackDeviceOrdering";
+        } else {
+            return "404";
+        }
+    }
+
+    @PostMapping("/rack/deviceOrder")
+    public String updateRackDeviceOrder(Model model, @ModelAttribute("rackDeviceOrderForm") RackDeviceOrderForm rackDeviceOrderForm){
+        log.info(String.valueOf(rackDeviceOrderForm.getRackId()));
+        log.info(String.valueOf(rackDeviceOrderForm.getOrderString()));
+
+        return "redirect:/";
     }
 
     @ModelAttribute
     public void addAttributes(Model model) {
         centerService.modelForCenterController(model);
     }
-
 }

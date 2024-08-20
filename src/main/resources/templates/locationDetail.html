@@ -247,9 +247,19 @@
         <!--Salon/Rack/Room overview table-->
 
         <!--Device view (Rack)-->
+
         <h4 th:if="${location.locationCategory.categoryId == 2}" class="mb-0 text-bg-primary">آرایش رک</h4>
+        <br>
+
+        <a th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
+           class="btn btn-outline-warning"
+           th:text="'جانمایی تجهیزات رک ' + ${location.name}">
+        </a>
+
         <div th:if="${location.locationCategory.categoryId == 2}" class='housing'>
+
             <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
+
             <ol class="rack">
                 <li th:each="device, iter : ${rackDeviceList}" class='large'>
                     <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}" class="btn-sm px-sm-1"

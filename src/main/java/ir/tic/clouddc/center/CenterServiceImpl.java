@@ -9,6 +9,7 @@ import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.resource.UtilizerRepository;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
@@ -73,7 +74,7 @@ public class CenterServiceImpl implements CenterService {
 
 
     @Override
-    public Location getRefrencedLocation(Long locationId) {
+    public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
         return locationRepository.getReferenceById(locationId);
     }
 
