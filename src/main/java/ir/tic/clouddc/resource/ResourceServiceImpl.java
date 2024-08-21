@@ -1,6 +1,8 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
+import ir.tic.clouddc.center.Location;
+import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
 import ir.tic.clouddc.event.EventLandingForm;
@@ -10,13 +12,13 @@ import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Slf4j
@@ -95,7 +97,7 @@ public class ResourceServiceImpl implements ResourceService {
         unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
         unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
         unassignedDevice.setRemovalDate(UtilService.getDATE().plusDays(7));
-        Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(),"UnassignedDeviceRegister");
+        Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
         unassignedDevice.setPersistence(persistence);
 
         unassignedDeviceRepository.saveAndFlush(unassignedDevice);
@@ -114,6 +116,25 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public void deleteUnassignedList(List<Integer> assignedIdList) {
         unassignedDeviceRepository.deleteAllById(assignedIdList);
+    }
+
+    @Override
+    public void updateRackDevicePosition(Long rackId, Set<String> stringNewRackPositionList) {
+        var location = Hibernate.unproxy(centerService.getRefrencedLocation(rackId), Location.class);
+        Rack rack = (Rack) location;
+        var oldPositionMap = rack.getRackDeviceMap();
+        Map<Integer, Device> newPositionMap = new HashMap<>();
+        int currentPosition = 0;
+
+        for (String stringPosition : stringNewRackPositionList) {
+            int oldPosition = Integer.parseInt(stringPosition);
+            currentPosition += 1;
+            newPositionMap.put(currentPosition, oldPositionMap.get(oldPosition));
+        }
+
+        rack.setRackDeviceMap(newPositionMap);
+
+        centerService.saveRackDevicePosition(rack);
     }
 
     @Override

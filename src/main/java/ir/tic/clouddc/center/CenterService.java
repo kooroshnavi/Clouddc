@@ -17,6 +17,10 @@ public interface CenterService {
 
     List<Location> getLocationList();
 
+    void saveRackDevicePosition(Rack rack);
+
+    void verifyRackDevicePosition(List<Rack> rackList);
+
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {
         short getId();
@@ -60,6 +64,4 @@ public interface CenterService {
     void setDailyTemperatureReport(DailyReport currentReport);
 
     List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
-
-
 }

@@ -84,6 +84,7 @@
     </style>
 
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
@@ -111,6 +112,12 @@
 </head>
 
 <body>
+
+<script th:if="${devicePositionUpdated}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -251,7 +258,7 @@
         <h4 th:if="${location.locationCategory.categoryId == 2}" class="mb-0 text-bg-primary">آرایش رک</h4>
         <br>
 
-        <a th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
+        <a th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
            class="btn btn-outline-warning"
            th:text="'جانمایی تجهیزات رک ' + ${location.name}">
         </a>
@@ -261,11 +268,11 @@
             <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
 
             <ol class="rack">
-                <li th:each="device, iter : ${rackDeviceList}" class='large'>
-                    <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}" class="btn-sm px-sm-1"
-                       th:text="${device.deviceCategory.model + ' - ' + device.deviceCategory.factorSize + device.deviceCategory.factor}"
+                <li th:each="position, iter : ${rackDevicePositionMap.keySet().stream().sorted().toList()}" class='large'>
+                    <a th:href="@{/resource/device/{deviceId}/detail (deviceId=${rackDevicePositionMap.get(position).id})}" class="btn-sm px-sm-1"
+                       th:text="${rackDevicePositionMap.get(position).deviceCategory.model + ' - ' + rackDevicePositionMap.get(position).deviceCategory.factorSize + rackDevicePositionMap.get(position).deviceCategory.factor}"
                        data-bs-toggle="tooltip"
-                       data-bs-placement="bottom" th:title="${device.serialNumber}">
+                       data-bs-placement="bottom" th:title="${rackDevicePositionMap.get(position).serialNumber}">
                     </a>
                     <div class='light'></div>
                     <div class='light'></div>
@@ -343,7 +350,7 @@
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
 
-                            <td th:text="${rack.deviceList.size()}"></td>
+                            <td th:text="${rack.rackDeviceMap.size()}"></td>
                             <td th:text="${rack.utilizer.name} "></td>
 
 
@@ -483,6 +490,7 @@
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
+<!--notification js -->
 <script src="/panel/assets/js/jquery.min.js"></script>
 <script src="/panel/assets/js/jquery-ui.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
@@ -491,6 +499,10 @@
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>

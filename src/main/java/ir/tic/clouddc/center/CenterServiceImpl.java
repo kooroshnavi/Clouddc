@@ -7,7 +7,7 @@ import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.report.DailyReport;
-import ir.tic.clouddc.resource.UtilizerRepository;
+import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -18,9 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -38,20 +36,14 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationPmCatalogRepository locationPmCatalogRepository;
 
-    private final UtilizerRepository utilizerRepository;
-
-
-
-
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, UtilizerRepository utilizerRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
         this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
         this.locationPmCatalogRepository = locationPmCatalogRepository;
-        this.utilizerRepository = utilizerRepository;
     }
 /*
     @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
@@ -86,6 +78,36 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public List<Location> getLocationList() {
         return locationRepository.getLocationList();
+    }
+
+    @Override
+    public void saveRackDevicePosition(Rack rack) {
+        locationRepository.save(rack);
+    }
+
+    @Override
+    public void verifyRackDevicePosition(List<Rack> rackList) {
+        if (!rackList.isEmpty()) {
+            List<Rack> modifiedRackList = new ArrayList<>();
+            for (Rack rack : rackList) {
+                if (rack.getRackDeviceMap().isEmpty()) {
+                    var deviceList = rack.getDeviceList();
+                    if (!deviceList.isEmpty()) {
+                        Map<Integer, Device> rackDevicePositionMap = new HashMap<>();
+                        int position = 0;
+                        for (Device device : deviceList) {
+                            position += 1;
+                            rackDevicePositionMap.put(position, device);
+                        }
+                        rack.setRackDeviceMap(rackDevicePositionMap);
+                        modifiedRackList.add(rack);
+                    }
+                }
+            }
+            if (!modifiedRackList.isEmpty()) {
+                locationRepository.saveAllAndFlush(modifiedRackList);
+            }
+        }
     }
 
     @Override
@@ -182,14 +204,10 @@ public class CenterServiceImpl implements CenterService {
         */
     }
 
-
-
-
     @Override
     public Hall getHall(int hallId) {
         return null;
     }
-
 
     @Override
     public Optional<Location> getLocation(Long locationId) {
@@ -210,6 +228,7 @@ public class CenterServiceImpl implements CenterService {
         return optionalLocation;
 
     }
+
 
     @Override
     public Optional<Center> getCenter(int centerId) {

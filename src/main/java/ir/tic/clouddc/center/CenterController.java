@@ -5,13 +5,17 @@ import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import java.util.List;
 
 @Slf4j
 @Controller
 @RequestMapping("/center")
 public class CenterController {
-
     private final CenterService centerService;
 
     @Autowired
@@ -35,15 +39,22 @@ public class CenterController {
             model.addAttribute("catalogList", catalogList);
 
             if (baseLocation.get() instanceof Hall location) {
+                centerService.verifyRackDevicePosition(location.getRackList());
                 model.addAttribute("hall", location);
                 model.addAttribute("rackList", location.getRackList());
             } else if (baseLocation.get() instanceof Rack location) {
+                centerService.verifyRackDevicePosition(List.of(location));
                 model.addAttribute("rack", location);
-                model.addAttribute("rackDeviceList", location.getDeviceList());
+                model.addAttribute("rackDevicePositionMap", location.getRackDeviceMap());
             } else if (baseLocation.get() instanceof Room location) {
                 model.addAttribute("room", location);
                 model.addAttribute("roomDeviceList", location.getDeviceList());
             }
+
+            if (!model.containsAttribute("devicePositionUpdated")) {
+                model.addAttribute("devicePositionUpdated", false);
+            }
+
             return "locationDetail";
         }
 
@@ -63,13 +74,6 @@ public class CenterController {
         }
     }
 
-    @PostMapping("/rack/deviceOrder")
-    public String updateRackDeviceOrder(Model model, @ModelAttribute("rackDeviceOrderForm") RackDeviceOrderForm rackDeviceOrderForm){
-        log.info(String.valueOf(rackDeviceOrderForm.getRackId()));
-        log.info(String.valueOf(rackDeviceOrderForm.getOrderString()));
-
-        return "redirect:/";
-    }
 
     @ModelAttribute
     public void addAttributes(Model model) {

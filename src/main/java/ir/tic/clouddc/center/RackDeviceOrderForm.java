@@ -9,5 +9,5 @@ public class RackDeviceOrderForm {
 
     private Long rackId;
 
-    private List<String> orderString;
+    private List<String> orderList;
 }

@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.List;
+import java.util.Map;
 
 @Entity
 @Table(schema = "Center")
@@ -24,9 +25,17 @@ public final class Rack extends Location {
     @JoinColumn(name = "UtilizerID")
     private Utilizer utilizer;
 
-    @OneToMany(mappedBy = "location")
-    private List<Device> deviceList;
-
     @Column(name = "Description")
     private String description;
+
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
+    @JoinTable(name = "RackPositionDeviceMap", schema = "Center",
+            joinColumns = {@JoinColumn(name = "RackID", referencedColumnName = "LocationID")},
+            inverseJoinColumns = {@JoinColumn(name = "DeviceID", referencedColumnName = "DeviceID")})
+    @MapKeyColumn(name = "RackPosition")
+    private Map<Integer, Device> rackDeviceMap;
+
+    @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
+    private List<Device> deviceList;
+
 }
