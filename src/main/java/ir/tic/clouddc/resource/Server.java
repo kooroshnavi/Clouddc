@@ -14,6 +14,6 @@ import lombok.Setter;
 @Setter
 public final class Server extends Device {
 
-    @Column(name = "RemoteAddress")
+    @Column(name = "RemoteAddress", unique = true)
     private String remoteAddress;
 }

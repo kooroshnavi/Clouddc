@@ -22,7 +22,7 @@ public abstract class Device {
     @Column(name = "DeviceID")
     private Long id;
 
-    @Column(name = "SerialNumber")
+    @Column(name = "SerialNumber", unique = true, nullable = false)
     private String serialNumber;   /// DeviceForm
 
     @Column(name = "Priority")

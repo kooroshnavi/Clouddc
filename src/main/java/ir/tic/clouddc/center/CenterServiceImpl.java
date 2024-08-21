@@ -90,7 +90,7 @@ public class CenterServiceImpl implements CenterService {
         if (!rackList.isEmpty()) {
             List<Rack> modifiedRackList = new ArrayList<>();
             for (Rack rack : rackList) {
-                if (rack.getRackDeviceMap().isEmpty()) {
+                if (rack.getDevicePositionMap().isEmpty()) {
                     var deviceList = rack.getDeviceList();
                     if (!deviceList.isEmpty()) {
                         Map<Integer, Device> rackDevicePositionMap = new HashMap<>();
@@ -99,7 +99,7 @@ public class CenterServiceImpl implements CenterService {
                             position += 1;
                             rackDevicePositionMap.put(position, device);
                         }
-                        rack.setRackDeviceMap(rackDevicePositionMap);
+                        rack.setDevicePositionMap(rackDevicePositionMap);
                         modifiedRackList.add(rack);
                     }
                 }

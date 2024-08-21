@@ -119,20 +119,20 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void updateRackDevicePosition(Long rackId, Set<String> stringNewRackPositionList) {
+    public void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList) {
         var location = Hibernate.unproxy(centerService.getRefrencedLocation(rackId), Location.class);
         Rack rack = (Rack) location;
-        var oldPositionMap = rack.getRackDeviceMap();
+        var oldPositionMap = rack.getDevicePositionMap();
         Map<Integer, Device> newPositionMap = new HashMap<>();
-        int currentPosition = 0;
 
-        for (String stringPosition : stringNewRackPositionList) {
+        int newPosition = 0;
+        for (String stringPosition : newPositionStringList) {
             int oldPosition = Integer.parseInt(stringPosition);
-            currentPosition += 1;
-            newPositionMap.put(currentPosition, oldPositionMap.get(oldPosition));
+            newPosition += 1;
+            newPositionMap.put(newPosition, oldPositionMap.get(oldPosition));
         }
 
-        rack.setRackDeviceMap(newPositionMap);
+        rack.setDevicePositionMap(newPositionMap);
 
         centerService.saveRackDevicePosition(rack);
     }

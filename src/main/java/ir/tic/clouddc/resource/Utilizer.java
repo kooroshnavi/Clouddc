@@ -21,7 +21,7 @@ public final class Utilizer {
     @Column(name = "UtilizerID")
     private Integer id;
 
-    @Column(name = "Name")
+    @Column(name = "Name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "Messenger")

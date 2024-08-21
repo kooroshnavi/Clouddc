@@ -348,12 +348,12 @@
 
                                     <tbody>
 
-                                    <tr th:id="${position}" th:each="position, iter : ${rack.rackDeviceMap.keySet().stream().sorted().toList()}">
+                                    <tr th:id="${position}" th:each="position, iter : ${rack.devicePositionMap.keySet().stream().sorted().toList()}">
 
                                         <td th:text="${iter.count}"></td>
-                                        <td th:text="${rack.rackDeviceMap.get(position).serialNumber}">
-                                        <td th:text="${rack.rackDeviceMap.get(position).deviceCategory.category}"></td>
-                                        <td th:text="${rack.rackDeviceMap.get(position).deviceCategory.model}"></td>
+                                        <td th:text="${rack.devicePositionMap.get(position).serialNumber}">
+                                        <td th:text="${rack.devicePositionMap.get(position).deviceCategory.category}"></td>
+                                        <td th:text="${rack.devicePositionMap.get(position).deviceCategory.model}"></td>
 
                                         <td>
                                             <input id="order" type="hidden" th:field="*{orderList}"/>

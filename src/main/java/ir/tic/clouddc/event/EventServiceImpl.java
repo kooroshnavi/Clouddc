@@ -215,6 +215,24 @@ public final class EventServiceImpl implements EventService {
             referencedDeviceList.add(device);
         }
 
+        if (location instanceof Rack rack) { // updates device position
+            if (rack.getDevicePositionMap().isEmpty()) { // Empty Rack
+                Map<Integer, Device> devicePositionMap = new HashMap<>();
+                int position = 0;
+                for (Device device : referencedDeviceList) {
+                    position += 1;
+                    devicePositionMap.put(position, device);
+                }
+                rack.setDevicePositionMap(devicePositionMap);
+            } else {  // New devices will be added at the end of the list
+                int position = rack.getDevicePositionMap().size();
+                for (Device device : referencedDeviceList) {
+                    position += 1;
+                    rack.getDevicePositionMap().put(position, device);
+                }
+            }
+        }
+
         newDeviceInstallationEvent.setDeviceList(referencedDeviceList);
         newDeviceInstallationEvent.setLocationList(List.of(location)); // new device installed @ this location
         newDeviceInstallationEvent.setUtilizerList(List.of(utilizer)); // new device installed for this utilizer
@@ -429,7 +447,7 @@ public final class EventServiceImpl implements EventService {
             deviceUtilizerEvent.setDeviceList(List.of(device));
             deviceUtilizerEvent.setUtilizerList  // 0: old   1: new
                     (List.of(resourceService.getReferencedUtilizer(eventForm.getUtilizer_oldUtilizerId())
-                    , newUtilizer));
+                            , newUtilizer));
 
             eventPersist(eventForm, deviceUtilizerEvent);
         } else {

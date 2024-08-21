@@ -255,7 +255,7 @@
 
         <!--Device view (Rack)-->
 
-        <h4 th:if="${location.locationCategory.categoryId == 2}" class="mb-0 text-bg-primary">آرایش رک</h4>
+        <h4 th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" class="mb-0 text-bg-primary">آرایش رک</h4>
         <br>
 
         <a th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
@@ -263,7 +263,7 @@
            th:text="'جانمایی تجهیزات رک ' + ${location.name}">
         </a>
 
-        <div th:if="${location.locationCategory.categoryId == 2}" class='housing'>
+        <div th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" class='housing'>
 
             <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
 
@@ -350,7 +350,7 @@
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
 
-                            <td th:text="${rack.rackDeviceMap.size()}"></td>
+                            <td th:text="${rack.devicePositionMap.size()}"></td>
                             <td th:text="${rack.utilizer.name} "></td>
 
 

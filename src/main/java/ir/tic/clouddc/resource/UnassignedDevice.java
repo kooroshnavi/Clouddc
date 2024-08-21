@@ -31,7 +31,7 @@ public final class UnassignedDevice {
     @JoinColumn(name = "DeviceCategoryID")
     private DeviceCategory deviceCategory;
 
-    @OneToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY)
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 }

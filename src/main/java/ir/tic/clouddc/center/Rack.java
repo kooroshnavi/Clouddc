@@ -28,12 +28,12 @@ public final class Rack extends Location {
     @Column(name = "Description")
     private String description;
 
-    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "RackPositionDeviceMap", schema = "Center",
             joinColumns = {@JoinColumn(name = "RackID", referencedColumnName = "LocationID")},
             inverseJoinColumns = {@JoinColumn(name = "DeviceID", referencedColumnName = "DeviceID")})
-    @MapKeyColumn(name = "RackPosition")
-    private Map<Integer, Device> rackDeviceMap;
+    @MapKeyColumn(name = "Position")
+    private Map<Integer, Device> devicePositionMap;
 
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     private List<Device> deviceList;

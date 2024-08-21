@@ -45,7 +45,7 @@ public class CenterController {
             } else if (baseLocation.get() instanceof Rack location) {
                 centerService.verifyRackDevicePosition(List.of(location));
                 model.addAttribute("rack", location);
-                model.addAttribute("rackDevicePositionMap", location.getRackDeviceMap());
+                model.addAttribute("rackDevicePositionMap", location.getDevicePositionMap());
             } else if (baseLocation.get() instanceof Room location) {
                 model.addAttribute("room", location);
                 model.addAttribute("roomDeviceList", location.getDeviceList());
