@@ -2,7 +2,6 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -21,19 +20,19 @@ public final class PmInterface {
     @Column(name = "PmInterfaceID")
     private Integer id;
 
-    @Column(name = "Title")
+    @Column(name = "Title", unique = true, nullable = false)
     private String title;
 
-    @Column(name = "Period")
+    @Column(name = "Period", nullable = false)
     private int period;
 
-    @Column(name = "Enabled")
+    @Column(name = "Enabled", nullable = false)
     private boolean enabled;
 
-    @Column(name = "GeneralPm")
+    @Column(name = "GeneralPm", nullable = false)
     private boolean generalPm;
 
-    @Column(name = "StatelessRecurring")
+    @Column(name = "StatelessRecurring", nullable = false)
     private boolean statelessRecurring;
 
     @Column(name = "Description")

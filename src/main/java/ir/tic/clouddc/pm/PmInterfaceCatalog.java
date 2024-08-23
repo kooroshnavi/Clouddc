@@ -3,7 +3,6 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,11 +25,11 @@ public abstract class PmInterfaceCatalog {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PmInterfaceID")
+    @JoinColumn(name = "PmInterfaceID", nullable = false)
     private PmInterface pmInterface;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DefaultPersonID")
+    @JoinColumn(name = "DefaultPersonID", nullable = false)
     private Person defaultPerson;
 
     @Column(name = "LastFinishedDate")

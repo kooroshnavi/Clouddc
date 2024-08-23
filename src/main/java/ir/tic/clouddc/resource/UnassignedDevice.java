@@ -21,10 +21,10 @@ public final class UnassignedDevice {
     @Column(name = "UnassignedDeviceID")
     private Integer id;
 
-    @Column(name = "SerialNumber")
+    @Column(name = "SerialNumber", unique = true, nullable = false)
     private String serialNumber;
 
-    @Column(name = "RemovalDate")
+    @Column(name = "RemovalDate", nullable = false)
     private LocalDate removalDate;
 
     @ManyToOne(cascade = CascadeType.MERGE)

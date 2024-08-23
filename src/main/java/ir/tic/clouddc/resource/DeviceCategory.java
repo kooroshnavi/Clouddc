@@ -19,16 +19,16 @@ public final class DeviceCategory {
     @Column(name = "DeviceCategoryID")
     private Integer id;
 
-    @Column(name = "Category")
+    @Column(name = "Category", nullable = false)
     private String category;  // server - switch - firewall - enclosure
 
-    @Column(name = "CategoryId")
+    @Column(name = "CategoryId", nullable = false)
     private int categoryId;  // 1 - 2 - 3 - 4
 
-    @Column(name = "Vendor")
+    @Column(name = "Vendor", nullable = false)
     private String vendor; // hpe - cisco
 
-    @Column(name = "Model")
+    @Column(name = "Model", nullable = false)
     private String model;   //
 
     @Column(name = "Factor")

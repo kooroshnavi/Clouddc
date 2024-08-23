@@ -1,7 +1,6 @@
 package ir.tic.clouddc.report;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,10 +19,10 @@ public final class DailyReport {
     @Column(name = "ReportID")
     private Long id;
 
-    @Column(name = "Date")
+    @Column(name = "Date", unique = true, nullable = false)
     private LocalDate date;
 
-    @Column(name = "Active")
+    @Column(name = "Active", nullable = false)
     private boolean active;
 
     @Transient

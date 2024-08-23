@@ -68,4 +68,6 @@ public interface EventService {
     Map<Utilizer, Integer> getBalanceReference(Event baseEvent);
 
     void updateGeneralEvent(EventForm eventForm) throws IOException;
+
+    boolean newDevicePresentCheck();
 }

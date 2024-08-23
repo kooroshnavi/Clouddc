@@ -30,9 +30,11 @@ public interface ResourceService {
 
     Supplier getReferencedDefaultSupplier();
 
-    void deleteUnassignedList(List<Integer> unassignedDeviceIdList);
+    void deleteInstalledUnassignedList(List<Integer> unassignedDeviceIdList);
 
     void updateRackDevicePosition(Long rackId, Set<String> stringNewRackPositionList);
+
+    boolean newDevicePresentCheck();
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();

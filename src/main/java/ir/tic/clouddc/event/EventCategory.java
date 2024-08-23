@@ -19,7 +19,7 @@ public final class EventCategory {
     @Column(name = "EventCategoryID")
     private Integer id;
 
-    @Column(name = "Title")
+    @Column(name = "Title", unique = true, nullable = false)
     private String title;
 
     @OneToMany(mappedBy = "eventCategory")

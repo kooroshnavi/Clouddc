@@ -54,6 +54,11 @@ public class EventController {
             }
 
             case 2 -> { // New Device Installation
+                var newDeviceAvailable = eventService.newDevicePresentCheck();
+                if (!newDeviceAvailable) {
+                    return "redirect:/resource/device/unassigned";
+                }
+
                 var optionalLocation = eventService.getLocation(targetId);
                 if (optionalLocation.isPresent()) {
                     var location = optionalLocation.get();

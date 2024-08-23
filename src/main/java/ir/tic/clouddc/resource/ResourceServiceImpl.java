@@ -114,7 +114,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void deleteUnassignedList(List<Integer> assignedIdList) {
+    public void deleteInstalledUnassignedList(List<Integer> assignedIdList) {
         unassignedDeviceRepository.deleteAllById(assignedIdList);
     }
 
@@ -135,6 +135,12 @@ public class ResourceServiceImpl implements ResourceService {
         rack.setDevicePositionMap(newPositionMap);
 
         centerService.saveRackDevicePosition(rack);
+    }
+
+    @Override
+    public boolean newDevicePresentCheck() {
+        var count = unassignedDeviceRepository.count();
+        return count != 0;
     }
 
     @Override

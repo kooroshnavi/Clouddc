@@ -25,23 +25,23 @@ public abstract class Device {
     @Column(name = "SerialNumber", unique = true, nullable = false)
     private String serialNumber;   /// DeviceForm
 
-    @Column(name = "Priority")
+    @Column(name = "Priority", nullable = false)
     private boolean priorityDevice;    /// DeviceForm
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DeviceCategoryID")
+    @JoinColumn(name = "DeviceCategoryID", nullable = false)
     private DeviceCategory deviceCategory;   /// DeviceForm
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "UtilizerID")
+    @JoinColumn(name = "UtilizerID", nullable = false)
     private Utilizer utilizer;    /// DeviceUtilizerEvent
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "LocationID")
+    @JoinColumn(name = "LocationID", nullable = false)
     private Location location;   /// DeviceMovementEvent
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "SupplierID")
+    @JoinColumn(name = "SupplierID", nullable = false)
     private Supplier supplier;
 
     @OneToMany(mappedBy = "device")
