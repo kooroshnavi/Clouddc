@@ -41,7 +41,6 @@ public final class EventServiceImpl implements EventService {
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 5;
-    private static final int DEVICE_CHECKLIST_EVENT_CATEGORY_ID = 6;
 
 
     @Autowired

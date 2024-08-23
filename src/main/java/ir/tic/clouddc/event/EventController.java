@@ -177,27 +177,25 @@ public class EventController {
             case 1 -> {
                 redirectAttributes.addAttribute("targetId", eventForm.getGeneral_locationId());
                 redirectAttributes.addAttribute("typeId", 1);
-                return "redirect:/event/{typeId}/{targetId}/list";
             }
             case 2, 3 -> {
                 redirectAttributes.addAttribute("targetId", eventForm.getUtilizer_locationId());
                 redirectAttributes.addAttribute("typeId", 1);
-                return "redirect:/event/{typeId}/{targetId}/list";
             }
             case 4 -> {
                 redirectAttributes.addAttribute("targetId", eventForm.getDeviceMovement_destLocId());
                 redirectAttributes.addAttribute("typeId", 1);
-                return "redirect:/event/{typeId}/{targetId}/list";
             }
             case 5 -> {
                 redirectAttributes.addAttribute("targetId", eventForm.getUtilizer_deviceId());
                 redirectAttributes.addAttribute("typeId", 2);
-                return "redirect:/event/{typeId}/{targetId}/list";
             }
             default -> {
                 return "404";
             }
         }
+        return "redirect:/event/{typeId}/{targetId}/list";
+
     }
 
     @GetMapping("/{typeId}/{targetId}/list")
