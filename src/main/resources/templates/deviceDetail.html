@@ -247,7 +247,7 @@
                             <th>ردیف</th>
                             <th>نوع</th>
                             <th>عنوان Pm</th>
-                            <th>جزئیات آخرین اقدام</th>
+                            <th>آخرین اقدام</th>
                             <th>سررسید بعدی</th>
                             <th>کارتابل پیش فرض</th>
                             <th>وضعیت</th>
@@ -272,11 +272,8 @@
 
                             <td th:if="${catalog.history}">
                                 <div class="col">
-                                    <a th:text="${catalog.persianLastFinishedDate}"
-                                       th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="top"
-                                       title="جزئیات آخرین اقدام"></a>
+                                    <a th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
+                                       class="btn btn-outline-warning px-10 radius-30">جزئیات آخرین اقدام</a>
                                 </div>
                             </td>
 

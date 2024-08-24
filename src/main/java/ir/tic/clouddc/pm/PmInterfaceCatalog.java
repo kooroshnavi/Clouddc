@@ -8,7 +8,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
@@ -32,12 +31,6 @@ public abstract class PmInterfaceCatalog {
     @JoinColumn(name = "DefaultPersonID", nullable = false)
     private Person defaultPerson;
 
-    @Column(name = "LastFinishedDate")
-    private LocalDate lastFinishedDate;
-
-    @Column(name = "LastFinishedTime")
-    private LocalTime lastFinishedTime;
-
     @Column(name = "LastPmId")
     private Long lastPmId;
 
@@ -53,18 +46,12 @@ public abstract class PmInterfaceCatalog {
     @Column(name = "History")
     private boolean history;
 
-    @OneToMany(mappedBy = "pmInterfaceCatalog")
+    @OneToMany(mappedBy = "pmInterfaceCatalog", cascade = CascadeType.ALL)
     private List<Pm> pmList;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
-
-    @Transient
-    private String persianLastFinishedDate;
-
-    @Transient
-    private String persianLastFinishedDayTime;
 
     @Transient
     private String persianNextDue;

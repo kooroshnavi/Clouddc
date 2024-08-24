@@ -1,7 +1,6 @@
 package ir.tic.clouddc.pm;
 
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,10 +40,10 @@ public abstract class Pm {    // new Task style
     @Column(name = "FinishedTime")
     private LocalTime finishedTime;
 
-    @OneToMany(mappedBy = "pm")
+    @OneToMany(mappedBy = "pm", cascade = {CascadeType.ALL})
     private List<PmDetail> pmDetailList;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinColumn(name = "CatalogID")
     private PmInterfaceCatalog pmInterfaceCatalog;
 

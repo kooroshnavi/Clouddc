@@ -3,7 +3,6 @@ package ir.tic.clouddc.event;
 import ir.tic.clouddc.center.*;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.log.LogHistory;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.log.Workflow;
@@ -516,9 +515,9 @@ public final class EventServiceImpl implements EventService {
         eventDetail.setRegisterTime(UtilService.getTime());
         Persistence persistence;
         if (eventForm.getEventId() != null) {
-            persistence = getPersistence("EventUpdate");
+            persistence = logService.newPersistenceInitialization("EventUpdate");
         } else {
-            persistence = getPersistence("EventRegister");
+            persistence = logService.newPersistenceInitialization("EventRegister");
         }
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
@@ -542,15 +541,6 @@ public final class EventServiceImpl implements EventService {
         if (eventForm.getMultipartFile() != null) {
             fileService.registerAttachment(eventForm.getMultipartFile(), persistedDetail.getPersistence());
         }
-    }
-
-    private Persistence getPersistence(String logMessageKey) {
-        var currentPerson = personService.getCurrentPerson();
-        var persistence = logService.persistenceSetup(currentPerson);
-        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get(logMessageKey), true);
-        persistence.setLogHistoryList(List.of(logHistory));
-
-        return persistence;
     }
 
     @Override

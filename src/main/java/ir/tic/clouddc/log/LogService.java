@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface LogService {
 
+    Persistence newPersistenceInitialization(String logMessageKey);
+
     Persistence persistenceSetup(Person person);
 
     void historyUpdate(LocalDate date, LocalTime time, String logMessage, Person person, Persistence persistence);

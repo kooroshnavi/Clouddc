@@ -151,11 +151,6 @@ public class ResourceServiceImpl implements ResourceService {
             if (currentDevice.get().getDevicePmCatalogList() != null) {
                 log.info("Current device has catalog");
                 for (DevicePmCatalog devicePmCatalog : currentDevice.get().getDevicePmCatalogList()) {
-                    if (devicePmCatalog.isHistory()) {
-                        var finishedDate = devicePmCatalog.getLastFinishedDate();
-                        devicePmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
-                        devicePmCatalog.setPersianLastFinishedDayTime(UtilService.getFormattedPersianDayTime(finishedDate, devicePmCatalog.getLastFinishedTime()));
-                    }
                     devicePmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(devicePmCatalog.getNextDueDate()));
                 }
             }

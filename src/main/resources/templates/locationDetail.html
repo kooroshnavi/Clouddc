@@ -211,6 +211,7 @@
                         <th scope="col">نام</th>
                         <th scope="col">مرکز</th>
                         <th th:if="${location.locationCategory.categoryId == 2}" scope="col">سالن</th>
+                        <th th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" scope="col">تعداد تجهیز مستقر در رک</th>
                         <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             scope="col">توضیحات
                         </th>
@@ -232,6 +233,7 @@
 
                         <td th:if="${location.locationCategory.categoryId == 2}" th:text="${rack.hall.name}"></td>
 
+                        <td th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:text="${rackDevicePositionMap.size()}"></td>
 
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             th:text="${rack.description}"></td>
@@ -388,7 +390,7 @@
                             <th>ردیف</th>
                             <th>نوع</th>
                             <th>عنوان Pm</th>
-                            <th>جزئیات آخرین اقدام</th>
+                            <th>آخرین اقدام</th>
                             <th>سررسید بعدی</th>
                             <th>کارتابل پیش فرض</th>
                             <th>وضعیت</th>
@@ -423,11 +425,10 @@
 
                             <td th:if="${catalog.history}">
                                 <div class="col">
-                                    <a th:text="${catalog.persianLastFinishedDate}"
+                                    <a th:text="${catalog.persianNextDue}"
                                        th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="top"
-                                       th:title="${catalog.persianLastFinishedDayTime}"></a>
+                                       data-bs-placement="top">>جزئیات آخرین اقدام</a>
                                 </div>
                             </td>
 

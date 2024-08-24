@@ -1,15 +1,15 @@
 package ir.tic.clouddc.log;
 
 import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -21,11 +21,24 @@ public final class LogServiceImpl implements LogService {
 
     private final WorkflowRepository workflowRepository;
 
+    private final PersonService personService;
+
     @Autowired
-    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository, WorkflowRepository workflowRepository) {
+    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository, WorkflowRepository workflowRepository, PersonService personService) {
         this.persistenceRepository = persistenceRepository;
         this.logHistoryRepository = logHistoryRepository;
         this.workflowRepository = workflowRepository;
+        this.personService = personService;
+    }
+
+    @Override
+    public Persistence newPersistenceInitialization(String logMessageKey) {
+        var currentPerson = personService.getCurrentPerson();
+        Persistence persistence = new Persistence(currentPerson);
+        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get(logMessageKey), true);
+        persistence.setLogHistoryList(List.of(logHistory));
+
+        return persistence;
     }
 
     @Override
@@ -37,17 +50,23 @@ public final class LogServiceImpl implements LogService {
 
     @Override
     public void historyUpdate(LocalDate date, LocalTime time, String logMessage, Person person, Persistence persistence) {
-        List<LogHistory> logHistoryList = new ArrayList<>();
-        LogHistory logHistory = new LogHistory(date, time, person, persistence, logMessage, true);
-        logHistoryList.add(logHistory);
+
         if (persistence.getLogHistoryList() != null) {
-            Optional<LogHistory> currentHistory = persistence.getLogHistoryList().stream().filter(LogHistory::isLast).findAny();
-            if (currentHistory.isPresent()) {
-                currentHistory.get().setLast(false);
-                logHistoryList.add(currentHistory.get());
-            }
+            persistence
+                    .getLogHistoryList()
+                    .stream()
+                    .filter(LogHistory::isLast)
+                    .findFirst()
+                    .ifPresent(logHistory -> logHistory.setLast(false));
+
         }
-        logHistoryRepository.saveAll(logHistoryList);
+
+        LogHistory newLogHistory = new LogHistory(date, time, person, persistence, logMessage, true);
+        if (persistence.getLogHistoryList() != null) {
+            persistence.getLogHistoryList().add(newLogHistory);
+        } else {
+            persistence.setLogHistoryList(List.of(newLogHistory));
+        }
     }
 
     @Override

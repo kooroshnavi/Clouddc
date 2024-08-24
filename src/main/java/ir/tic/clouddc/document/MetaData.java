@@ -3,7 +3,6 @@ package ir.tic.clouddc.document;
 
 import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
-import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -44,7 +43,7 @@ public final class MetaData {
     @Transient
     private String persianRemoveDate;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.DETACH, CascadeType.MERGE, CascadeType.REFRESH})
+    @ManyToOne(cascade = {CascadeType.MERGE})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 

@@ -35,4 +35,8 @@ public final class Persistence {
         LogHistory logHistory = new LogHistory(date, time, owner, this, UtilService.LOG_MESSAGE.get(logMessageKey), true);
         this.setLogHistoryList(List.of(logHistory));
     }
+
+    public Persistence(Person person) {
+        this.person = person;
+    }
 }
