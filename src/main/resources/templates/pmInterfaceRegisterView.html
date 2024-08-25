@@ -32,7 +32,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>Pm Register</title>
+    <title>ثبت یا ویرایش یک Pm</title>
 </head>
 
 <body>
@@ -59,7 +59,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">تعریف Pm</li>
+                        <li class="breadcrumb-item active" aria-current="page">تعریف / ویرایش Pm</li>
                     </ol>
                 </nav>
             </div>
@@ -70,14 +70,57 @@
         <div class="row">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
-                    <div class="card-header py-3 bg-transparent" align="hall">
-                        <h5 class="mb-0">فرم ثبت Pm</h5>
-                    </div>
-
                     <div class="card-body">
+
+                        <div th:if="${!isUpdate}" class="col" align="right">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای فرم</button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">فرم ثبت PM جدید</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <label class="text-bg-primary">عنوان Pm: </label>
+                                            <p>عنوان اصلی اینکه این PM چه کاری را به صورت دوره ای انجام می دهد.</p>
+                                            <label class="text-bg-primary">دوره تکرار: </label>
+                                            <p>هر چند روز این Pm می بایست در مکان یا تجهیز مدنظر تکرار شود.</p>
+                                            <label class="text-bg-primary">نوع مکان / تجهیز</label>
+                                            <p>انتخاب نوع مکان یا نوع تجهیز قابل اجرا برای این Pm</p>
+                                            <label class="text-bg-primary">وضعیت فعالسازی:</label>
+                                            <p>در صورت انتخاب؛ Pm در سررسیدها اجرا می شود و می توان مکان یا تجهیزات را به کاتالوگ آن افزود.</p>
+                                            <p class="text-bg-danger">در صورت عدم انتخاب؛ Pm در سررسیدهای بعدی اجرا نمی شود و امکان افزودن تجهیز/ مکان به کاتالوگ آن وجود ندارد. مناسب برای غیرفعال سازی موقت Pm</p>
+                                            <label class="text-bg-success">فایل پیوست شده در این فرم در تمام گردش کارهای این Pm نمایش داده می شود.</label>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <h6 th:if="${isUpdate}" class="mb-0 text-uppercase" align="center">
+                            <strong>ویرایش PM</strong>
+                        </h6>
+                        <h6 th:unless="${isUpdate}" class="mb-0 text-uppercase" align="center">
+                            <strong>ثبت PM جدید</strong>
+                        </h6>
+                        <hr/>
+                        <h6 th:if="${!isUpdate}" class="mb-0 text-uppercase" align="center">
+                            <strong class="mb-0 text-bg-primary">خواهشمندست راهنمای فرم را مطالعه نمایید.</strong>
+                        </h6>
+                        <br>
+
+                        <div class="d-flex align-items-center">
+                        </div>
                         <div class="border p-3 rounded">
 
-                            <form class="row g-lg-3" th:action="@{/pm/register}" th:object="${pmInterfaceRegisterForm}"
+                            <form class="was-validated" th:action="@{/pm/register}" th:object="${pmInterfaceRegisterForm}"
                                   enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                                 <div class="col-12">
@@ -120,10 +163,16 @@
                                         <option th:value="9">روی تمام انواع تجهیزات</option>
                                     </select>
                                 </div>
+                                <br th:if="${!isUpdate}">
+
+                                <h6 th:if="${!isUpdate}" class="mb-sm-5 text-sm-center" align="center">
+                                    <strong class="mb-sm-5 text-warning-emphasis">مکان یا نوع تجهیز انتخاب شده برای اجرای این PM بعدا قابل ویرایش نخواهد بود.</strong>
+                                </h6>
+
                                 <hr/>
 
                                 <div th:if="${enablementAccess}" class="col-12">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:field="*{enabled}">
+                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" checked="checked" th:field="*{enabled}">
                                     <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال سازی</label>
                                 </div>
                                 <hr/>
@@ -132,13 +181,6 @@
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked="checked" disabled="disabled">
                                     <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این Pm خاتمه یابد.</label>
                                 </div>
-
-                                <div class="col-12">
-                                    <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" th:field="*{statelessRecurring}" checked>
-                                    <label class="form-check-label" for="flexSwitchCheckChecked">تکرار مستقل
-                                    </label>
-                                </div>
-                                <hr/>
 
                                 <div class="col-12">
                                     <label class="form-label">توضیحات</label>
@@ -154,6 +196,15 @@
                                 </div>
                                 <hr/>
 
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
+                                        <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                        <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                    </div>
+                                    <hr/>
+                                </div>
+
                                 <input type="hidden" name="update" th:value="${isUpdate}"/>
                                 <input th:if="${not enablementAccess}" type="hidden" name="enabled" th:value="${pmInterface.enabled}"/>
                                 <input th:if="${isUpdate}" type="hidden" name="pmInterfaceId" th:value="${pmInterface.id}"/>
@@ -168,19 +219,18 @@
                                         <div class="modal-dialog modal-lg modal-dialog-centered">
                                             <div class="modal-content bg-warning">
                                                 <div class="modal-header border-dark">
-                                                    <h5 class="modal-title text-dark">همکار گرامی، نظر به اهمیت ثبت
-                                                        اطلاعات صحیح و قابل استناد،</h5>
+                                                    <h5 class="modal-title text-dark">همکار گرامی،</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body text-dark">
-                                                    <p>لطفا در ثبت و ویرایش Pm ها دقت لازم را مبذول نمایید باتشکر</p>
+                                                    <p>پس از ثبت می بایست مکان/تجهیز مدنظر را به لیست اجرایی این PM اضافه نمایید. برای این کار به صفحه مکان / تجهیز مربوطه مراجعه کنید.</p>
                                                 </div>
                                                 <div class="modal-footer border-dark">
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                         بستن
                                                     </button>
-                                                    <button type="submit" id="submit" class="btn btn-dark">ثبت وظیفه جدید</button>
+                                                    <button type="submit" id="submit" class="btn btn-dark">ثبت PM</button>
                                                 </div>
                                             </div>
                                         </div>

@@ -3,7 +3,6 @@ package ir.tic.clouddc.notification;
 import com.github.mfathi91.time.PersianDateTime;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.soap2.SoapClientService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -28,7 +27,7 @@ public class SoapNotificationService implements NotificationService {
     public void sendSuccessLoginMessage(String personName, String ipAddress, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
-        var person = personService.getPerson(personName);
+        var person = personService.getPersonByUsername(personName);
         var address = person.getAddress().getValue();
 
         final String message =

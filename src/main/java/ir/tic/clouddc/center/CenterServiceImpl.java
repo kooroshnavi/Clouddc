@@ -244,7 +244,7 @@ public class CenterServiceImpl implements CenterService {
     public Model modelForCenterController(Model model) {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
+        Person person = personService.getPersonByUsername(personName);
         model.addAttribute("person", person);
         model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("date", UtilService.getCurrentDate());

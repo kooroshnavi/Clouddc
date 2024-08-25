@@ -6,23 +6,92 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        html,
+        body {
+        }
+        .glow-on-hover {
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background: #111;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px;
+            left:-2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:active {
+            color: #6a1a21;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:active:after {
+            background: transparent;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:hover:before {
+            opacity: 1;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: darkgoldenrod;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+        @keyframes glowing {
+            0% { background-position: 0 0; }
+            50% { background-position: 400% 0; }
+            100% { background-position: 0 0; }
+        }
+    </style>
+
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
+
     <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
     <link href="/panel/assets/css/style.css" rel="stylesheet"/>
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-    <link href="/panel/assets/css/tableFilter.css" rel="stylesheet">
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -36,6 +105,17 @@
 
 <body>
 
+<script th:if="${pmInterfaceRegistered}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
+
+<script th:if="${pmInterfaceUpdated}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -49,34 +129,40 @@
 
     <!--start content-->
     <main class="page-content">
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-            <a type="button" th:href="@{/pm/register/form}" class="btn btn-warning px-5" data-bs-toggle="tooltip"
-               data-bs-placement="top" title="لطفا از ثبت رخدادها و وظایف تکراری خودداری نمایید">تعریف PM جدید</a>
-        </div>
 
 
         <!--breadcrumb-->
 
         <!--end breadcrumb-->
 
+        <h4 class="mb-0 text-uppercase" align="center">لیست Pmهای تعریف شده</h4>
+        <br>
+        <h5 class="mb-0 text-uppercase" align="center">
+            <strong class="mb-0 text-bg-info">دکمه جزئیات شامل اطلاعات مرتبط می باشد.</strong>
+        </h5>
+        <br>
+
+
         <div class="card">
 
             <div class="card-body">
+
+
+
+                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col" align="right">
+                    <a type="button" th:href="@{/pm/register/form}" class="btn btn-outline-warning">تعریف PM جدید</a>
+                </div>
+                <br sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+
                 <div class="table-responsive">
-                    <table id="example2" class="table table-striped table-bordered">
+                    <table class="table table-striped table-bordered">
                         <thead>
                         <tr>
                             <th>ردیف</th>
                             <th>PM عنوان</th>
-                            <th index=0>دوره تکرار
-                                <div class="filter"></div>
-                            </th>
-                            <th index=1>دسته بندی
-                                    <div class="filter"></div>
-                            </th>
-                            <th index=1>قابل اجرا بر روی
-                                <div class="filter"></div>
-                            </th>
+                            <th>دوره تکرار</th>
+                            <th>دسته بندی</th>
+                            <th>قابل اجرا بر روی</th>
                             <th>جزئیات</th>
                         </tr>
                         </thead>
@@ -84,11 +170,17 @@
 
                         <tr th:each="pmInterface, iter : ${pmInterfaceList}">
 
-                            <td th:text="${iter.count}"/>
-
-                            <td>
+                            <td th:if="${pmInterfaceRegistered && iter.first}" class="text-bg-success"
+                                th:text="${iter.count}"/>
+                            <td th:if="${pmInterfaceRegistered && iter.first}" class="text-bg-success">
                                 <strong th:text="${pmInterface.title}"></strong>
                             </td>
+
+                            <td th:unless="${pmInterfaceRegistered && iter.first}" th:text="${iter.count}"/>
+                            <td th:unless="${pmInterfaceRegistered && iter.first}">
+                                <strong th:text="${pmInterface.title}"></strong>
+                            </td>
+
 
                             <td th:text="${pmInterface.period}"></td>
 
@@ -106,24 +198,33 @@
 
                             <td>
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmInterfaceId}/edit (pmInterfaceId=${pmInterface.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="تغییرات در نام، دسته بندی و ...">ویرایش
-                                        Pm</a>
-                                </div>
+                                    <div class="dropdown">
+                                        <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">جزئیات PM</button>
 
-                                <div class="col">
-                                    <a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${true})}"
-                                       class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده لیست">لیست فعال</a>
-                                </div>
+                                        <ul class="dropdown-menu">
 
-                                <div class="col">
-                                    <a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${false})}"
-                                       class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" title="مشاهده لیست">لیست آرشیو</a>
-                                </div>
+                                            <li align="center"><a th:href="@{/pm/{pmInterfaceId}/catalog/list (pmInterfaceId=${pmInterface.id})}"
+                                                                  class="btn btn-outline-danger">کاتالوگ</a>
+                                            </li>
+                                            <br>
 
+                                            <li align="center"><a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${true})}"
+                                                   class="btn btn-outline-primary">وظایف فعال</a>
+                                            </li>
+                                            <br>
+
+                                            <li align="center"><a th:href="@{/pm/{pmInterfaceId}/active/{active}(pmInterfaceId=${pmInterface.id}, active=${false})}"
+                                                   class="btn btn-outline-dark">وظایف آرشیو</a>
+                                            </li>
+                                            <br>
+
+                                            <li align="center"><a th:href="@{/pm/{pmInterfaceId}/edit (pmInterfaceId=${pmInterface.id})}"
+                                                                  class="btn btn-outline-warning">ویرایش</a>
+                                            </li>
+
+                                        </ul>
+                                    </div>
+                                </div>
                             </td>
 
                         </tr>
@@ -155,148 +256,23 @@
 </div>
 <!--end wrapper-->
 
-<script type="text/javascript">
-        (function($) {
-
-$.fn.ddTableFilter = function(options) {
-  options = $.extend(true, $.fn.ddTableFilter.defaultOptions, options);
-
-  return this.each(function() {
-    if($(this).hasClass('ddtf-processed')) {
-      refreshFilters(this);
-      return;
-    }
-    var table = $(this);
-    var start = new Date();
-
-    $('th:visible', table).each(function(index) {
-      if($(this).hasClass('skip-filter')) return;
-      var selectbox = $('<select class="form-control">');
-      var values = [];
-      var opts = [];
-      selectbox.append('<option value="--all--">' + $(this).text() + '</option>');
-
-      var col = $('tr:not(.skip-filter) td:nth-child(' + (index + 1) + ')', table).each(function() {
-        var cellVal = options.valueCallback.apply(this);
-        if(cellVal.length == 0) {
-          cellVal = '--empty--';
-        }
-        $(this).attr('ddtf-value', cellVal);
-
-        if($.inArray(cellVal, values) === -1) {
-          var cellText = options.textCallback.apply(this);
-          if(cellText.length == 0) {cellText = options.emptyText;}
-          values.push(cellVal);
-          opts.push({val:cellVal, text:cellText});
-        }
-      });
-      if(opts.length < options.minOptions){
-        return;
-      }
-      if(options.sortOpt) {
-        opts.sort(options.sortOptCallback);
-      }
-      $.each(opts, function() {
-        $(selectbox).append('<option value="' + this.val + '">' + this.text + '</option>')
-      });
-
-      $(this).wrapInner('<div style="display:none">');
-      $(this).append(selectbox);
-
-      selectbox.bind('change', {column:col}, function(event) {
-        var changeStart = new Date();
-        var value = $(this).val();
-
-        event.data.column.each(function() {
-          if($(this).attr('ddtf-value') === value || value == '--all--') {
-            $(this).removeClass('ddtf-filtered');
-          }
-          else {
-            $(this).addClass('ddtf-filtered');
-          }
-        });
-        var changeStop = new Date();
-        if(options.debug) {
-          console.log('Search: ' + (changeStop.getTime() - changeStart.getTime()) + 'ms');
-        }
-        refreshFilters(table);
-
-      });
-      table.addClass('ddtf-processed');
-      if($.isFunction(options.afterBuild)) {
-        options.afterBuild.apply(table);
-      }
-    });
-
-    function refreshFilters(table) {
-      var refreshStart = new Date();
-      $('tr', table).each(function() {
-        var row = $(this);
-        if($('td.ddtf-filtered', row).length > 0) {
-          options.transition.hide.apply(row, options.transition.options);
-        }
-        else {
-          options.transition.show.apply(row, options.transition.options);
-        }
-      });
-
-      if($.isFunction(options.afterFilter)) {
-        options.afterFilter.apply(table);
-      }
-
-      if(options.debug) {
-        var refreshEnd = new Date();
-        console.log('Refresh: ' + (refreshEnd.getTime() - refreshStart.getTime()) + 'ms');
-      }
-    }
-
-    if(options.debug) {
-      var stop = new Date();
-      console.log('Build: ' + (stop.getTime() - start.getTime()) + 'ms');
-    }
-  });
-};
-
-$.fn.ddTableFilter.defaultOptions = {
-  valueCallback:function() {
-    return encodeURIComponent($.trim($(this).text()));
-  },
-  textCallback:function() {
-    return $.trim($(this).text());
-  },
-  sortOptCallback: function(a, b) {
-    return a.text.toLowerCase() > b.text.toLowerCase();
-  },
-  afterFilter: null,
-  afterBuild: null,
-  transition: {
-    hide:$.fn.hide,
-    show:$.fn.show,
-    options: []
-  },
-  emptyText:'--Empty--',
-  sortOpt:true,
-  debug:false,
-  minOptions:2
-}
-
-})(jQuery);
-
-$('table').ddTableFilter();
-
-
-</script>
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
+
 <script src="/panel/assets/js/jquery.min.js"></script>
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
-<script src="/panel/assets/js/index.umd.js"></script>
 
 <!--app-->
 

@@ -58,7 +58,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
         }
 
         var addressObject = addressRepository.findByValue(result);
-        var personObject = personService.getPerson(addressObject.get().getId());
+        var personObject = personService.getReferencedPerson(addressObject.get().getId());
         var roleId = personObject.getRole();
         List<GrantedAuthority> personRoles = new ArrayList<>();
         switch (roleId) {

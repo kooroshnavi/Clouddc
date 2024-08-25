@@ -6,7 +6,6 @@ import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.resource.Device;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.EntityNotFoundException;
-import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -17,11 +16,10 @@ import java.util.Optional;
 public interface PmService {
 
     String updateTodayPmList();
+
     List<PmInterface> getPmInterfaceList();
 
     List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active);
-
-    Model modelForTaskController(Model model);
 
     List<PmDetail> getPmDetail_2(Pm pm);
 

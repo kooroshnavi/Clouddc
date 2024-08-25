@@ -54,7 +54,4 @@ public final class PmInterface {
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
-    public PmInterface(Integer id) {
-        this.id = id;
-    }
 }

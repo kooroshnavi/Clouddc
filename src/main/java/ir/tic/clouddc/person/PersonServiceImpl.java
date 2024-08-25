@@ -1,7 +1,5 @@
 package ir.tic.clouddc.person;
 
-import ir.tic.clouddc.resource.Utilizer;
-import ir.tic.clouddc.resource.UtilizerRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,29 +16,15 @@ final class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
 
-    private final UtilizerRepository utilizerRepository;
-
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository, UtilizerRepository utilizerRepository) {
+    public PersonServiceImpl(PersonRepository personRepository) {
         this.personRepository = personRepository;
-        this.utilizerRepository = utilizerRepository;
     }
 
     @Override
-    public Person getPerson(int personId) {
-
-        return personRepository.findById(personId).get();
-    }
-
-    @Override
-    public Person getPerson(String name) {
+    public Person getPersonByUsername(String name) {
         return personRepository.findByUsername(name);
-    }
-
-    @Override
-    public List<Person> getPersonList() {
-        return personRepository.findAllByAssignee(true);
     }
 
     @Override
@@ -49,24 +33,8 @@ final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public Person addPerson(Person person) {
-        return null;
-    }
-
-    @Override
-    public Person updatePerson(Person person) {
-        personRepository.save(person);
-        return null;
-    }
-
-    @Override
-    public int getPersonId(String username) {
-        return personRepository.fetchPersonId(username);
-    }
-
-    @Override
     public Person getCurrentPerson() {
-        return getPerson(SecurityContextHolder.getContext().getAuthentication().getName());
+        return getPersonByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
     }
 
     @Override
@@ -80,18 +48,13 @@ final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<Utilizer> getUtilizerList() {
-        return utilizerRepository.findAll();
-    }
-
-    @Override
     public List<Person> getDefaultAssgineeList() {
         return personRepository.findAllByAssignee(true);
     }
 
     @Override
-    public Person getReferencedPerson(Integer defaultPersonId) throws EntityNotFoundException {
-        return personRepository.getReferenceById(defaultPersonId);
+    public Person getReferencedPerson(Integer personId) throws EntityNotFoundException {
+        return personRepository.getReferenceById(personId);
     }
 
 }

@@ -20,12 +20,10 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.io.IOException;
 import java.sql.SQLException;
@@ -160,12 +158,11 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getPmInterfaceList() {
-        return pmInterfaceRepository.findAll(Sort.by("category"));
+        return pmInterfaceRepository.findAll();
     }
 
     @Override
     public List<Pm> getPmInterfacePmList(Integer pmInterfaceId, boolean active) {
-
         List<Pm> basePmList = pmRepository.fetchActivePmList(pmInterfaceId, active);
         setPmTransients(basePmList);
 
@@ -239,7 +236,8 @@ public class PmServiceImpl implements PmService {
     @Override
     @PreAuthorize("#pm.active == true  && (#ownerUsername == authentication.name || hasAnyAuthority('ADMIN', 'SUPERVISOR')) ")
     public void updatePm(PmUpdateForm pmUpdateForm, @Param("pm") Pm pm, @Param("ownerUsername") String ownerUsername) throws IOException {
-        // PART 1. Pm detail update
+        // All operations run on a single Pm
+        // PART 1. PmDetail update
         PmDetail basePmDetail;
         var optionalPmDetail = pmDetailRepository.findByPmIdAndActive(pm.getId(), true);
         if (optionalPmDetail.isPresent()) {
@@ -254,14 +252,16 @@ public class PmServiceImpl implements PmService {
         Persistence attachmentPersistence;
 
         var currentPerson = personService.getCurrentPerson();
-        if (ownerUsername.equals(currentPerson.getUsername())) {
+        if (ownerUsername.equals(currentPerson.getUsername())) { // Routine Operation
             attachmentPersistence = basePmDetail.getPersistence();
             basePmDetail.setDescription(pmUpdateForm.getDescription());
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmUpdate"), basePmDetail.getPersistence().getPerson(), basePmDetail.getPersistence());
-        } else {
+        } else { // Supervisor Operation
             basePmDetail.setDescription("توسط مسئول مدیریت وظایف از کارتابل خارج شد.");
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("SupervisorPmTermination"), currentPerson, basePmDetail.getPersistence());
-            var supervisorPmDetail = supervisorOperation(pmUpdateForm, currentPerson, pm);
+            var supervisorPmDetail = setupNewPmDetail(currentPerson.getId(), false);
+            supervisorPmDetail.setDescription(pmUpdateForm.getDescription());
+            supervisorPmDetail.setPm(pm);
             pm.getPmDetailList().add(supervisorPmDetail);
             attachmentPersistence = supervisorPmDetail.getPersistence();
         }
@@ -285,7 +285,7 @@ public class PmServiceImpl implements PmService {
 
     private PmDetail setupNewPmDetail(Integer personId, boolean active) {
         GeneralPmDetail generalPmDetail = new GeneralPmDetail();
-        var assigneePerson = personService.getPerson(personId);
+        var assigneePerson = personService.getReferencedPerson(personId);
         Persistence persistence = logService.persistenceSetup(assigneePerson);
         generalPmDetail.setPersistence(persistence);
         generalPmDetail.setRegisterDate(UtilService.getDATE());
@@ -302,15 +302,6 @@ public class PmServiceImpl implements PmService {
         }
 
         return generalPmDetail;
-    }
-
-
-    private PmDetail supervisorOperation(PmUpdateForm pmUpdateForm, Person currentPerson, Pm pm) throws IOException {
-        var supervisorPmDetail = setupNewPmDetail(currentPerson.getId(), false);
-        supervisorPmDetail.setDescription(pmUpdateForm.getDescription());
-        supervisorPmDetail.setPm(pm);
-
-        return supervisorPmDetail;
     }
 
     private void endPm(Pm pm) {
@@ -549,7 +540,7 @@ public class PmServiceImpl implements PmService {
         pmInterface.setTitle(pmInterfaceRegisterForm.getTitle());
         pmInterface.setPeriod(pmInterfaceRegisterForm.getPeriod());
         pmInterface.setDescription(pmInterfaceRegisterForm.getDescription());
-        pmInterface.setStatelessRecurring(pmInterfaceRegisterForm.isStatelessRecurring());
+        pmInterface.setStatelessRecurring(false);
         if (pmInterfaceRegisterForm.getFile() != null) {
             if (Objects.equals(currentPerson.getId(), persistence.getPerson().getId())) {
                 fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), persistence);
@@ -576,16 +567,7 @@ public class PmServiceImpl implements PmService {
     }
 
 
-    @Override
-    public Model modelForTaskController(Model model) {
-        model.addAttribute("person", personService.getCurrentPerson());
-        model.addAttribute("date", UtilService.getCurrentDate());
-
-        return model;
-    }
-
-
-/*
+    /*
     @Override
     public long getFinishedTaskCount() {
         return taskRepository.getTaskCountByActivation(false);

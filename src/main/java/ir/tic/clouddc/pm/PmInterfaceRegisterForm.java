@@ -23,8 +23,6 @@ public class PmInterfaceRegisterForm {
 
     private boolean enabled;
 
-    private boolean statelessRecurring;
-
     private boolean update;
 
     private MultipartFile file;
