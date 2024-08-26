@@ -125,9 +125,6 @@
         </div>
 
         <!--catalog table table (Salon)-->
-        <h4 class="mb-0 text-uppercase" align="center">
-            <strong>لیست کاتالوگ</strong>
-        </h4>
 
         <div class="col" align="right">
             <!-- Button trigger modal -->
@@ -154,6 +151,12 @@
 
         <div class="card">
             <div class="card-body">
+
+                <h5 class="mb-0 text-uppercase" align="center">
+                    <strong>لیست کاتالوگ این PM</strong>
+                </h5>
+                <br>
+
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
                         <thead>
@@ -186,7 +189,7 @@
                                 </div>
                             </td>
 
-                            <td th:if="${catalog.enabled && catalog.active}" class="text-bg-primary">در حال انجام</td>
+                            <td th:if="${catalog.enabled && catalog.active}" class="text-bg-primary">فعال-در کارتابل</td>
                             <td th:if="${catalog.enabled && !catalog.active}" class="text-bg-success">منتظر سررسید</td>
                             <td th:if="${!catalog.enabled}" class="text-bg-danger">غیرفعال</td>
 
@@ -198,7 +201,7 @@
                                         <ul class="dropdown-menu">
 
                                             <li align="center"><a th:href="@{/pm/catalog/{catalogId}/pmList/{active} (catalogId=${catalog.id}, active = ${true})}"
-                                                                  class="btn btn-outline-secondary">تاریخچه وظایف فعال</a></li>
+                                                                  class="btn btn-outline-info">تاریخچه وظایف فعال</a></li>
                                             <br>
                                             <li align="center"><a th:href="@{/pm/catalog/{catalogId}/pmList/{active} (catalogId=${catalog.id}, active = ${false})}"
                                                                   class="btn btn-outline-secondary">تاریخچه وظایف آرشیو</a></li>
@@ -222,6 +225,7 @@
                             </td>
 
                             <td th:text="${deviceCatalog.device.deviceCategory.category + ' ' + deviceCatalog.device.deviceCategory.model}"></td>
+
                             <td>
                                 <div class="col">
                                     <a th:text="${deviceCatalog.device.serialNumber}"
@@ -232,7 +236,7 @@
                             </td>
                             <td th:text="${deviceCatalog.device.location.locationCategory.category + ' ' + deviceCatalog.device.location.name}"></td>
 
-                            <td th:if="${deviceCatalog.enabled && deviceCatalog.active}" class="text-bg-primary">در حال انجام</td>
+                            <td th:if="${deviceCatalog.enabled && deviceCatalog.active}" class="text-bg-primary">فعال-در کارتابل</td>
                             <td th:if="${deviceCatalog.enabled && !deviceCatalog.active}" class="text-bg-success">منتظر سررسید</td>
                             <td th:if="${!deviceCatalog.enabled}" class="text-bg-danger">غیرفعال</td>
 
@@ -243,14 +247,15 @@
 
                                         <ul class="dropdown-menu">
 
-                                            <li align="center"><a th:href="@{/pm/catalog/{catalogId}/pmList (catalogId=${deviceCatalog.id})}"
-                                                                  class="btn btn-outline-danger">تاریخچه وظایف</a>
-                                            </li>
+                                            <li align="center"><a th:href="@{/pm/catalog/{catalogId}/pmList/{active} (catalogId=${deviceCatalog.id}, active = ${true})}"
+                                                                  class="btn btn-outline-info">تاریخچه وظایف فعال</a></li>
+                                            <br>
+                                            <li align="center"><a th:href="@{/pm/catalog/{catalogId}/pmList/{active} (catalogId=${deviceCatalog.id}, active = ${false})}"
+                                                                  class="btn btn-outline-secondary">تاریخچه وظایف آرشیو</a></li>
                                             <br>
 
                                             <li align="center"><a th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${deviceCatalog.id})}"
-                                                                  class="btn btn-outline-warning">ویرایش</a>
-                                            </li>
+                                                                  class="btn btn-outline-warning">ویرایش</a></li>
 
                                         </ul>
                                     </div>

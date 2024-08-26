@@ -75,7 +75,7 @@
                         <th scope="col">عنوان PM</th>
                         <th th:if="${catalog.pmInterface.categoryId == 1}" scope="col">مکان اجرا</th>
                         <th th:if="${catalog.pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" scope="col">سالن</th>
-                        <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">روی تجهیز</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">تجهیز</th>
                         <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">شماره سریال</th>
                         <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">مکان نصب</th>
                         <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">بهره بردار تجهیز</th>
@@ -85,14 +85,15 @@
 
                     <tbody>
                     <tr>
-                        <td th:text="${catalog.pmInterface.title}" class="text-bg-info"></td>
-                        <td th:if="${catalog.pmInterface.categoryId == 1}" th:text="${locationPmCatalog.location.locationCategory.category + ' ' + locationPmCatalog.location.name}" class="text-bg-success"></td>
+                        <td th:text="${catalog.pmInterface.title}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 1}" th:text="${locationPmCatalog.location.locationCategory.category + ' ' + locationPmCatalog.location.name}"></td>
                         <td th:if="${catalog.pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" th:text="${rack.hall.name + ' - ' + rack.hall.center.name}"></td>
                         <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.deviceCategory.category + ' ' + devicePmCatalog.device.deviceCategory.model}"></td>
-                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.serialNumber}" class="text-bg-success"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.serialNumber}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.location.locationCategory.category + ' ' +devicePmCatalog.device.location.name}"></td>
                         <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.utilizer.name}"></td>
 
-                        <td th:if="${catalog.enabled && catalog.active}" class="text-bg-primary">در حال انجام</td>
+                        <td th:if="${catalog.enabled && catalog.active}" class="text-bg-primary">فعال-در کارتابل</td>
                         <td th:if="${catalog.enabled && !catalog.active}" class="text-bg-success">منتظر سررسید</td>
                         <td th:if="${!catalog.enabled}" class="text-bg-danger">غیرفعال</td>
                     </tr>
@@ -100,12 +101,6 @@
                 </table>
             </div>
         </div>
-
-        <!--catalog table table (Salon)-->
-        <h6 class="mb-0 text-uppercase" align="center">
-            <strong th:if="${catalog.pmInterface.categoryId == 1}">تاریخچه وظایف Pm در این مکان</strong>
-            <strong th:if="${catalog.pmInterface.categoryId == 2}">تاریخچه وظایف Pm روی این تجهیز</strong>
-        </h6>
 
         <div class="col" align="right">
             <!-- Button trigger modal -->
@@ -130,8 +125,16 @@
         </div>
         <br>
 
+
         <div class="card">
             <div class="card-body">
+
+                <h5 class="mb-0 text-uppercase" align="center">
+                    <strong th:if="${active}">لیست وظایف فعال</strong>
+                    <strong th:unless="${active}">لیست وظایف آرشیو</strong>
+                </h5>
+                <br>
+
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
                         <thead>
