@@ -272,10 +272,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -332,7 +330,7 @@
 
                     <div class="card-body" dir="rtl">
                         <div class="border p-3 rounded">
-                            <form th:action="@{/resource/device/rackPosition/update}" th:object="${rackDeviceOrderForm}"
+                            <form th:action="@{/center/rack/position/update}" th:object="${rackDeviceOrderForm}"
                                   enctype="multipart/form-data" method="POST"
                                   onSubmit="document.getElementById('submit').disabled=true;">
 
@@ -432,15 +430,13 @@
 
 <!--plugins-->
 <script src="/panel/assets/js/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/TableDnD/0.9.1/jquery.tablednd.js"
-        integrity="sha256-d3rtug+Hg1GZPB7Y/yTcRixO/wlI78+2m08tosoRn7A=" crossorigin="anonymous"></script>
+<script src="/rackOrdering/jquery.tablednd.js"></script>
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
-
 <script type="text/javascript">
     $(document).ready(function () {
         $("#myTable").tableDnD({

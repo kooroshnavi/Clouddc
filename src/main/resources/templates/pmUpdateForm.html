@@ -9,6 +9,8 @@
     <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
     <!--plugins-->
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
@@ -52,7 +54,7 @@
 
         <!--breadcrumb-->
         <div class="page-breadcrumb d-none d-sm-flex align-items-hall mb-3">
-            <div class="breadcrumb-title pe-3">مدیریت Pm</div>
+            <div class="breadcrumb-title pe-3">Pm</div>
             <div class="ps-3">
                 <nav aria-label="breadcrumb">
                     <ol class="breadcrumb mb-0 p-0">
@@ -69,66 +71,128 @@
         <div class="col">
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
-                    <div class="d-flex align-items-hall gap-3">
-                        <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
-                            </h6>
-                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.target}"></strong></h6>
-                            <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
-                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.category}"></p>
-                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1" th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.category}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1" th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
-                            <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
-                            <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
-                        </div>
+
+                    <h6 class="mb-0 text-uppercase" align="center">
+                        <strong>وضعیت PM</strong>
+                    </h6>
+                    <br>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">شناسه وظیفه</th>
+                                <th scope="col">دسته بندی</th>
+                                <th scope="col">عنوان</th>
+                                <th scope="col">سررسید</th>
+                                <th scope="col">تاخیر</th>
+                                <th th:if="${pm.active}" scope="col">کارتابل فعلی</th>
+                                <th th:unless="${pm.active}" scope="col">تاریخ اتمام</th>
+
+                                <th th:if="${pmInterface.categoryId == 1}" scope="col">نام مکان</th>
+                                <th th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}"
+                                    scope="col">سالن
+                                </th>
+                                <th th:if="${pmInterface.categoryId == 2}" scope="col">نوع و مدل تجهیز</th>
+                                <th th:if="${pmInterface.categoryId == 2}" scope="col">شماره سریال</th>
+                                <th th:if="${pmInterface.categoryId == 2}" scope="col">مکان نصب</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td th:text="${pm.id}"/>
+                                <td th:text="${pm.pmInterfaceCatalog.pmInterface.category}"/>
+                                <td th:text="${pm.pmInterfaceCatalog.pmInterface.title}"/>
+                                <td th:text="${pm.persianDueDate}"/>
+                                <td class="clock">
+                                <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
+                                      class="text-bg-danger"></span>
+                                    <span th:if="${pm.delay} == 0"
+                                          class="text-bg-success">ندارد</span>
+                                </td>
+                                <td th:if="${pm.active}" class="text-bg-warning" th:text="${pm.activePersonName}"/>
+                                <td th:unless="${pm.active}" class="text-bg-success" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${pm.persianFinishedDayTime}" dir="rtl"/>
+
+                                <td th:if="${pmInterface.categoryId == 1}">
+                                    <div class="col">
+                                        <a th:text="${locationPmCatalog.location.locationCategory.category + ' ' + locationPmCatalog.location.name}"
+                                           th:href="@{/center/location/{locationId}/detail (locationId=${locationPmCatalog.location.id})}"
+                                           class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom" title="جزئیات مکان"></a>
+                                    </div>
+                                </td>
+
+                                <td th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" th:text="${rack.hall.name + ' - ' + rack.center.name}"></td>
+
+                                <td th:if="${pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.deviceCategory.category + ' ' + devicePmCatalog.device.deviceCategory.model}"></td>
+                                <td th:if="${pmInterface.categoryId == 2}">
+                                    <div class="col">
+                                        <a th:text="${devicePmCatalog.device.serialNumber}"
+                                           th:href="@{/resource/device/{deviceId}/detail (deviceId=${devicePmCatalog.device.id})}"
+                                           class="btn btn-outline-secondary px-10 radius-30" data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom" title="جزئیات تجهیز"></a>
+                                    </div>
+                                </td>
+                                <td th:if="${pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.location.locationCategory.category + ' ' + devicePmCatalog.device.location.name}"></td>
+
+                            </tr>
+
+                            </tbody>
+
+                        </table>
                     </div>
+
+
+
                 </div>
             </div>
         </div>
 
-        <hr/>
-        <h6 class="mb-0 text-uppercase" align="hall">فرم بروزرسانی وظیفه</h6>
-        <hr/>
+        <h6 class="mb-0 text-uppercase" align="center">
+            <strong>بروزرسانی وضعیت PM</strong>
+        </h6>
+        <br>
 
         <div class="row">
             <div class="col-lg-12 mx-auto">
                 <div class="card">
 
                     <div class="card-body">
-                        <div class="row g-3">
                             <div class="col-12 col-lg-8">
                                 <div class="card shadow-none bg-light border">
                                     <div class="card-body">
 
-                                        <form class="row g-3" th:action="@{/pm/update}"
+                                        <form class="was-validated" th:action="@{/pm/update}"
                                               enctype="multipart/form-data"  th:object="${pmUpdateForm}" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
 
                                             <div class="col-12">
                                                 <label class="form-label">نتیجه بررسی</label>
-                                                <textarea class="form-control" placeholder="توضیحات" rows="4" cols="4"
+                                                <textarea class="form-control" placeholder="شرح اقدام و توضیحات ضروری. اگر لازم است به مستندات شامل شماره نامه ، مجوز و ... اشاره نمایید. اگر فایلی در میان است آن را پیوست کنید." rows="4" cols="4"
                                                           th:field="*{description}" required="required" dir="rtl"
                                                           maxlength="1000"></textarea>
                                             </div>
+                                            <br>
 
                                             <div class="col-12">
                                                 <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
                                                 <input class="form-control" type="file" name="attachment"
                                                        id="attachment">
                                             </div>
+                                            <br>
 
                                             <div class="col-12">
-                                                <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران</label>
-                                                <label>
-                                                    <select class="form-select" th:field="*{actionType}">
+                                                <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران
+                                                    <select class="single-select" th:field="*{actionType}">
                                                         <option th:value="100" disabled="disabled" selected="selected">
                                                             انتخاب
                                                         </option>
-                                                        <option th:value="0">اتمام وظیفه</option>
-                                                        <option th:each="person : ${assignPersonList}"
-                                                                th:value="${person.id}" th:text="${person.name}"></option>
+                                                        <option class="text-bg-success" th:value="0">اتمام وظیفه</option>
+                                                        <option class="text-bg-warning" th:each="person : ${assignPersonList}"
+                                                                th:value="${person.id}" th:text="${person.name + ' - ' + 'وظایف کارتابل: ' + person.getWorkspaceSize()}"></option>
                                                     </select>
                                                 </label>
                                             </div>
@@ -176,7 +240,6 @@
                             </div>
 
 
-                        </div><!--end row-->
                     </div>
                 </div>
             </div>
@@ -211,6 +274,9 @@
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
+<script src="/panel/assets/js/form-select2.js"></script>
+
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
 

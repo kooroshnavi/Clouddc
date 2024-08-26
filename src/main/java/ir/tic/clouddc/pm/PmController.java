@@ -2,6 +2,7 @@ package ir.tic.clouddc.pm;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationPmCatalog;
+import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
@@ -117,8 +118,7 @@ public class PmController {
 
         if (pmInterfaceRegisterForm.getPmInterfaceId() == null) {
             redirectAttributes.addFlashAttribute("pmInterfaceRegistered", true);
-        }
-        else {
+        } else {
             redirectAttributes.addFlashAttribute("pmInterfaceUpdated", true);
         }
 
@@ -169,18 +169,11 @@ public class PmController {
             model.addAttribute("permission", permission);
         }
 
-     /*   if (pm instanceof TemperaturePm) {
-            List<TemperaturePmDetail> temperaturePmDetailList = new ArrayList<>();
-            for (PmDetail pmDetail : pmDetailList) {
-                temperaturePmDetailList.add((TemperaturePmDetail) pmDetail);
-            }
-            model.addAttribute("temperaturePmDetailList", temperaturePmDetailList);
-        } else {
-            model.addAttribute("pmDetailList", pmDetailList);
-        }*/
-
         if (catalog instanceof LocationPmCatalog locationPmCatalog) {
             model.addAttribute("locationPmCatalog", locationPmCatalog);
+            if (locationPmCatalog.getLocation() instanceof Rack rack) {
+                model.addAttribute("rack", rack);
+            }
         } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
             model.addAttribute("devicePmCatalog", devicePmCatalog);
         }
@@ -203,6 +196,9 @@ public class PmController {
 
         if (catalog instanceof LocationPmCatalog locationPmCatalog) {
             model.addAttribute("locationPmCatalog", locationPmCatalog);
+            if (locationPmCatalog.getLocation() instanceof Rack rack) {
+                model.addAttribute("rack", rack);
+            }
         } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
             model.addAttribute("devicePmCatalog", devicePmCatalog);
         }
@@ -265,7 +261,6 @@ public class PmController {
         model.addAttribute("enablementAccess", false);
 
         return "catalogForm";
-
     }
 
     @GetMapping("/catalog/device/{deviceId}/form")
@@ -284,58 +279,6 @@ public class PmController {
         model.addAttribute("enablementAccess", false);
 
         return "catalogForm";
-
-    }
-
-    @PostMapping("/catalog/register")
-    @ModifyProtection
-    public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm, RedirectAttributes redirectAttributes) throws SQLException {
-        var nextDue = catalogForm.getNextDue();
-        var validDate = LocalDate.parse(nextDue);
-        log.info(String.valueOf(validDate));
-        if (validDate.isBefore(UtilService.getDATE())) {
-            return "403";
-        }
-        pmService.registerNewCatalog(catalogForm, validDate);
-
-        if (catalogForm.getLocationId() != null) {
-            redirectAttributes.addAttribute("locationId", catalogForm.getLocationId());
-            return "redirect:/center/location/{locationId}/detail";
-        } else if (catalogForm.getDeviceId() != null) {
-            redirectAttributes.addAttribute("deviceId", catalogForm.getDeviceId());
-            return "redirect:/resource/device/{deviceId}/detail";
-        } else {
-            var catalog = pmService.getReferencedCatalog(catalogForm.getPmInterfaceCatalogId());
-            var pmInterfaceId = catalog.getPmInterface().getId();
-            redirectAttributes.addAttribute("pmInterfaceId", pmInterfaceId);
-            redirectAttributes.addAttribute("active", true);
-            return "redirect:/pm/{pmInterfaceId}/active/{active}";
-        }
-    }
-
-    @GetMapping("/{pmInterfaceId}/catalog/list")
-    public String pmInterfaceCatalogView(Model model, @PathVariable Integer pmInterfaceId) {
-        var pmInterface = Hibernate.unproxy(pmService.getReferencedPmInterface(pmInterfaceId), PmInterface.class);
-        List<LocationPmCatalog> locationPmCatalogList = new ArrayList<>();
-        List<DevicePmCatalog> devicePmCatalogList = new ArrayList<>();
-
-        for (PmInterfaceCatalog pmInterfaceCatalog : pmInterface.getPmInterfaceCatalogList()) {
-            if (pmInterfaceCatalog instanceof LocationPmCatalog locationPmCatalog) {
-                locationPmCatalogList.add(locationPmCatalog);
-            }
-            else if (pmInterfaceCatalog instanceof DevicePmCatalog devicePmCatalog) {
-                devicePmCatalogList.add(devicePmCatalog);
-            }
-        }
-        if (!locationPmCatalogList.isEmpty()) {
-            model.addAttribute("locationPmCatalogList", locationPmCatalogList);
-        }
-        else if (!devicePmCatalogList.isEmpty()) {
-            model.addAttribute("devicePmCatalogList", devicePmCatalogList);
-        }
-        model.addAttribute("pmInterface", pmInterface);
-
-        return "catalogList";
     }
 
     @GetMapping("/catalog/{catalogId}/edit")
@@ -368,9 +311,77 @@ public class PmController {
 
         return "catalogForm";
     }
-/*
-    @ModelAttribute
-    public void addAttributes(Model model) {
-        pmService.modelForTaskController(model);
-    }*/
+
+    @PostMapping("/catalog/register")
+    @ModifyProtection
+    public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm, RedirectAttributes redirectAttributes) throws SQLException {
+        var nextDue = catalogForm.getNextDue();
+        var validDate = LocalDate.parse(nextDue);
+        log.info(String.valueOf(validDate));
+        if (validDate.isBefore(UtilService.getDATE())) {
+            return "403";
+        }
+        var pmInterfaceId = pmService.registerNewCatalog(catalogForm, validDate);
+
+        if (catalogForm.getPmInterfaceCatalogId() == null) {
+            redirectAttributes.addFlashAttribute("catalogRegistered", true);
+        } else {
+            redirectAttributes.addFlashAttribute("catalogUpdated", true);
+        }
+        redirectAttributes.addAttribute("pmInterfaceId", pmInterfaceId);
+
+        return "redirect:/pm/{pmInterfaceId}/catalog/list";
+    }
+
+    @GetMapping("/{pmInterfaceId}/catalog/list")
+    public String pmInterfaceCatalogView(Model model, @PathVariable Integer pmInterfaceId) {
+        var pmInterface = Hibernate.unproxy(pmService.getReferencedPmInterface(pmInterfaceId), PmInterface.class);
+        List<LocationPmCatalog> locationPmCatalogList = new ArrayList<>();
+        List<DevicePmCatalog> devicePmCatalogList = new ArrayList<>();
+
+        for (PmInterfaceCatalog pmInterfaceCatalog : pmInterface.getPmInterfaceCatalogList()) {
+            if (pmInterfaceCatalog instanceof LocationPmCatalog locationPmCatalog) {
+                locationPmCatalogList.add(locationPmCatalog);
+            } else if (pmInterfaceCatalog instanceof DevicePmCatalog devicePmCatalog) {
+                devicePmCatalogList.add(devicePmCatalog);
+            }
+        }
+        if (!locationPmCatalogList.isEmpty()) {
+            model.addAttribute("locationPmCatalogList", locationPmCatalogList.stream().sorted(Comparator.comparing(PmInterfaceCatalog::getId).reversed()));
+        } else if (!devicePmCatalogList.isEmpty()) {
+            model.addAttribute("devicePmCatalogList", devicePmCatalogList.stream().sorted(Comparator.comparing(PmInterfaceCatalog::getId).reversed()));
+        }
+        model.addAttribute("pmInterface", pmInterface);
+
+        if (!model.containsAttribute("catalogRegistered")) {
+            model.addAttribute("catalogRegistered", false);
+        }
+        if (!model.containsAttribute("catalogUpdated")) {
+            model.addAttribute("catalogUpdated", false);
+        }
+
+        return "catalogList";
+    }
+
+    @GetMapping("/catalog/{catalogId}/pmList/{active}")
+    public String showCatalogPmHistory(Model model, @PathVariable Long catalogId, @PathVariable boolean active) {
+        var catalog = Hibernate.unproxy(pmService.getReferencedCatalog(catalogId), PmInterfaceCatalog.class);
+        var pmList = pmService.getCatalogPmList(catalogId, active);
+
+        if (catalog instanceof LocationPmCatalog locationPmCatalog) {
+            model.addAttribute("locationPmCatalog", locationPmCatalog);
+            if (locationPmCatalog.getLocation() instanceof Rack rack) {
+                model.addAttribute("rack", rack);
+            }
+        } else if (catalog instanceof DevicePmCatalog devicePmCatalog) {
+            model.addAttribute("devicePmCatalog", devicePmCatalog);
+        }
+
+        model.addAttribute("catalog", catalog);
+        model.addAttribute("active", active);
+        model.addAttribute("pmList", pmList);
+
+        return "catalogPmList";
+    }
+
 }

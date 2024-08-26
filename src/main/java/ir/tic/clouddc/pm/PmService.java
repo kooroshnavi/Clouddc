@@ -47,7 +47,7 @@ public interface PmService {
 
     Location getReferencedLocation(Long locationId) throws SQLException;
 
-    void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException;
+    Integer registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException;
 
     Device getDevice(Long deviceId) throws SQLException;
 
@@ -55,9 +55,9 @@ public interface PmService {
 
     Long getPmInterfaceActivePmCount(Integer id);
 
-    long getWorkspaceSize();
-
     PmInterfaceCatalog getReferencedCatalog(Long catalogId);
 
     Long getCatalogActivePmCount(Long catalogId);
+
+    List<Pm> getCatalogPmList(Long catalogId, boolean active);
 }

@@ -6,7 +6,6 @@ import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 public interface ResourceService {
 
@@ -31,8 +30,6 @@ public interface ResourceService {
     Supplier getReferencedDefaultSupplier();
 
     void deleteInstalledUnassignedList(List<Integer> unassignedDeviceIdList);
-
-    void updateRackDevicePosition(Long rackId, Set<String> stringNewRackPositionList);
 
     boolean newDevicePresentCheck();
 
@@ -79,5 +76,4 @@ public interface ResourceService {
     List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList);
 
     DeviceStatus getCurrentDeviceStatus(Device device);
-
 }

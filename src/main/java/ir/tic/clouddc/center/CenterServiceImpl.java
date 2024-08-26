@@ -1,23 +1,19 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationCheckList;
-import ir.tic.clouddc.event.LocationStatusForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.report.DailyReport;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.time.LocalDate;
 import java.util.*;
 
 @Slf4j
@@ -45,25 +41,6 @@ public class CenterServiceImpl implements CenterService {
         this.locationRepository = locationRepository;
         this.locationPmCatalogRepository = locationPmCatalogRepository;
     }
-/*
-    @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
-    public void dailyTemperatureCheck() {
-        var dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        var todayReport = reportService.findActive(true);
-        var todayTemperatureSalon1 = temperatureRepository.existsBydailyReportAndCenter(todayReport.get(), getCenter(1));
-
-        if (!todayTemperatureSalon1) {
-            log.info("Salon 1 is absent");
-            notificationService.sendTemperatureReminderMessage(dateTime);
-        } else {
-            var todayTemperatureSalon2 = temperatureRepository.existsBydailyReportAndCenter(todayReport.get(), getCenter(2));
-            if (!todayTemperatureSalon2) {
-                log.info("Salon 2 is absent");
-                notificationService.sendTemperatureReminderMessage(dateTime);
-            }
-        }
-    }*/
-
 
     @Override
     public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
@@ -80,10 +57,6 @@ public class CenterServiceImpl implements CenterService {
         return locationRepository.getLocationList();
     }
 
-    @Override
-    public void saveRackDevicePosition(Rack rack) {
-        locationRepository.save(rack);
-    }
 
     @Override
     public void verifyRackDevicePosition(List<Rack> rackList) {
@@ -111,8 +84,37 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public List<LocationPmCatalog> getLocationCatalogList(Location baseLocation) {
-        return locationPmCatalogRepository.findAllByLocation(baseLocation);
+    public void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList) {
+        var location = Hibernate.unproxy(getRefrencedLocation(rackId), Location.class);
+        Rack rack = (Rack) location;
+        var oldPositionMap = rack.getDevicePositionMap();
+        Map<Integer, Device> newPositionMap = new HashMap<>();
+
+        int newPosition = 0;
+        for (String stringPosition : newPositionStringList) {
+            int oldPosition = Integer.parseInt(stringPosition);
+            newPosition += 1;
+            newPositionMap.put(newPosition, oldPositionMap.get(oldPosition));
+        }
+
+        rack.setDevicePositionMap(newPositionMap);
+
+        locationRepository.save(rack);
+    }
+
+    @Override
+    public Optional<Location> getLocation(Long locationId) {
+        Optional<Location> optionalLocation = locationRepository.findById(locationId);
+
+        if (optionalLocation.isPresent()) {
+            if (optionalLocation.get().getLocationPmCatalogList() != null) {
+                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
+                    locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
+                }
+            }
+        }
+
+        return optionalLocation;
     }
 
     @Override
@@ -128,11 +130,6 @@ public class CenterServiceImpl implements CenterService {
             return defaultLocationStatus;
         }*/
         return null;
-    }
-
-    @Override
-    public List<Location> getCustomizedLocationList(List<String> locationCategoryNameList) {
-        return locationRepository.fetchCustomizedLocationList(locationCategoryNameList);
     }
 
     @Override
@@ -181,66 +178,6 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationCheckList event) {
-        List<LocationStatus> locationStatusList = new ArrayList<>();
-        var location = locationStatusForm.getLocation();
-       /* var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();
-        if (currentStatus.isPresent()) {
-            currentStatus.get().setActive(false);
-            locationStatusList.add(currentStatus.get());
-        }
-        LocationStatus locationStatus = new LocationStatus();
-        locationStatus.setLocation(locationStatusForm.getLocation());
-        locationStatus.setEvent(event);
-        locationStatus.setDoor(locationStatusForm.isDoor());
-        locationStatus.setVentilation(locationStatusForm.isVentilation());
-        locationStatus.setPower(locationStatusForm.isPower());
-        locationStatus.setActive(true);
-
-        locationStatusList.add(locationStatus);
-
-        locationStatusRepository.saveAllAndFlush(locationStatusList);
-
-        */
-    }
-
-    @Override
-    public Hall getHall(int hallId) {
-        return null;
-    }
-
-    @Override
-    public Optional<Location> getLocation(Long locationId) {
-        Optional<Location> optionalLocation = locationRepository.findById(locationId);
-
-        if (optionalLocation.isPresent()) {
-            if (optionalLocation.get().getLocationPmCatalogList() != null) {
-                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
-                    locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
-                }
-            }
-        }
-        return optionalLocation;
-
-    }
-
-
-    @Override
-    public Optional<Center> getCenter(int centerId) {
-        return centerRepository.findById(centerId);
-    }
-
-    @Override
-    public List<Hall> getHallList() {
-        return null;
-    }
-
-    @Override
-    public List<Center> getCenterList() {
-        return centerRepository.findAll(Sort.by("name"));
-    }
-
-    @Override
     public Model modelForCenterController(Model model) {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
@@ -250,24 +187,4 @@ public class CenterServiceImpl implements CenterService {
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
     }
-
-
-    @Override
-    public void setDailyTemperatureReport(DailyReport currentReport) {
-
-    }
-
-
-    @Override
-    public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
-        /*
-        var center = getHall(centerId);
-        List<Float> weeklyTemperature = new ArrayList<>();
-        for (LocalDate date : weeklyDateList) {
-            weeklyTemperature.add(center.getAverageTemperature().get(date));
-        }*/
-        return null;
-    }
-
-
 }

@@ -38,9 +38,7 @@ import java.util.*;
 public class PmServiceImpl implements PmService {
 
     private static final List<Integer> locationTargetIdList = List.of(1, 2, 3, 4);
-
     private static final List<Integer> deviceTargetIdList = List.of(5, 6, 7, 8, 9);
-
     private final PmRepository pmRepository;
     private final PmInterfaceRepository pmInterfaceRepository;
     private final PmInterfaceCatalogRepository pmInterfaceCatalogRepository;
@@ -198,14 +196,16 @@ public class PmServiceImpl implements PmService {
         return pmDetailFormViewPermission(pmDetail.getPersistence().getPerson().getUsername());
     }
 
-    private void setPmTransients(List<Pm> basePm) {
-        for (Pm pm : basePm) {
-            pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
-            if (pm.isActive()) {
-                pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get().getPersistence().getPerson().getName());
-            } else {
-                pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
-                pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
+    private void setPmTransients(List<Pm> pmList) {
+        if (!pmList.isEmpty()) {
+            for (Pm pm : pmList) {
+                pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
+                if (pm.isActive()) {
+                    pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get().getPersistence().getPerson().getName());
+                } else {
+                    pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
+                    pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
+                }
             }
         }
     }
@@ -333,7 +333,14 @@ public class PmServiceImpl implements PmService {
         } else {  /// supervisor updates pm
             assignPersonList = personService.getPersonListExcept(List.of(pmOwnerUsername, currentUsername));
         }
-        return assignPersonList;
+
+        if (!assignPersonList.isEmpty()) {
+            for (Person person : assignPersonList) {
+                person.setWorkspaceSize(countPersonWorkspaceSize(person.getId()));
+            }
+        }
+
+        return assignPersonList.stream().sorted(Comparator.comparing(Person::getWorkspaceSize)).toList();
     }
 
     @Override
@@ -414,7 +421,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public void registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) throws SQLException {
+    public Integer registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) {
         Persistence persistence;
         PmInterfaceCatalog newCatalog;
         var currentPerson = personService.getCurrentPerson();
@@ -459,9 +466,15 @@ public class PmServiceImpl implements PmService {
         }
         if (newCatalog.getNextDueDate().isEqual(UtilService.getDATE())) {
             var todayPm = pmRegister(newCatalog);
-            newCatalog.setPmList(List.of(todayPm));
+            if (newCatalog.getPmList() == null) {
+                newCatalog.setPmList(List.of(todayPm));
+            } else {
+                newCatalog.getPmList().add(todayPm);
+            }
         }
-        pmInterfaceCatalogRepository.save(newCatalog);
+        var catalog = pmInterfaceCatalogRepository.save(newCatalog);
+
+        return catalog.getPmInterface().getId();
     }
 
     @Override
@@ -498,10 +511,8 @@ public class PmServiceImpl implements PmService {
         return pmRepository.countActiveByPmInterface(pmInterfaceId, true);
     }
 
-    @Override
-    public long getWorkspaceSize() {
-        var currentPerson = personService.getCurrentPerson();
-        return pmDetailRepository.countActiveByPerson(currentPerson.getId(), true);
+    private long countPersonWorkspaceSize(Integer personId) {
+        return pmDetailRepository.countActiveByPerson(personId, true);
     }
 
     @Override
@@ -512,6 +523,14 @@ public class PmServiceImpl implements PmService {
     @Override
     public Long getCatalogActivePmCount(Long catalogId) {
         return pmRepository.getCatalogActivePmCount(catalogId, true);
+    }
+
+    @Override
+    public List<Pm> getCatalogPmList(Long catalogId, boolean active) {
+        List<Pm> pmList = pmRepository.fetchActiveCatalogPmList(catalogId, active);
+        setPmTransients(pmList);
+
+        return pmList;
     }
 
     @Override

@@ -37,4 +37,7 @@ public final class Person {
     @MapsId
     @JoinColumn(name = "AddressID")
     private Address address;
+
+    @Transient
+    private long workspaceSize;
 }

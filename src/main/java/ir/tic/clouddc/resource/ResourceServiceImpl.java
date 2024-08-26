@@ -1,8 +1,6 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
 import ir.tic.clouddc.event.EventLandingForm;
@@ -12,13 +10,13 @@ import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
-import java.util.*;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -116,25 +114,6 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public void deleteInstalledUnassignedList(List<Integer> assignedIdList) {
         unassignedDeviceRepository.deleteAllById(assignedIdList);
-    }
-
-    @Override
-    public void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList) {
-        var location = Hibernate.unproxy(centerService.getRefrencedLocation(rackId), Location.class);
-        Rack rack = (Rack) location;
-        var oldPositionMap = rack.getDevicePositionMap();
-        Map<Integer, Device> newPositionMap = new HashMap<>();
-
-        int newPosition = 0;
-        for (String stringPosition : newPositionStringList) {
-            int oldPosition = Integer.parseInt(stringPosition);
-            newPosition += 1;
-            newPositionMap.put(newPosition, oldPositionMap.get(oldPosition));
-        }
-
-        rack.setDevicePositionMap(newPositionMap);
-
-        centerService.saveRackDevicePosition(rack);
     }
 
     @Override

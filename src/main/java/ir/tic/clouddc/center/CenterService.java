@@ -1,13 +1,10 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationCheckList;
-import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CenterService {
 
@@ -17,9 +14,9 @@ public interface CenterService {
 
     List<Location> getLocationList();
 
-    void saveRackDevicePosition(Rack rack);
-
     void verifyRackDevicePosition(List<Rack> rackList);
+
+    Optional<Location> getLocation(Long locationId);
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {
@@ -27,41 +24,14 @@ public interface CenterService {
 
         String getName();
     }
-    interface LocationIdNameCenterCategoryProjection1 {
-        Long getId();
 
-        String getLocationName();
-
-        String getCenterName();
-
-        String getCategoryName();
-    }
-
-    List<LocationPmCatalog> getLocationCatalogList(Location baseLocation);
+    void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList);
 
     LocationStatus getCurrentLocationStatus(Location location);
-
-    List<Location> getCustomizedLocationList(List<String> locationCategoryNameList);
 
     Model getCenterLandingPageModel(Model model);
 
     List<CenterIdNameProjection> getCenterIdAndNameList();
 
-    void updateLocationStatus(LocationStatusForm locationStatusForm, LocationCheckList event);
-
-    Hall getHall(int hallId);
-
-    Optional<Location> getLocation(Long locationId);
-
-    Optional<Center> getCenter(int centerId);
-
-    List<Hall> getHallList();
-
-    List<Center> getCenterList();
-
     Model modelForCenterController(Model model);
-
-    void setDailyTemperatureReport(DailyReport currentReport);
-
-    List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
 }

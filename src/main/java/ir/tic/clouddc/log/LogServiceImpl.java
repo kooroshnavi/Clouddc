@@ -83,6 +83,4 @@ public final class LogServiceImpl implements LogService {
     public List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId) {
         return logHistoryRepository.getPmInterfaceSupervisorEditedPersistenceList(stringPmInterfaceId);
     }
-
-
 }
