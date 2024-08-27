@@ -81,6 +81,7 @@
                         <tr>
                             <th>ردیف</th>
                             <th>شماره Pm</th>
+                            <th>دسته بندی</th>
                             <th>عنوان Pm</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
@@ -96,6 +97,10 @@
 
                             <td th:text="${pm.id}"></td>
 
+                            <td>
+                                <strong th:if="${pm.pmInterfaceCatalog.pmInterface.categoryId == 1}" class="text-bg-primary" th:text="${pm.pmInterfaceCatalog.pmInterface.category}"></strong>
+                                <strong th:if="${pm.pmInterfaceCatalog.pmInterface.categoryId == 2}" class="text-bg-secondary" th:text="${pm.pmInterfaceCatalog.pmInterface.category}"></strong>
+                            </td>
                             <td>
                                 <strong th:text="${pm.pmInterfaceCatalog.pmInterface.title}"></strong>
                             </td>

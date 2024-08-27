@@ -27,6 +27,9 @@ public final class UnassignedDevice {
     @Column(name = "RemovalDate", nullable = false)
     private LocalDate removalDate;
 
+    @Transient
+    private String persianRemovalDate;
+
     @ManyToOne(cascade = CascadeType.MERGE)
     @JoinColumn(name = "DeviceCategoryID")
     private DeviceCategory deviceCategory;

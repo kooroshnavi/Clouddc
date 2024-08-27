@@ -21,13 +21,10 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
     <link href="/JalaliDatePicker/JalaliDatePicker_1.min.css" rel="stylesheet">
     <script type="text/javascript" src="/JalaliDatePicker/JalaliDatePicker.min_2.js"></script>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -103,6 +100,32 @@
 
 
                     <div class="card-body" dir="rtl">
+
+                        <div class="col" align="right">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">نکات مرتبط با رخدادها</button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">لطفا توجه داشته باشید</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>در رخدادهای نصب، جابجایی و تغییر بهره بردار، اطلاعات مکان، تجهیز و دارایی های بهره بردار متناسب با نوع رخداد بروزرسانی شده و در گزارش گیری های آتی مورد استناد قرار می گیرد. لذا در تکمیل اطلاعات فرم دقت فرمایید.</p>
+                                            <p>تاریخ وقوع یا اتمام انجام، تاریخ واقعی رخداد است لطفا در ثبت آن دقت فرمایید.</p>
+                                            <p>در رخدادهای عمومی در صورت عدم ثبت پایان رخداد می توانید بعدا آن را بروزرسانی نمایید.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <BR>
+
                         <div class="border p-3 rounded">
                             <form class="was-validated" th:action="@{/event/register}" th:object="${eventForm}"
                                   enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">

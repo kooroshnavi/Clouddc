@@ -3,15 +3,13 @@ package ir.tic.clouddc.report;
 import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.pm.PmService;
+import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
-
-import java.sql.SQLException;
-import java.time.LocalDateTime;
 
 @Slf4j
 @Service
@@ -20,16 +18,18 @@ public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
 
+    private final ResourceService resourceService;
+
     private final PmService pmService;
 
     private final FileService fileService;
 
     private final NotificationService notificationService;
 
-
     @Autowired
-    ReportServiceImpl(ReportRepository reportRepository, PmService pmService, FileService fileService, NotificationService notificationService) {
+    ReportServiceImpl(ReportRepository reportRepository, ResourceService resourceService, PmService pmService, FileService fileService, NotificationService notificationService) {
         this.reportRepository = reportRepository;
+        this.resourceService = resourceService;
         this.pmService = pmService;
         this.fileService = fileService;
         this.notificationService = notificationService;
@@ -40,11 +40,16 @@ public class ReportServiceImpl implements ReportService {
         UtilService.setDate();
         String pmSchedulerResult = pmService.updateTodayPmList();
         String removalFileResult = fileService.scheduleDocumentRemoval(UtilService.getDATE());
-        var scheduleNotificationMessage = pmSchedulerResult + System.lineSeparator() + removalFileResult;
+        String removalDeviceResult = resourceService.scheduleUnassignedDeviceRemoval();
+
+        var scheduleNotificationMessage = pmSchedulerResult
+                + System.lineSeparator()
+                + removalFileResult
+                + System.lineSeparator()
+                + removalDeviceResult;
 
         notificationService.sendScheduleUpdateMessage("09127016653", scheduleNotificationMessage);
     }
-
 /*
     @Override
     public DailyReport setCurrentReport() {
@@ -64,6 +69,4 @@ public class ReportServiceImpl implements ReportService {
 
         return today;
     }*/
-
-
 }

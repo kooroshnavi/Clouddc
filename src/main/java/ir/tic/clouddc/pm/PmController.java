@@ -183,6 +183,10 @@ public class PmController {
         model.addAttribute("pm", pm);
         model.addAttribute("metadataList", metadataList);
 
+        if (!model.containsAttribute("updated")) {
+            model.addAttribute("updated", false);
+        }
+
         return "pmDetail";
     }
 
@@ -214,14 +218,18 @@ public class PmController {
 
     @PostMapping(value = "/update")
     public String updatePm(@RequestParam("attachment") MultipartFile file,
-                           @Valid @ModelAttribute("pmUpdateForm") PmUpdateForm pmUpdateForm) throws IOException {
+                           @Valid @ModelAttribute("pmUpdateForm") PmUpdateForm pmUpdateForm, RedirectAttributes redirectAttributes) throws IOException {
         if (!file.isEmpty()) {
             pmUpdateForm.setFile(file);
         }
         var pm = pmService.getPm(pmUpdateForm.getPmId());
         if (pm.isPresent()) {
             pmService.updatePm(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
-            return "redirect:/pm/workspace";
+
+            redirectAttributes.addAttribute("pmId", pmUpdateForm.getPmId());
+            redirectAttributes.addFlashAttribute("updated", true);
+
+            return "redirect:/pm/{pmId}/detailList";
         }
 
         return "404";

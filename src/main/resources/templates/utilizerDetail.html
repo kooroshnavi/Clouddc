@@ -21,11 +21,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -71,6 +68,32 @@
         <hr/>
         <div class="card">
             <div class="card-body">
+
+                <div class="col" align="right">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای بهره بردار</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">بهره بردار</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>بهره بردار، مجموعه ای است که تجهیز و رک در اختیار او قرار داده شده است.</p>
+                                    <p>انواع بهره بردارن شامل ادارات و معاونت های داخل زیرساخت، سازمان ها و شرکت های خصوصی و دولتی، پیام رسان های بومی و پیمانکاران توسعه و نگه داری زیرساخت ابر هستند.</p>
+                                    <p>رک ها و تجهیزات در اختیار بهره بردار در سامانه مطابق با ثبت رخدادها تغییر می کنند.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <BR>
+
 
                 <div class="col" align="right">
                     <a th:href="@{/event/{typeId}/{targetId}/list (typeId=${3}, targetId=${utilizer.id})}"

@@ -99,39 +99,26 @@ public class PmServiceImpl implements PmService {
         }
 
         Pm pm;
-        GeneralPmDetail generalPmDetail;
-
-        if (catalog instanceof LocationPmCatalog locationPmCatalog) {
-            GeneralLocationPm generalLocationPm = new GeneralLocationPm();
-            generalLocationPm.setPmInterfaceCatalog(locationPmCatalog);
-            generalLocationPm.setActive(true);
-            generalLocationPm.setDueDate(UtilService.getDATE());
-            generalLocationPm.setRegisterTime(UtilService.getTime());
-            generalLocationPm.setDelay(0);
-
-            generalPmDetail = new GeneralPmDetail();
-            generalPmDetail.setPm(generalLocationPm);
-            generalLocationPm.setPmDetailList(List.of(generalPmDetail));
-            pm = generalLocationPm;
-
+        if (catalog instanceof LocationPmCatalog) {
+            pm = new GeneralLocationPm();
         } else {
-            GeneralDevicePm generalDevicePm = new GeneralDevicePm();
-            generalDevicePm.setPmInterfaceCatalog(catalog);
-            generalDevicePm.setActive(true);
-            generalDevicePm.setDueDate(UtilService.getDATE());
-            generalDevicePm.setRegisterTime(UtilService.getTime());
-            generalDevicePm.setDelay(0);
-
-            generalPmDetail = new GeneralPmDetail();
-            generalPmDetail.setPm(generalDevicePm);
-            generalDevicePm.setPmDetailList(List.of(generalPmDetail));
-            pm = generalDevicePm;
+            pm = new GeneralDevicePm();
         }
+
+        pm.setPmInterfaceCatalog(catalog);
+        pm.setActive(true);
+        pm.setDueDate(UtilService.getDATE());
+        pm.setRegisterTime(UtilService.getTime());
+        pm.setDelay(0);
+
+        GeneralPmDetail generalPmDetail = new GeneralPmDetail();
         generalPmDetail.setDelay(0);
         generalPmDetail.setActive(true);
         generalPmDetail.setRegisterDate(UtilService.getDATE());
         generalPmDetail.setRegisterTime(UtilService.getTime());
         generalPmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
+        generalPmDetail.setPm(pm);
+        pm.setPmDetailList(List.of(generalPmDetail));
 
         return pm;
     }

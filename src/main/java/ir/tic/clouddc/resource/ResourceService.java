@@ -29,9 +29,11 @@ public interface ResourceService {
 
     Supplier getReferencedDefaultSupplier();
 
-    void deleteInstalledUnassignedList(List<Integer> unassignedDeviceIdList);
+    void deleteUnassignedDeviceIdList(List<Integer> unassignedDeviceIdList);
 
     boolean newDevicePresentCheck();
+
+    String scheduleUnassignedDeviceRemoval();
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
@@ -53,7 +55,6 @@ public interface ResourceService {
 
     interface DeviceIdUtilizerId_Projection2 {
         Long getDeviceId();
-
         Integer getDeviceUtilizerId();
     }
 

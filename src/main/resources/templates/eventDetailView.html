@@ -537,42 +537,105 @@
                             <tr th:each="metadata, iter : ${metaDataList}">
 
                                 <td th:text="${iter.count}"></td>
-                                <td>
-
-                                    <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
+                                <td th:switch="${metadata.type}">
+                                    <div th:case="'application/pdf'" class="d-flex align-items-center">
                                         <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
                                         <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                            class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
                                     </div>
 
-                                    <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
-                                         class="d-flex align-items-hall">
+                                    <div th:case="'application/vnd.openxmlformats-officedocument.presentationml.presentation'"
+                                         class="d-flex align-items-center">
+                                        <div><i class='bx bxs-file-plus me-2 font-24 text-danger'></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                    </div>
+
+                                    <div th:case="'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+                                         class="d-flex align-items-center">
                                         <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
                                         <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                            class="font-weight-bold text-success" th:text="${metadata.name}"></a>
                                     </div>
 
-                                    <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
-                                         class="d-flex align-items-hall">
+                                    <div th:case="'application/vnd.ms-excel'"
+                                         class="d-flex align-items-center">
+                                        <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                    </div>
+
+                                    <div th:case="'application/vnd.openxmlformats-officedocument.wordprocessingml.document'"
+                                         class="d-flex align-items-center">
                                         <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                         <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                            class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                     </div>
 
-                                    <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}"
-                                         class="d-flex align-items-hall">
-                                        <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                    <div th:case="'application/msword'"
+                                         class="d-flex align-items-center">
+                                        <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                         <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                           class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                           class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                     </div>
 
-                                    <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}"
-                                         class="d-flex align-items-hall">
-                                        <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
+                                    <div th:case="'image/png'"
+                                         class="d-flex align-items-center">
+                                        <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
                                         <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                           class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                           class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
+                                    </div>
+                                    <div th:case="'image/jpeg'"
+                                         class="d-flex align-items-center">
+                                        <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
+                                    </div>
+                                    <div th:case="'image/jpg'"
+                                         class="d-flex align-items-center">
+                                        <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
                                     </div>
 
+                                    <div th:case="'text/csv'"
+                                         class="d-flex align-items-center">
+                                        <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                    </div>
+                                    <div th:case="'text/plain'"
+                                         class="d-flex align-items-center">
+                                        <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                    </div>
+                                    <div th:case="'text'"
+                                         class="d-flex align-items-center">
+                                        <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                    </div>
+
+                                    <div th:case="'text/html'" class="d-flex align-items-center">
+                                        <div class="bx bxs-file-html"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-info" th:text="${metadata.name}"></a>
+                                    </div>
+
+                                    <div th:case="'application/x-zip-compressed'"
+                                         class="d-flex align-items-center">
+                                        <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                                    </div>
+
+                                    <div th:case="*"
+                                         class="d-flex align-items-center">
+                                        <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                        <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                           class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                                    </div>
                                 </td>
 
                                 <td th:text="${metadata.persistence.person.name}"/>

@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
@@ -35,6 +36,11 @@
 
 <body>
 
+<script th:if="${updated}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -199,7 +205,7 @@
 
                         <td th:if="${detail.active}">اقدام نشده</td>
 
-                        <td th:if="${not detail.active}" th:title="${detail.persianFinishedDayTime}"
+                        <td th:unless="${detail.active}" th:title="${detail.persianFinishedDayTime}"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             th:text="${detail.persianFinishedDate}"></td>
@@ -218,102 +224,131 @@
         <br>
 
         <!--attachment table-->
-        <div class="card" align="center">
+        <div th:if="${!metadataList.isEmpty()}" class="card" align="center">
             <div class="card-body">
                 <h6 class="mb-0 text-uppercase" align="center">
                     <strong>لیست پیوست</strong>
                 </h6>
-                <div class="d-flex align-items-center">
-
-                </div>
-                <div class="card-body">
+                <br>
                     <table class="table mb-0">
                         <thead class="table-dark">
                         <tr>
                             <th>ردیف</th>
                             <th>فایل</th>
                             <th>بارگذاری توسط</th>
-                            <th>عملیات</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="metadata, iter : ${metadataList}">
 
                             <td th:text="${iter.count}"></td>
-                            <td>
 
-                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
+                            <td th:switch="${metadata.type}">
+                                <div th:case="'application/pdf'" class="d-flex align-items-center">
                                     <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
-                                     class="d-flex align-items-hall">
+                                <div th:case="'application/vnd.openxmlformats-officedocument.presentationml.presentation'"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file-plus me-2 font-24 text-danger'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+                                     class="d-flex align-items-center">
                                     <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-success" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
-                                     class="d-flex align-items-hall">
+                                <div th:case="'application/vnd.ms-excel'"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'application/vnd.openxmlformats-officedocument.wordprocessingml.document'"
+                                     class="d-flex align-items-center">
                                     <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}"
-                                     class="d-flex align-items-hall">
-                                    <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                <div th:case="'application/msword'"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                       class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}"
-                                     class="d-flex align-items-hall">
-                                    <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
+                                <div th:case="'image/png'"
+                                     class="d-flex align-items-center">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'image/jpeg'"
+                                     class="d-flex align-items-center">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'image/jpg'"
+                                     class="d-flex align-items-center">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
                                 </div>
 
+                                <div th:case="'text/csv'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'text/plain'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'text'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'text/html'" class="d-flex align-items-center">
+                                    <div class="bx bxs-file-html"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-info" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'application/x-zip-compressed'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="*"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                                </div>
                             </td>
 
                             <td th:text="${metadata.persistence.person.name}"/>
 
-                            <td>
-                                <div th:if="${metadata.persistence.person.username == #authentication.getName()}"
-                                     class="col">
-                                    <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                            data-bs-target="#exampleWarningModal">مدیریت فایل های پیوست
-                                    </button>
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                                            <div class="modal-content bg-gradient-info">
-                                                <div class="modal-header border-dark">
-                                                    <h5 class="modal-title text-dark">مدیریت فایل</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body text-dark">
-                                                    <p>همکار گرامی جهت مشاهده و حذف فایل های خود می توانید از طریق بخش
-                                                        مدیریت فایل واقع در منوی دسترسی سریع (بالا سمت چپ کنار
-                                                        ساعت) اقدام نمایید.
-                                                    </p>
-                                                </div>
-                                                <div class="modal-footer border-dark">
-                                                    <a th:href="@{/document/list}" class="btn btn-dark">مدیریت فایل</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
                         </tbody>
                     </table>
-                </div>
+
             </div>
         </div>
         <!--End attachment table-->
@@ -347,6 +382,11 @@
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 <script src="/panel/assets/js/table-datatable.js"></script>
 
 <!--app-->

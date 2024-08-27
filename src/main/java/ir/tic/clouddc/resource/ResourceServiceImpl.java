@@ -94,7 +94,7 @@ public class ResourceServiceImpl implements ResourceService {
         UnassignedDevice unassignedDevice = new UnassignedDevice();
         unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
         unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
-        unassignedDevice.setRemovalDate(UtilService.getDATE().plusDays(7));
+        unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
         Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
         unassignedDevice.setPersistence(persistence);
 
@@ -112,7 +112,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void deleteInstalledUnassignedList(List<Integer> assignedIdList) {
+    public void deleteUnassignedDeviceIdList(List<Integer> assignedIdList) {
         unassignedDeviceRepository.deleteAllById(assignedIdList);
     }
 
@@ -120,6 +120,17 @@ public class ResourceServiceImpl implements ResourceService {
     public boolean newDevicePresentCheck() {
         var count = unassignedDeviceRepository.count();
         return count != 0;
+    }
+
+    @Override
+    public String scheduleUnassignedDeviceRemoval() {
+        List<Integer> unassignedDeviceIdList = unassignedDeviceRepository.getUnassignedDeviceIdList(UtilService.getDATE());
+        if (!unassignedDeviceIdList.isEmpty()) {
+            unassignedDeviceRepository.deleteAllById(unassignedDeviceIdList);
+
+            return unassignedDeviceIdList.size() + " un-assigned device removed.";
+        }
+        return "No device were removed.";
     }
 
     @Override

@@ -19,11 +19,8 @@
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
     <link href="/panel/assets/css/tableFilter.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -69,9 +66,9 @@
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
 
-                    <h6 class="mb-0 text-uppercase" align="center">
-                        <strong>وضعیت PM</strong>
-                    </h6>
+                    <h4 class="mb-0 text-uppercase" align="center">
+                        <strong th:text="${pmInterface.title}"></strong>
+                    </h4>
                     <br>
 
                     <div class="table-responsive">
@@ -79,40 +76,16 @@
                             <thead>
                             <tr>
                                 <th scope="col">دسته بندی</th>
-                                <th scope="col">عنوان</th>
                                 <th scope="col">دوره تکرار</th>
                                 <th scope="col">توضیحات</th>
-                                <th th:if="${pm.active}" scope="col">کارتابل فعلی</th>
-                                <th th:unless="${pm.active}" scope="col">تاریخ اتمام</th>
-
-                                <th th:if="${pmInterface.categoryId == 1}" scope="col">نام مکان</th>
-                                <th th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}"
-                                    scope="col">سالن
-                                </th>
-                                <th th:if="${pmInterface.categoryId == 2}" scope="col">نوع و مدل تجهیز</th>
-                                <th th:if="${pmInterface.categoryId == 2}" scope="col">شماره سریال</th>
-                                <th th:if="${pmInterface.categoryId == 2}" scope="col">مکان نصب</th>
                             </tr>
                             </thead>
 
                             <tbody>
                             <tr>
-                                <td th:text="${pm.id}"/>
-                                <td th:text="${pm.pmInterfaceCatalog.pmInterface.category}"/>
-                                <td th:text="${pm.pmInterfaceCatalog.pmInterface.title}"/>
-                                <td th:text="${pm.persianDueDate}"/>
-                                <td class="clock">
-                                <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
-                                      class="text-bg-danger"></span>
-                                    <span th:if="${pm.delay} == 0"
-                                          class="text-bg-success">ندارد</span>
-                                </td>
-                                <td th:if="${pm.active}" class="text-bg-warning" th:text="${pm.activePersonName}"/>
-                                <td th:unless="${pm.active}" class="text-bg-success" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
-                                    data-bs-placement="top"
-                                    th:title="${pm.persianFinishedDayTime}" dir="rtl"/>
-
-
+                                <td th:text="${pmInterface.category}"/>
+                                <td th:text="${pmInterface.period}"/>
+                                <td th:text="${pmInterface.description}"/>
                             </tr>
 
                             </tbody>
@@ -123,30 +96,10 @@
             </div>
         </div>
 
-        <div class="col">
-            <div class="card border shadow-none radius-10">
-                <div class="card-body">
-                    <div class="d-flex align-items-hall gap-3">
-                        <div class="icon-box bg-light-success border-0">
-                            <i class="lni lni-chevron-left"></i>
-                        </div>
-                        <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
-                            </h6>
-                            <h6 class="mb-2"><strong th:text=" 'عنوان: ' + ${pmInterface.title}"></strong></h6>
-                            <p class="mb-1" th:text=" 'دوره تکرار (روز): ' + ${pmInterface.period}"></p>
-                            <p th:if="${pmInterface.description != null}" class="mb-1"
-                               th:text=" 'توضیحات: ' + ${pmInterface.description}"></p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <br>
 
-        <hr/>
-
-        <h6 th:if="${active}" class="mb-0 text-uppercase" align="hall">لیست فعال</h6>
-        <h6 th:if="${not active}" class="mb-0 text-uppercase" align="hall">لیست آرشیو </h6>
+        <h5 th:if="${active}" class="mb-0 text-uppercase" align="hall">لیست وظایف فعال این PM</h5>
+        <h5 th:if="${not active}" class="mb-0 text-uppercase" align="hall">لیست وظایف آرشیو این PM</h5>
         <hr/>
         <div class="card">
             <div class="card-body">
@@ -186,22 +139,22 @@
 
                             <td class="clock">
                                 <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
-                                      class="badge bg-light-danger text-danger w-100"></span>
+                                      class="text-bg-danger"></span>
                                 <span th:if="${pm.delay} == 0"
-                                      class="badge bg-light-success text-success w-100">ندارد</span>
+                                      class="text-bg-success">ندارد</span>
                             </td>
 
-                            <td th:if="${active}" th:text="${pm.activePersonName}"></td>
+                            <td th:if="${active}" th:text="${pm.activePersonName}" class="text-bg-warning"></td>
 
-                            <td th:if="${not active}" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
+                            <td class="text-bg-success" th:if="${not active}" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
                                 data-bs-placement="top"
                                 th:title="${pm.persianFinishedDayTime}" dir="rtl"></td>
-
                             <td>
                                 <div class="col">
-                                    <a th:href="@{/pm/{pmId}/detailList(pmId=${pm.id})}">جزئیات</a>
+                                    <a  class="btn btn-outline-secondary" th:href="@{/pm/{pmId}/detailList(pmId=${pm.id})}">گردش کار</a>
                                 </div>
                             </td>
+
 
                         </tr>
                         </tbody>

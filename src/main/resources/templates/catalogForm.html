@@ -8,6 +8,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
@@ -62,11 +64,10 @@
                     </ol>
                 </nav>
             </div>
-
         </div>
         <!--end breadcrumb-->
 
-        <div class="row">
+        <div class="card">
             <div class="col-lg-8 mx-auto">
                 <div class="card">
                     <div th:if="${isLocation}" class="card-header py-3 bg-transparent" align="center">
@@ -83,21 +84,32 @@
                     </div>
 
                     <div class="card-body">
+
+                        <h6 th:if="${!update}" class="mb-0 text-uppercase" align="center">
+                            <strong class="mb-0 text-bg-warning">همکار گرامی، PMهایی که قبلا در بخش مدیریت وظایف تعریف شده اند و دسته بندی آنها مطابق با این مکان/تجهیز است، قابل انتخاب می باشند.</strong>
+                        </h6>
+                        <br>
+                        <h6 class="mb-0 text-uppercase" align="center">
+                            <strong class="mb-0 text-bg-info">اگر اولین سررسید امروز باشد، پس از ثبت، یک وظیفه فعال ایجاد و به کارتابل می رود.</strong>
+                        </h6>
+                        <br>
+                        <h6 class="mb-0 text-uppercase" align="center">
+                            <strong class="mb-0 text-bg-success">این PM در سررسیدها به طور خودکار به کارتابل پیش فرض منتسب می شود.</strong>
+                        </h6>
+                        <br>
                         <div class="border p-3 rounded">
 
-                            <form class="row g-3" th:action="@{/pm/catalog/register}"
+                            <form class="was-validated" th:action="@{/pm/catalog/register}"
                                   th:object="${catalogForm}"
                                   method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
-                                <div th:if="${not update}" class="mb-3">
+                                <div th:if="${!update}" class="mb-3">
                                     <label class="form-label">انتخاب Pm</label>
-                                    <label>
-                                        <select class="single-select" th:field="*{pmInterfaceId}" required="required">
-                                            <option th:each="pmInterface : ${pmInterfaceList}"
-                                                    th:value="${pmInterface.id}"
-                                                    th:text="${pmInterface.title + ' با دوره تکرار ' + pmInterface.period}"></option>
-                                        </select>
-                                    </label>
+                                    <select class="single-select" th:field="*{pmInterfaceId}" required="required">
+                                        <option th:each="pmInterface : ${pmInterfaceList}"
+                                                th:value="${pmInterface.id}"
+                                                th:text="${pmInterface.title + ' با دوره تکرار ' + pmInterface.period}"></option>
+                                    </select>
                                 </div>
 
                                 <div class="mb-3">
@@ -127,11 +139,21 @@
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckDefault" th:field="*{enabled}">
                                     <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال سازی</label>
                                 </div>
-                                <hr/>
 
                                 <div th:if="${update && not enablementAccess}" class="col-12">
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked="checked" disabled="disabled">
-                                    <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این Pm خاتمه یابد.</label>
+                                    <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این کاتالوگ خاتمه یابد.</label>
+                                </div>
+
+                                <br>
+
+                                <div class="col-12">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
+                                        <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                        <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                    </div>
+                                    <hr/>
                                 </div>
 
                                 <div class="col">
@@ -144,13 +166,12 @@
                                         <div class="modal-dialog modal-lg modal-dialog-centered">
                                             <div class="modal-content bg-warning">
                                                 <div class="modal-header border-dark">
-                                                    <h5 class="modal-title text-dark">همکار گرامی، نظر به اهمیت ثبت
-                                                        اطلاعات صحیح و قابل استناد،</h5>
+                                                    <h5 class="modal-title text-dark">همکار گرامی، پس از تایید</h5>
                                                     <button type="button" class="btn-close" data-bs-dismiss="modal"
                                                             aria-label="Close"></button>
                                                 </div>
                                                 <div class="modal-body text-dark">
-                                                    <p>لطفا در ثبت و ویرایش Pm ها دقت لازم را مبذول نمایید باتشکر</p>
+                                                    <p>این PM در سررسید مقرر جهت اجرا در کارتابل قرار می گیرد.</p>
                                                 </div>
                                                 <div class="modal-footer border-dark">
                                                     <button type="button" class="btn btn-light" data-bs-dismiss="modal">
@@ -198,6 +219,9 @@
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
+<script src="/panel/assets/js/form-select2.js"></script>
+
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
 <script src="/JalaliDatePicker/JalaliDatePickerGeorgianResponse_3.js"></script>

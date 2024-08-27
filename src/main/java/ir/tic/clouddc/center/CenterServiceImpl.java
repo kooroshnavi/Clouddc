@@ -105,7 +105,6 @@ public class CenterServiceImpl implements CenterService {
     @Override
     public Optional<Location> getLocation(Long locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
-
         if (optionalLocation.isPresent()) {
             if (optionalLocation.get().getLocationPmCatalogList() != null) {
                 for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {

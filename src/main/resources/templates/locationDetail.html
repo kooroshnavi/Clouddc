@@ -154,6 +154,32 @@
             <div class="card-body">
 
                 <div class="col" align="right">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای مکان</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">تعریف مکان در این سیستم</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>مکان در این سامانه شامل سه محل در مرکزداده می شود که عبارتند از: 1.هال (یا سالن) - 2. رک   3. اتاق یا انبار</p>
+                                    <p>این سه مکان بعضا دارای اشتراکاتی هستند مثلا در رک و اتاق می توان تجهیز قرار داد. هر سالن یک لیست از رک دارد. بنابراین هر رک متعلق به یک سالن است. در اتاق معمولا تجهیزات یدک وجود دارد.</p>
+                                    <p>می توان هر مکان اشاره شده را به کاتالوگ یک PM که دسته بندی آن "مکان" است افزود.</p>
+                                    <p>با توجه به نوع مکان یا تجهیز، رخدادهایی در آن اتفاق می افتد که می بایست جزئیات آن ثبت و مستند گردد. از طریق صفحه هر مکان یا تجهیز می توانید رخداد مدنظر را ثبت نمایید.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <BR>
+
+                <div class="col" align="right">
                     <div class="dropdown">
                         <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">رخدادهای این مکان</button>
 
@@ -370,15 +396,16 @@
         <hr/>
         <h5 class="mb-0 text-bg-success"
             th:text="${'Pm های ' + location.locationCategory.category + ' ' + location.name}"></h5>
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+        <br>
 
-            <div class="ui-dialog-buttonpane" align="left">
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <div class="ui-dialog-buttonpane" align="center">
                 <a th:href="@{/pm/catalog/location/{locationId}/form(locationId=${location.id})}"
                    class="btn btn-outline-success"
-                   th:text="'افزودن Pm به ' + ${location.name}">
+                   th:text="'افزودن ' + ${location.name} + 'به کاتالوگ یک PM'">
                 </a>
             </div>
-
+            <br>
         </div>
 
         <div class="card">

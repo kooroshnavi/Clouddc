@@ -455,7 +455,7 @@ public final class EventServiceImpl implements EventService {
 
     private void eventPostProcessing(EventForm eventForm) {
         if (eventForm.getEventCategoryId() == NewDevice_Installation_EVENT_CATEGORY_ID) {
-            resourceService.deleteInstalledUnassignedList(eventForm.getUnassignedDeviceIdList());
+            resourceService.deleteUnassignedDeviceIdList(eventForm.getUnassignedDeviceIdList());
         }
     }
 

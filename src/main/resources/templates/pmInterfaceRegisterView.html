@@ -88,7 +88,7 @@
                                             <p>عنوان اصلی اینکه این PM چه کاری را به صورت دوره ای انجام می دهد.</p>
                                             <label class="text-bg-primary">دوره تکرار: </label>
                                             <p>هر چند روز این Pm می بایست در مکان یا تجهیز مدنظر تکرار شود.</p>
-                                            <label class="text-bg-primary">نوع مکان / تجهیز</label>
+                                            <label class="text-bg-primary">دسته بندی</label>
                                             <p>انتخاب نوع مکان یا نوع تجهیز قابل اجرا برای این Pm</p>
                                             <label class="text-bg-primary">وضعیت فعالسازی:</label>
                                             <p>در صورت انتخاب؛ Pm در سررسیدها اجرا می شود و می توان مکان یا تجهیزات را به کاتالوگ آن افزود.</p>
@@ -112,7 +112,7 @@
                         </h6>
                         <hr/>
                         <h6 th:if="${!isUpdate}" class="mb-0 text-uppercase" align="center">
-                            <strong class="mb-0 text-bg-primary">خواهشمندست راهنمای فرم را مطالعه نمایید.</strong>
+                            <strong class="mb-0 text-bg-success">خواهشمندست راهنمای فرم را مطالعه نمایید.</strong>
                         </h6>
                         <br>
 
@@ -149,18 +149,18 @@
                                 <hr/>
 
                                 <div th:if="${not isUpdate}" class="col-12">
-                                    <label class="form-label">این Pm روی کدام مکان یا نوع تجهیز اعمال شود؟</label>
+                                    <label class="form-label">دسته بندی</label>
                                     <select class="form-select" name="subject" th:field="*{target}">
                                         <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
                                         <option th:value="1">مکان: هال (سالن)</option>
                                         <option th:value="2">مکان: رک</option>
                                         <option th:value="3">مکان: اتاق - انبار</option>
-                                        <option th:value="4">روی هر سه مکان قابل اجرا باشد</option>
+                                        <option th:value="4">روی هر مکانی قابل تعریف باشد</option>
                                         <option th:value="5">تجهیز: سرور</option>
                                         <option th:value="6">تجهیز: سوئیچ</option>
                                         <option th:value="7">تجهیز: فایروال</option>
                                         <option th:value="8">تجهیز: انکلوژر</option>
-                                        <option th:value="9">روی تمام انواع تجهیزات</option>
+                                        <option th:value="9">روی هر تجهیزی قابل تعریف باشد</option>
                                     </select>
                                 </div>
                                 <br th:if="${!isUpdate}">

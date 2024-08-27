@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,11 @@ public class ResourceController {
     @GetMapping("/device/{deviceId}/detail")
     public String showDeviceDetail(Model model, @PathVariable Long deviceId) throws EntityNotFoundException {
         var device = resourceService.getReferencedDevice(deviceId);
+        if (device.getDevicePmCatalogList() != null) {
+            for (DevicePmCatalog catalog : device.getDevicePmCatalogList()) {
+                catalog.setPersianNextDue(UtilService.getFormattedPersianDate(catalog.getNextDueDate()));
+            }
+        }
         model.addAttribute("device", device);
         model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
@@ -91,6 +97,4 @@ public class ResourceController {
         }
         return "redirect:/resource/device/unassigned";
     }
-
-
 }
