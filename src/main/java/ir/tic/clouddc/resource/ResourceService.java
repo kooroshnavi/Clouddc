@@ -35,6 +35,8 @@ public interface ResourceService {
 
     String scheduleUnassignedDeviceRemoval();
 
+    List<Utilizer> getUtilierList();
+
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 
@@ -63,6 +65,7 @@ public interface ResourceService {
 
         String getName();
     }
+
 
     Optional<Device> getDevice(Long deviceId);
 

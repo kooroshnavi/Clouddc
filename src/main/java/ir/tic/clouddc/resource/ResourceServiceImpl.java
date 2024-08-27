@@ -134,6 +134,11 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public List<Utilizer> getUtilierList() {
+        return utilizerRepository.fetchGenuineList();
+    }
+
+    @Override
     public Optional<Device> getDevice(Long deviceId) {
         Optional<Device> currentDevice = deviceRepository.findById(deviceId);
 

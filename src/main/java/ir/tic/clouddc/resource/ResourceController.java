@@ -10,6 +10,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -37,6 +38,20 @@ public class ResourceController {
         model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
         return "deviceDetail";
+    }
+
+    @GetMapping("/utilizer/list")
+    public String showUtilizerList(Model model) {
+        List<Utilizer> utilizerList = new java.util.ArrayList<>(resourceService
+                .getUtilierList()
+                .stream()
+                .sorted(Comparator.comparing(utilizer -> utilizer.getDeviceList().size()))
+                .toList());
+        Collections.reverse(utilizerList);
+
+        model.addAttribute("utilizerList", utilizerList);
+
+        return "UtilizerList";
     }
 
     @GetMapping("/utilizer/{utilizerId}/detail")

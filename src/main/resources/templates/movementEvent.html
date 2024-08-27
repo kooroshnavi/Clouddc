@@ -113,9 +113,11 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>در رخدادهای نصب، جابجایی و تغییر بهره بردار، اطلاعات مکان، تجهیز و دارایی های بهره بردار متناسب با نوع رخداد بروزرسانی شده و در گزارش گیری های آتی مورد استناد قرار می گیرد. لذا در تکمیل اطلاعات فرم دقت فرمایید.</p>
-                                            <p>تاریخ وقوع یا اتمام انجام، تاریخ واقعی رخداد است لطفا در ثبت آن دقت فرمایید.</p>
-                                            <p>در رخدادهای عمومی در صورت عدم ثبت پایان رخداد می توانید بعدا آن را بروزرسانی نمایید.</p>
+                                            <p>* در رخدادهای نصب، جابجایی و تغییر بهره بردار، اطلاعات مکان، تجهیز و دارایی های بهره بردار دقیقا متناسب با نوع رخداد و اطلاعاتی که در این فرم ثبت شده بروزرسانی می گردد و در گزارش گیری های آتی مورد استناد قرار می گیرد. لذا در تکمیل اطلاعات فرم دقت فرمایید.</p>
+                                            <p>* تاریخ وقوع یا اتمام انجام، تاریخ واقعی رخداد است لطفا در ثبت آن دقت فرمایید.</p>
+                                            <p>* در رخدادهای عمومی در صورت عدم ثبت پایان رخداد می توانید بعدا آن را بروزرسانی نمایید.</p>
+                                            <p>* پس از ثبت رخداد می توانید جزئیات آن را مشاهده نمایید.</p>
+
                                         </div>
                                         <div class="modal-footer">
                                             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
@@ -191,8 +193,7 @@
                                             multiple="multiple" th:field="*{unassignedDeviceIdList}" required="required">
                                         <option th:each="device : ${deviceList}"
                                                 th:value="${device.getId()}"
-                                                th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
-                                                 + ' - ' + device.getId()}"></option>
+                                                th:text="${device.getCategory() + ' - ' + device.getSerialNumber() + ' - ' + device.getModel()}"></option>
                                     </select>
                                     <hr/>
                                 </div>
@@ -203,8 +204,7 @@
                                             multiple="multiple" th:field="*{deviceIdList}" required="required">
                                         <option th:each="device : ${deviceList}"
                                                 th:value="${device.getId()}"
-                                                th:text="${device.getCategory() + ' - ' + device.getModel() + ' - ' + device.getSerialNumber()
-                                                 + ' - ' + device.getId()}"></option>
+                                                th:text="${device.getCategory() + ' - ' + device.getSerialNumber() + ' - ' + device.getModel()}"></option>
                                     </select>
                                     <hr/>
                                 </div>
@@ -215,12 +215,12 @@
 
                                         <option th:each="room : ${roomList}"
                                                 th:value="${room.id}"
-                                                th:text="${room.locationCategory.category + ' - ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name + room.getId()}">
+                                                th:text="${room.locationCategory.category + ' - ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name}">
                                         </option>
 
                                         <option th:each="rack : ${rackList}"
                                                 th:value="${rack.id}"
-                                                th:text="${rack.locationCategory.category + ' - ' + rack.name + ' - ' +  rack.hall.name  + ' - ' + rack.getUtilizer().name + rack.getId()}">
+                                                th:text="${rack.locationCategory.category + ' - ' + rack.name + ' - ' +  rack.hall.name  + ' - ' + rack.getUtilizer().name}">
                                         </option>
 
                                     </select>
@@ -247,7 +247,6 @@
                                     <hr/>
                                 </div>
 
-
                                 <div class="col-12">
                                     <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
                                     <input class="form-control" type="file" name="attachment" id="attachment">
@@ -268,7 +267,6 @@
                                     </div>
                                     <hr/>
                                 </div>
-
 
                                 <div class="col">
                                     <!-- Button trigger modal -->

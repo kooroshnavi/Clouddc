@@ -165,10 +165,10 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>مکان در این سامانه شامل سه محل در مرکزداده می شود که عبارتند از: 1.هال (یا سالن) - 2. رک   3. اتاق یا انبار</p>
-                                    <p>این سه مکان بعضا دارای اشتراکاتی هستند مثلا در رک و اتاق می توان تجهیز قرار داد. هر سالن یک لیست از رک دارد. بنابراین هر رک متعلق به یک سالن است. در اتاق معمولا تجهیزات یدک وجود دارد.</p>
-                                    <p>می توان هر مکان اشاره شده را به کاتالوگ یک PM که دسته بندی آن "مکان" است افزود.</p>
-                                    <p>با توجه به نوع مکان یا تجهیز، رخدادهایی در آن اتفاق می افتد که می بایست جزئیات آن ثبت و مستند گردد. از طریق صفحه هر مکان یا تجهیز می توانید رخداد مدنظر را ثبت نمایید.</p>
+                                    <p>* مکان در این سامانه شامل سه محل در مرکزداده می شود که عبارتند از: 1.هال (یا سالن) - 2. رک 3. اتاق یا انبار</p>
+                                    <p>* این سه مکان بعضا دارای اشتراکاتی هستند مثلا در رک و اتاق می توان تجهیز قرار داد. هر سالن یک لیست از رک دارد. بنابراین هر رک متعلق به یک سالن است. در اتاق معمولا تجهیزات یدک وجود دارد.</p>
+                                    <p>* می توان هر مکان اشاره شده را به کاتالوگ یک PM که دسته بندی آن "مکان" است افزود.</p>
+                                    <p>* با توجه به نوع مکان یا تجهیز، رخدادهایی در آن اتفاق می افتد که می بایست جزئیات آن ثبت و مستند گردد. از طریق صفحه هر مکان یا تجهیز می توانید رخداد مدنظر را ثبت نمایید.</p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
@@ -244,7 +244,7 @@
                         <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}"
                             scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}" scope="col">
+                        <th th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}" scope="col">
                             بهره
                             بردار
                         </th>
@@ -266,10 +266,16 @@
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده
                             - خالی
                         </td>
-                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}">
+                        <td th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}">
                             <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
                                    th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${rack.utilizer.id})}"
+                                   class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
+                                   data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
+                            </div>
+                            <div th:if="${location.locationCategory.categoryId == 3}" class="col">
+                                <a th:text="${room.utilizer.name}"
+                                   th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${room.utilizer.id})}"
                                    class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>

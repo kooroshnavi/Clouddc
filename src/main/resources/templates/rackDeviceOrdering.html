@@ -323,12 +323,38 @@
                             th:text="${ 'جانمایی تجهیزات ' + rack.locationCategory.category + ' ' + rack.name}"></h4>
                     </div>
 
-                    <div class="card-header py-3 bg-transparent" align="center">
-                        <h5 class="mb-0 text-bg-info">ردیف اول بالاترین تجهیز و آخرین ردیف پایین ترین تجهیز رک را نشان
-                            می دهد.</h5>
+                    <div class="card-header py-3 bg-info" align="center">
+                        <h6 class="mb-0">ردیف اول بالاترین تجهیز و آخرین ردیف پایین ترین تجهیز رک را نشان می دهد.</h6>
                     </div>
 
                     <div class="card-body" dir="rtl">
+
+                        <div class="col" align="right">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#examplePrimaryModal">نکات مرتبط</button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="examplePrimaryModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog-centered">
+                                    <div class="modal-content bg-body">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">جانمایی تجهیزات رک</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>* روی یک ردیف کلیک کرده و با جابجایی به ردیف مدنظر ببرید و رها کنید تا جابجایی را ببینید (Drag & Drop). پس از رسیدن به چینش صحیح آن را ذخیره کنید.</p>
+                                            <p>* جانمایی صرفا ترتیب چینش تجهیزات درون رک را نمایش می دهد و نمایانگر یونیت رک نیست.</p>
+                                            <p>* این قابلیت آزمایشی است.</p>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <BR>
+
+
                         <div class="border p-3 rounded">
                             <form th:action="@{/center/rack/position/update}" th:object="${rackDeviceOrderForm}"
                                   enctype="multipart/form-data" method="POST"
@@ -369,7 +395,7 @@
                                 <div class="col">
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                            data-bs-target="#exampleWarningModal">ثبت
+                                            data-bs-target="#exampleWarningModal">ذخیره
                                     </button>
                                     <!-- Modal -->
                                     <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">

@@ -81,9 +81,9 @@
                                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>بهره بردار، مجموعه ای است که تجهیز و رک در اختیار او قرار داده شده است.</p>
-                                    <p>انواع بهره بردارن شامل ادارات و معاونت های داخل زیرساخت، سازمان ها و شرکت های خصوصی و دولتی، پیام رسان های بومی و پیمانکاران توسعه و نگه داری زیرساخت ابر هستند.</p>
-                                    <p>رک ها و تجهیزات در اختیار بهره بردار در سامانه مطابق با ثبت رخدادها تغییر می کنند.</p>
+                                    <p>* بهره بردار، مجموعه ای است که تجهیز و رک در اختیار او قرار داده شده است.</p>
+                                    <p>* انواع بهره بردارن شامل ادارات و معاونت های داخل زیرساخت، سازمان ها و شرکت های خصوصی و دولتی، پیام رسان های بومی و پیمانکاران توسعه و نگه داری زیرساخت ابر هستند.</p>
+                                    <p>* رک ها و تجهیزات در اختیار بهره بردار در سامانه مطابق با ثبت رخدادها تغییر می کنند.</p>
                                 </div>
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
@@ -115,7 +115,8 @@
                     <tbody>
                     <tr>
 
-                        <td th:text="${utilizer.name}"></td>
+                        <td th:if="${utilizer.messenger}" class="bg-success" th:text="${utilizer.name}"></td>
+                        <td th:unless="${utilizer.messenger}" th:text="${utilizer.name}"></td>
                         <td th:text="${rackList.size()}"></td>
                         <td th:text="${deviceList.size()}"></td>
                     </tr>
@@ -126,13 +127,18 @@
 
 
         <!--Rack table (Salon)-->
-        <h6 th:if="${rackList.size() != 0}" class="mb-0 text-uppercase">رک های بهره بردار</h6>
-        <hr/>
-        <h6 th:if="${rackList.size() != 0}" class="mb-0 text-bg-warning">تجهیزات مستقر در یک رک لزوما متعلق به یک بهره
-            بردار نیست</h6>
-        <hr/>
+
+        <h5 th:if="${rackList.size() != 0}" class="mb-0 text-bg-warning">تجهیزات مستقر در یک رک لزوما متعلق به یک بهره
+            بردار نیست</h5>
+        <br>
+        <h6 th:if="${rackList.size() != 0}" class="mb-0 text-bg-danger">چنانچه بهره بردار یک رک یا تجهیز اشتباه می باشد؛ از طریق ثبت رخداد تغییر بهره بردار در صفحه رک یا تجهیز مدنظر آن را اصلاح نمایید.</h6>
+        <br>
         <div th:if="${rackList.size() != 0}" class="card">
             <div class="card-body">
+
+                <h5 th:if="${rackList.size() != 0}" class="mb-0 text-body">رک های بهره بردار</h5>
+                <br>
+
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
                         <thead>
