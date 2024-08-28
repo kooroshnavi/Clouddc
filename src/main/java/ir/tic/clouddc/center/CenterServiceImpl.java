@@ -98,8 +98,10 @@ public class CenterServiceImpl implements CenterService {
         }
 
         rack.setDevicePositionMap(newPositionMap);
-
         locationRepository.save(rack);
+
+        var logMessage = " بروزرسانی جانمایی رک " + rack.getName() + " - " + rack.getHall().getName();
+        logService.registerIndependentPersistence(logMessage);
     }
 
     @Override

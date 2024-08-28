@@ -1,6 +1,7 @@
 package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.center.LocationPmCatalog;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -32,6 +33,9 @@ public final class Person {
 
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
+
+    @OneToMany(mappedBy = "person")
+    private List<Persistence> personList;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId

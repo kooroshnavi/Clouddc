@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class DeviceCategory {
+public final class  DeviceCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -50,7 +50,6 @@ public final class LogServiceImpl implements LogService {
 
     @Override
     public void historyUpdate(LocalDate date, LocalTime time, String logMessage, Person person, Persistence persistence) {
-
         if (persistence.getLogHistoryList() != null) {
             persistence
                     .getLogHistoryList()
@@ -58,7 +57,6 @@ public final class LogServiceImpl implements LogService {
                     .filter(LogHistory::isLast)
                     .findFirst()
                     .ifPresent(logHistory -> logHistory.setLast(false));
-
         }
 
         LogHistory newLogHistory = new LogHistory(date, time, person, persistence, logMessage, true);
@@ -75,12 +73,16 @@ public final class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void saveWorkFlow(List<Workflow> workflowList) {
-        workflowRepository.saveAll(workflowList);
+    public List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId) {
+        return logHistoryRepository.getPmInterfaceSupervisorEditedPersistenceList(stringPmInterfaceId);
     }
 
     @Override
-    public List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId) {
-        return logHistoryRepository.getPmInterfaceSupervisorEditedPersistenceList(stringPmInterfaceId);
+    public void registerIndependentPersistence(String logMessage) {
+        var currentPerson = personService.getCurrentPerson();
+        Persistence persistence = persistenceSetup(currentPerson);
+        historyUpdate(UtilService.getDATE(), UtilService.getTime(), logMessage, currentPerson, persistence);
+
+        persistenceRepository.save(persistence);
     }
 }

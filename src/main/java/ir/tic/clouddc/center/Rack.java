@@ -37,5 +37,4 @@ public final class Rack extends Location {
 
     @OneToMany(mappedBy = "location", fetch = FetchType.LAZY)
     private List<Device> deviceList;
-
 }

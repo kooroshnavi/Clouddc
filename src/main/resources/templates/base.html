@@ -19,11 +19,8 @@
     <link href="/panel/assets/css/roboto.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -56,6 +53,7 @@
                             </div>
                         </a>
                     </li>
+
                     <li>
                         <div id="clock" data-bs-toggle="tooltip" data-bs-placement="top" title="این نیز بگذرد"></div>
                         <div th:text="${date}"/>
@@ -67,6 +65,17 @@
                         </a>
                         <div class="dropdown-menu dropdown-menu-end">
                             <div class="row row-cols-3 gx-2">
+
+                                <div class="col">
+                                    <a th:href="@{/}">
+                                        <div class="apps p-2 radius-10 text-center">
+                                            <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
+                                                <i class="bi bi-collection-play-fill"></i>
+                                            </div>
+                                            <p class="mb-0 apps-name">صفحه اول</p>
+                                        </div>
+                                    </a>
+                                </div>
 
                                 <div class="col">
                                     <a th:href="@{/document/list}">
@@ -316,6 +325,9 @@
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/js/feather.min.js"></script>
+<script src="/panel/assets/js/icons-feather-icons.js"></script>
+
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
 

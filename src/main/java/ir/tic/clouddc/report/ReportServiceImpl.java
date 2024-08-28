@@ -16,8 +16,6 @@ import org.springframework.stereotype.Service;
 @EnableScheduling
 public class ReportServiceImpl implements ReportService {
 
-    private final ReportRepository reportRepository;
-
     private final ResourceService resourceService;
 
     private final PmService pmService;
@@ -27,8 +25,7 @@ public class ReportServiceImpl implements ReportService {
     private final NotificationService notificationService;
 
     @Autowired
-    ReportServiceImpl(ReportRepository reportRepository, ResourceService resourceService, PmService pmService, FileService fileService, NotificationService notificationService) {
-        this.reportRepository = reportRepository;
+    ReportServiceImpl(ResourceService resourceService, PmService pmService, FileService fileService, NotificationService notificationService) {
         this.resourceService = resourceService;
         this.pmService = pmService;
         this.fileService = fileService;
@@ -50,23 +47,4 @@ public class ReportServiceImpl implements ReportService {
 
         notificationService.sendScheduleUpdateMessage("09127016653", scheduleNotificationMessage);
     }
-/*
-    @Override
-    public DailyReport setCurrentReport() {
-        List<DailyReport> dailyReportList = new ArrayList<>();
-        Optional<DailyReport> yesterday = findActive(true);
-        if (yesterday.isPresent()) {
-            yesterday.get().setActive(false);
-            dailyReportList.add(yesterday.get());
-        }
-        DailyReport today = new DailyReport();
-        today.setDate(UtilService.getDATE());
-        today.setActive(true);
-        dailyReportList.add(today);
-        reportRepository.saveAll(dailyReportList);
-
-        UtilService.setTodayReportId(reportRepository.getActiveReportId(true));
-
-        return today;
-    }*/
 }

@@ -42,7 +42,8 @@ public final class UtilService {
             entry("EventUpdate", "بروزرسانی رخداد"),
             entry("CatalogRegister", "ثبت کاتالوگ"),
             entry("CatalogUpdate", "بروزرسانی کاتالوگ"),
-            entry("UnassignedDeviceRegister", "ثبت تجهیز جدید")
+            entry("UnassignedDeviceRegister", "ثبت تجهیز جدید"),
+            entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(
