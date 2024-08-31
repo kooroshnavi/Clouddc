@@ -59,24 +59,29 @@
 <section class="ftco-section">
     <div class="container">
 
-        <h5>
-            <strong th:text="${date}">سامانه نگه داری و پایش زیرساخت ابر</strong>
-            <span class="bg-success" id="clock"></span>
-        </h5>
-
-
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
-                <h2 class="heading-section">
-                    <strong>سامانه نگه داری و پایش زیرساخت ابر</strong>
-                </h2>
+
+                <h6>
+                    <strong class="text-body">معاونت فناوری اطلاعات</strong>
+                </h6>
+
+                <h4 class="heading-section">
+                    <strong>سامانه مدیریت اطلاعات زیرساخت ابر</strong>
+                </h4>
+
+                <h6>
+                    <span class="text-sm-center alert-success" th:text="${date}"></span>
+                </h6>
+                <h6>
+                    <span class="text-sm-center alert-success" id="clock"></span>
+                </h6>
             </div>
         </div>
 
 
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
-
                 <div class="login-wrap p-0">
 
                     <form id="form" class="was-validated" th:action="@{/login/otp}" th:object="${otpRequest}"
@@ -102,12 +107,11 @@
                         </div>
 
 
-                            <div class="form-group">
-                                <hr/>
-                                <input type="text" th:field="*{challenge}" class="form-group" disabled="disabled">
-                                <input type="number" dir="ltr" th:field="*{providedAnswer}" class="form-group"
-                                       required="required">
-                            </div>
+                        <div class="form-group">
+                            <input type="text" th:field="*{challenge}" class="form-group" disabled="disabled">
+                            <input type="number" dir="ltr" th:field="*{providedAnswer}" class="form-group"
+                                   required="required">
+                        </div>
 
                         <input type="hidden" name="index" th:value="${index}"/>
 
@@ -122,7 +126,7 @@
         </div>
     </div>
     <h6>
-        <span class="bg-warning" th:text="${'آدرس آی پی شما: '   + remoteAddress}"></span>
+        <span class="bg-dark" th:text="${'IP Address: '   + remoteAddress}"></span>
     </h6>
 </section>
 

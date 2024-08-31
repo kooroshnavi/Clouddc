@@ -1,6 +1,5 @@
 package ir.tic.clouddc.pm;
 
-import ir.tic.clouddc.utils.DTOForm;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,7 +7,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 @NoArgsConstructor
 @Data
-public class PmInterfaceRegisterForm extends DTOForm {
+public class PmInterfaceRegisterForm {
 
     private Integer pmInterfaceId;
 

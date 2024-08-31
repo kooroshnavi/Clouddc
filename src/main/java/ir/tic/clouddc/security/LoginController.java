@@ -5,8 +5,6 @@ import ir.tic.clouddc.otp.OtpRequest;
 import ir.tic.clouddc.otp.OtpService;
 import ir.tic.clouddc.person.Address;
 import ir.tic.clouddc.person.AddressRepository;
-import ir.tic.clouddc.person.PersonService;
-import ir.tic.clouddc.pm.PmService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -21,8 +19,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.net.InetAddress;
-import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
@@ -36,17 +32,13 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class LoginController {
 
-    private final PersonService personService;
     private final OtpService otpService;
     private final AddressRepository addressRepository;
-    private final PmService pmService;
 
     @Autowired
-    public LoginController(PersonService personService, OtpService otpService, AddressRepository addressRepository, PmService pmService) {
-        this.personService = personService;
+    public LoginController(OtpService otpService, AddressRepository addressRepository) {
         this.otpService = otpService;
         this.addressRepository = addressRepository;
-        this.pmService = pmService;
     }
 
     @GetMapping("/login")
@@ -77,21 +69,8 @@ public class LoginController {
         model.addAttribute("date", UtilService.getCurrentDate());
         model.addAttribute("remoteAddress", request.getRemoteAddr());
 
-        InetAddress localIP = InetAddress.getByName(request.getRemoteAddr());
-        NetworkInterface ni = NetworkInterface.getByInetAddress(localIP);
-        if (ni != null) {
-            byte[] hardwareAddress = ni.getHardwareAddress();
-            String[] hexadecimal = new String[hardwareAddress.length];
-            for (int i = 0; i < hardwareAddress.length; i++) {
-                hexadecimal[i] = String.format("%02X", hardwareAddress[i]);
-            }
-            String macAddress = String.join("-", hexadecimal);
-            log.info(macAddress);
-        }
-
         return "otp1";
     }
-
 
     @PostMapping("/login/otp")
     public String getAddress(Model model, @Valid @ModelAttribute("otpRequest") OtpRequest otpRequest, Errors errors
