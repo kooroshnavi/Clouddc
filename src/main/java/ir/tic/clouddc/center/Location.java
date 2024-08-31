@@ -1,16 +1,18 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationStatusEvent;
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public abstract class Location {
 
     @Id
@@ -22,20 +24,20 @@ public abstract class Location {
     @Column(name = "Name")
     private String name;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @Column(name = "Assignable")
+    private boolean assignable;
+
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "LocationCategoryID")
     private LocationCategory locationCategory;  // Hall - Rack - Room
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JoinColumn(name = "CenterID")
     private Center center;
-
-    @OneToMany(mappedBy = "location")
-    private List<LocationStatusEvent> eventList;
-
-    @OneToMany(mappedBy = "location")
-    private List<LocationStatus> locationStatusList;
-
+    
     @OneToMany(mappedBy = "location")
     private List<LocationPmCatalog> locationPmCatalogList;
+
+    @ManyToMany(mappedBy = "locationList")
+    private List<Event> eventList;
 }

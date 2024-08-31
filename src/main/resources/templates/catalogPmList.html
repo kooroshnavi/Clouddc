@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--plugins-->
+    <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/normalize.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/jquery-ui.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>تاریخچه کاتالوگ</title>
+</head>
+
+<body>
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">PM</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">تاریخچه کاتالوگ</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <!--Salon/Rack/Room overview table-->
+        <h3 class="mb-0 text-body">تاریخچه کاتالوگ</h3>
+        <br>
+
+        <div class="card">
+            <div class="card-body">
+
+                <table class="table mb-0">
+                    <thead class="table-dark">
+                    <tr>
+                        <th scope="col">عنوان PM</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 1}" scope="col">مکان اجرا</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" scope="col">سالن</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">تجهیز</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">شماره سریال</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">مکان نصب</th>
+                        <th th:if="${catalog.pmInterface.categoryId == 2}" scope="col">بهره بردار تجهیز</th>
+                        <th scope="col">وضعیت فعلی</th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    <tr>
+                        <td th:text="${catalog.pmInterface.title}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 1}" th:text="${locationPmCatalog.location.locationCategory.category + ' ' + locationPmCatalog.location.name}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" th:text="${rack.hall.name + ' - ' + rack.hall.center.name}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.deviceCategory.category + ' ' + devicePmCatalog.device.deviceCategory.model}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.serialNumber}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.location.locationCategory.category + ' ' +devicePmCatalog.device.location.name}"></td>
+                        <td th:if="${catalog.pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.utilizer.name}"></td>
+
+                        <td th:if="${catalog.enabled && catalog.active}" class="text-bg-primary">فعال-در کارتابل</td>
+                        <td th:if="${catalog.enabled && !catalog.active}" class="text-bg-success">منتظر سررسید</td>
+                        <td th:if="${!catalog.enabled}" class="text-bg-danger">غیرفعال</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col" align="right">
+            <!-- Button trigger modal -->
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">کاتالوگ چیست؟</button>
+            <!-- Modal -->
+            <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title">تعریف</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <p>کاتالوگ؛ مکان یا تجهیزی است که این PM به صورت دوره ای روی آن اجرا می شود. جهت افزودن کاتالوگ ابتدا PM را تعریف کنید و سپس به صفحه مکان یا تجهیز مدنظر مراجعه و از طریق دکمه افزودن PM اقدام نمایید.</p>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <br>
+
+
+        <div class="card">
+            <div class="card-body">
+
+                <h5 class="mb-0 text-uppercase" align="center">
+                    <strong th:if="${active}">لیست وظایف فعال</strong>
+                    <strong th:unless="${active}">لیست وظایف آرشیو</strong>
+                </h5>
+                <br>
+
+                <div class="table-responsive">
+                    <table id="example2" class="table table-striped table-bordered">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>شماره Pm</th>
+                            <th>تاریخ سررسید</th>
+                            <th>تاخیر</th>
+                            <th th:if="${active}">کارتابل</th>
+                            <th th:if="${not active}">زمان اتمام</th>
+                            <th>جزئیات</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each="pm, iter : ${pmList}">
+
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${pm.id}"></td>
+
+                            <td th:text="${pm.persianDueDate}"></td>
+
+                            <td class="clock">
+                                <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
+                                      class="text-bg-danger"></span>
+                                <span th:if="${pm.delay} == 0"
+                                      class="text-bg-success">ندارد</span>
+                            </td>
+
+                            <td th:if="${active}" th:text="${pm.activePersonName}" class="text-bg-warning"></td>
+
+                            <td class="text-bg-success" th:if="${not active}" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                th:title="${pm.persianFinishedDayTime}" dir="rtl"></td>
+
+                            <td>
+                                <div class="col">
+                                    <a  class="btn btn-outline-secondary" th:href="@{/pm/{pmId}/detailList(pmId=${pm.id})}">گردش کار</a>
+                                </div>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        </tfoot>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!--Rack table (Salon)-->
+
+        <!--Pm table-->
+
+        <!--Pm table-->
+
+        <!--Event table-->
+        <!--Event table-->
+
+        <!--File attachment form -->
+        <!--File attachment form -->
+
+        <!--attachment table-->
+
+        <!--End attachment table-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/js/jquery-ui.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+<script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+<script src="/panel/assets/js/table-datatable.js"></script>
+
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
+<script src="/panel/assets/js/pace.min.js"></script>
+
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+</body>
+
+</html>

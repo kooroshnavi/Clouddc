@@ -6,7 +6,85 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        html,
+        body {
+        }
+        .glow-on-hover {
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background: #111;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:active {
+            color: #997404;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:active:after {
+            background: transparent;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:hover:before {
+            opacity: 1;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #2c6ed5;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+            50% {
+                background-position: 400% 0;
+            }
+            100% {
+                background-position: 0 0;
+            }
+        }
+    </style>
+
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
@@ -21,11 +99,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -38,6 +113,11 @@
 
 <body>
 
+<script th:if="${devicePositionUpdated}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -67,10 +147,89 @@
         <!--end breadcrumb-->
 
         <!--Salon/Rack/Room overview table-->
-        <h6 class="mb-0 text-uppercase">مشخصات مکان</h6>
+        <h3 class="mb-0 text-bg-light">مشخصات مکان</h3>
         <hr/>
+
         <div class="card">
             <div class="card-body">
+
+                <div class="col" align="right">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای مکان</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">تعریف مکان در این سیستم</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>* مکان در این سامانه شامل سه محل در مرکزداده می شود که عبارتند از: 1.هال (یا سالن) - 2. رک 3. اتاق یا انبار</p>
+                                    <p>* این سه مکان بعضا دارای اشتراکاتی هستند مثلا در رک و اتاق می توان تجهیز قرار داد. هر سالن یک لیست از رک دارد. بنابراین هر رک متعلق به یک سالن است. در اتاق معمولا تجهیزات یدک وجود دارد.</p>
+                                    <p>* می توان هر مکان اشاره شده را به کاتالوگ یک PM که دسته بندی آن "مکان" است افزود.</p>
+                                    <p>* با توجه به نوع مکان یا تجهیز، رخدادهایی در آن اتفاق می افتد که می بایست جزئیات آن ثبت و مستند گردد. از طریق صفحه هر مکان یا تجهیز می توانید رخداد مدنظر را ثبت نمایید.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <BR>
+
+                <div class="col" align="right">
+                    <div class="dropdown">
+                        <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">رخدادهای این مکان</button>
+
+                        <ul class="dropdown-menu">
+
+                            <li>
+                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 1)}"
+                                   class="btn btn-outline-dark">1. ثبت رخداد عمومی</a>
+                                <hr/>
+                            </li>
+
+                            <li th:if="${location.assignable}"
+                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 2)}"
+                                   class="btn btn-outline-dark"
+                                   th:text="${'2. نصب تجهیزات جدید در  ' + location.locationCategory.category + ' ' + location.name}">
+                                </a>
+                                <hr/>
+                            </li>
+
+                            <li th:if="${location.assignable}"
+                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 3)}"
+                                   class="btn btn-outline-dark">3. تغییر بهره بردار</a>
+                                <hr/>
+                            </li>
+
+                            <li th:if="${location.assignable}"
+                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 4)}"
+                                   class="btn btn-outline-dark"
+                                   th:text="${'4. جابجایی تجهیزات  ' + location.locationCategory.category + ' ' + location.name}">
+                                </a>
+                                <hr/>
+                            </li>
+
+                            <li>
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 6)}"
+                                        class="btn btn-outline-danger" disabled="disabled">چک لیست (در حال توسعه)</button>
+                                <hr/>
+                            </li>
+
+                            <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${1}, targetId=${location.id})}"
+                                   class="btn btn-outline-primary">تاریخچه</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <br>
+
                 <table class="table mb-0">
                     <thead class="table-dark">
                     <tr>
@@ -78,11 +237,15 @@
                         <th scope="col">نام</th>
                         <th scope="col">مرکز</th>
                         <th th:if="${location.locationCategory.categoryId == 2}" scope="col">سالن</th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}" scope="col">توضیحات
+                        <th th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" scope="col">تعداد تجهیز مستقر در رک</th>
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
+                            scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}" scope="col">توضیحات
+                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}"
+                            scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}" scope="col">بهره
+                        <th th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}" scope="col">
+                            بهره
                             بردار
                         </th>
                     </tr>
@@ -96,15 +259,24 @@
 
                         <td th:if="${location.locationCategory.categoryId == 2}" th:text="${rack.hall.name}"></td>
 
+                        <td th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:text="${rackDevicePositionMap.size()}"></td>
 
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             th:text="${rack.description}"></td>
-                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده - خالی</td>
-                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001}">
+                        <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده
+                            - خالی
+                        </td>
+                        <td th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}">
                             <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
                                    th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${rack.utilizer.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                   class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
+                                   data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
+                            </div>
+                            <div th:if="${location.locationCategory.categoryId == 3}" class="col">
+                                <a th:text="${room.utilizer.name}"
+                                   th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${room.utilizer.id})}"
+                                   class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
@@ -115,18 +287,26 @@
         </div>
         <!--Salon/Rack/Room overview table-->
 
-
         <!--Device view (Rack)-->
-        <h6 th:if="${location.locationCategory.categoryId == 2}" class="mb-0 text-uppercase">آرایش رک</h6>
-        <hr/>
-        <div th:if="${location.locationCategory.categoryId == 2}" class='housing'>
+
+        <h4 th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" class="mb-0 text-bg-primary">آرایش رک</h4>
+        <br>
+
+        <a th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
+           class="btn btn-outline-warning"
+           th:text="'جانمایی تجهیزات رک ' + ${location.name}">
+        </a>
+
+        <div th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" class='housing'>
+
             <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
+
             <ol class="rack">
-                <li th:each="device, iter : ${rackDeviceList}" class='large'>
-                    <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}" class="btn-sm px-sm-1"
-                       th:text="${device.deviceCategory.model + ' - ' + device.deviceCategory.factorSize + device.deviceCategory.factor}"
+                <li th:each="position, iter : ${rackDevicePositionMap.keySet().stream().sorted().toList()}" class='large'>
+                    <a th:href="@{/resource/device/{deviceId}/detail (deviceId=${rackDevicePositionMap.get(position).id})}" class="btn-sm px-sm-1"
+                       th:text="${rackDevicePositionMap.get(position).deviceCategory.model + ' - ' + rackDevicePositionMap.get(position).deviceCategory.factorSize + rackDevicePositionMap.get(position).deviceCategory.factor}"
                        data-bs-toggle="tooltip"
-                       data-bs-placement="bottom" th:title="${device.serialNumber}">
+                       data-bs-placement="bottom" th:title="${rackDevicePositionMap.get(position).serialNumber}">
                     </a>
                     <div class='light'></div>
                     <div class='light'></div>
@@ -135,10 +315,8 @@
         </div>
         <!--Device view (Rack)-->
 
-
         <!--Device table (Room)-->
-        <h6 th:if="${location.locationCategory.categoryId == 3}" class="mb-0 text-uppercase">لیست تجهیزات اتاق</h6>
-        <hr/>
+        <h4 th:if="${location.locationCategory.categoryId == 3}" class="mb-0 text-bg-secondary">لیست تجهیزات اتاق</h4>
         <div th:if="${location.locationCategory.categoryId == 3}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -159,8 +337,9 @@
 
                             <td>
                                 <div class="col">
-                                    <a th:text="${device.serialNumber}" th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                    <a th:text="${device.serialNumber}"
+                                       th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
+                                       class="btn btn-outline-secondary px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                 </div>
                             </td>
@@ -179,8 +358,7 @@
         <!--Module table (Room)-->
 
         <!--Rack table (Salon)-->
-        <h6 th:if="${location.locationCategory.categoryId == 1}" class="mb-0 text-uppercase">رک های سالن</h6>
-        <hr/>
+        <h4 th:if="${location.locationCategory.categoryId == 1}" class="mb-0 text-bg-primary">رک های سالن</h4>
         <div th:if="${location.locationCategory.categoryId == 1}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -200,15 +378,15 @@
                             <td th:text="${counter.count}"></td>
 
                             <td>
-
                                 <a th:text="${rack.name}"
                                    th:href="@{/center/location/{locationId}/detail (locationId=${rack.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
 
-                            <td th:text="${rack.deviceList.size()} "></td>
+                            <td th:text="${rack.devicePositionMap.size()}"></td>
                             <td th:text="${rack.utilizer.name} "></td>
+
 
                         </tr>
 
@@ -221,19 +399,21 @@
         <!--Rack table (Salon)-->
 
         <!--Pm table-->
-        <h6 class="mb-0 text-uppercase"
-            th:text="${'لیست Pm های ' + location.locationCategory.category + ' ' + location.name}"></h6>
         <hr/>
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+        <h5 class="mb-0 text-bg-success"
+            th:text="${'Pm های ' + location.locationCategory.category + ' ' + location.name}"></h5>
+        <br>
 
-            <div class="ui-dialog-buttonpane">
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+            <div class="ui-dialog-buttonpane" align="center">
                 <a th:href="@{/pm/catalog/location/{locationId}/form(locationId=${location.id})}"
                    class="btn btn-outline-success"
-                   th:text="'افزودن Pm به ' + ${location.name}">
+                   th:text="'افزودن ' + ${location.name} + 'به کاتالوگ یک PM'">
                 </a>
             </div>
-
+            <br>
         </div>
+
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
@@ -243,7 +423,7 @@
                             <th>ردیف</th>
                             <th>نوع</th>
                             <th>عنوان Pm</th>
-                            <th>جزئیات آخرین اقدام</th>
+                            <th>آخرین اقدام</th>
                             <th>سررسید بعدی</th>
                             <th>کارتابل پیش فرض</th>
                             <th>وضعیت</th>
@@ -269,26 +449,26 @@
                             <td th:if="${not catalog.pmInterface.enabled}">
                                 <div class="col">
                                     <button th:text="${catalog.pmInterface.title}"
-                                       th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="top"
-                                       title="ویرایش Pm روی این مکان" disabled="disabled"></button>
+                                            th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
+                                            class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="ویرایش Pm روی این مکان" disabled="disabled"></button>
                                 </div>
                             </td>
 
                             <td th:if="${catalog.history}">
                                 <div class="col">
-                                    <a th:text="${catalog.persianLastFinishedDate}"
+                                    <a th:text="${catalog.persianNextDue}"
                                        th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="top"
-                                       th:title="${catalog.persianLastFinishedDayTime}"></a>
+                                       data-bs-placement="top">>جزئیات آخرین اقدام</a>
                                 </div>
                             </td>
 
                             <td th:if="${not catalog.history}">اقدام نشده</td>
 
-                            <td th:if="${catalog.pmInterface.enabled &&  catalog.enabled}" th:text="${catalog.persianNextDue}"></td>
+                            <td th:if="${catalog.pmInterface.enabled &&  catalog.enabled}"
+                                th:text="${catalog.persianNextDue}"></td>
                             <td th:if="${not catalog.pmInterface.enabled || not catalog.enabled}">
                                 <span class="badge bg-light-danger text-danger w-100">غیرفعال</span>
 
@@ -313,45 +493,6 @@
         <!--Pm table-->
 
         <!--Event table-->
-        <h6 class="mb-0 text-uppercase">رخدادها</h6>
-        <hr/>
-
-
-
-        <div class="card">
-            <div class="card-body">
-                <div class="table-responsive">
-                    <table id="example3" class="table table-striped table-bordered">
-                        <thead>
-                        <tr>
-                            <th>ردیف</th>
-                            <th>شناسه</th>
-                            <th>تاریخ ثبت</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-
-                        <tr th:each="event, iter : ${eventList}">
-
-                            <td th:text="${iter.count}"></td>
-                            <td th:text="${event.id}"></td>
-
-                            <td th:text="${event.persianRegisterDate}">
-                                <div class="col">
-                                    <a th:href="@{/event/{eventId}/detail(eventId=${event.id})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="bottom" th:text="${event.persianRegisterDayTime}"></a>
-                                </div>
-                            </td>
-
-                        </tr>
-
-                        </tbody>
-
-                    </table>
-                </div>
-            </div>
-        </div>
         <!--Event table-->
 
         <!--File attachment form -->
@@ -383,6 +524,7 @@
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
+<!--notification js -->
 <script src="/panel/assets/js/jquery.min.js"></script>
 <script src="/panel/assets/js/jquery-ui.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
@@ -391,6 +533,10 @@
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>

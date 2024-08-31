@@ -1,25 +1,68 @@
 package ir.tic.clouddc.utils;
 
 import com.github.mfathi91.time.PersianDate;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Random;
 
 import static java.util.Map.entry;
 
 public final class UtilService {
 
-    private static final Logger log = LoggerFactory.getLogger(UtilService.class);
     private static LocalDate DATE;
-
     private static Long TODAY_REPORT_ID;
+    private static final List<String> FORM_CAPTCHA_CHALLENGE = List.of(
+            "هفده پانزده",
+            "ده بیست و سه نود و پنج",
+            "چهل و یک هفده",
+            "دوازده بیست و دو",
+            "هشتاد و نه نود",
+            "دویست و پنج دوصفر",
+            "پانصد دویست",
+            "هشتاد و هشت هشتاد و نه",
+            "یازده صدویک",
+            "بیست و پنج هفده",
+            "هفت هشت نه ده",
+            "سیزده بیست و پنج",
+            "نوزده پنجاه سی",
+            "هزار و سیصد و هفتاد",
+            "یازده نودوهفت",
+            "نود و نه صد",
+            "چهارده صفرسه");
+    public static final Map<Integer, Integer> FORM_CAPTCHA_RESULT = Map.ofEntries(
+            entry(0, 1715),
+            entry(1, 102395),
+            entry(2, 4117),
+            entry(3, 1222),
+            entry(4, 8990),
+            entry(5, 20500),
+            entry(6, 500200),
+            entry(7, 8889),
+            entry(8, 11101),
+            entry(9, 2517),
+            entry(10, 78910),
+            entry(11, 1325),
+            entry(12, 195030),
+            entry(13, 1370),
+            entry(14, 1197),
+            entry(15, 99100),
+            entry(16, 1403)
+    );
+
+    public static DTOForm createChallenge(DTOForm dtoForm) {
+        var challengeIndex = new Random().nextInt(FORM_CAPTCHA_CHALLENGE.size());
+        dtoForm.setChallenge(FORM_CAPTCHA_CHALLENGE.get(challengeIndex));
+        dtoForm.setIndex(challengeIndex);
+
+        return dtoForm;
+    }
 
     public static final Map<String, String> PERSIAN_DAY = Map.ofEntries(
             entry("Sat", "شنبه"),
@@ -38,9 +81,12 @@ public final class UtilService {
             entry("PmUpdate", "بروزرسانی Pm"),
             entry("SupervisorPmTermination", "بستن PmDetail توسط Supervisor"),
             entry("DisableAttachment", "حذف فایل پیوست"),
-            entry("EventUpdate", "ثبت و بروزرسانی یک رخداد"),
+            entry("EventRegister", "ثبت رخداد"),
+            entry("EventUpdate", "بروزرسانی رخداد"),
             entry("CatalogRegister", "ثبت کاتالوگ"),
-            entry("CatalogUpdate", "بروزرسانی کاتالوگ")
+            entry("CatalogUpdate", "بروزرسانی کاتالوگ"),
+            entry("UnassignedDeviceRegister", "ثبت تجهیز جدید"),
+            entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(
@@ -58,6 +104,16 @@ public final class UtilService {
             entry(7, 2),
             entry(8, 2),
             entry(9, 2)
+    );
+
+    public static final Map<Integer, String> GENERAL_EVENT_CATEGORY_ID = Map.ofEntries(
+            entry(1, "اختلال برق"),
+            entry(2, "اختلال سیستم برودتی پکیج ها و فن ها"),
+            entry(3, "مشکل درب و قفل"),
+            entry(4, "اختلال سیستم روشنایی"),
+            entry(5, "مفقودی هرگونه تجهیز، ماژول، دیگر وسایل و ابزار"),
+            entry(6, "اختلال عملکرد تجهیزات ایمنی شامل اطفاء حریق و کپسول آتش نشانی"),
+            entry(7, "بازدید از مرکز یا هرگونه مراسم مرتبط")
     );
 
     public static String getCurrentDate() {
@@ -96,7 +152,6 @@ public final class UtilService {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
         return dateFormatter.format(PersianDate.fromGregorian(date));
     }
-
 
     public static String getFormattedPersianDayTime(LocalDate localDate, LocalTime localTime) {
         DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");

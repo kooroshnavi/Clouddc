@@ -2,13 +2,7 @@ package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
-@Table(schema = "Resource")
-@NoArgsConstructor
-@Data
 public final class DeviceStatus {
 
     @Id

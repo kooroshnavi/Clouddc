@@ -1,16 +1,19 @@
 package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.center.LocationPmCatalog;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Person")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Person {
 
     @Id
@@ -31,12 +34,14 @@ public final class Person {
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
 
+    @OneToMany(mappedBy = "person")
+    private List<Persistence> personList;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId
     @JoinColumn(name = "AddressID")
     private Address address;
 
-    public Person(Integer id) {
-        this.id = id;
-    }
+    @Transient
+    private long workspaceSize;
 }

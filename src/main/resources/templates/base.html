@@ -19,11 +19,8 @@
     <link href="/panel/assets/css/roboto.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -56,6 +53,7 @@
                             </div>
                         </a>
                     </li>
+
                     <li>
                         <div id="clock" data-bs-toggle="tooltip" data-bs-placement="top" title="این نیز بگذرد"></div>
                         <div th:text="${date}"/>
@@ -69,12 +67,34 @@
                             <div class="row row-cols-3 gx-2">
 
                                 <div class="col">
+                                    <a th:href="@{/}">
+                                        <div class="apps p-2 radius-10 text-center">
+                                            <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
+                                                <i class="bi bi-collection-play-fill"></i>
+                                            </div>
+                                            <p class="mb-0 apps-name">صفحه اول</p>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div class="col">
                                     <a th:href="@{/document/list}">
-                                        <div class="apps p-2 radius-10 text-hall">
+                                        <div class="apps p-2 radius-10 text-center">
                                             <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
                                                 <i class="bi bi-collection-play-fill"></i>
                                             </div>
                                             <p class="mb-0 apps-name">مدیریت فایل</p>
+                                        </div>
+                                    </a>
+                                </div>
+
+                                <div class="col">
+                                    <a th:href="@{/resource/device/unassigned}">
+                                        <div class="apps p-2 radius-10 text-center">
+                                            <div class="apps-icon-box mb-1 text-white bg-gradient-purple">
+                                                <i class="bi bi-collection-play-fill"></i>
+                                            </div>
+                                            <p class="mb-0 product-title">ثبت تجهیز جدید</p>
                                         </div>
                                     </a>
                                 </div>
@@ -119,9 +139,9 @@
                 </ul>
             </div>
         </nav>
+
         <script>
             setInterval(showTime, 1000);
-
             function showTime() {
                 let time = new Date();
                 let hour =
@@ -153,11 +173,9 @@
                     ":" +
                     sec;
             }
-
             showTime();
-
-
         </script>
+
     </header>
     <!--end top header-->
 
@@ -201,8 +219,11 @@
                     <div class="menu-title">مراکز داده و تجهیزات</div>
                 </a>
                 <ul>
-                    <li><a href="/center/overview"><i class="bi bi-circle"></i>مراکز داده</a>
+                    <li><a href="/center/overview"><i class="bi bi-circle"></i>مراکز داده</a></li>
+                    <li><a href="/resource/utilizer/list"><i class="bi bi-circle"></i>بهره برداران</a></li>
+                    <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${0}, targetId=${0})}"><i class="bi bi-circle"></i>رخدادهای گزارش شده</a>
                     </li>
+
                 </ul>
             </li>
 
@@ -302,6 +323,9 @@
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/js/feather.min.js"></script>
+<script src="/panel/assets/js/icons-feather-icons.js"></script>
+
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
 

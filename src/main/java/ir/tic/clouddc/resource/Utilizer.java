@@ -1,16 +1,19 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Rack;
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Utilizer {
 
     @Id
@@ -18,15 +21,21 @@ public final class Utilizer {
     @Column(name = "UtilizerID")
     private Integer id;
 
-    @Column(name = "Name")
+    @Column(name = "Name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "Messenger")
     private boolean messenger;
+
+    @Column(name = "GenuineUtilizer")
+    private boolean genuineUtilizer;
 
     @OneToMany(mappedBy = "utilizer")
     private List<Rack> rackList;
 
     @OneToMany(mappedBy = "utilizer")
     private List<Device> deviceList;
+
+    @ManyToMany(mappedBy = "utilizerList")
+    private List<Event> eventList;
 }

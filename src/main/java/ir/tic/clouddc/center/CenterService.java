@@ -1,20 +1,22 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationStatusEvent;
-import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.report.DailyReport;
 import org.springframework.ui.Model;
 
-import java.sql.SQLException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 public interface CenterService {
-    LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate validNextDue);
 
-    Location getRefrencedLocation(Long locationId) throws SQLException;
+    Location getRefrencedLocation(Long locationId);
+
+    List<Location> getLocationListExcept(List<Long> locationId);
+
+    List<Location> getLocationList();
+
+    void verifyRackDevicePosition(List<Rack> rackList);
+
+    Optional<Location> getLocation(Long locationId);
 
     ////    Repository Projection name convention: EntityFiled1Field2...Projection
     interface CenterIdNameProjection {
@@ -22,39 +24,14 @@ public interface CenterService {
 
         String getName();
     }
-    interface HallIdNameProjection {
-        short getId();
 
-        String getName();
-    }
-
-    List<LocationPmCatalog> getLocationCatalogList(Location baseLocation);
+    void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList);
 
     LocationStatus getCurrentLocationStatus(Location location);
-
-    List<Location> getCustomizedLocationList(List<String> locationCategoryNameList);
 
     Model getCenterLandingPageModel(Model model);
 
     List<CenterIdNameProjection> getCenterIdAndNameList();
 
-    void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event);
-
-    Hall getHall(int hallId);
-
-    Optional<Location> getLocation(Long locationId);
-
-    Optional<Center> getCenter(int centerId);
-
-    List<Hall> getHallList();
-
-    List<Center> getCenterList();
-
     Model modelForCenterController(Model model);
-
-    void setDailyTemperatureReport(DailyReport currentReport);
-
-    List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId);
-
-
 }

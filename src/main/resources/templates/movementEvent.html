@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
+    <!--plugins-->
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/bootstrap/dist/css/bootstrap.rtl.min.css" rel="stylesheet"/>
+    <link href="/panel/bootstrap/dist/css/bootstrap.rtl.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+    <link href="/JalaliDatePicker/JalaliDatePicker_1.min.css" rel="stylesheet">
+    <script type="text/javascript" src="/JalaliDatePicker/JalaliDatePicker.min_2.js"></script>
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>ثبت رخداد</title>
+</head>
+
+<body>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">رخداد</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li th:if="${categoryId == 1}" class="breadcrumb-item active" aria-current="page">رخداد عمومی</li>
+                        <li th:if="${categoryId == 2}" class="breadcrumb-item active" aria-current="page">نصب تجهیزات جدید</li>
+                        <li th:if="${categoryId == 3}" class="breadcrumb-item active" aria-current="page">تغییر بهره بردار مکان</li>
+                        <li th:if="${categoryId == 4}" class="breadcrumb-item active" aria-current="page">جابجایی تجهیزات</li>
+                        <li th:if="${categoryId == 5}" class="breadcrumb-item active" aria-current="page">تغییر بهره بردار تجهیز</li>
+                    </ol>
+                </nav>
+            </div>
+
+        </div>
+        <!--end breadcrumb-->
+
+        <div class="row">
+            <div class="col-lg-8 mx-auto">
+                <div class="card">
+
+                    <div th:if="${categoryId == 1}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'ثبت رخداد عمومی در ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
+
+                    <div th:if="${categoryId == 2}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'نصب تجهیزات جدید در ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
+
+                    <div th:if="${categoryId == 3}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'تغییر بهره بردار ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
+
+                    <div th:if="${categoryId == 4}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'جابجایی تجهیزات از ' + location.locationCategory.category + ' ' + location.name}"></h5>
+                    </div>
+
+                    <div th:if="${categoryId == 5}" class="card-header py-3 bg-transparent" align="center">
+                        <h5 class="mb-0"
+                            th:text="${ 'تغییر بهره بردار  ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h5>
+                    </div>
+
+
+                    <div class="card-body" dir="rtl">
+
+                        <div class="col" align="right">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">نکات مرتبط با رخدادها</button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-dialog-scrollable">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">لطفا توجه داشته باشید</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <p>* در رخدادهای نصب، جابجایی و تغییر بهره بردار، اطلاعات مکان، تجهیز و دارایی های بهره بردار دقیقا متناسب با نوع رخداد و اطلاعاتی که در این فرم ثبت شده بروزرسانی می گردد و در گزارش گیری های آتی مورد استناد قرار می گیرد. لذا در تکمیل اطلاعات فرم دقت فرمایید.</p>
+                                            <p>* تاریخ وقوع یا اتمام انجام، تاریخ واقعی رخداد است لطفا در ثبت آن دقت فرمایید.</p>
+                                            <p>* در رخدادهای عمومی در صورت عدم ثبت پایان رخداد می توانید بعدا آن را بروزرسانی نمایید.</p>
+                                            <p>* پس از ثبت رخداد می توانید جزئیات آن را مشاهده نمایید.</p>
+
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <BR>
+
+                        <div class="border p-3 rounded">
+                            <form class="was-validated" th:action="@{/event/register}" th:object="${eventForm}"
+                                  enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+
+                                <input type="hidden" name="eventCategoryId" th:value="${categoryId}"/>
+
+                                <div th:if="${categoryId == 1}" class="mb-3">
+                                    <label class="form-label">دسته بندی</label>
+                                    <select class="single-select" th:field="*{general_category}" id="validationFormCheck2" required="required">
+
+                                        <option th:value="${1}">اختلال برق</option>
+                                        <option th:value="${2}">اختلال سیستم برودت شامل پکیج ها و فن ها</option>
+                                        <option th:value="${3}">مشکل درب و قفل</option>
+                                        <option th:value="${4}">اختلال سیستم روشنایی</option>
+                                        <option th:value="${5}">مفقودی هرگونه تجهیز، ماژول، ابزار و دیگر وسایل</option>
+                                        <option th:value="${6}">اختلال عملکرد سیستم ایمنی شامل تجهیزات اطفاء حریق و کپسول آتش نشانی</option>
+                                        <option th:value="${7}">بازدید از مرکز یا هرگونه مراسم مرتبط</option>
+
+                                    </select>
+                                    <hr/>
+                                </div>
+
+                                <input th:if="${categoryId == 1}" type="hidden" name="general_locationId" th:value="${location.id}"/>
+
+                                <div th:if="${categoryId == 2 || categoryId == 3 || categoryId == 5}" class="mb-3">
+                                    <label class="form-label">بهره بردار فعلی</label>
+                                    <label>
+                                        <select class="select2-selection--single">
+                                            <option th:text="${currentUtilizer.name}" selected="selected" disabled="disabled"></option>
+                                        </select>
+                                    </label>
+                                    <hr/>
+                                </div>
+
+                                <div th:if="${(categoryId == 2 && not currentUtilizer.genuineUtilizer) || categoryId == 3 || categoryId == 5}" class="mb-3">
+                                    <label class="form-label">بهره بردار جدید</label>
+                                    <label>
+                                        <select class="single-select" th:field="*{utilizer_newUtilizerId}">
+                                            <option th:each="utilizer : ${utilizerList}"
+                                                    th:value="${utilizer.id}"
+                                                    th:text="${utilizer.name}">
+                                            </option>
+                                        </select>
+                                    </label>
+                                    <hr/>
+                                </div>
+
+                                <input th:if="${(categoryId == 2 && currentUtilizer.genuineUtilizer) || categoryId == 3 || categoryId == 5}" type="hidden" name="utilizer_oldUtilizerId" th:value="${currentUtilizer.id}"/>
+                                <input th:if="${categoryId == 2 || categoryId == 3}" type="hidden" name="utilizer_locationId" th:value="${location.id}"/>
+                                <input th:if="${categoryId == 5}" type="hidden" name="utilizer_deviceId" th:value="${device.id}"/>
+
+
+                                <input th:if="${categoryId == 4}" type="hidden" name="DeviceMovement_sourceLocId" th:value="${location.id}"/>
+
+
+                                <div th:if="${categoryId == 2}" class="mb-3">
+                                    <label class="form-label">
+                                         تجهیزات مدنظر جهت نصب در این مکان را انتخاب کنید. صرفا مواردی که قبلا در بخش
+                                        <a href="/resource/device/unassigned"> ثبت تجهیزات جدید </a>
+                                    تعریف شده اند و تاکنون در مکانی نصب نشده اند در این لیست قابل مشاهده و انتخاب هستند.
+                                    </label>
+                                    <select class="multiple-select" data-placeholder="Choose anything"
+                                            multiple="multiple" th:field="*{unassignedDeviceIdList}" required="required">
+                                        <option th:each="device : ${deviceList}"
+                                                th:value="${device.getId()}"
+                                                th:text="${device.getCategory() + ' - ' + device.getSerialNumber() + ' - ' + device.getModel()}"></option>
+                                    </select>
+                                    <hr/>
+                                </div>
+
+                                <div th:if="${categoryId == 4}" class="mb-3">
+                                    <label class="form-label">تجهیزات مدنظر جهت جابجایی را انتخاب کنید</label>
+                                    <select class="multiple-select" data-placeholder="Choose anything"
+                                            multiple="multiple" th:field="*{deviceIdList}" required="required">
+                                        <option th:each="device : ${deviceList}"
+                                                th:value="${device.getId()}"
+                                                th:text="${device.getCategory() + ' - ' + device.getSerialNumber() + ' - ' + device.getModel()}"></option>
+                                    </select>
+                                    <hr/>
+                                </div>
+
+                                <div th:if="${categoryId == 4}" class="mb-3">
+                                    <label class="form-label">مقصد جابجایی</label>
+                                    <select class="single-select" th:field="*{deviceMovement_destLocId}">
+
+                                        <option th:each="room : ${roomList}"
+                                                th:value="${room.id}"
+                                                th:text="${room.locationCategory.category + ' - ' + room.name + ' - ' + room.center.name + ' - ' + room.getUtilizer().name}">
+                                        </option>
+
+                                        <option th:each="rack : ${rackList}"
+                                                th:value="${rack.id}"
+                                                th:text="${rack.locationCategory.category + ' - ' + rack.name + ' - ' +  rack.hall.name  + ' - ' + rack.getUtilizer().name}">
+                                        </option>
+
+                                    </select>
+                                    <hr/>
+                                </div>
+
+                                <div class="mb-3">
+                                    <div class="form-label">
+                                        <label>تاریخ رخداد یا اتمام انجام این تغییر</label>
+                                        <input required="required" type="text" data-jdp
+                                               data-jdp-miladi-input="miladi_date" data-jdp-max-date="today"
+                                               placeholder="تاریخ وقوع رخداد"/>
+                                    </div>
+                                    <hr/>
+                                </div>
+                                <input type="hidden" th:field="*{date}" id="miladi_date"/>
+
+                                <div class="col-12">
+                                    <label class="form-label">توضیحات</label>
+                                    <textarea required="required" minlength="5" class="form-control" th:field="*{description}"
+                                              placeholder="شرح رخداد - در صورت اقدام پیرو نامه، پیام پیپرلس یا مجوز، به شماره آن اشاره نمایید. اگر رسید امضا کرده اید تصویر آن را پیوست کنید."
+                                              rows="4"
+                                              cols="4"></textarea>
+                                    <hr/>
+                                </div>
+
+                                <div class="col-12">
+                                    <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+                                    <input class="form-control" type="file" name="attachment" id="attachment">
+                                    <hr/>
+                                </div>
+
+                                <div th:if="${categoryId == 1}" class="form-check mb-sm-5">
+                                    <input type="checkbox" class="form-check-input" id="validationFormCheck1" th:field="*{general_activation}">
+                                    <label class="form-check-label" for="validationFormCheck1">پایان رخداد</label>
+                                    <hr/>
+                                </div>
+
+                                <div class="col">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
+                                        <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                        <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                    </div>
+                                    <hr/>
+                                </div>
+
+                                <div class="col">
+                                    <!-- Button trigger modal -->
+                                    <button type="button" class="btn btn-warning" data-bs-toggle="modal"
+                                            data-bs-target="#exampleWarningModal">ثبت
+                                    </button>
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
+                                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                                            <div class="modal-content bg-warning">
+                                                <div class="modal-header border-dark">
+                                                    <h5 class="modal-title text-dark">همکار گرامی، پس از ثبت رخداد</h5>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                            aria-label="Close"></button>
+                                                </div>
+                                                <div class="modal-body text-dark">
+                                                    <p th:if="${categoryId == 2}">مکان و بهره بردار تجهیزات انتخاب شده جهت نصب؛ طبق اطلاعات فرم بروز می شود.</p>
+                                                    <p th:if="${categoryId == 3}">این رک و تجهیزات نصب شده در آن متعلق به بهره بردار جدید خواهد بود. در صورت لزوم می توانید بهره بردار هر تجهیز را جداگانه تغییر دهید.</p>
+                                                    <p th:if="${categoryId == 4}">بهره بردار تجهیزات ثبت شده جهت جابجایی مطابق با رک یا اتاق مقصد، بروز می شود.</p>
+                                                    <p th:if="${categoryId == 5}">بهره بردار این تجهیز بدون جابجایی مکان آن به روز می شود.</p>
+                                                </div>
+                                                <div class="modal-footer border-dark">
+                                                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                        بستن
+                                                    </button>
+                                                    <button type="submit" id="submit" class="btn btn-dark">ثبت رخداد
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <hr/>
+
+                            </form>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div><!--end row-->
+
+    </main>
+    <!--end page main-->
+
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+<script src="/panel/assets/js/fileSizeValidation.js"></script>
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
+<script src="/panel/assets/js/form-select2.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+<script src="/JalaliDatePicker/JalaliDatePickerGeorgianResponse_3.js"></script>
+
+</body>
+
+</html>

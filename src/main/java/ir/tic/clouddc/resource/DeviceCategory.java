@@ -1,32 +1,34 @@
 package ir.tic.clouddc.resource;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
-@Data
-public final class DeviceCategory {
+@Getter
+@Setter
+public final class  DeviceCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "DeviceCategoryID")
     private Integer id;
 
-    @Column(name = "Category")
+    @Column(name = "Category", nullable = false)
     private String category;  // server - switch - firewall - enclosure
 
-    @Column(name = "CategoryId")
+    @Column(name = "CategoryId", nullable = false)
     private int categoryId;  // 1 - 2 - 3 - 4
 
-    @Column(name = "Vendor")
+    @Column(name = "Vendor", nullable = false)
     private String vendor; // hpe - cisco
 
-    @Column(name = "Model")
+    @Column(name = "Model", nullable = false)
     private String model;   //
 
     @Column(name = "Factor")

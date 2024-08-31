@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface LogService {
+    Persistence newPersistenceInitialization(String logMessageKey);
 
     Persistence persistenceSetup(Person person);
 
@@ -14,7 +15,7 @@ public interface LogService {
 
     List<Long> getPersistenceIdList(Integer personId);
 
-    void saveWorkFlow(List<Workflow> workflowList);
-
     List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId);
+
+    void registerIndependentPersistence(String logMessage);
 }

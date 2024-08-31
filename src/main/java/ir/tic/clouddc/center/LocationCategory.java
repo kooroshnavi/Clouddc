@@ -1,15 +1,17 @@
 package ir.tic.clouddc.center;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class LocationCategory {
 
     @Id

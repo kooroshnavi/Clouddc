@@ -6,13 +6,65 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
 
     <link href="/login/css/style.css" rel="stylesheet">
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
 
 </head>
 
 <body class="img js-fullheight" style="background-image: url(/login/images/bg.jpg);">
+<script>
+    setInterval(showTime, 1000);
+
+    function showTime() {
+        let time = new Date();
+        let hour =
+            time.getHours();
+        let min =
+            time.getMinutes();
+        let sec =
+            time.getSeconds();
+
+        hour =
+            hour < 10
+                ? "0" + hour
+                : hour;
+        min =
+            min < 10
+                ? "0" + min
+                : min;
+        sec =
+            sec < 10
+                ? "0" + sec
+                : sec;
+
+        document.getElementById(
+            "clock"
+        ).innerHTML =
+            hour +
+            ":" +
+            min +
+            ":" +
+            sec;
+    }
+
+    showTime();
+</script>
+
+<script th:if="${error}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos3_formCaptchaWarning();
+    });
+</script>
 
 <section class="ftco-section">
     <div class="container">
+
+        <h5>
+            <strong th:text="${date}">سامانه نگه داری و پایش زیرساخت ابر</strong>
+            <span class="bg-success" id="clock"></span>
+        </h5>
+
+
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
                 <h2 class="heading-section">
@@ -21,13 +73,14 @@
             </div>
         </div>
 
-        <div class="row justify-content-center">
 
+        <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
+
                 <div class="login-wrap p-0">
 
-                    <form id="form" class="signin-form" th:action="@{/login/otp}" th:object="${otpRequest}"
-                          method="Post">
+                    <form id="form" class="was-validated" th:action="@{/login/otp}" th:object="${otpRequest}"
+                          method="Post" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div th:if="${logout}" class="alert-success">
                             خروج از سیستم انجام شد.
@@ -43,26 +96,40 @@
                         </div>
 
                         <div class="form-group">
-                            <input type="number" id="phoneNumber" size="11" dir="rtl" th:field="*{address}"
-                                   name="username" class="form-control" placeholder="تلفن همراه تیک گرام"
+                            <input type="number" id="phoneNumber" size="11" dir="ltr" th:field="*{address}"
+                                   name="username" class="form-control" placeholder="Ticgram Phone Number"
                                    required="required">
                         </div>
 
+
+                            <div class="form-group">
+                                <hr/>
+                                <input type="text" th:field="*{challenge}" class="form-group" disabled="disabled">
+                                <input type="number" dir="ltr" th:field="*{providedAnswer}" class="form-group"
+                                       required="required">
+                            </div>
+
+                        <input type="hidden" name="index" th:value="${index}"/>
+
+
                         <div class="form-group">
-                            <button type="submit" class="form-control btn btn-primary submit px-3">بررسی</button>
+                            <button type="submit" id="submit" class="form-control btn btn-primary submit px-3">بررسی
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
         </div>
     </div>
+    <h6>
+        <span class="bg-warning" th:text="${'آدرس آی پی شما: '   + remoteAddress}"></span>
+    </h6>
 </section>
 
 <script src="/login/js/jquery.min.js"></script>
 <script src="/login/js/popper.js"></script>
 <script src="/login/js/bootstrap.min.js"></script>
 <script src="/login/js/main.js"></script>
-
 <script th:inline="javascript">
     const form = document.getElementById('form');
     form.addEventListener('submit', (e) => {
@@ -70,6 +137,7 @@
             form.submit()
         }
     });
+
     function phoneNumberSyntax(e) {
         const phoneNumber = document.getElementById('phoneNumber').value;
         if (phoneNumber === "" || phoneNumber.length !== 11) {
@@ -80,7 +148,9 @@
         }
     }
 </script>
-
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
 </body>
 </html>
 

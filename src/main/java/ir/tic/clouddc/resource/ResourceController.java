@@ -1,16 +1,22 @@
 package ir.tic.clouddc.resource;
 
 
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 @Controller
 @RequestMapping("/resource")
+@Slf4j
 public class ResourceController {
 
     private final ResourceService resourceService;
@@ -22,14 +28,30 @@ public class ResourceController {
 
     @GetMapping("/device/{deviceId}/detail")
     public String showDeviceDetail(Model model, @PathVariable Long deviceId) throws EntityNotFoundException {
-        var device = resourceService.getDevice(deviceId);
-        if (device.isPresent()) {
-            model.addAttribute("device", device.get());
-            model.addAttribute("catalogList", device.get().getDevicePmCatalogList());
-            return "deviceDetail";
+        var device = resourceService.getReferencedDevice(deviceId);
+        if (device.getDevicePmCatalogList() != null) {
+            for (DevicePmCatalog catalog : device.getDevicePmCatalogList()) {
+                catalog.setPersianNextDue(UtilService.getFormattedPersianDate(catalog.getNextDueDate()));
+            }
         }
+        model.addAttribute("device", device);
+        model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
-        return "404";
+        return "deviceDetail";
+    }
+
+    @GetMapping("/utilizer/list")
+    public String showUtilizerList(Model model) {
+        List<Utilizer> utilizerList = new java.util.ArrayList<>(resourceService
+                .getUtilierList()
+                .stream()
+                .sorted(Comparator.comparing(utilizer -> utilizer.getDeviceList().size()))
+                .toList());
+        Collections.reverse(utilizerList);
+
+        model.addAttribute("utilizerList", utilizerList);
+
+        return "UtilizerList";
     }
 
     @GetMapping("/utilizer/{utilizerId}/detail")
@@ -45,4 +67,49 @@ public class ResourceController {
         return "404";
     }
 
+    @GetMapping("/device/unassigned")
+    public String newDeviceView(Model model) {
+
+        List<DeviceCategory> deviceCategoryList = resourceService.getdeviceCategoryList();
+        List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> unassignedDeviceList =
+                resourceService.getNewDeviceList()
+                        .stream()
+                        .sorted(Comparator.comparing(ResourceService.DeviceIdSerialCategoryVendor_Projection1::getId).reversed())
+                        .toList();
+
+        model.addAttribute("deviceRegisterForm", new DeviceRegisterForm());
+        model.addAttribute("deviceCategoryList", deviceCategoryList);
+        model.addAttribute("unassignedDeviceList", unassignedDeviceList);
+
+        if (!model.containsAttribute("newDevice")) {
+            model.addAttribute("newDevice", false);
+        }
+        if (!model.containsAttribute("exist")) {
+            model.addAttribute("exist", false);
+        }
+
+        return "newDeviceView";
+    }
+
+    @PostMapping("/register")
+    public String registerNewDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") DeviceRegisterForm deviceRegisterForm) {
+
+        boolean exist = resourceService.checkDeviceExistence(deviceRegisterForm.getSerialNumber());
+
+        if (!exist) {
+            resourceService.registerUnassignedDevice(deviceRegisterForm);
+            redirectAttributes.addFlashAttribute("newDevice", true);
+        } else {
+            var existedDeviceId = resourceService.getDeviceIdBySerialNumber(deviceRegisterForm.getSerialNumber());
+            if (existedDeviceId.isPresent()) {
+                redirectAttributes.addFlashAttribute("existedDeviceId", existedDeviceId.get());
+                redirectAttributes.addFlashAttribute("existedUnassigned", false);
+            } else {
+                redirectAttributes.addFlashAttribute("existedUnassigned", true);
+            }
+            redirectAttributes.addFlashAttribute("exist", true);
+            redirectAttributes.addFlashAttribute("existedSerialNumber", deviceRegisterForm.getSerialNumber());
+        }
+        return "redirect:/resource/device/unassigned";
+    }
 }

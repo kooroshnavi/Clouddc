@@ -1,27 +1,20 @@
 package ir.tic.clouddc.center;
 
-import ir.tic.clouddc.event.LocationStatusEvent;
-import ir.tic.clouddc.event.LocationStatusForm;
-import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.notification.NotificationService;
-import ir.tic.clouddc.pm.CatalogForm;
-import ir.tic.clouddc.pm.PmInterface;
-import ir.tic.clouddc.report.DailyReport;
+import ir.tic.clouddc.person.Person;
+import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
-import java.sql.SQLException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -39,66 +32,96 @@ public class CenterServiceImpl implements CenterService {
 
     private final LocationPmCatalogRepository locationPmCatalogRepository;
 
-    private final LocationStatusRepository locationStatusRepository;
-
-
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository, LocationStatusRepository locationStatusRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
         this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
         this.locationPmCatalogRepository = locationPmCatalogRepository;
-        this.locationStatusRepository = locationStatusRepository;
-    }
-/*
-    @Scheduled(cron = "0 0 14 * * SAT,SUN,MON,TUE,WED")
-    public void dailyTemperatureCheck() {
-        var dateTime = LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES);
-        var todayReport = reportService.findActive(true);
-        var todayTemperatureSalon1 = temperatureRepository.existsBydailyReportAndCenter(todayReport.get(), getCenter(1));
-
-        if (!todayTemperatureSalon1) {
-            log.info("Salon 1 is absent");
-            notificationService.sendTemperatureReminderMessage(dateTime);
-        } else {
-            var todayTemperatureSalon2 = temperatureRepository.existsBydailyReportAndCenter(todayReport.get(), getCenter(2));
-            if (!todayTemperatureSalon2) {
-                log.info("Salon 2 is absent");
-                notificationService.sendTemperatureReminderMessage(dateTime);
-            }
-        }
-    }*/
-
-    @Override
-    public LocationPmCatalog registerNewCatalog(CatalogForm catalogForm, LocalDate nextDue) {
-        LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
-        locationPmCatalog.setLocation(locationRepository.getReferenceById(catalogForm.getLocationId()));
-        locationPmCatalog.setDefaultPerson(new Person(catalogForm.getDefaultPersonId()));
-        locationPmCatalog.setPmInterface(new PmInterface(catalogForm.getPmInterfaceId()));
-        locationPmCatalog.setEnabled(true);
-        locationPmCatalog.setHistory(false);
-        locationPmCatalog.setActive(false);
-        locationPmCatalog.setNextDueDate(UtilService.validateNextDue(nextDue));
-
-        return locationPmCatalogRepository.save(locationPmCatalog);
     }
 
     @Override
-    public Location getRefrencedLocation(Long locationId) throws SQLException {
+    public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
         return locationRepository.getReferenceById(locationId);
     }
 
     @Override
-    public List<LocationPmCatalog> getLocationCatalogList(Location baseLocation) {
-        return locationPmCatalogRepository.findAllByLocation(baseLocation);
+    public List<Location> getLocationListExcept(List<Long> locationId) {
+        return locationRepository.getLocationListNotIn(locationId);
+    }
+
+    @Override
+    public List<Location> getLocationList() {
+        return locationRepository.getLocationList();
+    }
+
+
+    @Override
+    public void verifyRackDevicePosition(List<Rack> rackList) {
+        if (!rackList.isEmpty()) {
+            List<Rack> modifiedRackList = new ArrayList<>();
+            for (Rack rack : rackList) {
+                if (rack.getDevicePositionMap().isEmpty()) {
+                    var deviceList = rack.getDeviceList();
+                    if (!deviceList.isEmpty()) {
+                        Map<Integer, Device> rackDevicePositionMap = new HashMap<>();
+                        int position = 0;
+                        for (Device device : deviceList) {
+                            position += 1;
+                            rackDevicePositionMap.put(position, device);
+                        }
+                        rack.setDevicePositionMap(rackDevicePositionMap);
+                        modifiedRackList.add(rack);
+                    }
+                }
+            }
+            if (!modifiedRackList.isEmpty()) {
+                locationRepository.saveAllAndFlush(modifiedRackList);
+            }
+        }
+    }
+
+    @Override
+    public void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList) {
+        var location = Hibernate.unproxy(getRefrencedLocation(rackId), Location.class);
+        Rack rack = (Rack) location;
+        var oldPositionMap = rack.getDevicePositionMap();
+        Map<Integer, Device> newPositionMap = new HashMap<>();
+
+        int newPosition = 0;
+        for (String stringPosition : newPositionStringList) {
+            int oldPosition = Integer.parseInt(stringPosition);
+            newPosition += 1;
+            newPositionMap.put(newPosition, oldPositionMap.get(oldPosition));
+        }
+
+        rack.setDevicePositionMap(newPositionMap);
+        locationRepository.save(rack);
+
+        var logMessage = " بروزرسانی جانمایی رک " + rack.getName() + " - " + rack.getHall().getName();
+        logService.registerIndependentPersistence(logMessage);
+    }
+
+    @Override
+    public Optional<Location> getLocation(Long locationId) {
+        Optional<Location> optionalLocation = locationRepository.findById(locationId);
+        if (optionalLocation.isPresent()) {
+            if (optionalLocation.get().getLocationPmCatalogList() != null) {
+                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
+                    locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
+                }
+            }
+        }
+
+        return optionalLocation;
     }
 
     @Override
     public LocationStatus getCurrentLocationStatus(Location location) {
-        var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
-        if (locationStatus.isPresent()) {
+        //var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
+     /*   if (locationStatus.isPresent()) {
             return locationStatus.get();
         } else {
             LocationStatus defaultLocationStatus = new LocationStatus();
@@ -106,12 +129,8 @@ public class CenterServiceImpl implements CenterService {
             defaultLocationStatus.setVentilation(true);
             defaultLocationStatus.setPower(true);
             return defaultLocationStatus;
-        }
-    }
-
-    @Override
-    public List<Location> getCustomizedLocationList(List<String> locationCategoryNameList) {
-        return locationRepository.fetchCustomizedLocationList(locationCategoryNameList);
+        }*/
+        return null;
     }
 
     @Override
@@ -160,97 +179,13 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
-    public void updateLocationStatus(LocationStatusForm locationStatusForm, LocationStatusEvent event) {
-        List<LocationStatus> locationStatusList = new ArrayList<>();
-        var location = locationStatusForm.getLocation();
-        var currentStatus = location.getLocationStatusList().stream().filter(LocationStatus::isActive).findFirst();
-        if (currentStatus.isPresent()) {
-            currentStatus.get().setActive(false);
-            locationStatusList.add(currentStatus.get());
-        }
-        LocationStatus locationStatus = new LocationStatus();
-        locationStatus.setLocation(locationStatusForm.getLocation());
-        locationStatus.setEvent(event);
-        locationStatus.setDoor(locationStatusForm.isDoor());
-        locationStatus.setVentilation(locationStatusForm.isVentilation());
-        locationStatus.setPower(locationStatusForm.isPower());
-        locationStatus.setActive(true);
-
-        locationStatusList.add(locationStatus);
-
-        locationStatusRepository.saveAllAndFlush(locationStatusList);
-    }
-
-
-    @Override
-    public Hall getHall(int hallId) {
-        return null;
-    }
-
-
-    @Override
-    public Optional<Location> getLocation(Long locationId) {
-        Optional<Location> optionalLocation = locationRepository.findById(locationId);
-
-        if (optionalLocation.isPresent()) {
-            if (optionalLocation.get().getLocationPmCatalogList() != null) {
-                for (LocationPmCatalog locationPmCatalog : optionalLocation.get().getLocationPmCatalogList()) {
-                    if (locationPmCatalog.isHistory()) {
-                        var finishedDate = locationPmCatalog.getLastFinishedDate();
-                        locationPmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
-                        locationPmCatalog.setPersianLastFinishedDayTime(UtilService.getFormattedPersianDayTime(finishedDate, locationPmCatalog.getLastFinishedTime()));
-                    }
-                    locationPmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(locationPmCatalog.getNextDueDate()));
-                }
-            }
-        }
-        return optionalLocation;
-
-    }
-
-    @Override
-    public Optional<Center> getCenter(int centerId) {
-        return centerRepository.findById(centerId);
-    }
-
-    @Override
-    public List<Hall> getHallList() {
-        return null;
-    }
-
-    @Override
-    public List<Center> getCenterList() {
-        return centerRepository.findAll(Sort.by("name"));
-    }
-
-    @Override
     public Model modelForCenterController(Model model) {
         var authenticated = SecurityContextHolder.getContext().getAuthentication();
         var personName = authenticated.getName();
-        Person person = personService.getPerson(personName);
+        Person person = personService.getPersonByUsername(personName);
         model.addAttribute("person", person);
         model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("date", UtilService.getCurrentDate());
         return model;
     }
-
-
-    @Override
-    public void setDailyTemperatureReport(DailyReport currentReport) {
-
-    }
-
-
-    @Override
-    public List<Float> getWeeklyTemperature(List<LocalDate> weeklyDateList, int centerId) {
-        /*
-        var center = getHall(centerId);
-        List<Float> weeklyTemperature = new ArrayList<>();
-        for (LocalDate date : weeklyDateList) {
-            weeklyTemperature.add(center.getAverageTemperature().get(date));
-        }*/
-        return null;
-    }
-
-
 }

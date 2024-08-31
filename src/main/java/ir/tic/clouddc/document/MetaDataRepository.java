@@ -30,7 +30,7 @@ public interface MetaDataRepository extends JpaRepository<MetaData, Long> {
     void disableMetadata(@Param("metadataId") Long id, @Param("enabled") boolean enabled, @Param("removeDate") LocalDate date);
 
     @Query("SELECT m FROM MetaData m WHERE m.persistence.id IN :persistenceIdList")
-    List<MetaData> fetchFullMetadataList(List<Long> persistenceIdList);
+    List<MetaData> fetchFullMetadataList(List<Long> persistenceIdList); // Full: file manager view
 
     @Query("SELECT m.id FROM MetaData m WHERE m.enabled = :enabled and m.removeDate = :date")
     List<Long> getRemovalDueIdList(@Param("date") LocalDate date, @Param("enabled") boolean enabled);

@@ -1,13 +1,15 @@
 package ir.tic.clouddc.person;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Table(schema = "Person")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class Address {
 
     @Id
@@ -15,6 +17,6 @@ public final class Address {
     @Column(name = "PersonID")
     private Integer id;
 
-    @Column(name = "PhoneNumber")
+    @Column(name = "PhoneNumber", unique = true, nullable = false)
     private String value;
 }

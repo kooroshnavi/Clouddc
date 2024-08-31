@@ -3,7 +3,9 @@ package ir.tic.clouddc.log;
 import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -11,7 +13,8 @@ import java.time.LocalTime;
 @Entity
 @Table(schema = "Log", name = "History")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class LogHistory {
 
     @Id
@@ -32,7 +35,7 @@ public final class LogHistory {
     @JoinColumn(name = "PersonID")
     private Person person;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 

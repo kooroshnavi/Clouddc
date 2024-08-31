@@ -2,13 +2,7 @@ package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
-@Entity
-@Table(schema = "Center")
-@NoArgsConstructor
-@Data
 public final class LocationStatus {
 
     @Id

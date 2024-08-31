@@ -63,8 +63,14 @@
         </div>
         <!--end breadcrumb-->
 
-        <h6 th:if="${workspace}" class="mb-0 text-uppercase" align="hall">کارتابل من</h6>
-        <h6 th:if="${not workspace}" class="mb-0 text-uppercase" align="hall">لیست Pm های فعال</h6>
+        <h6 th:if="${workspace}" class="mb-0 text-uppercase" align="center">
+            <strong>کارتابل کاربر (آزمایشی و در حال توسعه)</strong>
+        </h6>
+        <br>
+        <h6 th:unless="${workspace}" class="mb-0 text-uppercase" align="center">
+            <strong>لیست وظایف فعال</strong>
+        </h6>
+        <br>
 
         <hr/>
         <div class="card">
@@ -75,6 +81,7 @@
                         <tr>
                             <th>ردیف</th>
                             <th>شماره Pm</th>
+                            <th>دسته بندی</th>
                             <th>عنوان Pm</th>
                             <th>تاریخ سررسید</th>
                             <th>تاخیر</th>
@@ -91,6 +98,10 @@
                             <td th:text="${pm.id}"></td>
 
                             <td>
+                                <strong th:if="${pm.pmInterfaceCatalog.pmInterface.categoryId == 1}" class="text-bg-primary" th:text="${pm.pmInterfaceCatalog.pmInterface.category}"></strong>
+                                <strong th:if="${pm.pmInterfaceCatalog.pmInterface.categoryId == 2}" class="text-bg-secondary" th:text="${pm.pmInterfaceCatalog.pmInterface.category}"></strong>
+                            </td>
+                            <td>
                                 <strong th:text="${pm.pmInterfaceCatalog.pmInterface.title}"></strong>
                             </td>
 
@@ -98,21 +109,17 @@
 
                             <td>
                                 <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
-                                      class="badge bg-light-danger text-danger w-100"></span>
+                                      class="text-bg-danger"></span>
                                 <span th:if="${pm.delay} == 0"
-                                      class="badge bg-light-success text-success w-100">ندارد</span>
+                                      class="text-bg-success">ندارد</span>
                             </td>
 
-                            <td th:if="${not workspace}">
-                                <span th:text="${pm.activePersonName}"
-                                      class="badge bg-light-warning text-warning w-100"></span>
-                            </td>
+                            <td  class="text-bg-warning" th:if="${not workspace}" th:text="${pm.activePersonName}"></td>
 
                             <td>
                                 <div class="table-actions d-flex align-items-hall gap-3 fs-6">
                                     <a th:href="@{/pm/{pmId}/detailList (pmId=${pm.id})}"
-                                       class="text-primary" data-bs-toggle="tooltip" data-bs-placement="bottom"
-                                       title="گردش کار"><i class="bi bi-eye-fill"></i></a>
+                                       class="btn btn-outline-secondary">گردش کار</a></li>
                                 </div>
                             </td>
 

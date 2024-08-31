@@ -1,14 +1,18 @@
 package ir.tic.clouddc.log;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public abstract class Workflow {
 
     @Id
@@ -26,7 +30,7 @@ public abstract class Workflow {
     @Column(name = "Description")
     private String description;
 
-    @OneToOne(cascade = {CascadeType.ALL})
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 

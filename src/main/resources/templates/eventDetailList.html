@@ -63,10 +63,11 @@
         </div>
         <!--end breadcrumb-->
 
+        <!--Table 1-->
         <div class="col">
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
-                    <h6 class="mb-0 text-uppercase">جزئیات</h6>
+                    <h6 class="mb-0 text-uppercase">کلیات</h6>
                     <hr/>
 
                     <div class="card warning-table bg-warning">
@@ -76,40 +77,22 @@
                                 <tr>
                                     <th scope="col">شناسه رخداد</th>
                                     <th scope="col">دسته بندی</th>
-                                    <th scope="col">تاریخ ثبت</th>
-
-                                    <th th:if="${baseEvent.eventCategory.target == 'Device'}" scope="col">سریال تجهیز
-                                    </th>
-
-                                    <th th:if="${baseEvent.eventCategory.target == 'Center'}"
-                                        scope="col">مرکز
-                                    </th>
-
-                                    <th th:if="${baseEvent.eventCategory.target == 'Location'}"
-                                        scope="col">نوع مکان
-                                    </th>
-                                    <th th:if="${baseEvent.eventCategory.target == 'Location'}"
-                                        scope="col">نام
-                                    </th>
+                                    <th scope="col">تاریخ ثبت رخداد</th>
+                                    <th scope="col">تاریخ وقوع رخداد</th>
                                 </tr>
                                 </thead>
 
                                 <tbody>
                                 <tr>
                                     <td th:text="${baseEvent.id}"/>
-                                    <td th:text="${baseEvent.eventCategory.name}"/>
+                                    <td th:text="${baseEvent.eventCategory.title}"/>
                                     <td th:text="${baseEvent.persianRegisterDate}" data-bs-toggle="tooltip"
                                         data-bs-placement="top"
                                         th:title="${baseEvent.persianRegisterDayTime}" dir="rtl"/>
+                                    <td th:text="${baseEvent.persianEventDate}"/>
 
-                                    <td th:if="${baseEvent.eventCategory.id == 3}"
-                                        th:text="${deviceUtilizerEvent.device.serialNumber}">
-                                        <div class="col">
-                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${deviceUtilizerEvent.device.id})}"
-                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                               data-bs-placement="bottom" title="جزئیات تجهیز"></a>
-                                        </div>
-                                    </td>
+
+
                                     <td th:if="${baseEvent.eventCategory.id == 4}"
                                         th:text="${deviceMovementEvent.device.serialNumber}">
                                         <div class="col">
@@ -118,24 +101,17 @@
                                                data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                         </div>
                                     </td>
-                                    <td th:if="${baseEvent.eventCategory.id == 5}"
-                                        th:text="${deviceStatusEvent.device.serialNumber}">
-                                        <div class="col">
-                                            <a th:href="@{/resource/device/{deviceId}/detail(deviceId=${deviceStatusEvent.device.id})}"
-                                               class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                               data-bs-placement="bottom" title="جزئیات تجهیز"></a>
-                                        </div>
-                                    </td>
+
 
                                     <td th:if="${baseEvent.eventCategory.target == 'Center'}"
                                         th:text="${visitEvent.center.name}"/>
 
                                     <td th:if="${baseEvent.eventCategory.target == 'Location'}"
-                                        th:text="${locationStatusEvent.location.locationCategory.target}"/>
+                                        th:text="${locationCheckList.location.locationCategory.target}"/>
                                     <td th:if="${baseEvent.eventCategory.target == 'Location'}"
-                                        th:text="${locationStatusEvent.location.name}">
+                                        th:text="${locationCheckList.location.name}">
                                         <div class="col">
-                                            <a th:href="@{/center/location/{locationId}/detail(locationId=${locationStatusEvent.location.id})}"
+                                            <a th:href="@{/center/location/{locationId}/detail(locationId=${locationCheckList.location.id})}"
                                                class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                                data-bs-placement="bottom" title="جزئیات مکان"></a>
                                         </div>
@@ -154,51 +130,73 @@
             </div>
         </div>
 
+        <!--Table 2-->
         <h6 class="mb-0 text-uppercase" align="center">
-            <strong>جزئیات ثبت رخداد</strong>
+            <strong>فرآیند رخداد</strong>
         </h6>
         <hr/>
 
         <div class="card">
             <div class="card-body">
+
                 <div class="table-responsive">
                     <table class="table mb-0 table-dark table-striped">
                         <thead>
                         <tr>
-                            <th>تاریخ</th>
-                            <th>ساعت</th>
-                            <th>اقدام کننده</th>
-                            <th>توضیحات</th>
+                            <th th:if="${baseEvent.eventCategory.id == 1}">نوع رخداد عمومی</th>
 
-                            <th th:if="${baseEvent.eventCategory.id == 3}">بهره بردار قبلی</th>
+                            <th th:if="${baseEvent.eventCategory.id == 2}">مکان نصب</th>
+                            <th th:if="${baseEvent.eventCategory.id == 2}">بهره بردار</th>
+
+                            <th th:if="${baseEvent.eventCategory.id == 3}">مکان</th>
+                            <th th:if="${baseEvent.eventCategory.id == 3}">بهره بردار قدیم</th>
                             <th th:if="${baseEvent.eventCategory.id == 3}">بهره بردار جدید</th>
 
-                            <th th:if="${baseEvent.eventCategory.id == 4}">مکان قبلی</th>
-                            <th th:if="${baseEvent.eventCategory.id == 4}">مکان جدید</th>
+                            <th th:if="${baseEvent.eventCategory.id == 4}">مبدا</th>
+                            <th th:if="${baseEvent.eventCategory.id == 4}">مقصد</th>
+
+                            <th th:if="${baseEvent.eventCategory.id == 5}">نوع تجهیز</th>
+                            <th th:if="${baseEvent.eventCategory.id == 5}">شماره سریال</th>
+                            <th th:if="${baseEvent.eventCategory.id == 5}">برند</th>
+                            <th th:if="${baseEvent.eventCategory.id == 5}">مدل</th>
+                            <th th:if="${baseEvent.eventCategory.id == 5}">بهره بردار قدیم</th>
+                            <th th:if="${baseEvent.eventCategory.id == 5}">بهره بردار جدید</th>
 
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td th:text="${baseEvent.eventDetail.persianRegisterDate}"/>
-                            <td th:text="${baseEvent.eventDetail.persianRegisterDayTime}"/>
-                            <td th:text="${baseEvent.eventDetail.persistence.person.name} "/>
-                            <td th:text="${baseEvent.eventDetail.description}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 1}" th:text="${generalEvent.category}"/>
 
-                            <td th:if="${baseEvent.eventCategory.id == 3}"
-                                th:text="${deviceUtilizerEvent.oldUtilizer.name}"/>
-                            <td th:if="${baseEvent.eventCategory.id == 3}"
-                                th:text="${deviceUtilizerEvent.newUtilizer.name}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 2}" th:text="${newDeviceInstallationEvent.installationLocation.locationCategory.category + ' ' + newDeviceInstallationEvent.installationLocation.name}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 2}" th:text="${newDeviceInstallationEvent.installationUtilizer.name}"/>
 
-                            <td th:if="${baseEvent.eventCategory.id == 4}" th:text="${deviceMovementEvent.source.name}"
-                                data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                th:title="${deviceMovementEvent.source.locationCategory.target}" dir="rtl"/>
+                            <td th:if="${baseEvent.eventCategory.id == 3}" th:text="${locationUtilizerEvent.locationList.get(0).locationCategory.category + ' ' + locationUtilizerEvent.locationList.get(0).name}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 3}"
+                                class="badge bg-light-danger text-danger w-100"
+                                th:text="${locationUtilizerEvent.oldUtilizer.name}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 3}"
+                                class="badge bg-light-success text-success w-100"
+                                th:text="${locationUtilizerEvent.newUtilizer.name}"/>
+
                             <td th:if="${baseEvent.eventCategory.id == 4}"
-                                th:text="${deviceMovementEvent.destination.name}" data-bs-toggle="tooltip"
-                                data-bs-placement="top"
-                                th:title="${deviceMovementEvent.destination.locationCategory.target}" dir="rtl"/>
+                                class="badge bg-light-danger text-danger w-100"
+                                th:text="${deviceMovementEvent.source.locationCategory.category + ' ' + deviceMovementEvent.source.name}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 4}"
+                                class="badge bg-light-success text-success w-100"
+                                th:text="${deviceMovementEvent.destination.locationCategory.category + ' ' + deviceMovementEvent.destination.name}"/>
 
+
+                            <td th:if="${baseEvent.eventCategory.id == 5}" th:text="${deviceUtilizerEvent.deviceList.get(0).deviceCategory.category}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 5}" th:text="${deviceUtilizerEvent.deviceList.get(0).serialNumber}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 5}" th:text="${deviceUtilizerEvent.deviceList.get(0).deviceCategory.vendor}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 5}" th:text="${deviceUtilizerEvent.deviceList.get(0).deviceCategory.model}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 5}"
+                                class="badge bg-light-danger text-danger w-100"
+                                th:text="${deviceUtilizerEvent.oldUtilizer.name + ' ' + deviceUtilizerEvent.newUtilizer.name}"/>
+                            <td th:if="${baseEvent.eventCategory.id == 5}"
+                                class="badge bg-light-success text-success w-100"
+                                th:text="${deviceMovementEvent.destination.locationCategory.category + ' ' + deviceMovementEvent.destination.name}"/>
                         </tr>
                         </tbody>
                         <tfoot>
@@ -208,32 +206,36 @@
             </div>
         </div>
 
-        <div th:if="${baseEvent.eventCategory.id == 2}" class="card">
+        <h6 th:if="${baseEvent.eventCategory.id == 2}" class="mb-0 text-uppercase" align="center">
+            <strong>در این رخداد نصب؛ تجهیزات ذیل در مکان اشاره شده نصب شده اند.</strong>
+        </h6>
+        <hr/>
+        <div th:if="${baseEvent.eventCategory.id == 2 || baseEvent.eventCategory.id == 3 || baseEvent.eventCategory.id == 4}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table mb-0 table-dark table-striped">
+                    <table class="table mb-0 table-info table-striped">
                         <thead>
                         <tr>
-                            <th th:if="${locationStatusEvent.isDoorChanged()}">وضعیت درب و قفل ها</th>
-                            <th th:if="${locationStatusEvent.isVentilationChanged()}">شرایط تهویه و دما</th>
-                            <th th:if="${locationStatusEvent.isPowerChanged()}">وضعیت برق</th>
+                            <th th:if="${locationCheckList.isDoorChanged()}">وضعیت درب و قفل ها</th>
+                            <th th:if="${locationCheckList.isVentilationChanged()}">شرایط تهویه و دما</th>
+                            <th th:if="${locationCheckList.isPowerChanged()}">وضعیت برق</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td th:if="${locationStatusEvent.isDoorChanged()} && ${locationStatusEvent.locationStatus.isDoor()}"
+                            <td th:if="${locationCheckList.isDoorChanged()} && ${locationCheckList.locationStatus.isDoor()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${locationStatusEvent.isDoorChanged()} && ${not locationStatusEvent.locationStatus.isDoor()}"
+                            <td th:if="${locationCheckList.isDoorChanged()} && ${not locationCheckList.locationStatus.isDoor()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${locationStatusEvent.isVentilationChanged()} && ${locationStatusEvent.locationStatus.isVentilation()}"
+                            <td th:if="${locationCheckList.isVentilationChanged()} && ${locationCheckList.locationStatus.isVentilation()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${locationStatusEvent.isVentilationChanged()} && ${not locationStatusEvent.locationStatus.isVentilation()}"
+                            <td th:if="${locationCheckList.isVentilationChanged()} && ${not locationCheckList.locationStatus.isVentilation()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${locationStatusEvent.isPowerChanged()} && ${locationStatusEvent.locationStatus.isPower()}"
+                            <td th:if="${locationCheckList.isPowerChanged()} && ${locationCheckList.locationStatus.isPower()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${locationStatusEvent.isPowerChanged()} && ${not locationStatusEvent.locationStatus.isPower()}"
+                            <td th:if="${locationCheckList.isPowerChanged()} && ${not locationCheckList.locationStatus.isPower()}"
                                 th:text="اعلام رفع خرابی"/>
                         </tr>
                         </tbody>
@@ -250,47 +252,47 @@
                     <table class="table mb-0 table-dark table-striped">
                         <thead>
                         <tr>
-                            <th th:if="${deviceStatusEvent.isDualPowerChanged()}">اتصال تجهیز به دو (2) منبع نیرو</th>
-                            <th th:if="${deviceStatusEvent.isStsChanged()}">چراغ وضعیت تجهیز (STS یا Power)</th>
-                            <th th:if="${deviceStatusEvent.isFanChanged()}">عملکرد فن های تجهیز</th>
-                            <th th:if="${deviceStatusEvent.isModuleChanged()}">سلامت ماژول های متصل</th>
-                            <th th:if="${deviceStatusEvent.isStorageChanged()}">سلامت استوریج ها (چراغ باکس) HDD و SSD
+                            <th th:if="${deviceCheckList.isDualPowerChanged()}">اتصال تجهیز به دو (2) منبع نیرو</th>
+                            <th th:if="${deviceCheckList.isStsChanged()}">چراغ وضعیت تجهیز (STS یا Power)</th>
+                            <th th:if="${deviceCheckList.isFanChanged()}">عملکرد فن های تجهیز</th>
+                            <th th:if="${deviceCheckList.isModuleChanged()}">سلامت ماژول های متصل</th>
+                            <th th:if="${deviceCheckList.isStorageChanged()}">سلامت استوریج ها (چراغ باکس) HDD و SSD
                             </th>
-                            <th th:if="${deviceStatusEvent.isPortChanged()}">اتصال پورت های غیرخالی و برقراری آپ لینک
+                            <th th:if="${deviceCheckList.isPortChanged()}">اتصال پورت های غیرخالی و برقراری آپ لینک
                                 ها
                             </th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr>
-                            <td th:if="${deviceStatusEvent.isDualPowerChanged()} && ${deviceStatusEvent.deviceStatus.isDualPower()}"
+                            <td th:if="${deviceCheckList.isDualPowerChanged()} && ${deviceCheckList.deviceStatus.isDualPower()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${deviceStatusEvent.isDualPowerChanged()} && ${not deviceStatusEvent.deviceStatus.isDualPower()}"
+                            <td th:if="${deviceCheckList.isDualPowerChanged()} && ${not deviceCheckList.deviceStatus.isDualPower()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${deviceStatusEvent.isStsChanged()} && ${deviceStatusEvent.deviceStatus.isSts()}"
+                            <td th:if="${deviceCheckList.isStsChanged()} && ${deviceCheckList.deviceStatus.isSts()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${deviceStatusEvent.isStsChanged()} && ${not deviceStatusEvent.deviceStatus.isSts()}"
+                            <td th:if="${deviceCheckList.isStsChanged()} && ${not deviceCheckList.deviceStatus.isSts()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${deviceStatusEvent.isFanChanged()} && ${deviceStatusEvent.deviceStatus.isFan()}"
+                            <td th:if="${deviceCheckList.isFanChanged()} && ${deviceCheckList.deviceStatus.isFan()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${deviceStatusEvent.isFanChanged()} && ${not deviceStatusEvent.deviceStatus.isFan()}"
+                            <td th:if="${deviceCheckList.isFanChanged()} && ${not deviceCheckList.deviceStatus.isFan()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${deviceStatusEvent.isModuleChanged()} && ${deviceStatusEvent.deviceStatus.isModule()}"
+                            <td th:if="${deviceCheckList.isModuleChanged()} && ${deviceCheckList.deviceStatus.isModule()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${deviceStatusEvent.isModuleChanged()} && ${not deviceStatusEvent.deviceStatus.isModule()}"
+                            <td th:if="${deviceCheckList.isModuleChanged()} && ${not deviceCheckList.deviceStatus.isModule()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${deviceStatusEvent.isStorageChanged()} && ${deviceStatusEvent.deviceStatus.isStorage()}"
+                            <td th:if="${deviceCheckList.isStorageChanged()} && ${deviceCheckList.deviceStatus.isStorage()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${deviceStatusEvent.isStorageChanged()} && ${not deviceStatusEvent.deviceStatus.isStorage()}"
+                            <td th:if="${deviceCheckList.isStorageChanged()} && ${not deviceCheckList.deviceStatus.isStorage()}"
                                 th:text="اعلام رفع خرابی"/>
 
-                            <td th:if="${deviceStatusEvent.isPortChanged()} && ${deviceStatusEvent.deviceStatus.isPort()}"
+                            <td th:if="${deviceCheckList.isPortChanged()} && ${deviceCheckList.deviceStatus.isPort()}"
                                 th:text="اعلام خرابی"/>
-                            <td th:if="${deviceStatusEvent.isPortChanged()} && ${not deviceStatusEvent.deviceStatus.isPort()}"
+                            <td th:if="${deviceCheckList.isPortChanged()} && ${not deviceCheckList.deviceStatus.isPort()}"
                                 th:text="اعلام رفع خرابی"/>
 
                         </tr>

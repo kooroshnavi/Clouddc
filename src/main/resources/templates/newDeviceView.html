@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+>
+
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+
+
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>ثبت تجهیز جدید</title>
+</head>
+
+<body>
+
+<script th:if="${newDevice}">
+    document.addEventListener('DOMContentLoaded', function() {
+        pos5_success_noti();
+    });
+</script>
+
+<script th:if="${exist}">
+    document.addEventListener('DOMContentLoaded', function() {
+        pos3_warning_noti();
+    });
+</script>
+
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">منابع</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">ثبت تجهیزات</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <hr/>
+
+        <div class="card" align="center">
+            <div class="card-body">
+                <h6 class="mb-0 text-uppercase" align="center">
+                    <strong>ثبت تجهیز جدید الورود به مرکز</strong>
+                </h6>
+                <hr/>
+                <h6 class="card-header py-3 bg-info" align="center">
+                    <strong class="mb-0">همکار گرامی، جهت مشاهده و انتخاب تجهیزات در فرم نصب تجهیزات
+                        جدید، ابتدا می بایست مشخصات آن را در فرم ذیل ثبت نمایید.</strong>
+                </h6>
+                <div class="d-flex align-items-center">
+                </div>
+                <hr/>
+
+                <div class="card-body">
+
+                    <form class="was-validated" th:action="@{/resource/register}" th:object="${deviceRegisterForm}"
+                          enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+
+                        <div class="mb-3">
+                            <label class="form-label">انتخاب نوع تجهیز از میان مدل های موجود</label>
+                            <select class="single-select" th:field="*{deviceCategoryId}">
+
+                                <option th:each="category : ${deviceCategoryList}"
+                                        th:if="${category.categoryId == 5 || category.categoryId == 8}"
+                                        th:value="${category.id}"
+                                        th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model + ' - ' + category.factorSize + ' ' + category.factor}">
+                                </option>
+
+                                <option th:each="category : ${deviceCategoryList}"
+                                        th:if="${category.categoryId != 5 && category.categoryId != 8}"
+                                        th:value="${category.id}"
+                                        th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model}">
+                                </option>
+
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                        <label for="input" class="form-check">شماره سریال تجهیز</label>
+                        <input type="text" class="form-control" id="input" maxlength="40" required="required" dir="ltr" placeholder="SerialNumber"
+                               onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                               oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
+                        </div>
+
+                        <div th:if="${exist}">
+                            <h6 class="mb-0 text-uppercase" align="center">
+                                <strong class="mb-0 text-bg-warning">شماره سریال تکراری است</strong>
+                            </h6>
+                            <br>
+                            <a th:if="${!existedUnassigned}" th:href="@{/resource/device/{deviceId}/detail  (deviceId = ${existedDeviceId})}" th:text="${' جزئیات تجهیز با شماره سریال ' + existedSerialNumber}">مشاهده تجهیز با شماره سریال ارائه شده</a>
+                        </div>
+
+                        <div class="col">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
+                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                            </div>
+                            <hr/>
+                        </div>
+
+                        <div class="col">
+                            <!-- Button trigger modal -->
+                            <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                    data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید
+                            </button>
+                            <!-- Modal -->
+                            <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
+                                <div class="modal-dialog modal-lg modal-dialog">
+                                    <div class="modal-content text-bg-primary">
+                                        <div class="modal-header border-dark">
+                                            <h5 class="modal-title text-dark">همکار گرامی</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body text-dark">
+                                            <p>پس از تایید جهت ثبت نهایی تجهیز (اختصاص مکان و بهره بردار) به صفحه رک یا اتاق مربوطه مراجعه و از طریق گزینه 'نصب تجهیزات جدید' اقدام نمایید.</p>
+                                        </div>
+                                        <div class="modal-footer border-dark">
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                بستن
+                                            </button>
+                                            <button type="submit" id="submit" class="btn btn-dark">تایید
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <hr/>
+                    </form>
+
+                    <h6 th:if="${not unassignedDeviceList.isEmpty()}" class="mb-0 text-uppercase" align="center">
+                        <strong>اطلاعات تجهیزات ذیل پس از یک هفته در صورت عدم ثبت مکان نصب؛ حذف خواهد شد.</strong>
+                    </h6>
+
+                    <table th:if="${not unassignedDeviceList.isEmpty()}" class="table mb-0">
+                        <thead class="table-dark">
+                        <tr>
+                            <th>ردیف</th>
+                            <th>نوع</th>
+                            <th>شماره سریال</th>
+                            <th>مدل</th>
+                            <th>وضعیت</th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        <tr th:each="device, iter : ${unassignedDeviceList}">
+
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${iter.count}"></td>
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success">
+                                <div th:text="${device.category}"
+                                     class="d-flex align-items-center">
+                                </div>
+                            </td>
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${device.serialNumber}"></td>
+
+                            <td th:unless="${newDevice && iter.first}" th:text="${iter.count}"></td>
+                            <td th:unless="${newDevice && iter.first}">
+                                <div th:text="${device.category}"
+                                     class="d-flex align-items-center">
+                                </div>
+                            </td>
+                            <td th:unless="${newDevice && iter.first}" th:text="${device.serialNumber}"></td>
+
+                            <td th:if="${device.categoryId == 5}" th:text="${device.vendor + ' - ' + device.model + ' - ' + device.factorSize + ' ' + device.factor}"/>
+                            <td th:if="${device.categoryId != 5}" th:text="${device.vendor + ' - ' + device.model}"/>
+
+                            <td>
+                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت مکان</button>
+                            </td>
+
+                        </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+        <!--End attachment table-->
+
+    </main>
+    <!--end page main-->
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+
+
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+
+<!--notification js -->
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
+<script src="/panel/assets/js/form-select2.js"></script>
+
+<script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+<script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+<script src="/panel/assets/js/table-datatable.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+
+<script>
+    function clsAlphaNoOnly(e) {  // Accept only alpha numerics, no special characters
+        var regex = new RegExp("^[a-zA-Z0-9]+$");
+        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+        if (str === 32) {
+            return false;
+        }
+        if (regex.test(str)) {
+            return true;
+        }
+        e.preventDefault();
+        return false;
+    }
+    function clsAlphaNoOnly2() {  // Accept only alpha numerics, no special characters
+        return clsAlphaNoOnly(this.event); // window.event
+    }
+</script>
+
+</body>
+
+</html>

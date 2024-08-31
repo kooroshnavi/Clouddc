@@ -6,7 +6,85 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <style>
+        html,
+        body {
+        }
+
+        .glow-on-hover {
+            width: 220px;
+            height: 50px;
+            border: none;
+            outline: none;
+            color: #fff;
+            background: #111;
+            cursor: pointer;
+            position: relative;
+            z-index: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:before {
+            content: '';
+            background: linear-gradient(45deg, #ff0000, #ff7300, #fffb00, #48ff00, #00ffd5, #002bff, #7a00ff, #ff00c8, #ff0000);
+            position: absolute;
+            top: -2px;
+            left: -2px;
+            background-size: 400%;
+            z-index: -1;
+            filter: blur(5px);
+            width: calc(100% + 4px);
+            height: calc(100% + 4px);
+            animation: glowing 20s linear;
+            opacity: 0;
+            transition: opacity .3s ease-in-out;
+            border-radius: 10px;
+        }
+
+        .glow-on-hover:active {
+            color: #6a1a21;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:active:after {
+            background: transparent;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:hover:before {
+            opacity: 1;
+            animation: glowing 20s linear;
+        }
+
+        .glow-on-hover:after {
+            z-index: -1;
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: #5c636a;
+            left: 0;
+            top: 0;
+            border-radius: 10px;
+            animation: glowing 20s linear;
+        }
+
+        @keyframes glowing {
+            0% {
+                background-position: 0 0;
+            }
+            50% {
+                background-position: 400% 0;
+            }
+            100% {
+                background-position: 0 0;
+            }
+        }
+    </style>
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
@@ -18,10 +96,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
 
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
@@ -35,6 +111,11 @@
 
 <body>
 
+<script th:if="${eventRegisterSuccessful}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -62,10 +143,83 @@
             </div>
         </div>
         <!--end breadcrumb-->
-        <h6 class="mb-0 text-uppercase">مشخصات</h6>
+
+        <h3 class="mb-0 text-bg-secondary">مشخصات تجهیز</h3>
         <hr/>
+
         <div class="card">
             <div class="card-body">
+
+                <div class="col" align="right">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای تجهیز</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title">تجهیز</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+                                    <p>* تجهیزات مورد استفاده در مرکزداده و ثبت شده در این سیستم عبارتند از: انواع سرور - سوئیچ - فایروال - انکلوژر</p>
+                                    <p>* هر تجهیز دارای بهره بردار و مکان نصب است که می تواند رک یا اتاق باشد.</p>
+                                    <p>* PM های متناسب با تجهیز می بایست تعریف و جهت اجرا به تجهیزات منتسب شوند.</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <BR>
+
+
+                <div class="col" align="right">
+                    <div class="dropdown">
+                        <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">
+                            رخدادهای این تجهیز
+                        </button>
+
+                        <ul class="dropdown-menu">
+
+                            <li>
+                                <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 5)}"
+                                   class="btn btn-outline-dark">1. تغییر بهره بردار</a>
+                                <hr/>
+                            </li>
+
+                            <li>
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 6)}"
+                                        class="btn btn-outline-danger" disabled="disabled">2. چک لیست (در حال توسعه)
+                                </button>
+                                <hr/>
+                            </li>
+
+                            <li>
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
+                                        class="btn btn-outline-danger" disabled="disabled">3. قطعی لینک (در حال توسعه)
+                                </button>
+                                <hr/>
+                            </li>
+
+                            <li>
+                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
+                                        class="btn btn-outline-danger" disabled="disabled">4. جابجایی ماژول (در حال
+                                    توسعه)
+                                </button>
+                                <hr/>
+                            </li>
+
+                            <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${2}, targetId=${device.id})}"
+                                   class="btn btn-outline-primary">تاریخچه</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                <br>
+
                 <table class="table mb-0">
                     <thead class="table-dark">
                     <tr>
@@ -91,28 +245,28 @@
                             <div class="col">
                                 <a th:text="${device.utilizer.name}"
                                    th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${device.utilizer.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                   class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
                             </div>
                         </td>
 
                         <td>
                             <div class="col">
-                                <a th:text="${device.location.locationCategory.category} + ' ' + ${device.location.name}" th:href="@{/center/location/{locationId}/detail (locationId=${device.location.id})}"
-                                   class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                <a th:text="${device.location.locationCategory.category} + ' ' + ${device.location.name}"
+                                   th:href="@{/center/location/{locationId}/detail (locationId=${device.location.id})}"
+                                   class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="جزئیات محل نصب"></a>
                             </div>
                         </td>
 
                     </tr>
-
                     </tbody>
                 </table>
             </div>
         </div>
 
         <!--Pm table-->
-        <h6 class="mb-0 text-uppercase"> Pm های تجهیز</h6>
+        <h6 class="mb-0 text-uppercase">Pm های تجهیز</h6>
         <hr/>
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
 
@@ -132,7 +286,7 @@
                             <th>ردیف</th>
                             <th>نوع</th>
                             <th>عنوان Pm</th>
-                            <th>جزئیات آخرین اقدام</th>
+                            <th>آخرین اقدام</th>
                             <th>سررسید بعدی</th>
                             <th>کارتابل پیش فرض</th>
                             <th>وضعیت</th>
@@ -157,11 +311,8 @@
 
                             <td th:if="${catalog.history}">
                                 <div class="col">
-                                    <a th:text="${catalog.persianLastFinishedDate}"
-                                       th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
-                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
-                                       data-bs-placement="top"
-                                       title="جزئیات آخرین اقدام"></a>
+                                    <a th:href="@{/pm/{pmId}/detailList (pmId=${catalog.lastPmId})}"
+                                       class="btn btn-outline-warning px-10 radius-30">جزئیات آخرین اقدام</a>
                                 </div>
                             </td>
 
@@ -175,30 +326,17 @@
                                 <span th:if="${catalog.enabled}"
                                       class="badge bg-light-success text-success w-100">فعال</span>
                             </td>
-
                         </tr>
-
                         </tbody>
-
                     </table>
+
                 </div>
             </div>
         </div>
         <!--Pm table-->
 
-        <!--Event table-->
-        <!--Event table-->
-
-        <!--File attachment form -->
-        <!--File attachment form -->
-
-        <!--attachment table-->
-        <!--End attachment table-->
-
-
     </main>
     <!--end page main-->
-
 
     <!--start overlay-->
     <div class="overlay nav-toggle-icon"></div>
@@ -215,7 +353,6 @@
 </div>
 <!--end wrapper-->
 
-
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
@@ -223,11 +360,14 @@
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+<!--notification js -->
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
-
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
 

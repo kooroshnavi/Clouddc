@@ -1,15 +1,17 @@
 package ir.tic.clouddc.event;
 
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Event")
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public final class EventCategory {
 
     @Id
@@ -17,11 +19,8 @@ public final class EventCategory {
     @Column(name = "EventCategoryID")
     private Integer id;
 
-    @Column(name = "Title")
+    @Column(name = "Title", unique = true, nullable = false)
     private String title;
-
-    @Column(name = "Target")
-    private int target;  /// Center - Location - Device
 
     @OneToMany(mappedBy = "eventCategory")
     private List<Event> eventList;

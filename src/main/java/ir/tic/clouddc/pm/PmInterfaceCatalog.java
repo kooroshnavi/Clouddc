@@ -3,17 +3,18 @@ package ir.tic.clouddc.pm;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.Person;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @NoArgsConstructor
-@Data
+@Getter
+@Setter
 public abstract class PmInterfaceCatalog {
 
     @Id
@@ -23,18 +24,12 @@ public abstract class PmInterfaceCatalog {
     private Long id;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "PmInterfaceID")
+    @JoinColumn(name = "PmInterfaceID", nullable = false)
     private PmInterface pmInterface;
 
     @ManyToOne(cascade = CascadeType.MERGE)
-    @JoinColumn(name = "DefaultPersonID")
+    @JoinColumn(name = "DefaultPersonID", nullable = false)
     private Person defaultPerson;
-
-    @Column(name = "LastFinishedDate")
-    private LocalDate lastFinishedDate;
-
-    @Column(name = "LastFinishedTime")
-    private LocalTime lastFinishedTime;
 
     @Column(name = "LastPmId")
     private Long lastPmId;
@@ -51,18 +46,12 @@ public abstract class PmInterfaceCatalog {
     @Column(name = "History")
     private boolean history;
 
-    @OneToMany(mappedBy = "pmInterfaceCatalog")
+    @OneToMany(mappedBy = "pmInterfaceCatalog", cascade = CascadeType.ALL)
     private List<Pm> pmList;
 
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
-
-    @Transient
-    private String persianLastFinishedDate;
-
-    @Transient
-    private String persianLastFinishedDayTime;
 
     @Transient
     private String persianNextDue;

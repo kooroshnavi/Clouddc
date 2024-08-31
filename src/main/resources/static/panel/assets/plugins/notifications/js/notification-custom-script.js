@@ -24,7 +24,7 @@ function warning_noti() {
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
 		icon: 'bx bx-error',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'خطا در انجام عملیات'
 	});
 }
 
@@ -82,7 +82,7 @@ function round_warning_noti() {
 		icon: 'bx bx-error',
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'خطا در انجام عملیات'
 	});
 }
 
@@ -108,7 +108,7 @@ function round_success_noti() {
 		delayIndicator: false,
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'عملیات با موفقیت انجام شد.'
 	});
 }
 /* Notifications With Images*/
@@ -194,9 +194,21 @@ function pos3_warning_noti() {
 		continueDelayOnInactiveTab: false,
 		position: 'top right',
 		size: 'mini',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'خطا در انجام عملیات'
 	});
 }
+
+  function pos3_formCaptchaWarning() {
+	  Lobibox.notify('warning', {
+		  pauseDelayOnHover: true,
+		  icon: 'bx bx-error',
+		  continueDelayOnInactiveTab: false,
+		  position: 'top right',
+		  size: 'mini',
+		  msg: 'اطلاعات فرم را به درستی وارد نمایید.'
+	  });
+  }
+
 
 function pos4_error_noti() {
 	Lobibox.notify('error', {
@@ -216,7 +228,7 @@ function pos5_success_noti() {
 		icon: 'bx bx-check-circle',
 		continueDelayOnInactiveTab: false,
 		position: 'bottom right',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'عملیات با موفقیت انجام شد'
 	});
 }
 /* Animated Notifications*/

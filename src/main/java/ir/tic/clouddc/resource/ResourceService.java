@@ -1,30 +1,83 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.event.*;
+import ir.tic.clouddc.event.DeviceCheckList;
+import ir.tic.clouddc.event.DeviceStatusForm;
+import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ResourceService {
 
-    Device validateFormDevice(EventLandingForm eventLandingForm);
+    List<DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceListProjection(Long locationId);
+
+    Utilizer getReferencedUtilizer(Integer utilizerId) throws EntityNotFoundException;
+
+    List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
+
+    List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
+
+    List<Device> getLocationDeviceList(Long locationId);
+
+    List<DeviceCategory> getdeviceCategoryList();
+
+    boolean checkDeviceExistence(String serialNumber);
+
+    void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm);
+
+    UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId);
+
+    Supplier getReferencedDefaultSupplier();
+
+    void deleteUnassignedDeviceIdList(List<Integer> unassignedDeviceIdList);
+
+    boolean newDevicePresentCheck();
+
+    String scheduleUnassignedDeviceRemoval();
+
+    List<Utilizer> getUtilierList();
+
+    interface DeviceIdSerialCategoryVendor_Projection1 {
+        Long getId();
+
+        String getSerialNumber();
+
+        String getCategory();
+
+        String getModel();
+
+        String getVendor();
+
+        String getFactor();
+
+        Integer getFactorSize();
+
+        Integer getCategoryId();
+    }
+
+    interface DeviceIdUtilizerId_Projection2 {
+        Long getDeviceId();
+        Integer getDeviceUtilizerId();
+    }
+
+    interface UtilizerIdNameProjection {
+        Integer getId();
+
+        String getName();
+    }
+
 
     Optional<Device> getDevice(Long deviceId);
 
-    Optional<Device> getDeviceBySerialNumber(String serialNumber);
+    Optional<Long> getDeviceIdBySerialNumber(String serialNumber);
 
-    Device getReferencedDevice(Long deviceId);
+    Device getReferencedDevice(Long deviceId) throws EntityNotFoundException;
 
     Utilizer getUtilizer(int utilizerId);
-    List<Utilizer> getUtilizerList();
-    void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event);
 
-    void updateDeviceUtilizer(DeviceUtilizerEvent event);
+    void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event);
 
-    void updateDeviceLocation(DeviceMovementEvent event);
-
-    List<Utilizer> getUtilizerListExcept(Utilizer utilizer);
+    List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList);
 
     DeviceStatus getCurrentDeviceStatus(Device device);
-    
 }

@@ -25,7 +25,7 @@
                         کد وارد شده اشتباه است.
                     </div>
 
-                    <form id="form" class="otp-form" th:action="@{/login}" method="POST">
+                    <form id="form" class="otp-form" th:action="@{/login}" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
                         <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
                         <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
                         <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
@@ -37,7 +37,7 @@
                         <input type="hidden" th:value="${otpUid}" name="username"/>
                         <input type="hidden" id="userOTP" class="otp-value" name="password"/>
                         <div class="d-grid mt-4">
-                            <button onclick="OTPVerifyFn()" class="btn btn-primary" type="submit">بررسی</button>
+                            <button onclick="OTPVerifyFn()" class="btn btn-primary" id="submit" type="submit">بررسی</button>
                         </div>
                     </form>
 

@@ -7,6 +7,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
@@ -35,6 +36,11 @@
 
 <body>
 
+<script th:if="${updated}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -56,7 +62,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">جزئیات گردش کار Pm</li>
+                        <li class="breadcrumb-item active" aria-current="page">گردش کار Pm</li>
                     </ol>
                 </nav>
             </div>
@@ -66,31 +72,78 @@
         <div class="col">
             <div class="card border shadow-none radius-10">
                 <div class="card-body">
-                    <div class="d-flex align-items-hall gap-3">
-                        <div th:if="${pm.delay} == 0" class="icon-box bg-light-success border-0">
-                            <i class="lni lni-chevron-left"></i>
-                        </div>
-                        <div th:if="${pm.delay} > 0" class="icon-box bg-light-danger border-0">
-                            <i class="lni lni-chevron-left"></i>
-                        </div>
-                        <div class="info">
-                            <h6 class="mb-2"><strong th:text=" 'دسته بندی: ' + ${pmInterface.category}"></strong>
-                            </h6>
-                            <h6 class="mb-2"><strong th:text=" 'عنوان Pm: ' + ${pmInterface.title}"></strong></h6>
-                            <p class="mb-1" th:text=" 'شماره وظیفه: ' + ${pm.id}"></p>
-                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1"
-                               th:text=" 'نوع مکان: ' + ${locationPmCatalog.location.locationCategory.category}"></p>
-                            <p th:if="${pmInterface.categoryId == 1}" class="mb-1"
-                               th:text=" 'نام: ' + ${locationPmCatalog.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
-                               th:text=" 'نوع تجهیز: ' + ${devicePmCatalog.device.deviceCategory.category}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
-                               th:text=" 'محل نصب تجهیز: ' + ${devicePmCatalog.device.location.name}"></p>
-                            <p th:if="${pmInterface.categoryId == 2}" class="mb-1"
-                               th:text=" 'شماره سریال تجهیز: ' + ${devicePmCatalog.device.serialNumber}"></p>
-                            <p class="mb-1" th:text=" 'سررسید: ' + ${pm.persianDueDate}"></p>
-                            <p class="mb-1" th:text=" 'تاخیر (روز): ' + ${pm.delay}"></p>
-                        </div>
+
+                    <h6 class="mb-0 text-uppercase" align="center">
+                        <strong>وضعیت PM</strong>
+                    </h6>
+                    <br>
+
+                    <div class="table-responsive">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                            <tr>
+                                <th scope="col">شناسه وظیفه</th>
+                                <th scope="col">دسته بندی</th>
+                                <th scope="col">عنوان</th>
+                                <th scope="col">سررسید</th>
+                                <th scope="col">تاخیر</th>
+                                <th th:if="${pm.active}" scope="col">کارتابل فعلی</th>
+                                <th th:unless="${pm.active}" scope="col">تاریخ اتمام</th>
+
+                                <th th:if="${pmInterface.categoryId == 1}" scope="col">نام مکان</th>
+                                <th th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}"
+                                    scope="col">سالن
+                                </th>
+                                <th th:if="${pmInterface.categoryId == 2}" scope="col">نوع و مدل تجهیز</th>
+                                <th th:if="${pmInterface.categoryId == 2}" scope="col">شماره سریال</th>
+                                <th th:if="${pmInterface.categoryId == 2}" scope="col">مکان نصب</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td th:text="${pm.id}"/>
+                                <td th:text="${pm.pmInterfaceCatalog.pmInterface.category}"/>
+                                <td th:text="${pm.pmInterfaceCatalog.pmInterface.title}"/>
+                                <td th:text="${pm.persianDueDate}"/>
+                                <td class="clock">
+                                <span th:if="${pm.delay} > 0" th:text="${pm.delay}"
+                                      class="text-bg-danger"></span>
+                                    <span th:if="${pm.delay} == 0"
+                                          class="text-bg-success">ندارد</span>
+                                </td>
+                                <td th:if="${pm.active}" class="text-bg-warning" th:text="${pm.activePersonName}"/>
+                                <td th:unless="${pm.active}" class="text-bg-success" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
+                                    data-bs-placement="top"
+                                    th:title="${pm.persianFinishedDayTime}" dir="rtl"/>
+
+                                <td th:if="${pmInterface.categoryId == 1}">
+                                    <div class="col">
+                                        <a th:text="${locationPmCatalog.location.locationCategory.category + ' ' + locationPmCatalog.location.name}"
+                                           th:href="@{/center/location/{locationId}/detail (locationId=${locationPmCatalog.location.id})}"
+                                           class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom" title="جزئیات مکان"></a>
+                                    </div>
+                                </td>
+
+                                <td th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" th:text="${rack.hall.name + ' - ' + rack.center.name}"></td>
+
+                                <td th:if="${pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.deviceCategory.category + ' ' + devicePmCatalog.device.deviceCategory.model}"></td>
+                                <td th:if="${pmInterface.categoryId == 2}">
+                                    <div class="col">
+                                        <a th:text="${devicePmCatalog.device.serialNumber}"
+                                           th:href="@{/resource/device/{deviceId}/detail (deviceId=${devicePmCatalog.device.id})}"
+                                           class="btn btn-outline-secondary px-10 radius-30" data-bs-toggle="tooltip"
+                                           data-bs-placement="bottom" title="جزئیات تجهیز"></a>
+                                    </div>
+                                </td>
+                                <td th:if="${pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.location.locationCategory.category + ' ' + devicePmCatalog.device.location.name}"></td>
+
+                            </tr>
+
+                            </tbody>
+
+                        </table>
                     </div>
                 </div>
             </div>
@@ -109,7 +162,7 @@
         <div th:if="${pm.active} AND ${permission}" class="col">
             <div class="card-body">
                 <a th:href="@{/pm/{pmId}/form (pmId=${pm.id})}" class="btn-outline-warning btn-danger">بروزرسانی وظیفه
-                    برای کارتابل منتسب و همچنین مسئول مدیریت وظایف امکان پذیر است. جهت بروزرسانی کلیک کنید.</a>
+                    برای کارتابل فعلی و همچنین مسئول مدیریت وظایف امکان پذیر است. جهت بروزرسانی کلیک کنید.</a>
             </div>
         </div>
 
@@ -124,10 +177,13 @@
         </div>
 
         <div class="card-body">
-            <h6 class="mb-0 text-uppercase" align="hall">گردش کار</h6>
-            <hr/>
+
+            <h6 class="mb-0 text-uppercase" align="center">
+                <strong>گردش کار</strong>
+            </h6>
+            <br>
             <div class="table-responsive">
-                <table id="example2" class="table table-striped table-bordered">
+                <table class="table mb-0 table-hover">
                     <thead>
                     <tr>
                         <th>ردیف</th>
@@ -149,7 +205,7 @@
 
                         <td th:if="${detail.active}">اقدام نشده</td>
 
-                        <td th:if="${not detail.active}" th:title="${detail.persianFinishedDayTime}"
+                        <td th:unless="${detail.active}" th:title="${detail.persianFinishedDayTime}"
                             data-bs-toggle="tooltip"
                             data-bs-placement="top"
                             th:text="${detail.persianFinishedDate}"></td>
@@ -165,104 +221,134 @@
                 </table>
             </div>
         </div>
+        <br>
 
         <!--attachment table-->
-        <div class="card" align="center">
+        <div th:if="${!metadataList.isEmpty()}" class="card" align="center">
             <div class="card-body">
                 <h6 class="mb-0 text-uppercase" align="center">
                     <strong>لیست پیوست</strong>
                 </h6>
-                <div class="d-flex align-items-hall">
-
-                </div>
-                <div class="card-body">
+                <br>
                     <table class="table mb-0">
                         <thead class="table-dark">
                         <tr>
                             <th>ردیف</th>
                             <th>فایل</th>
                             <th>بارگذاری توسط</th>
-                            <th>عملیات</th>
                         </tr>
                         </thead>
                         <tbody>
                         <tr th:each="metadata, iter : ${metadataList}">
 
                             <td th:text="${iter.count}"></td>
-                            <td>
 
-                                <div th:if="${metadata.type == 'application/pdf'}" class="d-flex align-items-hall">
+                            <td th:switch="${metadata.type}">
+                                <div th:case="'application/pdf'" class="d-flex align-items-center">
                                     <div><i class='bx bxs-file-pdf me-2 font-24 text-danger'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' || metadata.type == 'application/vnd.ms-excel'}"
-                                     class="d-flex align-items-hall">
+                                <div th:case="'application/vnd.openxmlformats-officedocument.presentationml.presentation'"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file-plus me-2 font-24 text-danger'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-danger" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'"
+                                     class="d-flex align-items-center">
                                     <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-success" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' || metadata.type == 'application/msword'}"
-                                     class="d-flex align-items-hall">
+                                <div th:case="'application/vnd.ms-excel'"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file-doc me-2 font-24 text-success'></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-success" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'application/vnd.openxmlformats-officedocument.wordprocessingml.document'"
+                                     class="d-flex align-items-center">
                                     <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
                                        class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'image/png' || metadata.type == 'image/jpeg' || metadata.type == 'image/jpg'}"
-                                     class="d-flex align-items-hall">
-                                    <div class="fs-6 text-black"><i class="bi bi-images"></i></div>
+                                <div th:case="'application/msword'"
+                                     class="d-flex align-items-center">
+                                    <div><i class='bx bxs-file me-2 font-24 text-primary'></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                       class="font-weight-bold text-primary" th:text="${metadata.name}"></a>
                                 </div>
 
-                                <div th:if="${metadata.type == 'text/csv' || metadata.type == 'text'}"
-                                     class="d-flex align-items-hall">
-                                    <div class="bx bxs-file-css"><i class="bi bi-images"></i></div>
+                                <div th:case="'image/png'"
+                                     class="d-flex align-items-center">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
                                     <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
-                                       class="font-weight-bold text-black" th:text="${metadata.name}"></a>
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'image/jpeg'"
+                                     class="d-flex align-items-center">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'image/jpg'"
+                                     class="d-flex align-items-center">
+                                    <div class="fs-6 bxs-file-image"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-warning" th:text="${metadata.name}"></a>
                                 </div>
 
+                                <div th:case="'text/csv'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'text/plain'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+                                <div th:case="'text'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-txt"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-secondary" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'text/html'" class="d-flex align-items-center">
+                                    <div class="bx bxs-file-html"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-info" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="'application/x-zip-compressed'"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                                </div>
+
+                                <div th:case="*"
+                                     class="d-flex align-items-center">
+                                    <div class="bx bxs-file-archive"><i class="bi bi-images"></i></div>
+                                    <a th:href="@{/document/{metaDataId}/download (metaDataId=${metadata.id})}"
+                                       class="font-weight-bold text-bg-dark" th:text="${metadata.name}"></a>
+                                </div>
                             </td>
 
                             <td th:text="${metadata.persistence.person.name}"/>
 
-                            <td>
-                                <div th:if="${metadata.persistence.person.username == #authentication.getName()}"
-                                     class="col">
-                                    <!-- Button trigger modal -->
-                                    <button type="button" class="btn btn-danger" data-bs-toggle="modal"
-                                            data-bs-target="#exampleWarningModal">مدیریت فایل های پیوست
-                                    </button>
-                                    <!-- Modal -->
-                                    <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
-                                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                                            <div class="modal-content bg-gradient-info">
-                                                <div class="modal-header border-dark">
-                                                    <h5 class="modal-title text-dark">مدیریت فایل</h5>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                                            aria-label="Close"></button>
-                                                </div>
-                                                <div class="modal-body text-dark">
-                                                    <p>همکار گرامی جهت مشاهده و حذف فایل های خود می توانید از طریق بخش
-                                                        مدیریت فایل واقع در منوی دسترسی سریع (بالا سمت چپ کنار
-                                                        ساعت) اقدام نمایید.
-                                                       </p>
-                                                </div>
-                                                <div class="modal-footer border-dark">
-                                                    <a th:href="@{/document/list}" class="btn btn-dark">مدیریت فایل</a>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </td>
-
                         </tbody>
                     </table>
-                </div>
+
             </div>
         </div>
         <!--End attachment table-->
@@ -296,6 +382,11 @@
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 <script src="/panel/assets/js/table-datatable.js"></script>
 
 <!--app-->

@@ -1,17 +1,19 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.event.DeviceMovementEvent;
-import ir.tic.clouddc.event.DeviceStatusEvent;
-import ir.tic.clouddc.event.DeviceUtilizerEvent;
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@NoArgsConstructor
+@Getter
+@Setter
 public abstract class Device {
 
     @Id
@@ -20,40 +22,31 @@ public abstract class Device {
     @Column(name = "DeviceID")
     private Long id;
 
-    @Column(name = "SerialNumber")
+    @Column(name = "SerialNumber", unique = true, nullable = false)
     private String serialNumber;   /// DeviceForm
 
-    @Column(name = "Priority")
+    @Column(name = "Priority", nullable = false)
     private boolean priorityDevice;    /// DeviceForm
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "DeviceCategoryID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "DeviceCategoryID", nullable = false)
     private DeviceCategory deviceCategory;   /// DeviceForm
 
-    @ManyToOne
-    @JoinColumn(name = "UtilizerID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "UtilizerID", nullable = false)
     private Utilizer utilizer;    /// DeviceUtilizerEvent
 
-    @ManyToOne
-    @JoinColumn(name = "LocationID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "LocationID", nullable = false)
     private Location location;   /// DeviceMovementEvent
 
-    @ManyToOne
-    @JoinColumn(name = "SupplierID")
+    @ManyToOne(cascade = CascadeType.MERGE)
+    @JoinColumn(name = "SupplierID", nullable = false)
     private Supplier supplier;
-
-    @OneToMany(mappedBy = "device")
-    private List<DeviceMovementEvent> deviceMovementEventList;
-
-    @OneToMany(mappedBy = "device")
-    private List<DeviceUtilizerEvent> deviceUtilizerEventList;
-
-    @OneToMany(mappedBy = "device")
-    private List<DeviceStatusEvent> deviceStatusEventList;
 
     @OneToMany(mappedBy = "device")
     private List<DevicePmCatalog> devicePmCatalogList;
 
-    @OneToMany(mappedBy = "device")
-    private List<DeviceStatus> deviceStatusList;
+    @ManyToMany(mappedBy = "deviceList")
+    private List<Event> deviceEventList;
 }

@@ -1,28 +1,23 @@
 package ir.tic.clouddc.event;
 
-import ir.tic.clouddc.center.Center;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationStatus;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.Device;
-import ir.tic.clouddc.resource.DeviceStatus;
+import ir.tic.clouddc.resource.ResourceService;
 import ir.tic.clouddc.resource.Utilizer;
-import jakarta.annotation.Nullable;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
-import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface EventService {
 
-
-    void eventSetup(EventLandingForm eventLandingForm
-            , @Nullable DeviceStatusForm deviceStatusForm
-            , @Nullable LocationStatusForm locationStatusForm) throws IOException, SQLException;
-
+    void registerEvent(EventForm eventForm, LocalDate validDate) throws IOException;
 
     List<EventCategory> getEventCategoryList();
 
@@ -32,14 +27,9 @@ public interface EventService {
 
     Event getEventHistory(Long eventId);
 
-    MetaData getRelatedMetadata(Long persistenceId);
+    List<MetaData> getRelatedMetadataList(List<EventDetail> eventDetailList);
 
-    List<Event> getEventList(@Nullable Integer categoryId);
-
-    Optional<Center> getCenter(Integer centerId);
-
-    Location getRefrencedLocation(Long locationId) throws SQLException;
-    Optional<Device> getDevice(String serialNumber);
+    List<Event> getEventList();
 
     long getEventCount();
 
@@ -55,14 +45,29 @@ public interface EventService {
 
     LocationStatus getCurrentLocationStatus(Location location);
 
-    List<Utilizer> deviceUtilizerEventData(Utilizer utilizer);
+    List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList);
 
-    List<Center> getCenterList();
+    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceList(Long locationId);
 
-    DeviceStatusForm getDeviceStatusForm(Device device);
+    List<Location> getLocationListExcept(Long locationId);
 
-    DeviceStatus getCurrentDeviceStatus(Device device);
+    Optional<Location> getLocation(Long locationId);
 
-    List<LocationStatusEvent> getLocationEventList(Location baseLocation);
+    Device getReferencedDevice(Long deviceId);
 
+    List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
+
+    List<Location> getLocationList();
+
+    Location getReferencedLocation(Long locationId);
+
+    Utilizer getReferencedUtilizer(Integer utilizerId);
+
+    List<Event> loadEventTransients_1(List<Event> eventList);
+
+    Map<Utilizer, Integer> getBalanceReference(Event baseEvent);
+
+    void updateGeneralEvent(EventForm eventForm) throws IOException;
+
+    boolean newDevicePresentCheck();
 }

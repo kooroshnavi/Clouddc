@@ -1,18 +1,20 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.center.Rack;
-import ir.tic.clouddc.center.Room;
-import ir.tic.clouddc.event.*;
-import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.event.DeviceCheckList;
+import ir.tic.clouddc.event.DeviceStatusForm;
+import ir.tic.clouddc.event.EventLandingForm;
 import ir.tic.clouddc.log.LogService;
+import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
+import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -22,6 +24,12 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final DeviceRepository deviceRepository;
 
+    private final UnassignedDeviceRepository unassignedDeviceRepository;
+
+    private final DeviceCategoryRepository deviceCategoryRepository;
+
+    private final SupplierRepository supplierRepository;
+
     private final CenterService centerService;
 
     private final UtilizerRepository utilizerRepository;
@@ -30,29 +38,104 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final PersonService personService;
 
-    private final DeviceStatusRepository deviceStatusRepository;
-
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, DeviceStatusRepository deviceStatusRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
         this.deviceRepository = deviceRepository;
+        this.unassignedDeviceRepository = unassignedDeviceRepository;
+        this.deviceCategoryRepository = deviceCategoryRepository;
+        this.supplierRepository = supplierRepository;
         this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
-        this.deviceStatusRepository = deviceStatusRepository;
     }
 
     @Override
-    public Device validateFormDevice(EventLandingForm eventLandingForm) {
-        Optional<Device> currentDevice = getDeviceBySerialNumber(eventLandingForm.getSerialNumber());
-        return currentDevice.orElseGet(() -> {
-            try {
-                return registerNewDevice(eventLandingForm);
-            } catch (SQLException e) {
-                throw new RuntimeException(e);
-            }
-        });
+    public List<DeviceIdSerialCategoryVendor_Projection1> getLocationDeviceListProjection(Long locationId) {
+        return deviceRepository.getProjection2ForLocationDeviceList(locationId);
+    }
+
+    @Override
+    public Utilizer getReferencedUtilizer(Integer utilizerId) throws EntityNotFoundException {
+        return utilizerRepository.getReferenceById(utilizerId);
+    }
+
+    @Override
+    public List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId) {
+        return deviceRepository.getProjection2List(locationId);
+    }
+
+    @Override
+    public List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
+        return unassignedDeviceRepository.getProjection2ForNewDeviceList();
+    }
+
+    @Override
+    public List<Device> getLocationDeviceList(Long locationId) {
+        return deviceRepository.getLocationDeviceList(locationId);
+    }
+
+    @Override
+    public List<DeviceCategory> getdeviceCategoryList() {
+        return deviceCategoryRepository.getList();
+    }
+
+    @Override
+    public boolean checkDeviceExistence(String serialNumber) {
+        boolean deviceExist = deviceRepository.existsBySerialNumber(serialNumber);
+        boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
+
+        return deviceExist || UnassignedDeviceExist;
+    }
+
+    @Override
+    public void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm) {
+        UnassignedDevice unassignedDevice = new UnassignedDevice();
+        unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
+        unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
+        unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
+        Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
+        unassignedDevice.setPersistence(persistence);
+
+        unassignedDeviceRepository.saveAndFlush(unassignedDevice);
+    }
+
+    @Override
+    public UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId) {
+        return unassignedDeviceRepository.getReferenceById(unassignedDeviceId);
+    }
+
+    @Override
+    public Supplier getReferencedDefaultSupplier() {
+        return supplierRepository.getReferenceById(1000);
+    }
+
+    @Override
+    public void deleteUnassignedDeviceIdList(List<Integer> assignedIdList) {
+        unassignedDeviceRepository.deleteAllById(assignedIdList);
+    }
+
+    @Override
+    public boolean newDevicePresentCheck() {
+        var count = unassignedDeviceRepository.count();
+        return count != 0;
+    }
+
+    @Override
+    public String scheduleUnassignedDeviceRemoval() {
+        List<Integer> unassignedDeviceIdList = unassignedDeviceRepository.getUnassignedDeviceIdList(UtilService.getDATE());
+        if (!unassignedDeviceIdList.isEmpty()) {
+            unassignedDeviceRepository.deleteAllById(unassignedDeviceIdList);
+
+            return unassignedDeviceIdList.size() + " un-assigned device removed.";
+        }
+        return "No device were removed.";
+    }
+
+    @Override
+    public List<Utilizer> getUtilierList() {
+        return utilizerRepository.fetchGenuineList();
     }
 
     @Override
@@ -63,11 +146,6 @@ public class ResourceServiceImpl implements ResourceService {
             if (currentDevice.get().getDevicePmCatalogList() != null) {
                 log.info("Current device has catalog");
                 for (DevicePmCatalog devicePmCatalog : currentDevice.get().getDevicePmCatalogList()) {
-                    if (devicePmCatalog.isHistory()) {
-                        var finishedDate = devicePmCatalog.getLastFinishedDate();
-                        devicePmCatalog.setPersianLastFinishedDate(UtilService.getFormattedPersianDate(finishedDate));
-                        devicePmCatalog.setPersianLastFinishedDayTime(UtilService.getFormattedPersianDayTime(finishedDate, devicePmCatalog.getLastFinishedTime()));
-                    }
                     devicePmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(devicePmCatalog.getNextDueDate()));
                 }
             }
@@ -97,26 +175,21 @@ public class ResourceServiceImpl implements ResourceService {
         return optionalUtilizer.orElse(null);
     }
 
-    @Override
-    public List<Utilizer> getUtilizerList() {
-        return utilizerRepository.findAll();
-    }
-
 
     @Override
-    public Optional<Device> getDeviceBySerialNumber(String serialNumber) {
-        return deviceRepository.findBySerialNumber(serialNumber);
+    public Optional<Long> getDeviceIdBySerialNumber(String serialNumber) {
+        return deviceRepository.getDeviceIdBySerialNumber(serialNumber);
     }
 
     @Override
-    public Device getReferencedDevice(Long deviceId) {
+    public Device getReferencedDevice(Long deviceId) throws EntityNotFoundException {
         return deviceRepository.getReferenceById(deviceId);
     }
 
     @Override
-    public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceStatusEvent event) {
-        List<DeviceStatus> deviceStatusList = new ArrayList<>();
-        var device = event.getDevice();
+    public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event) {
+       /* List<DeviceStatus> deviceStatusList = new ArrayList<>();
+      //  var device = event.getDevice();
         var currentDeviceStatus = getCurrentDeviceStatus(device);
         currentDeviceStatus.setActive(false);
         deviceStatusList.add(currentDeviceStatus);
@@ -134,36 +207,18 @@ public class ResourceServiceImpl implements ResourceService {
 
         deviceStatusList.add(newDeviceStatus);
 
-        deviceStatusRepository.saveAllAndFlush(deviceStatusList);
+        deviceStatusRepository.saveAllAndFlush(deviceStatusList);*/
     }
 
-    @Override
-    public void updateDeviceUtilizer(DeviceUtilizerEvent event) {
-        var device = event.getDevice();
-        device.setUtilizer(event.getNewUtilizer());
-        deviceRepository.saveAndFlush(device);
-    }
 
     @Override
-    public void updateDeviceLocation(DeviceMovementEvent event) {
-        var device = event.getDevice();
-        device.setLocation(event.getDestination());
-        if (device.getLocation() instanceof Rack rack) {
-            device.setUtilizer(rack.getUtilizer());
-        } else if (device.getLocation() instanceof Room room) {
-            device.setUtilizer(room.getUtilizer());
-        }
-        deviceRepository.saveAndFlush(device);
-    }
-
-    @Override
-    public List<Utilizer> getUtilizerListExcept(Utilizer utilizer) {
-        return utilizerRepository.findAllByIdNotIn(List.of(utilizer.getId()));
+    public List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList) {
+        return utilizerRepository.getUtilizerProjectionExcept(utilizerIdList);
     }
 
     @Override
     public DeviceStatus getCurrentDeviceStatus(Device device) {
-        var currentStatus = deviceStatusRepository.findByDeviceAndActive(device, true);
+      /*  var currentStatus = deviceStatusRepository.findByDeviceAndActive(device, true);
         if (currentStatus.isPresent()) {
             return currentStatus.get();
         } else {
@@ -175,7 +230,8 @@ public class ResourceServiceImpl implements ResourceService {
             defaultDeviceStatus.setStorage(true);
             defaultDeviceStatus.setPort(true);
             return defaultDeviceStatus;
-        }
+        }*/
+        return null;
     }
 
 

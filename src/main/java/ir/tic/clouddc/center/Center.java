@@ -1,13 +1,17 @@
 package ir.tic.clouddc.center;
 
 import jakarta.persistence.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.util.List;
 
 @Entity
 @Table(schema = "Center")
 @NoArgsConstructor
+@Getter
+@Setter
 public final class Center {
 
     @Id
@@ -15,7 +19,7 @@ public final class Center {
     @Column(name = "CenterID")
     private Integer id;
 
-    @Column(name = "Name")
+    @Column(name = "Name", unique = true, nullable = false)
     private String name;
 
     @Column(name = "City")
@@ -26,45 +30,4 @@ public final class Center {
 
     @OneToMany(mappedBy = "center")
     private List<Location> locationList;
-
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
-
-    public String getProvince() {
-        return province;
-    }
-
-    public void setProvince(String province) {
-        this.province = province;
-    }
-
-    public List<Location> getLocationList() {
-        return locationList;
-    }
-
-    public void setLocationList(List<Location> locationList) {
-        this.locationList = locationList;
-    }
 }
