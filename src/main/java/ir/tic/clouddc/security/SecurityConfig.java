@@ -17,10 +17,10 @@ import java.time.LocalDateTime;
 public class SecurityConfig {
 
     private final NotificationService notificationService;
-    private final OtpFailureHandler otpFailureHandler;
+    private final OTPFailureHandler otpFailureHandler;
 
     @Autowired
-    public SecurityConfig(NotificationService notificationService, OtpFailureHandler otpFailureHandler) {
+    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler) {
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
     }

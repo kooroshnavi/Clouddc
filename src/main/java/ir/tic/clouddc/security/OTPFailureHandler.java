@@ -13,7 +13,7 @@ import java.io.IOException;
 
 @Component
 @Slf4j
-public class OtpFailureHandler extends SimpleUrlAuthenticationFailureHandler {
+public class OTPFailureHandler extends SimpleUrlAuthenticationFailureHandler {
     @Override
     public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response, AuthenticationException exception) throws IOException, ServletException {
         String redirectURL;

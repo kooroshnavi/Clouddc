@@ -7,6 +7,7 @@ import ir.tic.clouddc.person.Address;
 import ir.tic.clouddc.person.AddressRepository;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.pm.PmService;
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.net.InetAddress;
+import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -45,11 +51,13 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLoginForm(@RequestParam(value = "error", required = false) String error,
-                                @RequestParam(value = "logout", required = false) String logout, Model model) {
+                                @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request, Model model) throws UnknownHostException, SocketException {
 
-        model.addAttribute("otpRequest", new OtpForm());
+        var OTPForm = UtilService.createChallenge(new OtpForm());
 
-        String errorMessage = null;
+        model.addAttribute("index", OTPForm.getIndex());
+        model.addAttribute("otpRequest", OTPForm);
+
         if (error != null) {
             model.addAttribute("error", error);
         }
@@ -58,18 +66,43 @@ public class LoginController {
             model.addAttribute("logout", logout);
         }
 
+        if (!model.containsAttribute("error")) {
+            model.addAttribute("error", false);
+        }
+
+        if (!model.containsAttribute("notFound")) {
+            model.addAttribute("notFound", false);
+        }
+
+        model.addAttribute("date", UtilService.getCurrentDate());
+        model.addAttribute("remoteAddress", request.getRemoteAddr());
+
+        InetAddress localIP = InetAddress.getByName(request.getRemoteAddr());
+        NetworkInterface ni = NetworkInterface.getByInetAddress(localIP);
+        if (ni != null) {
+            byte[] hardwareAddress = ni.getHardwareAddress();
+            String[] hexadecimal = new String[hardwareAddress.length];
+            for (int i = 0; i < hardwareAddress.length; i++) {
+                hexadecimal[i] = String.format("%02X", hardwareAddress[i]);
+            }
+            String macAddress = String.join("-", hexadecimal);
+            log.info(macAddress);
+        }
+
         return "otp1";
     }
 
 
     @PostMapping("/login/otp")
     public String getAddress(Model model, @Valid @ModelAttribute("otpRequest") OtpRequest otpRequest, Errors errors
-            , HttpServletRequest request) throws ExecutionException {
+            , HttpServletRequest request, RedirectAttributes redirectAttributes) throws ExecutionException {
 
-        if (errors.hasErrors()) {
+        if (errors.hasErrors() || otpRequest.getProvidedAnswer() != UtilService.FORM_CAPTCHA_RESULT.get(otpRequest.getIndex())) {
             var error2 = true;
             model.addAttribute("error2", error2);
-            return "otp1";
+            redirectAttributes.addFlashAttribute("error", true);
+
+            return "redirect:/login";
         }
 
         if (otpService.getOtpUid(otpRequest.getAddress()).isBlank()) {
@@ -77,7 +110,7 @@ public class LoginController {
                 UUID otpUid = UUID.randomUUID();
                 UUID expiryTimeUUID = UUID.nameUUIDFromBytes(otpUid.toString().getBytes(StandardCharsets.UTF_8));
 
-               otpService.generateOtp(otpRequest.getAddress()
+                otpService.generateOtp(otpRequest.getAddress()
                         , otpUid.toString()
                         , expiryTimeUUID.toString()
                         , request.getRemoteAddr()
@@ -87,11 +120,12 @@ public class LoginController {
                 model.addAttribute("otpInput", new OtpForm());
                 model.addAttribute("otpUid", otpUid.toString());
                 model.addAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
+
                 return "otp-verify";
             } else {
-                var notFound = true;
-                model.addAttribute("notFound", notFound);
-                return "otp1";
+                redirectAttributes.addFlashAttribute("notFound", true);
+
+                return "redirect:/login";
             }
 
         } else {
@@ -101,9 +135,9 @@ public class LoginController {
             model.addAttribute("otpInput", new OtpForm());
             model.addAttribute("otpUid", OTPUid);
             model.addAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
+
             return "otp-verify";
         }
-
     }
 
     @GetMapping("/login/otp/verify")
@@ -117,13 +151,12 @@ public class LoginController {
         model.addAttribute("otpInput", new OtpForm());
         model.addAttribute("otpUid", otpUid);
         model.addAttribute("secondsLeft", (LocalDateTime.now().until(expiry, ChronoUnit.SECONDS)));
-        return "otp-verify";
 
+        return "otp-verify";
     }
 
     private boolean userIsKnown(String address) {
         Optional<Address> personAddress = addressRepository.findByValue(address);
         return personAddress.isPresent();
     }
-
 }

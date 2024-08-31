@@ -22,7 +22,7 @@ import java.util.concurrent.ExecutionException;
 
 @Component
 @Slf4j
-public class OtpAuthenticationProvider implements AuthenticationProvider {
+public class OTPAuthenticationProvider implements AuthenticationProvider {
 
     private final OtpService otpService;
     private final PersonService personService;
@@ -30,7 +30,7 @@ public class OtpAuthenticationProvider implements AuthenticationProvider {
     private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");  // char role: 0.1.2.3.4
 
     @Autowired
-    public OtpAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
+    public OTPAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
         this.otpService = otpService;
         this.personService = personService;
         this.addressRepository = addressRepository;

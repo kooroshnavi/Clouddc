@@ -198,6 +198,18 @@ function pos3_warning_noti() {
 	});
 }
 
+  function pos3_formCaptchaWarning() {
+	  Lobibox.notify('warning', {
+		  pauseDelayOnHover: true,
+		  icon: 'bx bx-error',
+		  continueDelayOnInactiveTab: false,
+		  position: 'top right',
+		  size: 'mini',
+		  msg: 'اطلاعات فرم را به درستی وارد نمایید.'
+	  });
+  }
+
+
 function pos4_error_noti() {
 	Lobibox.notify('error', {
 		pauseDelayOnHover: true,

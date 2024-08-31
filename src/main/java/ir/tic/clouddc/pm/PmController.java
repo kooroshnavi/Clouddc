@@ -34,6 +34,7 @@ public class PmController {
 
     private final PmService pmService;
 
+
     @Autowired
     public PmController(PmServiceImpl taskService) {
         this.pmService = taskService;
@@ -62,6 +63,11 @@ public class PmController {
         model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
         model.addAttribute("isUpdate", false);
         model.addAttribute("enablementAccess", true);
+
+
+        if (!model.containsAttribute("error")) {
+            model.addAttribute("error", false);
+        }
 
         return "pmInterfaceRegisterView";
     }
@@ -107,6 +113,8 @@ public class PmController {
 
         if (errors.hasErrors()) {
             log.error("Failed to register task due to validation error on input data: {}", errors);
+            redirectAttributes.addFlashAttribute("error", true);
+
             return "redirect:/pm/register/form";
         }
 

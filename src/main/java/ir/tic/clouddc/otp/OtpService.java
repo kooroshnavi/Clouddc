@@ -5,7 +5,6 @@ import java.util.concurrent.ExecutionException;
 
 public interface OtpService {
 
-
     void generateOtp(String address, String otpUid, String expireUid, String machine, LocalDateTime localDateTime);
 
     String getOtpExpiry(String otpUid) throws ExecutionException;

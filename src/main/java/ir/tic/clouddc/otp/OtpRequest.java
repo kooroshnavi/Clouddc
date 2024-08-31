@@ -1,19 +1,14 @@
 package ir.tic.clouddc.otp;
 
+import ir.tic.clouddc.utils.DTOForm;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Data;
 
-public class OtpRequest {
+@Data
+public class OtpRequest extends DTOForm {
 
     @Size(min = 11, max = 11)
     @NotBlank
     private String address;
-
-    public String getAddress() {
-        return address;
-    }
-
-    public void setAddress(String address) {
-        this.address = address;
-    }
 }
