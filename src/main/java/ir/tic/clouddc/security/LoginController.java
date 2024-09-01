@@ -24,6 +24,7 @@ import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -76,7 +77,7 @@ public class LoginController {
     public String getAddress(Model model, @Valid @ModelAttribute("otpRequest") OtpRequest otpRequest, Errors errors
             , HttpServletRequest request, RedirectAttributes redirectAttributes) throws ExecutionException {
 
-        if (errors.hasErrors() || otpRequest.getProvidedAnswer() != UtilService.FORM_CAPTCHA_RESULT.get(otpRequest.getIndex())) {
+        if (errors.hasErrors() || !Objects.equals(otpRequest.getProvidedAnswer(), UtilService.FORM_CAPTCHA_RESULT.get(otpRequest.getIndex()))) {
             var error2 = true;
             model.addAttribute("error2", error2);
             redirectAttributes.addFlashAttribute("error", true);
@@ -136,6 +137,7 @@ public class LoginController {
 
     private boolean userIsKnown(String address) {
         Optional<Address> personAddress = addressRepository.findByValue(address);
+
         return personAddress.isPresent();
     }
 }

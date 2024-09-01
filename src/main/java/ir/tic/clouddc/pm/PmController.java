@@ -34,7 +34,6 @@ public class PmController {
 
     private final PmService pmService;
 
-
     @Autowired
     public PmController(PmServiceImpl taskService) {
         this.pmService = taskService;
@@ -112,7 +111,6 @@ public class PmController {
             Errors errors) throws IOException {
 
         if (errors.hasErrors()) {
-            log.error("Failed to register task due to validation error on input data: {}", errors);
             redirectAttributes.addFlashAttribute("error", true);
 
             return "redirect:/pm/register/form";
@@ -173,7 +171,6 @@ public class PmController {
 
         if (activeDetail.isPresent()) {
             var permission = pmService.getPmDetail_4(activeDetail.get());
-            log.info(String.valueOf(permission));
             model.addAttribute("permission", permission);
         }
 
@@ -265,8 +262,8 @@ public class PmController {
     public String showLocationCatalogForm(Model model, @PathVariable Long locationId) throws SQLException {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
         Location location = pmService.getReferencedLocation(locationId);
-
         List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(location, null);
+
         model.addAttribute("defaultPersonList", defaultPersonList);
         model.addAttribute("pmInterfaceList", pmInterfaceList);
         model.addAttribute("catalogForm", new CatalogForm());
@@ -283,8 +280,8 @@ public class PmController {
     public String showDeviceCatalogForm(Model model, @PathVariable Long deviceId) throws SQLException {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
         Device device = pmService.getDevice(deviceId);
-
         List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(null, device);
+
         model.addAttribute("defaultPersonList", defaultPersonList);
         model.addAttribute("pmInterfaceList", pmInterfaceList);
         model.addAttribute("catalogForm", new CatalogForm());
@@ -333,7 +330,6 @@ public class PmController {
     public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm, RedirectAttributes redirectAttributes) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);
-        log.info(String.valueOf(validDate));
         if (validDate.isBefore(UtilService.getDATE())) {
             return "403";
         }
@@ -399,5 +395,4 @@ public class PmController {
 
         return "catalogPmList";
     }
-
 }

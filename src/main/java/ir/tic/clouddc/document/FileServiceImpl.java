@@ -27,7 +27,6 @@ public class FileServiceImpl implements FileService {
 
     private final PersonService personService;
 
-
     @Autowired
     public FileServiceImpl(MetaDataRepository metaDataRepository, LogService logService, PersonService personService) {
         this.metaDataRepository = metaDataRepository;
@@ -88,11 +87,8 @@ public class FileServiceImpl implements FileService {
     public void disableDocument(Long metadataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
         var deleteDate = UtilService.validateNextDue(UtilService.getDATE().plusDays(7));
         metaDataRepository.disableMetadata(metadataId, false, deleteDate);
-        log.info(String.valueOf(documentOwnerId));
-        log.info(String.valueOf(requesterId));
         var persistence = metaDataRepository.fetchMetaDataPersistence(metadataId);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), personService.getReferencedPerson(requesterId), persistence);
-        log.info(String.valueOf(metadataId));
     }
 
     @Override
@@ -115,5 +111,4 @@ public class FileServiceImpl implements FileService {
         }
         return "No file were removed.";
     }
-
 }

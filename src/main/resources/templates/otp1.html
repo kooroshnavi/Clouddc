@@ -4,7 +4,6 @@
     <title>شرکت ارتباطات زیرساخت</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-
     <link href="/login/css/style.css" rel="stylesheet">
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
@@ -49,7 +48,6 @@
 
     showTime();
 </script>
-
 <script th:if="${error}">
     document.addEventListener('DOMContentLoaded', function () {
         pos3_formCaptchaWarning();
@@ -57,14 +55,17 @@
 </script>
 
 <section class="ftco-section">
+
+    <img src="/login/images/TIC%20Logo7.png" alt="TIC.IR">
+    <h6>
+        <strong class="text-justify text-light">اداره کل خدمات و فناوری های نوین</strong>
+    </h6>
+    <br>
+
     <div class="container">
 
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
-
-                <h6>
-                    <strong class="text-body">معاونت فناوری اطلاعات</strong>
-                </h6>
 
                 <h4 class="heading-section">
                     <strong>سامانه مدیریت اطلاعات زیرساخت ابر</strong>
@@ -78,7 +79,6 @@
                 </h6>
             </div>
         </div>
-
 
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
@@ -94,11 +94,8 @@
                         <div th:if="${notFound}" class="alert-warning">
                             شماره وارد شده در لیست کاربران این سامانه یافت نشد.
                         </div>
-                        <br>
 
-                        <div th:if="${error2}" class="alert-warning">
-                            شماره موبایل را به درستی وارد نمایید.
-                        </div>
+                        <br>
 
                         <div class="form-group">
                             <input type="number" id="phoneNumber" size="11" dir="ltr" th:field="*{address}"
@@ -106,11 +103,9 @@
                                    required="required">
                         </div>
 
-
                         <div class="form-group">
                             <input type="text" th:field="*{challenge}" class="form-group" disabled="disabled">
-                            <input type="number" dir="ltr" th:field="*{providedAnswer}" class="form-group"
-                                   required="required">
+                            <input type="number" th:field="*{providedAnswer}" required="required" value="" dir="ltr">
                         </div>
 
                         <input type="hidden" name="index" th:value="${index}"/>
@@ -120,15 +115,21 @@
                             <button type="submit" id="submit" class="form-control btn btn-primary submit px-3">بررسی
                             </button>
                         </div>
+
                     </form>
+
                 </div>
             </div>
         </div>
     </div>
+
     <h6>
-        <span class="bg-dark" th:text="${'IP Address: '   + remoteAddress}"></span>
+        <span class="bg-primary" th:text="${'IP Address: '   + remoteAddress}"></span>
     </h6>
 </section>
+
+</body>
+
 
 <script src="/login/js/jquery.min.js"></script>
 <script src="/login/js/popper.js"></script>
