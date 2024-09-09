@@ -12,7 +12,7 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class  DeviceCategory {
+public final class DeviceCategory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -23,7 +23,7 @@ public final class  DeviceCategory {
     private String category;  // server - switch - firewall - enclosure
 
     @Column(name = "CategoryId", nullable = false)
-    private int categoryId;  // 1 - 2 - 3 - 4
+    private int categoryId;  // 5 - 6 - 7 - 8
 
     @Column(name = "Vendor", nullable = false)
     private String vendor; // hpe - cisco
