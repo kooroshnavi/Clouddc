@@ -3,6 +3,7 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.resource.Device;
+import ir.tic.clouddc.resource.Module;
 import ir.tic.clouddc.resource.Utilizer;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -66,6 +67,13 @@ public abstract class Event {
             joinColumns = {@JoinColumn(name = "EventID")},
             inverseJoinColumns = {@JoinColumn(name = "DeviceID")})
     private List<Device> deviceList;
+
+    @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "EventModule", schema = "Event",
+            joinColumns = {@JoinColumn(name = "EventID")},
+            inverseJoinColumns = {@JoinColumn(name = "ModuleID")})
+    private List<Module> moduleList;
 
     @ManyToMany(cascade = {CascadeType.MERGE, CascadeType.DETACH, CascadeType.REFRESH, CascadeType.PERSIST}, fetch = FetchType.LAZY)
     @JoinTable(

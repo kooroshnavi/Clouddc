@@ -5,6 +5,7 @@ import ir.tic.clouddc.event.DeviceStatusForm;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ResourceService {
@@ -23,7 +24,7 @@ public interface ResourceService {
 
     boolean checkDeviceExistence(String serialNumber);
 
-    void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm);
+    void registerUnassignedDevice(ResourceRegisterForm resourceRegisterForm);
 
     UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId);
 
@@ -36,6 +37,8 @@ public interface ResourceService {
     String scheduleUnassignedDeviceRemoval();
 
     List<Utilizer> getUtilierList();
+
+   Map<ModuleCategory, Long> getDeviceModuleOverviewMap(Long deviceId);
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();

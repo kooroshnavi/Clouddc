@@ -33,7 +33,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>ثبت تجهیز جدید</title>
+    <title>ثبت ماژول جدید</title>
 </head>
 
 <body>
@@ -71,7 +71,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">ثبت تجهیزات</li>
+                        <li class="breadcrumb-item active" aria-current="page">ثبت ماژول</li>
                     </ol>
                 </nav>
             </div>
@@ -83,12 +83,11 @@
         <div class="card" align="center">
             <div class="card-body">
                 <h6 class="mb-0 text-uppercase" align="center">
-                    <strong>ثبت تجهیز جدید الورود به مرکز</strong>
+                    <strong>ثبت ماژول جدید</strong>
                 </h6>
                 <hr/>
                 <h6 class="card-header py-3 bg-info" align="center">
-                    <strong class="mb-0">همکار گرامی، جهت مشاهده و انتخاب تجهیزات در فرم نصب تجهیزات
-                        جدید، ابتدا می بایست مشخصات آن را در فرم ذیل ثبت نمایید.</strong>
+                    <strong class="mb-0">همکار گرامی، جهت مشاهده و افزودن ماژول به تجهیز ابتدا می بایست اطلاعات آن در فرم ذیل ثبت گردد.</strong>
                 </h6>
                 <div class="d-flex align-items-center">
                 </div>
@@ -96,7 +95,7 @@
 
                 <div class="card-body">
 
-                    <form class="was-validated" th:action="@{/resource/device/register}" th:object="${deviceRegisterForm}"
+                    <form class="was-validated" th:action="@{/resource/register}" th:object="${resourceRegisterForm}"
                           enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div class="mb-3">

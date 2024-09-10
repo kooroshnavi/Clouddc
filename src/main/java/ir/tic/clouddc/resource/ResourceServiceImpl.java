@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.sql.SQLException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Service
@@ -38,9 +40,13 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final PersonService personService;
 
+    private final ModuleRepository moduleRepository;
+
+    private final ModuleCategoryRepository moduleCategoryRepository;
+
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleRepository moduleRepository, ModuleCategoryRepository moduleCategoryRepository) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
@@ -49,6 +55,8 @@ public class ResourceServiceImpl implements ResourceService {
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
+        this.moduleRepository = moduleRepository;
+        this.moduleCategoryRepository = moduleCategoryRepository;
     }
 
     @Override
@@ -90,10 +98,10 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm) {
+    public void registerUnassignedDevice(ResourceRegisterForm resourceRegisterForm) {
         UnassignedDevice unassignedDevice = new UnassignedDevice();
-        unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
-        unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
+        unassignedDevice.setSerialNumber(StringUtils.capitalize(resourceRegisterForm.getSerialNumber()));
+        unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(resourceRegisterForm.getDeviceCategoryId()));
         unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
         Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
         unassignedDevice.setPersistence(persistence);
@@ -136,6 +144,33 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<Utilizer> getUtilierList() {
         return utilizerRepository.fetchGenuineList();
+    }
+
+    @Override
+    public Map<ModuleCategory, Long> getDeviceModuleOverviewMap(Long deviceId) {
+        Map<ModuleCategory, Long> deviceModuleOverviewMap = new HashMap<>();
+        List<ModuleCategory> moduleCategoryList = moduleRepository.getDeviceModuleCategoryList(deviceId, false);
+        List<Integer> distinctCategoryList = moduleCategoryList
+                .stream()
+                .map(ModuleCategory::getCategoryId)
+                .distinct()
+                .toList();
+
+        for (int i = 0; i < distinctCategoryList.size(); i++) {
+            var categoryId = distinctCategoryList.get(i);
+            long counter = moduleCategoryList
+                    .stream()
+                    .filter(moduleCategory -> moduleCategory.getCategoryId() == categoryId)
+                    .count();
+
+            var category = moduleCategoryList
+                    .stream()
+                    .filter(moduleCategory -> moduleCategory.getCategoryId() == categoryId)
+                    .findAny();
+            category.ifPresent(moduleCategory -> deviceModuleOverviewMap.put(moduleCategory, counter));
+        }
+
+        return deviceModuleOverviewMap;
     }
 
     @Override

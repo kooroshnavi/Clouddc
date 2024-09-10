@@ -1,9 +1,12 @@
 package ir.tic.clouddc.resource;
 
+import ir.tic.clouddc.event.Event;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
+import java.util.List;
 
 @Entity
 @Table(schema = "Resource")
@@ -35,5 +38,8 @@ public final class Module {
     private boolean spare;
 
     @Column(name = "LocalityId", nullable = false)
-    private int localityId; // Spare: true -> RoomID, false -> DeviceID
+    private long localityId; // Spare: true -> RoomID, false -> DeviceID
+
+    @ManyToMany(mappedBy = "moduleList")
+    private List<Event> moduleEventList;
 }

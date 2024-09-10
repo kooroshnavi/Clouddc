@@ -19,7 +19,7 @@ public final class ModuleCategory {
     @Column(name = "ModuleCategoryID")
     private Integer id;
 
-    @Column(name = "Classification", unique = true, nullable = false)
+    @Column(name = "Classification", nullable = false)
     private String classification;  // Transceiver - Storage - Memory - Power - NIC - SmartArray
 
     @Column(name = "Category", nullable = false)
@@ -31,11 +31,17 @@ public final class ModuleCategory {
     @Column(name = "Vendor", nullable = false)
     private String vendor; // hpe - samsung
 
-    @Column(name = "Specification", nullable = false)
-    private String spec;   //
+    @Column(name = "Specification")
+    private String spec;
 
     @Column(name = "PartNumber")
     private String partNumber;
+
+    @Column(name = "Value", nullable = false)
+    private float value; // 10 - 7.68
+
+    @Column(name = "Unit", nullable = false)
+    private String unit; // G - TB
 
     @OneToMany(mappedBy = "moduleCategory")
     private List<Module> moduleList;

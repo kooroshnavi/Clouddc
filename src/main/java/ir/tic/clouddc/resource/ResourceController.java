@@ -13,6 +13,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/resource")
@@ -34,6 +35,9 @@ public class ResourceController {
                 catalog.setPersianNextDue(UtilService.getFormattedPersianDate(catalog.getNextDueDate()));
             }
         }
+        Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getDeviceModuleOverviewMap(deviceId);
+
+        model.addAttribute("moduleMap", moduleOverviewMap);
         model.addAttribute("device", device);
         model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
@@ -69,7 +73,6 @@ public class ResourceController {
 
     @GetMapping("/device/unassigned")
     public String newDeviceView(Model model) {
-
         List<DeviceCategory> deviceCategoryList = resourceService.getdeviceCategoryList();
         List<ResourceService.DeviceIdSerialCategoryVendor_Projection1> unassignedDeviceList =
                 resourceService.getNewDeviceList()
@@ -77,7 +80,7 @@ public class ResourceController {
                         .sorted(Comparator.comparing(ResourceService.DeviceIdSerialCategoryVendor_Projection1::getId).reversed())
                         .toList();
 
-        model.addAttribute("deviceRegisterForm", new DeviceRegisterForm());
+        model.addAttribute("deviceRegisterForm", new ResourceRegisterForm());
         model.addAttribute("deviceCategoryList", deviceCategoryList);
         model.addAttribute("unassignedDeviceList", unassignedDeviceList);
 
@@ -91,16 +94,16 @@ public class ResourceController {
         return "newDeviceView";
     }
 
-    @PostMapping("/register")
-    public String registerNewDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") DeviceRegisterForm deviceRegisterForm) {
+    @PostMapping("/device/register")
+    public String registerNewDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") ResourceRegisterForm resourceRegisterForm) {
 
-        boolean exist = resourceService.checkDeviceExistence(deviceRegisterForm.getSerialNumber());
+        boolean exist = resourceService.checkDeviceExistence(resourceRegisterForm.getSerialNumber());
 
         if (!exist) {
-            resourceService.registerUnassignedDevice(deviceRegisterForm);
+            resourceService.registerUnassignedDevice(resourceRegisterForm);
             redirectAttributes.addFlashAttribute("newDevice", true);
         } else {
-            var existedDeviceId = resourceService.getDeviceIdBySerialNumber(deviceRegisterForm.getSerialNumber());
+            var existedDeviceId = resourceService.getDeviceIdBySerialNumber(resourceRegisterForm.getSerialNumber());
             if (existedDeviceId.isPresent()) {
                 redirectAttributes.addFlashAttribute("existedDeviceId", existedDeviceId.get());
                 redirectAttributes.addFlashAttribute("existedUnassigned", false);
@@ -108,7 +111,7 @@ public class ResourceController {
                 redirectAttributes.addFlashAttribute("existedUnassigned", true);
             }
             redirectAttributes.addFlashAttribute("exist", true);
-            redirectAttributes.addFlashAttribute("existedSerialNumber", deviceRegisterForm.getSerialNumber());
+            redirectAttributes.addFlashAttribute("existedSerialNumber", resourceRegisterForm.getSerialNumber());
         }
         return "redirect:/resource/device/unassigned";
     }
