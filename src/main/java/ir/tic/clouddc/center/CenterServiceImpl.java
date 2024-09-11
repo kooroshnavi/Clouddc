@@ -42,6 +42,8 @@ public class CenterServiceImpl implements CenterService {
         this.locationPmCatalogRepository = locationPmCatalogRepository;
     }
 
+
+
     @Override
     public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
         return locationRepository.getReferenceById(locationId);

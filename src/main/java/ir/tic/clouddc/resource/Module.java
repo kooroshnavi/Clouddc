@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.event.Event;
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -42,4 +43,8 @@ public final class Module {
 
     @ManyToMany(mappedBy = "moduleList")
     private List<Event> moduleEventList;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PersistenceID")
+    private Persistence persistence;
 }

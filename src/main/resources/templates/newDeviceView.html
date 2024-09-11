@@ -101,7 +101,7 @@
 
                         <div class="mb-3">
                             <label class="form-label">انتخاب نوع تجهیز از میان مدل های موجود</label>
-                            <select class="single-select" th:field="*{deviceCategoryId}">
+                            <select class="single-select" th:field="*{resourceCategoryId}">
 
                                 <option th:each="category : ${deviceCategoryList}"
                                         th:if="${category.categoryId == 5 || category.categoryId == 8}"

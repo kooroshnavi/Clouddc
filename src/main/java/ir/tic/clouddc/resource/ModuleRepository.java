@@ -10,9 +10,8 @@ import java.util.List;
 @Repository
 public interface ModuleRepository extends JpaRepository<Module, Long> {
 
-    @Query("select m from Module m where m.spare = :spare and m.localityId = :deviceId")
-    List<Module> getDeviceModuleList(@Param("deviceId") long deviceId, @Param("spare") boolean spare);
+    @Query("SELECT m.moduleCategory FROM Module m WHERE m.spare = :spare and m.localityId in :localityIdList")
+    List<ModuleCategory> getLocalityCategoryList(List<Long> localityIdList, @Param("spare") boolean spare);
 
-    @Query("SELECT m.moduleCategory FROM Module m WHERE m.spare = :spare and m.localityId = :deviceId")
-    List<ModuleCategory> getDeviceModuleCategoryList(@Param("deviceId") Long deviceId, @Param("spare") boolean spare);
+    boolean existsBySerialNumber(String serialNumber);
 }

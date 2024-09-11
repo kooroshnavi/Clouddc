@@ -95,30 +95,35 @@
 
                 <div class="card-body">
 
-                    <form class="was-validated" th:action="@{/resource/register}" th:object="${resourceRegisterForm}"
+                    <form class="was-validated" th:action="@{/resource/module/register}" th:object="${moduleRegisterForm}"
                           enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div class="mb-3">
-                            <label class="form-label">انتخاب نوع تجهیز از میان مدل های موجود</label>
-                            <select class="single-select" th:field="*{deviceCategoryId}">
+                            <label class="form-label">نوع ماژول را انتخاب کنید - امکان جستجو وجود دارد</label>
+                            <select class="single-select" th:field="*{resourceCategoryId}" required="required">
 
-                                <option th:each="category : ${deviceCategoryList}"
-                                        th:if="${category.categoryId == 5 || category.categoryId == 8}"
+                                <option th:each="category : ${moduleCategoryList}"
                                         th:value="${category.id}"
-                                        th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model + ' - ' + category.factorSize + ' ' + category.factor}">
-                                </option>
-
-                                <option th:each="category : ${deviceCategoryList}"
-                                        th:if="${category.categoryId != 5 && category.categoryId != 8}"
-                                        th:value="${category.id}"
-                                        th:text="${category.category + ' - ' + category.vendor + ' - ' + category.model}">
+                                        th:text="${category.classification + ' -> ' + category.category + ' -> ' + category.vendor + ' -> ' + category.value + category.unit + ' -> ' + category.spec}">
                                 </option>
 
                             </select>
                         </div>
 
                         <div class="mb-3">
-                        <label for="input" class="form-check">شماره سریال تجهیز</label>
+                            <label class="form-label">اتاقی که این ماژول در آن قرار می گیرد را انتخاب کنید تا یافتن آن بعدا راحت باشد.</label>
+                            <select class="single-select" th:field="*{locale}" required="required">
+
+                                <option th:value="1">اتاق 1</option>
+                                <option th:value="2">اتاق 2 (MeetMeRoom)</option>
+                                <option th:value="3">اتاق 412</option>
+                                <option th:value="0">مستقیم روی تجهیز نصب می شود و داخل اتاق نمی رود.</option>
+
+                            </select>
+                        </div>
+
+                        <div class="mb-3">
+                        <label for="input" class="form-check">شماره سریال ماژول</label>
                         <input type="text" class="form-control" id="input" maxlength="40" required="required" dir="ltr" placeholder="SerialNumber"
                                onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
                                oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
@@ -128,8 +133,6 @@
                             <h6 class="mb-0 text-uppercase" align="center">
                                 <strong class="mb-0 text-bg-warning">شماره سریال تکراری است</strong>
                             </h6>
-                            <br>
-                            <a th:if="${!existedUnassigned}" th:href="@{/resource/device/{deviceId}/detail  (deviceId = ${existedDeviceId})}" th:text="${' جزئیات تجهیز با شماره سریال ' + existedSerialNumber}">مشاهده تجهیز با شماره سریال ارائه شده</a>
                         </div>
 
                         <div class="col">
@@ -144,7 +147,7 @@
                         <div class="col">
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید
+                                    data-bs-target="#exampleWarningModal">ثبت اولیه ماژول جدید
                             </button>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
@@ -156,14 +159,11 @@
                                                     aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-dark">
-                                            <p>پس از تایید جهت ثبت نهایی تجهیز (اختصاص مکان و بهره بردار) به صفحه رک یا اتاق مربوطه مراجعه و از طریق گزینه 'نصب تجهیزات جدید' اقدام نمایید.</p>
+                                            <p>پس از تایید، ماژول مذکور در بخش مخزن ماژول ها نمایش داده می شود.</p>
                                         </div>
                                         <div class="modal-footer border-dark">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">
-                                                بستن
-                                            </button>
-                                            <button type="submit" id="submit" class="btn btn-dark">تایید
-                                            </button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">بستن</button>
+                                            <button type="submit" id="submit" class="btn btn-dark">تایید</button>
                                         </div>
                                     </div>
                                 </div>
@@ -172,50 +172,6 @@
                         <hr/>
                     </form>
 
-                    <h6 th:if="${not unassignedDeviceList.isEmpty()}" class="mb-0 text-uppercase" align="center">
-                        <strong>اطلاعات تجهیزات ذیل پس از یک هفته در صورت عدم ثبت مکان نصب؛ حذف خواهد شد.</strong>
-                    </h6>
-
-                    <table th:if="${not unassignedDeviceList.isEmpty()}" class="table mb-0">
-                        <thead class="table-dark">
-                        <tr>
-                            <th>ردیف</th>
-                            <th>نوع</th>
-                            <th>شماره سریال</th>
-                            <th>مدل</th>
-                            <th>وضعیت</th>
-                        </tr>
-                        </thead>
-
-                        <tbody>
-                        <tr th:each="device, iter : ${unassignedDeviceList}">
-
-                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${iter.count}"></td>
-                            <td th:if="${newDevice && iter.first}" class="text-bg-success">
-                                <div th:text="${device.category}"
-                                     class="d-flex align-items-center">
-                                </div>
-                            </td>
-                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${device.serialNumber}"></td>
-
-                            <td th:unless="${newDevice && iter.first}" th:text="${iter.count}"></td>
-                            <td th:unless="${newDevice && iter.first}">
-                                <div th:text="${device.category}"
-                                     class="d-flex align-items-center">
-                                </div>
-                            </td>
-                            <td th:unless="${newDevice && iter.first}" th:text="${device.serialNumber}"></td>
-
-                            <td th:if="${device.categoryId == 5}" th:text="${device.vendor + ' - ' + device.model + ' - ' + device.factorSize + ' ' + device.factor}"/>
-                            <td th:if="${device.categoryId != 5}" th:text="${device.vendor + ' - ' + device.model}"/>
-
-                            <td>
-                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت مکان</button>
-                            </td>
-
-                        </tr>
-                        </tbody>
-                    </table>
 
                 </div>
             </div>

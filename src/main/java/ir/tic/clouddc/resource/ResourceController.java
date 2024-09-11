@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 
+import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -35,7 +36,7 @@ public class ResourceController {
                 catalog.setPersianNextDue(UtilService.getFormattedPersianDate(catalog.getNextDueDate()));
             }
         }
-        Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getDeviceModuleOverviewMap(deviceId);
+        Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getModuleOverviewMap(List.of(deviceId), false);
 
         model.addAttribute("moduleMap", moduleOverviewMap);
         model.addAttribute("device", device);
@@ -94,13 +95,53 @@ public class ResourceController {
         return "newDeviceView";
     }
 
+    @GetMapping("/module/inventory")
+    public String showModuleInventory(Model model) {
+        Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getModuleOverviewMap(List.of(0L, CenterService.ROOM_1_ID, CenterService.ROOM_2_ID, CenterService.ROOM_412_ID), true);
+        model.addAttribute("moduleOverviewMap", moduleOverviewMap);
+
+        return "moduleInventory";
+    }
+
+    @GetMapping("/module/register/form")
+    public String showModuleRegisterForm(Model model) {
+        List<ModuleCategory> moduleCategoryList = resourceService
+                .getModuleCategoryList()
+                .stream()
+                .sorted(Comparator.comparing(ModuleCategory::getCategoryId))
+                .toList();
+
+        model.addAttribute("moduleCategoryList", moduleCategoryList);
+        model.addAttribute("moduleRegisterForm", new ResourceRegisterForm());
+        if (!model.containsAttribute("exist")) {
+            model.addAttribute("exist", false);
+        }
+
+        return "newModuleRegView";
+    }
+
+    @PostMapping("/module/register")
+    public String registerModuleHandler(RedirectAttributes redirectAttributes, @ModelAttribute("moduleRegisterForm") ResourceRegisterForm resourceRegisterForm) {
+        boolean exist = resourceService.checkResourceExistence(resourceRegisterForm.getSerialNumber(), 2);
+        if (exist) {
+            redirectAttributes.addFlashAttribute("exist", true);
+
+            return "redirect:/resource/module/register/form";
+        } else {
+            resourceService.resourceRegister(resourceRegisterForm, 2);
+            redirectAttributes.addFlashAttribute("newModule", true);
+
+            return "redirect:/resource/module/inventory";
+        }
+    }
+
     @PostMapping("/device/register")
     public String registerNewDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") ResourceRegisterForm resourceRegisterForm) {
 
-        boolean exist = resourceService.checkDeviceExistence(resourceRegisterForm.getSerialNumber());
+        boolean exist = resourceService.checkResourceExistence(resourceRegisterForm.getSerialNumber(), 1);
 
         if (!exist) {
-            resourceService.registerUnassignedDevice(resourceRegisterForm);
+            resourceService.resourceRegister(resourceRegisterForm, 1);
             redirectAttributes.addFlashAttribute("newDevice", true);
         } else {
             var existedDeviceId = resourceService.getDeviceIdBySerialNumber(resourceRegisterForm.getSerialNumber());

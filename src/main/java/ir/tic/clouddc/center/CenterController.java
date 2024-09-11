@@ -29,7 +29,7 @@ public class CenterController {
         return "centerLandingPage";
     }
 
-    @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
+    @GetMapping("/location/{locationId}/detail") // Covers Room Rack and Hall
     public String showLocationDetail(Model model, @PathVariable Long locationId) {
         var baseLocation = centerService.getLocation(locationId);
         if (baseLocation.isPresent()) {

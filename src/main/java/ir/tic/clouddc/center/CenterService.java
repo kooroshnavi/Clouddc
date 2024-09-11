@@ -8,6 +8,14 @@ import java.util.Set;
 
 public interface CenterService {
 
+    long HALL_1_ID = 10000;
+    long HALL_2_ID = 10001;
+    long HALL_CR2_ID = 10002;
+    long ROOM_1_ID = 10003;
+    long ROOM_2_ID = 10004;
+    long ROOM_412_ID = 10005;
+
+
     Location getRefrencedLocation(Long locationId);
 
     List<Location> getLocationListExcept(List<Long> locationId);

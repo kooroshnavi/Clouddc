@@ -14,17 +14,15 @@ public interface ResourceService {
 
     Utilizer getReferencedUtilizer(Integer utilizerId) throws EntityNotFoundException;
 
-    List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
-
     List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
 
     List<Device> getLocationDeviceList(Long locationId);
 
     List<DeviceCategory> getdeviceCategoryList();
 
-    boolean checkDeviceExistence(String serialNumber);
+    boolean checkResourceExistence(String serialNumber, int resourceType);
 
-    void registerUnassignedDevice(ResourceRegisterForm resourceRegisterForm);
+    void resourceRegister(ResourceRegisterForm resourceRegisterForm, int resourceType);
 
     UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId);
 
@@ -38,7 +36,9 @@ public interface ResourceService {
 
     List<Utilizer> getUtilierList();
 
-   Map<ModuleCategory, Long> getDeviceModuleOverviewMap(Long deviceId);
+    Map<ModuleCategory, Long> getModuleOverviewMap(List<Long> localityIdList, boolean spare);
+
+    List<ModuleCategory> getModuleCategoryList();
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
@@ -60,6 +60,7 @@ public interface ResourceService {
 
     interface DeviceIdUtilizerId_Projection2 {
         Long getDeviceId();
+
         Integer getDeviceUtilizerId();
     }
 

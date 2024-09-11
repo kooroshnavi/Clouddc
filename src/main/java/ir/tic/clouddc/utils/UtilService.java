@@ -133,7 +133,8 @@ public final class UtilService {
             entry("CatalogRegister", "ثبت کاتالوگ"),
             entry("CatalogUpdate", "بروزرسانی کاتالوگ"),
             entry("UnassignedDeviceRegister", "ثبت تجهیز جدید"),
-            entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک")
+            entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک"),
+            entry("ModuleRegister", "ثبت ماژول جدید")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(

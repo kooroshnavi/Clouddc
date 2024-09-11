@@ -3,7 +3,6 @@ package ir.tic.clouddc.resource;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
-import ir.tic.clouddc.event.EventLandingForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
@@ -14,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,12 +44,12 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleRepository moduleRepository, ModuleCategoryRepository moduleCategoryRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, CenterService centerService1, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleRepository moduleRepository, ModuleCategoryRepository moduleCategoryRepository) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
         this.supplierRepository = supplierRepository;
-        this.centerService = centerService;
+        this.centerService = centerService1;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
@@ -69,10 +67,6 @@ public class ResourceServiceImpl implements ResourceService {
         return utilizerRepository.getReferenceById(utilizerId);
     }
 
-    @Override
-    public List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId) {
-        return deviceRepository.getProjection2List(locationId);
-    }
 
     @Override
     public List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
@@ -90,23 +84,53 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public boolean checkDeviceExistence(String serialNumber) {
-        boolean deviceExist = deviceRepository.existsBySerialNumber(serialNumber);
-        boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
+    public boolean checkResourceExistence(String serialNumber, int resourceType) {
+        boolean exists;
+        if (resourceType == 1) {
+            exists = deviceRepository.existsBySerialNumber(serialNumber);
+            boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
 
-        return deviceExist || UnassignedDeviceExist;
+            return exists || UnassignedDeviceExist;
+        } else {
+            exists = moduleRepository.existsBySerialNumber(serialNumber);
+
+            return exists;
+        }
     }
 
     @Override
-    public void registerUnassignedDevice(ResourceRegisterForm resourceRegisterForm) {
-        UnassignedDevice unassignedDevice = new UnassignedDevice();
-        unassignedDevice.setSerialNumber(StringUtils.capitalize(resourceRegisterForm.getSerialNumber()));
-        unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(resourceRegisterForm.getDeviceCategoryId()));
-        unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
-        Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
-        unassignedDevice.setPersistence(persistence);
+    public void resourceRegister(ResourceRegisterForm resourceRegisterForm, int resourceType) {
+        Persistence persistence;
+        if (resourceType == 1) {
+            UnassignedDevice unassignedDevice = new UnassignedDevice();
+            unassignedDevice.setSerialNumber(StringUtils.capitalize(resourceRegisterForm.getSerialNumber()));
+            unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
+            unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
+            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
+            unassignedDevice.setPersistence(persistence);
 
-        unassignedDeviceRepository.saveAndFlush(unassignedDevice);
+            unassignedDeviceRepository.saveAndFlush(unassignedDevice);
+        } else {
+            Module module = new Module();
+            module.setModuleCategory(moduleCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
+            module.setSerialNumber(resourceRegisterForm.getSerialNumber());
+            module.setSpare(true);
+            module.setActive(false);
+            module.setProblematic(false);
+            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleRegister");
+            module.setPersistence(persistence);
+            if (resourceRegisterForm.getLocale() == 1) {
+                module.setLocalityId(CenterService.ROOM_1_ID);
+            } else if (resourceRegisterForm.getLocale() == 2) {
+                module.setLocalityId(CenterService.ROOM_2_ID);
+            } else if (resourceRegisterForm.getLocale() == 3) {
+                module.setLocalityId(CenterService.ROOM_412_ID);
+            } else {
+                module.setLocalityId(0);
+            }
+
+            moduleRepository.saveAndFlush(module);
+        }
     }
 
     @Override
@@ -147,9 +171,9 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Map<ModuleCategory, Long> getDeviceModuleOverviewMap(Long deviceId) {
+    public Map<ModuleCategory, Long> getModuleOverviewMap(List<Long> localityIdList, boolean spare) {
         Map<ModuleCategory, Long> deviceModuleOverviewMap = new HashMap<>();
-        List<ModuleCategory> moduleCategoryList = moduleRepository.getDeviceModuleCategoryList(deviceId, false);
+        List<ModuleCategory> moduleCategoryList = moduleRepository.getLocalityCategoryList(localityIdList, spare);
         List<Integer> distinctCategoryList = moduleCategoryList
                 .stream()
                 .map(ModuleCategory::getCategoryId)
@@ -171,6 +195,11 @@ public class ResourceServiceImpl implements ResourceService {
         }
 
         return deviceModuleOverviewMap;
+    }
+
+    @Override
+    public List<ModuleCategory> getModuleCategoryList() {
+        return moduleCategoryRepository.findAll();
     }
 
     @Override
@@ -267,39 +296,6 @@ public class ResourceServiceImpl implements ResourceService {
             return defaultDeviceStatus;
         }*/
         return null;
-    }
-
-
-    private Device registerNewDevice(EventLandingForm eventLandingForm) throws SQLException {
-
-        switch (eventLandingForm.getDevice().getDeviceCategory().getCategory()) {
-            case "Server" -> {   /// Server
-                Server srv = new Server();
-                srv.setSerialNumber(eventLandingForm.getSerialNumber());
-                srv.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
-                srv.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                return deviceRepository.save(srv);
-            }
-            case "Switch" -> { /// Switch
-                Switch sw = new Switch();
-                sw.setSerialNumber(eventLandingForm.getSerialNumber());
-                sw.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
-                sw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                return deviceRepository.save(sw);
-            }
-
-            case "Firewall" -> { /// Firewall
-                Firewall fw = new Firewall();
-                fw.setSerialNumber(eventLandingForm.getSerialNumber());
-                fw.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
-                fw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                return deviceRepository.save(fw);
-            }
-
-            default -> {
-                return null;
-            }
-        }
     }
 }
 

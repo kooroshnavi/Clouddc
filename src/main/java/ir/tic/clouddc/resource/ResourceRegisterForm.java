@@ -12,5 +12,7 @@ public class ResourceRegisterForm {
     private String serialNumber;
 
     @NotNull
-    private Integer deviceCategoryId;
+    private Integer resourceCategoryId;
+
+    private int locale;
 }
