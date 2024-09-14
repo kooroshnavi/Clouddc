@@ -21,10 +21,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
 
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
@@ -39,13 +37,13 @@
 <body>
 
 <script th:if="${newDevice}">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         pos5_success_noti();
     });
 </script>
 
 <script th:if="${exist}">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         pos3_warning_noti();
     });
 </script>
@@ -87,7 +85,8 @@
                 </h6>
                 <hr/>
                 <h6 class="card-header py-3 bg-info" align="center">
-                    <strong class="mb-0">همکار گرامی، جهت مشاهده و افزودن ماژول به تجهیز ابتدا می بایست اطلاعات آن در فرم ذیل ثبت گردد.</strong>
+                    <strong class="mb-0">همکار گرامی، جهت مشاهده و افزودن ماژول به تجهیز ابتدا می بایست اطلاعات آن در
+                        فرم ذیل ثبت گردد.</strong>
                 </h6>
                 <div class="d-flex align-items-center">
                 </div>
@@ -95,12 +94,14 @@
 
                 <div class="card-body">
 
-                    <form class="was-validated" th:action="@{/resource/module/register}" th:object="${moduleRegisterForm}"
-                          enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                    <form class="was-validated" th:action="@{/resource/module/register}"
+                          th:object="${moduleRegisterForm}"
+                          enctype="multipart/form-data" method="POST"
+                          onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div class="mb-3">
-                            <label class="form-label">نوع ماژول را انتخاب کنید - امکان جستجو وجود دارد</label>
-                            <select class="single-select" th:field="*{resourceCategoryId}" required="required">
+                            <label for="dropdown" class="form-label">نوع ماژول را انتخاب کنید - لطفا در انتخاب مدل دقت کنید.</label>
+                            <select id="dropdown" name="dropdown" class="single-select" th:field="*{resourceCategoryId}" required="required"  onchange="toggleTextBox()">
 
                                 <option th:each="category : ${moduleCategoryList}"
                                         th:value="${category.id}"
@@ -110,36 +111,53 @@
                             </select>
                         </div>
 
+                        <br>
+
                         <div class="mb-3">
-                            <label class="form-label">اتاقی که این ماژول در آن قرار می گیرد را انتخاب کنید تا یافتن آن بعدا راحت باشد.</label>
+                            <label class="form-label">اتاقی که این ماژول(ها) را در آن قرار داده اید انتخاب کنید تا یافتن آن بعدا راحت باشد.</label>
                             <select class="single-select" th:field="*{locale}" required="required">
 
-                                <option th:value="1">اتاق 1</option>
-                                <option th:value="2">اتاق 2 (MeetMeRoom)</option>
-                                <option th:value="3">اتاق 412</option>
-                                <option th:value="0">مستقیم روی تجهیز نصب می شود و داخل اتاق نمی رود.</option>
+                                <option th:value="${1}" selected="selected">اتاق 1</option>
+                                <option th:value="${2}">اتاق 2 (MeetMeRoom)</option>
+                                <option th:value="${3}">اتاق 412</option>
+                                <option th:value="${0}">مستقیم روی تجهیز نصب می شود و داخل اتاق نمی رود.</option>
 
                             </select>
                         </div>
 
-                        <div class="mb-3">
-                        <label for="input" class="form-check">شماره سریال ماژول</label>
-                        <input type="text" class="form-control" id="input" maxlength="40" required="required" dir="ltr" placeholder="SerialNumber"
-                               onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
-                               oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
+                        <br>
+
+                        <div id="serialNumber" class="mb-3" hidden="hidden">
+                            <label for="sn" class="form-check">برای مدل انتخابی، ثبت شماره سریال الزامی است.</label>
+                            <input type="text" id="sn" name="sn" class="form-control" maxlength="40"
+                                   required="required" dir="ltr" placeholder="SerialNumber"
+                                   onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                                   oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
+                                   th:field="*{serialNumber}" disabled="disabled">
+                            <br>
+                        </div>
+
+                        <div id="quantity" class="mb-sm-5">
+                            <label for="qty" class="form-check">چندتا از مدل انتخاب شده را تحویل گرفته اید؟ (حداکثر 300)</label>
+                            <input type="number" min="1" max="300" id="qty" name="qty" class="form-control"
+                                   required="required" th:field="*{serialNumber}" dir="ltr">
+                            <br>
                         </div>
 
                         <div th:if="${exist}">
                             <h6 class="mb-0 text-uppercase" align="center">
-                                <strong class="mb-0 text-bg-warning">شماره سریال تکراری است</strong>
+                                <strong class="mb-0 text-bg-warning">شماره سریال تکراری است.</strong>
                             </h6>
+                            <br>
                         </div>
 
                         <div class="col">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
-                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
-                                <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck"
+                                       required="required">
+                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن
+                                    هستم.</label>
+                                <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید.</div>
                             </div>
                             <hr/>
                         </div>
@@ -162,7 +180,8 @@
                                             <p>پس از تایید، ماژول مذکور در بخش مخزن ماژول ها نمایش داده می شود.</p>
                                         </div>
                                         <div class="modal-footer border-dark">
-                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">بستن</button>
+                                            <button type="button" class="btn btn-light" data-bs-dismiss="modal">بستن
+                                            </button>
                                             <button type="submit" id="submit" class="btn btn-dark">تایید</button>
                                         </div>
                                     </div>
@@ -171,7 +190,6 @@
                         </div>
                         <hr/>
                     </form>
-
 
                 </div>
             </div>
@@ -199,13 +217,10 @@
 <!-- Bootstrap bundle JS -->
 <script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
 <!--plugins-->
-
-
 <script src="/panel/assets/js/jquery.min.js"></script>
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
-
 <!--notification js -->
 <script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
@@ -213,13 +228,11 @@
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
 <script src="/panel/assets/js/form-select2.js"></script>
-
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
 <script src="/panel/assets/js/table-datatable.js"></script>
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
-
 <script>
     function clsAlphaNoOnly(e) {  // Accept only alpha numerics, no special characters
         var regex = new RegExp("^[a-zA-Z0-9]+$");
@@ -233,8 +246,39 @@
         e.preventDefault();
         return false;
     }
+
     function clsAlphaNoOnly2() {  // Accept only alpha numerics, no special characters
         return clsAlphaNoOnly(this.event); // window.event
+    }
+</script>
+<script>
+    function toggleTextBox() {
+        const dropdown = document.getElementById('dropdown');
+        const serialNumber = document.getElementById('serialNumber');
+        const SN = document.getElementById('sn');
+        const quantity = document.getElementById('quantity');
+        const qty = document.getElementById('qty');
+
+        if ((dropdown.value >= 18 && dropdown.value <= 27) || dropdown.value === '32' || dropdown.value === '33'){
+            serialNumber.style.display = 'block';
+            SN.disabled = false;
+            SN.hidden = false;
+            serialNumber.hidden = false;
+
+            qty.disabled = true;
+            qty.hidden = true;
+            quantity.hidden = true;
+
+        } else {
+            serialNumber.style.display = 'none';
+            SN.disabled = true;
+            SN.hidden = true;
+            serialNumber.hidden = true;
+
+            qty.disabled = false;
+            qty.hidden = false;
+            quantity.hidden = false;
+        }
     }
 </script>
 
