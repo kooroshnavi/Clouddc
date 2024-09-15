@@ -1,7 +1,6 @@
 package ir.tic.clouddc.resource;
 
 
-import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -36,9 +35,9 @@ public class ResourceController {
                 catalog.setPersianNextDue(UtilService.getFormattedPersianDate(catalog.getNextDueDate()));
             }
         }
-        Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getModuleOverviewMap(List.of(deviceId), false);
+        //   Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getModuleOverviewMap(List.of(deviceId), false);
 
-        model.addAttribute("moduleMap", moduleOverviewMap);
+        // model.addAttribute("moduleMap", moduleOverviewMap);
         model.addAttribute("device", device);
         model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
@@ -95,9 +94,9 @@ public class ResourceController {
         return "newDeviceView";
     }
 
-    @GetMapping("/module/inventory")
+    @GetMapping("/extension/inventory")
     public String showModuleInventory(Model model) {
-        Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getModuleOverviewMap(List.of(0L, CenterService.ROOM_1_ID, CenterService.ROOM_2_ID, CenterService.ROOM_412_ID), true);
+        Map<ModuleInventory, Integer> moduleOverviewMap = resourceService.getModuleOverviewMap();
         model.addAttribute("moduleOverviewMap", moduleOverviewMap);
 
         return "moduleInventory";
@@ -105,10 +104,10 @@ public class ResourceController {
 
     @GetMapping("/module/register/form")
     public String showModuleRegisterForm(Model model) {
-        List<ModuleCategory> moduleCategoryList = resourceService
+        List<ModuleInventory> moduleCategoryList = resourceService
                 .getModuleCategoryList()
                 .stream()
-                .sorted(Comparator.comparing(ModuleCategory::getCategoryId))
+                .sorted(Comparator.comparing(ModuleInventory::getCategoryId))
                 .toList();
 
         model.addAttribute("moduleCategoryList", moduleCategoryList);

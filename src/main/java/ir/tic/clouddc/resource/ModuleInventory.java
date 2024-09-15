@@ -12,11 +12,11 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class ModuleCategory {
+public final class ModuleInventory {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "ModuleCategoryID")
+    @Column(name = "SpecificationID")
     private Integer id;
 
     @Column(name = "Classification", nullable = false)
@@ -34,15 +34,15 @@ public final class ModuleCategory {
     @Column(name = "Specification")
     private String spec;
 
-    @Column(name = "PartNumber")
-    private String partNumber;
-
     @Column(name = "Value", nullable = false)
     private float value; // 10 - 7.68
 
     @Column(name = "Unit", nullable = false)
-    private String unit; // G - TB
+    private String unit; // G - TB - length
 
-    @OneToMany(mappedBy = "moduleCategory")
-    private List<Module> moduleList;
+    @Column(name = "Available")
+    private int available; // for storage -> count(spare:true)
+
+    @OneToMany(mappedBy = "moduleInventory")
+    private List<Storage> storageList;
 }

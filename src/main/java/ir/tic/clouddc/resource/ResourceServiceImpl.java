@@ -17,6 +17,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @Slf4j
@@ -38,13 +39,11 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final PersonService personService;
 
-    private final ModuleRepository moduleRepository;
-
-    private final ModuleCategoryRepository moduleCategoryRepository;
+    private final ModuleInventoryRepository moduleInventoryRepository;
 
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, CenterService centerService1, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleRepository moduleRepository, ModuleCategoryRepository moduleCategoryRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService1, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleInventoryRepository moduleInventoryRepository) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
@@ -53,8 +52,7 @@ public class ResourceServiceImpl implements ResourceService {
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
-        this.moduleRepository = moduleRepository;
-        this.moduleCategoryRepository = moduleCategoryRepository;
+        this.moduleInventoryRepository = moduleInventoryRepository;
     }
 
     @Override
@@ -85,7 +83,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public boolean checkResourceExistence(String serialNumber, int resourceType) {
-        boolean exists;
+      /*  boolean exists;
         if (resourceType == 1) {
             exists = deviceRepository.existsBySerialNumber(serialNumber);
             boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
@@ -95,7 +93,8 @@ public class ResourceServiceImpl implements ResourceService {
             exists = moduleRepository.existsBySerialNumber(serialNumber);
 
             return exists;
-        }
+        }*/
+        return true;
     }
 
     @Override
@@ -111,6 +110,7 @@ public class ResourceServiceImpl implements ResourceService {
 
             unassignedDeviceRepository.saveAndFlush(unassignedDevice);
         } else {
+            /*
             Module module = new Module();
             module.setModuleCategory(moduleCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
             module.setSerialNumber(resourceRegisterForm.getSerialNumber());
@@ -129,7 +129,7 @@ public class ResourceServiceImpl implements ResourceService {
                 module.setLocalityId(0);
             }
 
-            moduleRepository.saveAndFlush(module);
+            moduleRepository.saveAndFlush(module);*/
         }
     }
 
@@ -171,35 +171,38 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public Map<ModuleCategory, Long> getModuleOverviewMap(List<Long> localityIdList, boolean spare) {
-        Map<ModuleCategory, Long> deviceModuleOverviewMap = new HashMap<>();
-        List<ModuleCategory> moduleCategoryList = moduleRepository.getLocalityCategoryList(localityIdList, spare);
-        List<Integer> distinctCategoryList = moduleCategoryList
+    public Map<ModuleInventory, Integer> getModuleOverviewMap() {
+        Map<ModuleInventory, Integer> deviceModuleOverviewMap = new HashMap<>();
+        List<ModuleInventory> moduleInventoryList = moduleInventoryRepository.getAvailableList();
+
+        List<Integer> distinctList = moduleInventoryList
                 .stream()
-                .map(ModuleCategory::getCategoryId)
+                .map(ModuleInventory::getCategoryId)
                 .distinct()
                 .toList();
 
-        for (int i = 0; i < distinctCategoryList.size(); i++) {
-            var categoryId = distinctCategoryList.get(i);
-            long counter = moduleCategoryList
+        for (Integer categoryId : distinctList) {
+            AtomicInteger totalAvailable = new AtomicInteger();
+            moduleInventoryList
                     .stream()
-                    .filter(moduleCategory -> moduleCategory.getCategoryId() == categoryId)
-                    .count();
+                    .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                    .map(ModuleInventory::getAvailable)
+                    .forEach(totalAvailable::addAndGet);
 
-            var category = moduleCategoryList
+            var category = moduleInventoryList
                     .stream()
-                    .filter(moduleCategory -> moduleCategory.getCategoryId() == categoryId)
-                    .findAny();
-            category.ifPresent(moduleCategory -> deviceModuleOverviewMap.put(moduleCategory, counter));
+                    .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                    .findFirst();
+
+            category.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAvailable.get()));
         }
 
-        return deviceModuleOverviewMap;
+        return deviceModuleOverviewMap;  // Tomorrow: this view
     }
 
     @Override
-    public List<ModuleCategory> getModuleCategoryList() {
-        return moduleCategoryRepository.findAll();
+    public List<ModuleInventory> getModuleCategoryList() {
+        return moduleInventoryRepository.findAll();
     }
 
     @Override

@@ -36,9 +36,9 @@ public interface ResourceService {
 
     List<Utilizer> getUtilierList();
 
-    Map<ModuleCategory, Long> getModuleOverviewMap(List<Long> localityIdList, boolean spare);
+    Map<ModuleInventory, Integer> getModuleOverviewMap();
 
-    List<ModuleCategory> getModuleCategoryList();
+    List<ModuleInventory> getModuleCategoryList();
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
@@ -69,7 +69,6 @@ public interface ResourceService {
 
         String getName();
     }
-
 
     Optional<Device> getDevice(Long deviceId);
 
