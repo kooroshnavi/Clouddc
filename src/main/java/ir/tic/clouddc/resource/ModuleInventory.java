@@ -1,5 +1,6 @@
 package ir.tic.clouddc.resource;
 
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -43,6 +44,13 @@ public final class ModuleInventory {
     @Column(name = "Available")
     private int available; // for storage -> count(spare:true)
 
-    @OneToMany(mappedBy = "moduleInventory")
+    @Column(name = "DeviceExtension")
+    private boolean deviceExtension;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.LAZY)
+    @JoinColumn(name = "PersistenceID")
+    private Persistence persistence;
+
+    @OneToMany(mappedBy = "moduleInventory", cascade = CascadeType.ALL)
     private List<Storage> storageList;
 }

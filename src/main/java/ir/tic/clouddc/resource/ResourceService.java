@@ -40,6 +40,8 @@ public interface ResourceService {
 
     List<ModuleInventory> getModuleCategoryList();
 
+    List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId);
+
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 

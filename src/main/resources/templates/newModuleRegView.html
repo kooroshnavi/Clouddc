@@ -36,18 +36,11 @@
 
 <body>
 
-<script th:if="${newDevice}">
-    document.addEventListener('DOMContentLoaded', function () {
-        pos5_success_noti();
-    });
-</script>
-
 <script th:if="${exist}">
     document.addEventListener('DOMContentLoaded', function () {
         pos3_warning_noti();
     });
 </script>
-
 
 <!--start wrapper-->
 <div class="wrapper">
@@ -100,32 +93,70 @@
                           onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div class="mb-3">
-                            <label for="dropdown" class="form-label">نوع ماژول را انتخاب کنید - لطفا در انتخاب مدل دقت کنید.</label>
-                            <select id="dropdown" name="dropdown" class="single-select" th:field="*{resourceCategoryId}" required="required"  onchange="toggleTextBox()">
+                            <label for="dropdown" class="form-label">دسته بندی و نوع را انتخاب کنید. امکان جستجو وجود دارد.</label>
+                            <select id="dropdown" name="dropdown" class="single-select" th:field="*{resourceCategoryId}"
+                                    required="required" onchange="toggleTextBox()">
 
-                                <option th:each="category : ${moduleCategoryList}"
+                                <option th:each="category, counter : ${moduleCategoryList}"
                                         th:value="${category.id}"
-                                        th:text="${category.classification + ' -> ' + category.category + ' -> ' + category.vendor + ' -> ' + category.value + category.unit + ' -> ' + category.spec}">
+                                        th:text="${counter.count + ') ' + category.classification + ' -> ' + category.category + ' -> ' + category.vendor + ' -> ' + category.value + category.unit + ' -> ' + category.spec}">
                                 </option>
 
                             </select>
                         </div>
-
                         <br>
 
-                        <div class="mb-3">
-                            <label class="form-label">اتاقی که این ماژول(ها) را در آن قرار داده اید انتخاب کنید تا یافتن آن بعدا راحت باشد.</label>
-                            <select class="single-select" th:field="*{locale}" required="required">
+                        <div id="location" class="mb-3" hidden="hidden">
+                            <label for="loc" class="form-label">اتاقی که این هارد را در آن قرار داده اید انتخاب کنید
+                                تا یافتن آن بعدا راحت باشد.</label>
+                            <select class="single-select" id="loc" name="loc" th:field="*{locale}" required="required" disabled="disabled">
 
-                                <option th:value="${1}" selected="selected">اتاق 1</option>
-                                <option th:value="${2}">اتاق 2 (MeetMeRoom)</option>
-                                <option th:value="${3}">اتاق 412</option>
+                                <option th:value="${room1Id}" selected="selected">اتاق 1</option>
+                                <option th:value="${room2Id}">اتاق 2 (MeetMeRoom)</option>
+                                <option th:value="${room412Id}">اتاق 412</option>
                                 <option th:value="${0}">مستقیم روی تجهیز نصب می شود و داخل اتاق نمی رود.</option>
 
                             </select>
+                            <br>
                         </div>
 
-                        <br>
+                        <div id="mfg" class="mb-3" hidden="hidden">
+                            <label for="month" class="form-label">ماه ساخت هارد - مطابق با اطلاعات برچسب</label>
+                            <select id="month" name="month" class="single-select" th:field="*{mfgMonth}"
+                                    required="required" onchange="toggleTextBox()" disabled="disabled">
+                                <option th:value="${1}">1 - January</option>
+                                <option th:value="${2}">2 - February</option>
+                                <option th:value="${3}">3 - March</option>
+                                <option th:value="${4}">4 - April</option>
+                                <option th:value="${5}">5 - May</option>
+                                <option th:value="${6}">6 - June</option>
+                                <option th:value="${7}">7 - July</option>
+                                <option th:value="${8}">8 - August</option>
+                                <option th:value="${9}">9 - September</option>
+                                <option th:value="${10}">10 - October</option>
+                                <option th:value="${11}">11 - November</option>
+                                <option th:value="${12}">12 - December</option>
+                            </select>
+
+                            <br>
+
+                            <label for="year" class="form-label">سال ساخت هارد - مطابق با اطلاعات برچسب</label>
+                            <select id="year" name="year" class="single-select" th:field="*{mfgYear}"
+                                    required="required" onchange="toggleTextBox()" disabled="disabled">
+                                <option th:value="${2024}">2024</option>
+                                <option th:value="${2023}">2023</option>
+                                <option th:value="${2022}">2022</option>
+                                <option th:value="${2021}">2021</option>
+                                <option th:value="${2020}">2020</option>
+                                <option th:value="${2019}">2019</option>
+                                <option th:value="${2018}">2018</option>
+                                <option th:value="${2017}">2017</option>
+                                <option th:value="${2016}">2016</option>
+                                <option th:value="${2015}">2015</option>
+                            </select>
+                            <br>
+                        </div>
+
 
                         <div id="serialNumber" class="mb-3" hidden="hidden">
                             <label for="sn" class="form-check">برای مدل انتخابی، ثبت شماره سریال الزامی است.</label>
@@ -140,7 +171,7 @@
                         <div id="quantity" class="mb-sm-5">
                             <label for="qty" class="form-check">چندتا از مدل انتخاب شده را تحویل گرفته اید؟ (حداکثر 300)</label>
                             <input type="number" min="1" max="300" id="qty" name="qty" class="form-control"
-                                   required="required" th:field="*{serialNumber}" dir="ltr">
+                                   required="required" th:field="*{qty}" dir="ltr">
                             <br>
                         </div>
 
@@ -155,8 +186,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" value="" id="invalidCheck"
                                        required="required">
-                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن
-                                    هستم.</label>
+                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم.</label>
                                 <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید.</div>
                             </div>
                             <hr/>
@@ -165,7 +195,7 @@
                         <div class="col">
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleWarningModal">ثبت اولیه ماژول جدید
+                                    data-bs-target="#exampleWarningModal">ثبت ماژول جدید
                             </button>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
@@ -177,7 +207,7 @@
                                                     aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-dark">
-                                            <p>پس از تایید، ماژول مذکور در بخش مخزن ماژول ها نمایش داده می شود.</p>
+                                            <p>پس از تایید، موجودی ماژول در مخزن بروز می گردد.</p>
                                         </div>
                                         <div class="modal-footer border-dark">
                                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">بستن
@@ -254,16 +284,35 @@
 <script>
     function toggleTextBox() {
         const dropdown = document.getElementById('dropdown');
+
         const serialNumber = document.getElementById('serialNumber');
         const SN = document.getElementById('sn');
+
         const quantity = document.getElementById('quantity');
         const qty = document.getElementById('qty');
 
-        if ((dropdown.value >= 18 && dropdown.value <= 27) || dropdown.value === '32' || dropdown.value === '33'){
+        const location = document.getElementById('location');
+        const loc = document.getElementById('loc');
+
+        const mfg = document.getElementById('mfg');
+        const month = document.getElementById('month');
+        const year = document.getElementById('year');
+
+
+        if (dropdown.value >= 1047 && dropdown.value <= 1075) {
             serialNumber.style.display = 'block';
+            location.style.display = 'block';
+            mfg.style.display = 'block';
+
             SN.disabled = false;
             SN.hidden = false;
             serialNumber.hidden = false;
+            loc.disabled = false;
+            loc.hidden = false;
+            location.hidden = false;
+            mfg.hidden = false;
+            month.disabled = false;
+            year.disabled = false;
 
             qty.disabled = true;
             qty.hidden = true;
@@ -271,9 +320,17 @@
 
         } else {
             serialNumber.style.display = 'none';
+            location.style.display = 'none';
+
             SN.disabled = true;
             SN.hidden = true;
             serialNumber.hidden = true;
+            loc.disabled = true;
+            loc.hidden = true;
+            location.hidden = true;
+            mfg.hidden = true;
+            month.disabled = true;
+            year.disabled = true;
 
             qty.disabled = false;
             qty.hidden = false;

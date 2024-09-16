@@ -27,7 +27,7 @@
     <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
-    <title>مخزن ماژول</title>
+    <title>جزئیات ماژول</title>
 </head>
 
 <body>
@@ -58,7 +58,7 @@
                     <ol class="breadcrumb mb-0 p-0">
                         <li class="breadcrumb-item"><a href="javascript:"><i class="bx bx-home-alt"></i></a>
                         </li>
-                        <li class="breadcrumb-item active" aria-current="page">مخزن ماژول</li>
+                        <li class="breadcrumb-item active" aria-current="page">لیست جزئیات ماژول</li>
                     </ol>
                 </nav>
             </div>
@@ -76,7 +76,7 @@
         </h5>
         <br>
 
-        <h4 class="mb-0 text-uppercase" align="center">مخزن ماژول (موجودی اتاق ها)</h4>
+        <h4 class="mb-0 text-uppercase" align="center" th:text="${'وضعیت موجودی طبقه بندی ' + theCategory.category + ' :' + theCategory.classification}"></h4>
         <br>
 
         <div class="card">
@@ -87,24 +87,25 @@
                         <thead>
                         <tr>
                             <th>ردیف</th>
-                            <th>طبقه بندی</th>
-                            <th>نوع</th>
+                            <th>سازنده</th>
+                            <th>جزئیات</th>
                             <th>موجودی</th>
+                            <th th:if="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">جزئیات</th>
                         </tr>
                         </thead>
 
                         <tbody>
-                        <tr th:each="moduleCategory, iter : ${sortedKeySet}">
+                        <tr th:each="moduleCategory, iter : ${inventoryDetailList}">
 
                             <td th:text="${iter.count}"></td>
-                            <td th:text="${moduleCategory.classification}"></td>
-                            <td th:text="${moduleCategory.category}"></td>
-                            <td>
+                            <td th:text="${moduleCategory.vendor}"></td>
+                            <td th:text="${moduleCategory.value + moduleCategory.unit + ' -> ' + moduleCategory.spec}"></td>
+                            <td th:text="${moduleCategory.available}"></td>
+                            <td th:if="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">
                                 <div class="col">
-                                    <a th:text="${moduleOverviewMap.get(moduleCategory)}"
-                                       th:href="@{/resource/module/category/{categoryId}/detail (categoryId=${moduleCategory.categoryId})}"
-                                       class="btn btn-outline-info" data-bs-toggle="tooltip"
-                                       data-bs-placement="top" title="جزئیات موجودی"></a>
+                                    <a
+                                       th:href="@{/resource/module/storage/{specId}/detail (specId=${moduleCategory.id})}"
+                                       class="btn btn-outline-info">لیست جزئیات</a>
                                 </div>
                             </td>
                         </tr>

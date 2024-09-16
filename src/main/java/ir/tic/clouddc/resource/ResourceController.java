@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 
+import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
@@ -94,12 +95,31 @@ public class ResourceController {
         return "newDeviceView";
     }
 
-    @GetMapping("/extension/inventory")
+    @GetMapping("/module/inventory")
     public String showModuleInventory(Model model) {
         Map<ModuleInventory, Integer> moduleOverviewMap = resourceService.getModuleOverviewMap();
+        var sortedKeySet = moduleOverviewMap
+                .keySet()
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getClassification));
         model.addAttribute("moduleOverviewMap", moduleOverviewMap);
+        model.addAttribute("sortedKeySet", sortedKeySet);
+
+        if (!model.containsAttribute("newModuleRegistered")) {
+            model.addAttribute("newModuleRegistered", false);
+        }
 
         return "moduleInventory";
+    }
+
+    @GetMapping("/module/category/{categoryId}/detail")
+    public String showInventoryDetail_1(Model model, @PathVariable Integer categoryId) {
+        List<ModuleInventory> inventoryDetailList = resourceService.getRelatedModuleInventoryList(categoryId);
+        var category = inventoryDetailList.stream().findFirst();
+        category.ifPresent(moduleInventory -> model.addAttribute("theCategory", moduleInventory));
+        model.addAttribute("inventoryDetailList", inventoryDetailList);
+
+        return "moduleDetail";
     }
 
     @GetMapping("/module/register/form")
@@ -112,6 +132,10 @@ public class ResourceController {
 
         model.addAttribute("moduleCategoryList", moduleCategoryList);
         model.addAttribute("moduleRegisterForm", new ResourceRegisterForm());
+        model.addAttribute("room1Id", CenterService.ROOM_1_ID);
+        model.addAttribute("room2Id", CenterService.ROOM_2_ID);
+        model.addAttribute("room412Id", CenterService.ROOM_412_ID);
+
         if (!model.containsAttribute("exist")) {
             model.addAttribute("exist", false);
         }
@@ -121,21 +145,22 @@ public class ResourceController {
 
     @PostMapping("/module/register")
     public String registerModuleHandler(RedirectAttributes redirectAttributes, @ModelAttribute("moduleRegisterForm") ResourceRegisterForm resourceRegisterForm) {
-        boolean exist = resourceService.checkResourceExistence(resourceRegisterForm.getSerialNumber(), 2);
-        if (exist) {
-            redirectAttributes.addFlashAttribute("exist", true);
+        if (resourceRegisterForm.getResourceCategoryId() >= 1047 && resourceRegisterForm.getResourceCategoryId() <= 1075) { // check storage existence
+            boolean exist = resourceService.checkResourceExistence(resourceRegisterForm.getSerialNumber(), 2);
+            if (exist) {
+                redirectAttributes.addFlashAttribute("exist", true);
 
-            return "redirect:/resource/module/register/form";
-        } else {
-            resourceService.resourceRegister(resourceRegisterForm, 2);
-            redirectAttributes.addFlashAttribute("newModule", true);
-
-            return "redirect:/resource/module/inventory";
+                return "redirect:/resource/module/register/form";
+            }
         }
+        resourceService.resourceRegister(resourceRegisterForm, 2);
+        redirectAttributes.addFlashAttribute("newModuleRegistered", true);
+
+        return "redirect:/resource/module/inventory";
     }
 
     @PostMapping("/device/register")
-    public String registerNewDevice(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") ResourceRegisterForm resourceRegisterForm) {
+    public String registerDeviceHandler(RedirectAttributes redirectAttributes, @ModelAttribute("deviceRegisterForm") ResourceRegisterForm resourceRegisterForm) {
 
         boolean exist = resourceService.checkResourceExistence(resourceRegisterForm.getSerialNumber(), 1);
 

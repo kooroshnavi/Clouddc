@@ -45,4 +45,14 @@ public final class Storage {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.DETACH}, fetch = FetchType.LAZY)
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
+
+    public Storage(ModuleInventory moduleInventory, String serialNumber, LocalDate mfg, long localityId, boolean spare, boolean active, boolean problematic) {
+        this.moduleInventory = moduleInventory;
+        this.serialNumber = serialNumber;
+        this.mfg = mfg;
+        this.localityId = localityId;
+        this.spare = spare;
+        this.active = active;
+        this.problematic = problematic;
+    }
 }

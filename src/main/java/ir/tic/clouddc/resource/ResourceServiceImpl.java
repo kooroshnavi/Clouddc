@@ -13,10 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.time.LocalDate;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -41,9 +39,11 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final ModuleInventoryRepository moduleInventoryRepository;
 
+    private final StorageRepository storageRepository;
+
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService1, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleInventoryRepository moduleInventoryRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService1, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleInventoryRepository moduleInventoryRepository, StorageRepository storageRepository) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
@@ -53,6 +53,7 @@ public class ResourceServiceImpl implements ResourceService {
         this.logService = logService;
         this.personService = personService;
         this.moduleInventoryRepository = moduleInventoryRepository;
+        this.storageRepository = storageRepository;
     }
 
     @Override
@@ -83,24 +84,21 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public boolean checkResourceExistence(String serialNumber, int resourceType) {
-      /*  boolean exists;
+        boolean exists;
         if (resourceType == 1) {
             exists = deviceRepository.existsBySerialNumber(serialNumber);
             boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
 
             return exists || UnassignedDeviceExist;
         } else {
-            exists = moduleRepository.existsBySerialNumber(serialNumber);
-
-            return exists;
-        }*/
-        return true;
+            return storageRepository.existsBySerialNumber(serialNumber);
+        }
     }
 
     @Override
     public void resourceRegister(ResourceRegisterForm resourceRegisterForm, int resourceType) {
         Persistence persistence;
-        if (resourceType == 1) {
+        if (resourceType == 1) {    // Device Register
             UnassignedDevice unassignedDevice = new UnassignedDevice();
             unassignedDevice.setSerialNumber(StringUtils.capitalize(resourceRegisterForm.getSerialNumber()));
             unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
@@ -109,27 +107,34 @@ public class ResourceServiceImpl implements ResourceService {
             unassignedDevice.setPersistence(persistence);
 
             unassignedDeviceRepository.saveAndFlush(unassignedDevice);
-        } else {
-            /*
-            Module module = new Module();
-            module.setModuleCategory(moduleCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
-            module.setSerialNumber(resourceRegisterForm.getSerialNumber());
-            module.setSpare(true);
-            module.setActive(false);
-            module.setProblematic(false);
-            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleRegister");
-            module.setPersistence(persistence);
-            if (resourceRegisterForm.getLocale() == 1) {
-                module.setLocalityId(CenterService.ROOM_1_ID);
-            } else if (resourceRegisterForm.getLocale() == 2) {
-                module.setLocalityId(CenterService.ROOM_2_ID);
-            } else if (resourceRegisterForm.getLocale() == 3) {
-                module.setLocalityId(CenterService.ROOM_412_ID);
-            } else {
-                module.setLocalityId(0);
+        } else {    // Module Register
+            var moduleInventory = moduleInventoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId());
+            if (moduleInventory.getClassification().equals("Storage")) {  // Storage Register
+                Storage storage = new Storage(moduleInventory
+                        , StringUtils.capitalize(resourceRegisterForm.getSerialNumber())
+                        , LocalDate.of(resourceRegisterForm.getMfgYear(), resourceRegisterForm.getMfgMonth(), 1)
+                        , resourceRegisterForm.getLocale()
+                        , true, false, false);
+                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "StorageRegister");
+                storage.setPersistence(persistence);
+                moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
+                if (moduleInventory.getStorageList() != null) {
+                    moduleInventory.getStorageList().add(storage);
+                } else {
+                    moduleInventory.setStorageList(List.of(storage));
+                }
+
+            } else {    // Other Modules
+                if (moduleInventory.getPersistence() != null) {
+                    logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), "ModuleInventoryUpdate", personService.getCurrentPerson(), moduleInventory.getPersistence());
+                } else {
+                    persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleInventoryUpdate");
+                    moduleInventory.setPersistence(persistence);
+                    moduleInventory.setAvailable(moduleInventory.getAvailable() + resourceRegisterForm.getQty());
+                }
             }
 
-            moduleRepository.saveAndFlush(module);*/
+            moduleInventoryRepository.saveAndFlush(moduleInventory);
         }
     }
 
@@ -175,26 +180,28 @@ public class ResourceServiceImpl implements ResourceService {
         Map<ModuleInventory, Integer> deviceModuleOverviewMap = new HashMap<>();
         List<ModuleInventory> moduleInventoryList = moduleInventoryRepository.getAvailableList();
 
-        List<Integer> distinctList = moduleInventoryList
-                .stream()
-                .map(ModuleInventory::getCategoryId)
-                .distinct()
-                .toList();
-
-        for (Integer categoryId : distinctList) {
-            AtomicInteger totalAvailable = new AtomicInteger();
-            moduleInventoryList
+        if (!moduleInventoryList.isEmpty()) {
+            List<Integer> distinctList = moduleInventoryList
                     .stream()
-                    .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
-                    .map(ModuleInventory::getAvailable)
-                    .forEach(totalAvailable::addAndGet);
+                    .map(ModuleInventory::getCategoryId)
+                    .distinct()
+                    .toList();
 
-            var category = moduleInventoryList
-                    .stream()
-                    .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
-                    .findFirst();
+            for (Integer categoryId : distinctList) {
+                AtomicInteger totalAvailable = new AtomicInteger();
+                moduleInventoryList
+                        .stream()
+                        .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                        .map(ModuleInventory::getAvailable)
+                        .forEach(totalAvailable::addAndGet);
 
-            category.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAvailable.get()));
+                var category = moduleInventoryList
+                        .stream()
+                        .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                        .findFirst();
+
+                category.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAvailable.get()));
+            }
         }
 
         return deviceModuleOverviewMap;  // Tomorrow: this view
@@ -203,6 +210,15 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<ModuleInventory> getModuleCategoryList() {
         return moduleInventoryRepository.findAll();
+    }
+
+    @Override
+    public List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId) {
+        return moduleInventoryRepository
+                .getRelatedModuleInventoryList(categoryId)
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getAvailable).reversed())
+                .toList();
     }
 
     @Override

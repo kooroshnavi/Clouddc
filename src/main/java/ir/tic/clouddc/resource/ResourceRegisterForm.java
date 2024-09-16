@@ -14,5 +14,11 @@ public class ResourceRegisterForm {
     @NotNull
     private Integer resourceCategoryId;
 
-    private int locale;
+    private int qty;
+
+    private long locale;
+
+    private int mfgYear;
+
+    private int mfgMonth;
 }
