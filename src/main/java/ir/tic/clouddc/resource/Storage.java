@@ -6,7 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
 
 @Entity
 @Table(schema = "Resource")
@@ -28,7 +28,7 @@ public final class Storage {
     private String serialNumber;
 
     @Column(name = "MFG")
-    private LocalDate mfg;
+    private YearMonth mfg;
 
     @Column(name = "LocalityId", nullable = false)
     private long localityId; // Spare: true -> RoomID or 0 , false -> DeviceID
@@ -46,7 +46,7 @@ public final class Storage {
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
-    public Storage(ModuleInventory moduleInventory, String serialNumber, LocalDate mfg, long localityId, boolean spare, boolean active, boolean problematic) {
+    public Storage(ModuleInventory moduleInventory, String serialNumber, YearMonth mfg, long localityId, boolean spare, boolean active, boolean problematic) {
         this.moduleInventory = moduleInventory;
         this.serialNumber = serialNumber;
         this.mfg = mfg;

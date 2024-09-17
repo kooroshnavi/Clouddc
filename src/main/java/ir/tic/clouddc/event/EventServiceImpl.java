@@ -606,6 +606,15 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    public List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID) {
+        return resourceService
+                .getDeviceRelatedModuleInventoryList(deviceCategoryID)
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getClassification))
+                .toList();
+    }
+
+    @Override
     public List<Event> loadEventTransients_1(List<Event> eventList) {
         for (Event event : eventList) {
             event.setPersianEventDate(UtilService.getFormattedPersianDate(event.getEventDate()));

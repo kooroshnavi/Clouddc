@@ -5,9 +5,7 @@ import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.center.Room;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.resource.Device;
-import ir.tic.clouddc.resource.ResourceService;
-import ir.tic.clouddc.resource.Utilizer;
+import ir.tic.clouddc.resource.*;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.annotation.Nullable;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +34,6 @@ public class EventController {
     EventController(EventService eventService) {
         this.eventService = eventService;
     }
-
 
     @GetMapping("/category/{categoryId}/{targetId}/form")
     public String showEventForm(Model model, @PathVariable Long targetId, @PathVariable Integer categoryId) {
@@ -130,13 +127,29 @@ public class EventController {
                 }
             }
 
-            case 5 -> {
+            case 5 -> { // Device Utilizer
                 Device device = eventService.getReferencedDevice(targetId);
                 var currentUtilizer = device.getUtilizer();
                 List<ResourceService.UtilizerIdNameProjection> utilizerList = eventService.getUtilizerList(List.of(currentUtilizer.getId()));
                 model.addAttribute("currentUtilizer", currentUtilizer);
                 model.addAttribute("utilizerList", utilizerList);
                 model.addAttribute("device", device);
+            }
+
+            case 6 -> { // Device Module
+                Device device = eventService.getReferencedDevice(targetId);
+                List<ModuleInventory> deviceModuleInventoryList = eventService.getDeviceRelatedModuleInventoryList(device.getDeviceCategory().getId());
+                Map<ModuleInventory, Integer> deviceModuleMap = new HashMap<>();
+                if (!device.getModulePackList().isEmpty()) {
+                    for (ModulePack modulePack : device.getModulePackList()) {
+                        deviceModuleMap.put(modulePack.getModuleInventory(), modulePack.getQty());
+                    }
+                }
+
+                model.addAttribute("device", device);
+                model.addAttribute("deviceModuleMap", deviceModuleMap);
+                model.addAttribute("deviceModuleInventoryList", deviceModuleInventoryList);
+
             }
 
             default -> {

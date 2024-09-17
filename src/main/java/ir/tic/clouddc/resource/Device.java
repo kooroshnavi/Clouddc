@@ -47,6 +47,9 @@ public abstract class Device {
     @OneToMany(mappedBy = "device")
     private List<DevicePmCatalog> devicePmCatalogList;
 
+    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    private List<ModulePack> modulePackList;
+
     @ManyToMany(mappedBy = "deviceList")
     private List<Event> deviceEventList;
 

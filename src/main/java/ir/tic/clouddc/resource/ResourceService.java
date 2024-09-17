@@ -42,6 +42,12 @@ public interface ResourceService {
 
     List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId);
 
+    List<Storage> getRelatedStorageList(Integer specId);
+
+    Map<ModuleInventory, Integer> getDeviceModuleOverview(List<ModulePack> modulePackList);
+
+    List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID);
+
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 

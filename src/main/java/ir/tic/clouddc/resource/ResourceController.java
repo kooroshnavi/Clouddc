@@ -36,9 +36,14 @@ public class ResourceController {
                 catalog.setPersianNextDue(UtilService.getFormattedPersianDate(catalog.getNextDueDate()));
             }
         }
-        //   Map<ModuleCategory, Long> moduleOverviewMap = resourceService.getModuleOverviewMap(List.of(deviceId), false);
+        Map<ModuleInventory, Integer> deviceModuleOverviewMap = resourceService.getDeviceModuleOverview(device.getModulePackList());
+        var sortedKeySet = deviceModuleOverviewMap
+                .keySet()
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getClassification));
 
-        // model.addAttribute("moduleMap", moduleOverviewMap);
+        model.addAttribute("sortedKeySet", sortedKeySet);
+        model.addAttribute("moduleMap", deviceModuleOverviewMap);
         model.addAttribute("device", device);
         model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
@@ -102,8 +107,9 @@ public class ResourceController {
                 .keySet()
                 .stream()
                 .sorted(Comparator.comparing(ModuleInventory::getClassification));
-        model.addAttribute("moduleOverviewMap", moduleOverviewMap);
+
         model.addAttribute("sortedKeySet", sortedKeySet);
+        model.addAttribute("moduleOverviewMap", moduleOverviewMap);
 
         if (!model.containsAttribute("newModuleRegistered")) {
             model.addAttribute("newModuleRegistered", false);
@@ -120,6 +126,19 @@ public class ResourceController {
         model.addAttribute("inventoryDetailList", inventoryDetailList);
 
         return "moduleDetail";
+    }
+
+    @GetMapping("/module/storage/{specId}/detail")
+    public String showInventoryDetail_2(Model model, @PathVariable Integer specId) {
+        List<Storage> storageList = resourceService.getRelatedStorageList(specId);
+        var inventory = storageList.stream().map(Storage::getModuleInventory).findAny();
+        inventory.ifPresent(moduleInventory -> model.addAttribute("inventory", moduleInventory));
+        model.addAttribute("storageList", storageList);
+        model.addAttribute("room1Id", CenterService.ROOM_1_ID);
+        model.addAttribute("room2Id", CenterService.ROOM_2_ID);
+        model.addAttribute("room412Id", CenterService.ROOM_412_ID);
+
+        return "storageDetail";
     }
 
     @GetMapping("/module/register/form")

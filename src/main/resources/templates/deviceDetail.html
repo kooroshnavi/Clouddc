@@ -201,21 +201,14 @@
 
                             <li>
                                 <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 6)}"
-                                        class="btn btn-outline-danger" disabled="disabled">2. چک لیست (در حال توسعه)
+                                        class="btn btn-outline-danger">2. مدیریت ماژول ها و ملحقات
                                 </button>
                                 <hr/>
                             </li>
 
                             <li>
                                 <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                        class="btn btn-outline-danger" disabled="disabled">3. قطعی لینک (در حال توسعه)
-                                </button>
-                                <hr/>
-                            </li>
-
-                            <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                        class="btn btn-outline-danger" disabled="disabled">4. افزودن ماژول به تجهیز
+                                        class="btn btn-outline-danger" disabled="disabled">3.گزارش قطعی لینک (در حال توسعه)
                                 </button>
                                 <hr/>
                             </li>
@@ -272,19 +265,17 @@
                 </table>
             </div>
         </div>
-
         <br>
 
-        <h4 class="mb-0 text-bg-primary">ماژول ها</h4>
-        <br>
-        <div align="right" th:if="${not moduleMap.isEmpty()}"
-             sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+        <h4 th:if="${not moduleMap.isEmpty()}" class="mb-0 text-bg-primary">ماژول ها و ملحقات</h4>
+        <br th:if="${not moduleMap.isEmpty()}">
+        <div th:if="${not moduleMap.isEmpty()}" align="right" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
             <div class="ui-dialog-buttonpane">
                 <a th:href="@{/pm/catalog/device/{deviceId}/form (deviceId=${device.id})}"
-                   class="btn btn-outline-primary">جزئیات ماژول ها</a>
+                   class="btn btn-outline-primary">مدیریت ماژول های تجهیز</a>
             </div>
         </div>
-        <div class="card">
+        <div th:if="${not moduleMap.isEmpty()}" class="card">
             <div class="card-body">
                 <div class="table-responsive">
                     <table class="table mb-0 table-primary table-striped">
@@ -294,46 +285,22 @@
                             <th>طبقه بندی</th>
                             <th>نوع</th>
                             <th>تعداد</th>
-                            <th>عملیات</th>
                         </tr>
                         </thead>
                         <tbody>
 
-                        <tr th:each="module, iter : ${moduleMap.keySet()}">
+                        <tr th:each="module, iter : ${sortedKeySet}">
 
                             <td th:text="${iter.count}"></td>
                             <td th:text="${module.classification}"></td>
                             <td th:text="${module.category}"></td>
-                            <td th:text="${moduleMap.get(module)}"></td>
-
-                            <td class="clock">
-                                <span th:if="${module.active}"
-                                      class="badge bg-light-success text-success w-100">فعال</span>
-                                <span th:unless="${module.active}"
-                                      class="badge bg-light-danger text-danger w-100">غیرفعال</span>
-                            </td>
-
-                            <td class="clock">
-                                <span th:if="${not module.problematic}"
-                                      class="badge bg-light-success text-success w-100">اعلام نشده</span>
-                                <span th:if="${module.problematic}"
-                                      class="badge bg-light-danger text-danger w-100">خراب است</span>
-                            </td>
-
                             <td>
-                                <a class="button" href="#" role="button">
-                                    <span>حذف ماژول</span>
-                                    <div class="icon">
-                                        <i class="fadeIn animated bx bx-message-square-x"></i>
-                                    </div>
-                                </a>
-                                <br>
-                                <a class="button" href="#" role="button">
-                                    <span>ثبت خرابی</span>
-                                    <div class="icon">
-                                        <i class="fadeIn animated bx bx-message-square-x"></i>
-                                    </div>
-                                </a>
+                                <div class="col">
+                                    <a th:text="${moduleMap.get(module)}"
+                                       th:href="@{/resource/device/module/category/{categoryId}/detail (categoryId=${module.categoryId})}"
+                                       class="btn btn-outline-info" data-bs-toggle="tooltip"
+                                       data-bs-placement="top" title="جزئیات"></a>
+                                </div>
                             </td>
 
                         </tr>

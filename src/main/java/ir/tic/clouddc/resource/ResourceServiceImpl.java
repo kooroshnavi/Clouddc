@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -112,7 +112,7 @@ public class ResourceServiceImpl implements ResourceService {
             if (moduleInventory.getClassification().equals("Storage")) {  // Storage Register
                 Storage storage = new Storage(moduleInventory
                         , StringUtils.capitalize(resourceRegisterForm.getSerialNumber())
-                        , LocalDate.of(resourceRegisterForm.getMfgYear(), resourceRegisterForm.getMfgMonth(), 1)
+                        , YearMonth.of(resourceRegisterForm.getMfgYear(), resourceRegisterForm.getMfgMonth())
                         , resourceRegisterForm.getLocale()
                         , true, false, false);
                 persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "StorageRegister");
@@ -219,6 +219,78 @@ public class ResourceServiceImpl implements ResourceService {
                 .stream()
                 .sorted(Comparator.comparing(ModuleInventory::getAvailable).reversed())
                 .toList();
+    }
+
+    @Override
+    public List<Storage> getRelatedStorageList(Integer specId) {
+
+        return storageRepository.getRelatedStorageList(List.of(specId));
+    }
+
+    @Override
+    public Map<ModuleInventory, Integer> getDeviceModuleOverview(List<ModulePack> modulePackList) {
+        Map<ModuleInventory, Integer> deviceModuleOverviewMap = new HashMap<>();
+
+        if (!modulePackList.isEmpty()) {
+            List<Integer> distinctCategoryIdList = modulePackList
+                    .stream()
+                    .map(ModulePack::getModuleInventory)
+                    .map(ModuleInventory::getCategoryId)
+                    .distinct()
+                    .toList();
+
+            for (Integer categoryId : distinctCategoryIdList) {
+                AtomicInteger totalAssigned = new AtomicInteger();
+                modulePackList
+                        .stream()
+                        .filter(modulePack -> modulePack.getModuleInventory().getCategoryId() == categoryId)
+                        .map(ModulePack::getQty)
+                        .forEach(totalAssigned::addAndGet);
+
+                var inventory = modulePackList
+                        .stream()
+                        .map(ModulePack::getModuleInventory)
+                        .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                        .findFirst();
+
+                inventory.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAssigned.get()));
+            }
+        }
+
+        return deviceModuleOverviewMap;
+    }
+
+    @Override
+    public List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID) {
+        switch (deviceCategoryID) {
+            case 1, 2, 5 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 8, 10, 11, 12, 13, 14, 15, 16));
+            }
+            case 3, 4 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 8, 11, 12, 14, 15, 16));
+            }
+            case 6 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 3, 4, 5, 8, 9));
+            }
+            case 7, 8 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 5, 8, 9));
+            }
+            case 9, 10, 13 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 3, 4, 5, 8, 9));
+            }
+            case 11 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 5, 8));
+            }
+            case 12 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(8, 10, 12, 16));
+            }
+            case 14 -> {
+                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 5, 8));
+            }
+            default -> {
+                return new ArrayList<>();
+            }
+        }
     }
 
     @Override

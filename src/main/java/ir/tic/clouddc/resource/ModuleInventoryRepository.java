@@ -15,4 +15,7 @@ public interface ModuleInventoryRepository extends JpaRepository<ModuleInventory
 
     @Query("select m from ModuleInventory m where m.categoryId = :categoryId and m.available > 0")
     List<ModuleInventory> getRelatedModuleInventoryList(@Param("categoryId") Integer categoryId);
+
+    @Query("select m from ModuleInventory m where m.categoryId in :specificInventoryIdList")
+    List<ModuleInventory> getDeviceSpecificInventoryList(List<Integer> specificInventoryIdList);
 }
