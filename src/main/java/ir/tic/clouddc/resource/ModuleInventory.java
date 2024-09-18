@@ -23,6 +23,9 @@ public final class ModuleInventory {
     @Column(name = "Classification", nullable = false)
     private String classification;  // Transceiver - Storage - Memory - Power - NIC - SmartArray
 
+    @Column(name = "classificationId")
+    private int classificationId;
+
     @Column(name = "Category", nullable = false)
     private String category;  // SFP/CVR - HDD/SSD - Memory - Power - NIC - SmartArray
 

@@ -46,7 +46,9 @@ public interface ResourceService {
 
     Map<ModuleInventory, Integer> getDeviceModuleOverview(List<ModulePack> modulePackList);
 
-    List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID);
+    List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID);
+
+    long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm);
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();

@@ -606,12 +606,17 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
-    public List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID) {
+    public List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID) {
         return resourceService
-                .getDeviceRelatedModuleInventoryList(deviceCategoryID)
+                .getDeviceCompatibleModuleInventoryList(deviceCategoryID)
                 .stream()
                 .sorted(Comparator.comparing(ModuleInventory::getClassification))
                 .toList();
+    }
+
+    @Override
+    public Map<ModuleInventory, Integer> getDeviceModuleOverviewMap(List<ModulePack> packList) {
+        return resourceService.getDeviceModuleOverview(packList);
     }
 
     @Override

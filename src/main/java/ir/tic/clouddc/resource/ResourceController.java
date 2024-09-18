@@ -11,10 +11,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping("/resource")
@@ -40,14 +37,53 @@ public class ResourceController {
         var sortedKeySet = deviceModuleOverviewMap
                 .keySet()
                 .stream()
-                .sorted(Comparator.comparing(ModuleInventory::getClassification));
+                .sorted(Comparator.comparing(ModuleInventory::getClassification)).toList();
 
-        model.addAttribute("sortedKeySet", sortedKeySet);
+        model.addAttribute("sortedKeyList", sortedKeySet);
         model.addAttribute("moduleMap", deviceModuleOverviewMap);
         model.addAttribute("device", device);
         model.addAttribute("catalogList", device.getDevicePmCatalogList());
 
         return "deviceDetail";
+    }
+
+    @GetMapping("/device/{deviceId}/module/form")
+    public String showDeviceModuleUpdateForm(Model model, @PathVariable long deviceId) {
+        Device device = resourceService.getReferencedDevice(deviceId);
+        List<ModuleInventory> compatibleModuleInventoryList = new ArrayList<>(resourceService
+                .getDeviceCompatibleModuleInventoryList(device.getDeviceCategory().getId())
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getClassification))
+                .toList());
+        Map<ModuleInventory, Integer> deviceModuleMap = new HashMap<>();
+        var packList = device.getModulePackList();
+        if (!packList.isEmpty()) {
+            for (ModulePack modulePack : device.getModulePackList()) {
+                deviceModuleMap.put(modulePack.getModuleInventory(), modulePack.getQty());
+            }
+        }
+        compatibleModuleInventoryList.removeIf(inventory -> inventory.getAvailable() == 0 && deviceModuleMap.getOrDefault(inventory, 0) == 0);
+
+        if (!model.containsAttribute("success")) {
+            model.addAttribute("success", false);
+        }
+
+        model.addAttribute("device", device);
+        model.addAttribute("compatibleModuleInventoryList", compatibleModuleInventoryList);
+        model.addAttribute("deviceModuleMap", deviceModuleMap);
+        model.addAttribute("updateForm", new DeviceModuleUpdateForm());
+
+        return "deviceModuleForm2";
+    }
+
+    @PostMapping("/device/module/update")
+    public String updateDeviceModule(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") DeviceModuleUpdateForm deviceModuleUpdateForm) {
+        long result = resourceService.updateDeviceModule(deviceModuleUpdateForm);
+
+        redirectAttributes.addFlashAttribute("success", true);
+        redirectAttributes.addAttribute("deviceId", result);
+
+        return "redirect:/resource/device/{deviceId}/module/form";
     }
 
     @GetMapping("/utilizer/list")

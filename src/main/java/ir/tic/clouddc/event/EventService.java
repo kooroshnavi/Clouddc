@@ -4,10 +4,7 @@ import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Location;
 import ir.tic.clouddc.center.LocationStatus;
 import ir.tic.clouddc.document.MetaData;
-import ir.tic.clouddc.resource.Device;
-import ir.tic.clouddc.resource.ModuleInventory;
-import ir.tic.clouddc.resource.ResourceService;
-import ir.tic.clouddc.resource.Utilizer;
+import ir.tic.clouddc.resource.*;
 import org.springframework.ui.Model;
 
 import java.io.IOException;
@@ -72,5 +69,7 @@ public interface EventService {
 
     boolean newDevicePresentCheck();
 
-    List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID);
+    List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID);
+
+    Map<ModuleInventory, Integer> getDeviceModuleOverviewMap(List<ModulePack> packList);
 }

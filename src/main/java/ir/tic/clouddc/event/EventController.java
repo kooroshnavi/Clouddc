@@ -138,16 +138,24 @@ public class EventController {
 
             case 6 -> { // Device Module
                 Device device = eventService.getReferencedDevice(targetId);
-                List<ModuleInventory> deviceModuleInventoryList = eventService.getDeviceRelatedModuleInventoryList(device.getDeviceCategory().getId());
+                List<ModuleInventory> deviceModuleInventoryList = eventService.getDeviceCompatibleModuleInventoryList(device.getDeviceCategory().getId());
                 Map<ModuleInventory, Integer> deviceModuleMap = new HashMap<>();
-                if (!device.getModulePackList().isEmpty()) {
+                var packList = device.getModulePackList();
+                if (!packList.isEmpty()) {
                     for (ModulePack modulePack : device.getModulePackList()) {
                         deviceModuleMap.put(modulePack.getModuleInventory(), modulePack.getQty());
                     }
                 }
+                Map<ModuleInventory, Integer> moduleOverviewMap = eventService.getDeviceModuleOverviewMap(packList);
+                var sortedKeySet = moduleOverviewMap
+                        .keySet()
+                        .stream()
+                        .sorted(Comparator.comparing(ModuleInventory::getClassification)).toList();
 
                 model.addAttribute("device", device);
                 model.addAttribute("deviceModuleMap", deviceModuleMap);
+                model.addAttribute("sortedKeySet", sortedKeySet);
+                model.addAttribute("moduleOverviewMap", moduleOverviewMap);
                 model.addAttribute("deviceModuleInventoryList", deviceModuleInventoryList);
 
             }

@@ -261,36 +261,64 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<ModuleInventory> getDeviceRelatedModuleInventoryList(Integer deviceCategoryID) {
+    public List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID) {
         switch (deviceCategoryID) {
             case 1, 2, 5 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 8, 10, 11, 12, 13, 14, 15, 16));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 8, 10, 11, 12, 13, 14, 15, 16));
             }
             case 3, 4 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 8, 11, 12, 14, 15, 16));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 8, 11, 12, 14, 15, 16));
             }
             case 6 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 3, 4, 5, 8, 9));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 3, 4, 5, 8, 9));
             }
             case 7, 8 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 5, 8, 9));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 5, 8, 9));
             }
             case 9, 10, 13 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 3, 4, 5, 8, 9));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 3, 4, 5, 8, 9));
             }
             case 11 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 2, 5, 8));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 5, 8));
             }
             case 12 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(8, 10, 12, 16));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(8, 10, 12, 16));
             }
             case 14 -> {
-                return moduleInventoryRepository.getDeviceSpecificInventoryList(List.of(1, 5, 8));
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 5, 8));
             }
             default -> {
                 return new ArrayList<>();
             }
         }
+    }
+
+    @Override
+    public long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm) {
+        var device = deviceRepository.getReferenceById(deviceModuleUpdateForm.getDeviceId());
+        var moduleInventory = moduleInventoryRepository.getReferenceById(deviceModuleUpdateForm.getModuleInventoryId());
+        var updatedValue = deviceModuleUpdateForm.getUpdatedValue();
+
+        List<ModulePack> modulePackList = device.getModulePackList();
+        modulePackList
+                .stream()
+                .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                .findFirst()
+                .ifPresentOrElse(modulePack -> modulePack.setQty(modulePack.getQty() + updatedValue), () -> {
+                    ModulePack modulePack = new ModulePack();
+                    modulePack.setModuleInventory(moduleInventory);
+                    modulePack.setQty(updatedValue);
+                    modulePack.setDevice(device);
+                    if (device.getModulePackList() != null) {
+                        device.getModulePackList().add(modulePack);
+                    } else {
+                        device.setModulePackList(List.of(modulePack));
+                    }
+                });
+
+        moduleInventory.setAvailable(moduleInventory.getAvailable() + Math.negateExact(updatedValue));
+
+        return deviceRepository.saveAndFlush(device).getId();
     }
 
     @Override
