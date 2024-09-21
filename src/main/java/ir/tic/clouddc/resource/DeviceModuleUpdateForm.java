@@ -2,6 +2,9 @@ package ir.tic.clouddc.resource;
 
 import lombok.Data;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 public class DeviceModuleUpdateForm {
 
@@ -10,4 +13,8 @@ public class DeviceModuleUpdateForm {
     private int moduleInventoryId;
 
     private Integer updatedValue = null;
+
+    private List<Long> storageIdList = new ArrayList<>();
+
+    private boolean storageUpdate;
 }

@@ -54,6 +54,6 @@ public final class ModuleInventory {
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
-    @OneToMany(mappedBy = "moduleInventory", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "moduleInventory", cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.PERSIST, CascadeType.DETACH})
     private List<Storage> storageList;
 }

@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+    <link href="/multiSelect/MultiSelect.css" rel="stylesheet" type="text/css">
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
@@ -36,6 +37,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         pos5_success_noti();
     });
+
 </script>
 <!--start wrapper-->
 <div class="wrapper">
@@ -68,7 +70,73 @@
         <div class="card">
             <div class="card-body">
 
-                <h4 class="mb-0 text-uppercase" align="center">مخزن ماژول (موجودی اتاق ها)</h4>
+                <h4 class="mb-0 text-uppercase" align="center"
+                    th:text="${'فرم جزئیات و بروزرسانی ماژول های ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h4>
+                <br>
+                <h5 class="mb-0 text-uppercase" align="center"
+                    th:text="${'محل نصب: ' + device.location.locationCategory.category + ' ' + device.location.name}"></h5>
+                <br>
+                <h6 class="mb-0 text-uppercase" align="center" th:text="${'بهره بردار: ' + device.utilizer.name}"></h6>
+                <br>
+
+                <div th:if="${device.deviceCategory.categoryId == 5 || device.deviceCategory.categoryId == 8 }"
+                     class="col" align="left">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                            data-bs-target="#exampleLargeModal">استوریج (HDD/SSD)
+                    </button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleLargeModal" tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-xl">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h6 class="modal-title"
+                                        th:text="${'مشاهده و بروزرسانی استوریج های ' + device.deviceCategory.category + ' ' + device.deviceCategory.factorSize + device.deviceCategory.factor + ' <- ' + device.serialNumber}"></h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+
+                                    <form th:action="@{/resource/device/module/update}"
+                                          th:object="${updateForm}"
+                                          enctype="multipart/form-data"
+                                          method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                        <input type="hidden" name="deviceId" th:value="${device.id}"/>
+                                        <input type="hidden" name="storageUpdate" th:value="${true}"/>
+
+                                        <label for="Storage">Storage Add/Remove</label>
+                                        <select id="Storage" name="Storage" data-placeholder="حذف و اضافه استوریج ها" th:data-max="${device.deviceCategory.factorSize}" data-select-all="false" data-multi-select th:field="*{storageIdList}">
+                                            <option th:each="storage : ${deviceAssignedAndSpareStorageList}"
+                                                    class="text-bg-info"
+                                                    th:if="${not storage.spare}"
+                                                    selected="selected"
+                                                    th:value="${storage.getId()}"
+                                                    th:text="${' (این استوریج روی تجهیز قرار دارد. جهت حذف از تجهیز؛ تیک را بردارید) '+ storage.moduleInventory.vendor + ' -> ' + storage.moduleInventory.category + ' -> ' + storage.moduleInventory.spec + ' -> ' + storage.moduleInventory.value + storage.moduleInventory.unit + ' -> ' +storage.serialNumber}"></option>
+
+                                            <option th:each="storage : ${deviceAssignedAndSpareStorageList}"
+                                                    th:unless="${not storage.spare}"
+                                                    th:value="${storage.getId()}"
+                                                    th:text="${storage.moduleInventory.vendor + ' -> ' + storage.moduleInventory.category + ' -> ' + storage.moduleInventory.spec + ' -> ' + storage.moduleInventory.value + storage.moduleInventory.unit + ' -> ' +storage.serialNumber}"></option>
+                                        </select>
+
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary"
+                                                    data-bs-dismiss="modal">بستن
+                                            </button>
+                                            <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                                        </div>
+
+                                    </form>
+                                    <br>
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <br>
 
                 <div class="table-responsive">
@@ -95,44 +163,60 @@
                             <td th:text="${moduleInventory.vendor}"></td>
                             <td th:text="${moduleInventory.spec + '->' + moduleInventory.value + moduleInventory.unit}"></td>
 
-                            <td th:if="${moduleInventory.available >= 20}" class="text-bg-success" th:text="${moduleInventory.available}"></td>
-                            <td th:if="${moduleInventory.available < 20 && moduleInventory.available >= 10}" class="text-bg-warning" th:text="${moduleInventory.available}"></td>
-                            <td th:if="${moduleInventory.available < 10 && moduleInventory.available > 0}" class="text-bg-danger" th:text="${moduleInventory.available}"></td>
-                            <td th:if="${moduleInventory.available == 0}" class="text-bg-dark" th:text="${moduleInventory.available}"></td>
+                            <td th:if="${moduleInventory.available >= 20}" class="text-bg-success"
+                                th:text="${moduleInventory.available}"></td>
+                            <td th:if="${moduleInventory.available < 20 && moduleInventory.available >= 10}"
+                                class="text-bg-warning" th:text="${moduleInventory.available}"></td>
+                            <td th:if="${moduleInventory.available < 10 && moduleInventory.available > 0}"
+                                class="text-bg-danger" th:text="${moduleInventory.available}"></td>
+                            <td th:if="${moduleInventory.available == 0}" class="text-bg-dark"
+                                th:text="${moduleInventory.available}"></td>
 
                             <td th:text="${deviceModuleMap.getOrDefault(moduleInventory, 0)}"></td>
 
-                            <td class="text-danger" th:if="${moduleInventory.available == 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) == 0)}">موجودی ندارد</td>
+                            <td th:if="${moduleInventory.classification.equals('Storage')}" class="text-primary">از طریق
+                                گزینه جزئیات Storage
+                            </td>
 
-                            <td th:if="${moduleInventory.available == 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
+                            <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available == 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
                                 <form th:action="@{/resource/device/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" name="general_locationId" th:min="${-deviceModuleMap.get(moduleInventory)}" max="-1" th:field="*{updatedValue}"/>
+                                    <input type="number"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           max="-1" th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit" class="btn-group-sm btn-dark">بروزرسانی</button>
                                 </form>
                             </td>
 
-                            <td class="text-danger" th:if="${moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
+                            <td class="text-danger"
+                                th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
                                 <form th:action="@{/resource/device/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit2').disabled=true;">
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" name="general_locationId" th:min="${-deviceModuleMap.get(moduleInventory)}" th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
+                                    <input type="number"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit2" class="btn-group-sm btn-dark">بروزرسانی</button>
                                 </form>
                             </td>
 
-                            <td th:if="${moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) == 0)}">
+                            <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) == 0)}">
                                 <form th:action="@{/resource/device/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit3').disabled=true;">
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" name="general_locationId" min="1" th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
+                                    <input type="number" min="1"
+                                           th:max="${moduleInventory.available}"
+                                           th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit3" class="btn-group-sm btn-dark">بروزرسانی</button>
                                 </form>
                             </td>
@@ -172,6 +256,7 @@
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <!--notification js -->
+<script src="/multiSelect/MultiSelect.js"></script>
 <script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>

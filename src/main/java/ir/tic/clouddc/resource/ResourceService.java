@@ -50,6 +50,8 @@ public interface ResourceService {
 
     long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm);
 
+    List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList);
+
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 

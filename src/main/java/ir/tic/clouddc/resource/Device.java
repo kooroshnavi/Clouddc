@@ -47,7 +47,7 @@ public abstract class Device {
     @OneToMany(mappedBy = "device")
     private List<DevicePmCatalog> devicePmCatalogList;
 
-    @OneToMany(mappedBy = "device", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "device", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<ModulePack> modulePackList;
 
     @ManyToMany(mappedBy = "deviceList")

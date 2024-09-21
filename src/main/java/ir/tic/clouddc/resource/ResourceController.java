@@ -63,14 +63,27 @@ public class ResourceController {
             }
         }
         compatibleModuleInventoryList.removeIf(inventory -> inventory.getAvailable() == 0 && deviceModuleMap.getOrDefault(inventory, 0) == 0);
+        List<ModuleInventory> compatibleStorageInventoryList = compatibleModuleInventoryList
+                .stream()
+                .filter(moduleInventory -> moduleInventory.getClassification().equals("Storage"))
+                .toList();
+        List<Storage> deviceAssignedAndSpareStorageList = resourceService.getDeviceAssignedAndSpareStorageList(deviceId, compatibleStorageInventoryList);
 
         if (!model.containsAttribute("success")) {
             model.addAttribute("success", false);
         }
 
+        log.info(String.valueOf(deviceAssignedAndSpareStorageList.size()));
+
+        List<String> textList = deviceAssignedAndSpareStorageList.stream().map(Storage::getSerialNumber).toList();
+        List<Long> valueList = deviceAssignedAndSpareStorageList.stream().map(Storage::getId).toList();
+
         model.addAttribute("device", device);
         model.addAttribute("compatibleModuleInventoryList", compatibleModuleInventoryList);
         model.addAttribute("deviceModuleMap", deviceModuleMap);
+        model.addAttribute("deviceAssignedAndSpareStorageList", deviceAssignedAndSpareStorageList);
+        model.addAttribute("textList", textList);
+        model.addAttribute("valueList", valueList);
         model.addAttribute("updateForm", new DeviceModuleUpdateForm());
 
         return "deviceModuleForm2";
@@ -200,7 +213,7 @@ public class ResourceController {
 
     @PostMapping("/module/register")
     public String registerModuleHandler(RedirectAttributes redirectAttributes, @ModelAttribute("moduleRegisterForm") ResourceRegisterForm resourceRegisterForm) {
-        if (resourceRegisterForm.getResourceCategoryId() >= 1047 && resourceRegisterForm.getResourceCategoryId() <= 1075) { // check storage existence
+        if (resourceRegisterForm.getResourceCategoryId() >= 16 && resourceRegisterForm.getResourceCategoryId() <= 19) { // check storage existence
             boolean exist = resourceService.checkResourceExistence(resourceRegisterForm.getSerialNumber(), 2);
             if (exist) {
                 redirectAttributes.addFlashAttribute("exist", true);

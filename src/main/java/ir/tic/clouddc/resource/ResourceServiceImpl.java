@@ -29,8 +29,6 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final SupplierRepository supplierRepository;
 
-    private final CenterService centerService;
-
     private final UtilizerRepository utilizerRepository;
 
     private final LogService logService;
@@ -43,12 +41,11 @@ public class ResourceServiceImpl implements ResourceService {
 
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService1, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleInventoryRepository moduleInventoryRepository, StorageRepository storageRepository) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleInventoryRepository moduleInventoryRepository, StorageRepository storageRepository) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
         this.supplierRepository = supplierRepository;
-        this.centerService = centerService1;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
@@ -247,13 +244,15 @@ public class ResourceServiceImpl implements ResourceService {
                         .map(ModulePack::getQty)
                         .forEach(totalAssigned::addAndGet);
 
-                var inventory = modulePackList
-                        .stream()
-                        .map(ModulePack::getModuleInventory)
-                        .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
-                        .findFirst();
+                if (totalAssigned.get() > 0) {
+                    var inventory = modulePackList
+                            .stream()
+                            .map(ModulePack::getModuleInventory)
+                            .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                            .findFirst();
 
-                inventory.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAssigned.get()));
+                    inventory.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAssigned.get()));
+                }
             }
         }
 
@@ -296,29 +295,108 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm) {
         var device = deviceRepository.getReferenceById(deviceModuleUpdateForm.getDeviceId());
-        var moduleInventory = moduleInventoryRepository.getReferenceById(deviceModuleUpdateForm.getModuleInventoryId());
-        var updatedValue = deviceModuleUpdateForm.getUpdatedValue();
 
-        List<ModulePack> modulePackList = device.getModulePackList();
-        modulePackList
-                .stream()
-                .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
-                .findFirst()
-                .ifPresentOrElse(modulePack -> modulePack.setQty(modulePack.getQty() + updatedValue), () -> {
-                    ModulePack modulePack = new ModulePack();
-                    modulePack.setModuleInventory(moduleInventory);
-                    modulePack.setQty(updatedValue);
-                    modulePack.setDevice(device);
-                    if (device.getModulePackList() != null) {
-                        device.getModulePackList().add(modulePack);
+        if (deviceModuleUpdateForm.isStorageUpdate()) {
+            List<Long> currentStorageIdList = storageRepository.getDeviceStorageIdList(device.getId());
+            List<Long> alterStorageIdList = getUpdatableStorageIdList(deviceModuleUpdateForm, currentStorageIdList);
+            if (!alterStorageIdList.isEmpty()) {
+                for (Long storageId : alterStorageIdList) {
+                    Storage storage = storageRepository.getReferenceById(storageId);
+                    if (storage.isSpare()) {
+                        storage.setSpare(false);
+                        storage.setLocalityId(device.getId());
+                        updateModulePackAndInventory(device, storage.getModuleInventory(), false);
                     } else {
-                        device.setModulePackList(List.of(modulePack));
+                        storage.setSpare(true);
+                        storage.setLocalityId(CenterService.ROOM_1_ID);
+                        updateModulePackAndInventory(device, storage.getModuleInventory(), true);
                     }
-                });
+                }
+            }
 
-        moduleInventory.setAvailable(moduleInventory.getAvailable() + Math.negateExact(updatedValue));
+        } else {
+            var moduleInventory = moduleInventoryRepository.getReferenceById(deviceModuleUpdateForm.getModuleInventoryId());
+            var updatedValue = deviceModuleUpdateForm.getUpdatedValue();
+
+            List<ModulePack> modulePackList = device.getModulePackList();
+            modulePackList
+                    .stream()
+                    .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                    .findFirst()
+                    .ifPresentOrElse(modulePack -> modulePack.setQty(modulePack.getQty() + updatedValue), () -> {
+                        ModulePack modulePack = new ModulePack();
+                        modulePack.setModuleInventory(moduleInventory);
+                        modulePack.setQty(updatedValue);
+                        modulePack.setDevice(device);
+                        if (device.getModulePackList() != null) {
+                            device.getModulePackList().add(modulePack);
+                        } else {
+                            device.setModulePackList(List.of(modulePack));
+                        }
+                    });
+
+            moduleInventory.setAvailable(moduleInventory.getAvailable() + Math.negateExact(updatedValue));
+        }
 
         return deviceRepository.saveAndFlush(device).getId();
+    }
+
+    private void updateModulePackAndInventory(Device device, ModuleInventory moduleInventory, boolean spare) {
+        if (spare) {
+            moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
+            var pack = device
+                    .getModulePackList()
+                    .stream()
+                    .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                    .findFirst();
+            if (pack.isPresent()) {
+                var deviceModulePack = pack.get();
+                deviceModulePack.setQty(deviceModulePack.getQty() - 1);
+            }
+        } else {
+            moduleInventory.setAvailable(moduleInventory.getAvailable() - 1);
+            device
+                    .getModulePackList()
+                    .stream()
+                    .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                    .findFirst()
+                    .ifPresentOrElse(modulePack -> modulePack.setQty(modulePack.getQty() + 1), () -> {
+                        ModulePack modulePack = new ModulePack();
+                        modulePack.setModuleInventory(moduleInventory);
+                        modulePack.setQty(1);
+                        modulePack.setDevice(device);
+                        if (device.getModulePackList() != null) {
+                            device.getModulePackList().add(modulePack);
+                        } else {
+                            device.setModulePackList(List.of(modulePack));
+                        }
+                    });
+        }
+    }
+
+    private static List<Long> getUpdatableStorageIdList(DeviceModuleUpdateForm deviceModuleUpdateForm, List<Long> currentStorageIdList) {
+        List<Long> alterStorageIdList = new ArrayList<>();
+        for (Long storageId : currentStorageIdList) {
+            if (!deviceModuleUpdateForm.getStorageIdList().contains(storageId)) {
+                alterStorageIdList.add(storageId);
+            }
+        }
+        for (Long storageId : deviceModuleUpdateForm.getStorageIdList()) {
+            if (!currentStorageIdList.contains(storageId)) {
+                alterStorageIdList.add(storageId);
+            }
+        }
+        return alterStorageIdList;
+    }
+
+    @Override
+    public List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList) {
+
+        return storageRepository
+                .fetchAssignedAndSpareList(deviceId, compatibleStorageInventoryList)
+                .stream()
+                .sorted(Comparator.comparing(Storage::isSpare))
+                .toList();
     }
 
     @Override

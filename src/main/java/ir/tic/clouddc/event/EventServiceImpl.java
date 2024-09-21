@@ -28,19 +28,26 @@ import java.util.*;
 public final class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+
     private final EventDetailRepository eventDetailRepository;
+
     private final EventCategoryRepository eventCategoryRepository;
+
     private final CenterService centerService;
+
     private final PersonService personService;
+
     private final FileService fileService;
+
     private final LogService logService;
+
     private final ResourceService resourceService;
+
     private static final int General_Event_Category_ID = 1;
     private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 5;
-
 
     @Autowired
     public EventServiceImpl(
