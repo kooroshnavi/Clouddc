@@ -23,7 +23,7 @@ public final class ModuleInventory {
     @Column(name = "Classification", nullable = false)
     private String classification;  // Transceiver - Storage - Memory - Power - NIC - SmartArray
 
-    @Column(name = "classificationId")
+    @Column(name = "ClassificationId")
     private int classificationId;
 
     @Column(name = "Category", nullable = false)

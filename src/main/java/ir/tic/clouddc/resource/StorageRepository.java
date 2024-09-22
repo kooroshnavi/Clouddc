@@ -18,6 +18,6 @@ public interface StorageRepository extends JpaRepository<Storage, Long> {
     @Query("select s from Storage s where s.moduleInventory.id in :storageSpecificationIdList")
     List<Storage> getRelatedStorageList(List<Integer> storageSpecificationIdList);
 
-    @Query("select s from Storage s where (s.spare and s.moduleInventory in :compatibleStorageInventoryList) or s.localityId = :localityId")
-    List<Storage> fetchAssignedAndSpareList(@Param("localityId") long localityId, List<ModuleInventory> compatibleStorageInventoryList);
+    @Query("select s from Storage s where (s.spare and s.moduleInventory in :compatibleStorageInventoryList) or s.localityId = :deviceId")
+    List<Storage> fetchDeviceAssignedAndSpareList(@Param("deviceId") long deviceId, List<ModuleInventory> compatibleStorageInventoryList);
 }

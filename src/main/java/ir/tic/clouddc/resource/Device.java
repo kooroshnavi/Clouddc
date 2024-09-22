@@ -52,6 +52,4 @@ public abstract class Device {
 
     @ManyToMany(mappedBy = "deviceList")
     private List<Event> deviceEventList;
-
-
 }

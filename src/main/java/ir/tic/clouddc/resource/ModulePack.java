@@ -6,6 +6,9 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
+import java.util.Map;
+
 @Entity
 @Table(schema = "Resource")
 @NoArgsConstructor
@@ -28,4 +31,12 @@ public final class ModulePack {
 
     @Column(name = "Assigned")
     private int qty;
+
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "modulePackHistory", schema = "Resource",
+            joinColumns = {@JoinColumn(name = "ModulePackID", referencedColumnName = "ModulePackID")})
+    @MapKeyColumn(name = "LocalDateTime")
+    @Column(name = "Balance")
+    private Map<LocalDateTime, Integer> packHistory;
+
 }

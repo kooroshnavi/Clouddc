@@ -108,16 +108,15 @@
                                         <label for="Storage">Storage Add/Remove</label>
                                         <select id="Storage" name="Storage" data-placeholder="حذف و اضافه استوریج ها" th:data-max="${device.deviceCategory.factorSize}" data-select-all="false" data-multi-select th:field="*{storageIdList}">
                                             <option th:each="storage : ${deviceAssignedAndSpareStorageList}"
-                                                    class="text-bg-info"
                                                     th:if="${not storage.spare}"
                                                     selected="selected"
                                                     th:value="${storage.getId()}"
-                                                    th:text="${' (این استوریج روی تجهیز قرار دارد. جهت حذف از تجهیز؛ تیک را بردارید) '+ storage.moduleInventory.vendor + ' -> ' + storage.moduleInventory.category + ' -> ' + storage.moduleInventory.spec + ' -> ' + storage.moduleInventory.value + storage.moduleInventory.unit + ' -> ' +storage.serialNumber}"></option>
+                                                    th:text="${' (این استوریج روی تجهیز قرار دارد. جهت حذف از تجهیز؛ تیک را بردارید) '+ storage.moduleInventory.category + ' -> ' + storage.moduleInventory.vendor + ' -> ' + storage.moduleInventory.spec + ' -> ' + storage.moduleInventory.value + storage.moduleInventory.unit + ' -> ' +storage.serialNumber}"></option>
 
                                             <option th:each="storage : ${deviceAssignedAndSpareStorageList}"
-                                                    th:unless="${not storage.spare}"
+                                                    th:if="${storage.spare}"
                                                     th:value="${storage.getId()}"
-                                                    th:text="${storage.moduleInventory.vendor + ' -> ' + storage.moduleInventory.category + ' -> ' + storage.moduleInventory.spec + ' -> ' + storage.moduleInventory.value + storage.moduleInventory.unit + ' -> ' +storage.serialNumber}"></option>
+                                                    th:text="${storage.moduleInventory.category + ' -> ' + storage.moduleInventory.vendor + ' -> ' + storage.moduleInventory.spec + ' -> ' + storage.moduleInventory.value + storage.moduleInventory.unit + ' -> ' +storage.serialNumber}"></option>
                                         </select>
 
                                         <div class="modal-footer">

@@ -13,9 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
+import java.time.LocalDateTime;
 import java.time.YearMonth;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.Map.entry;
 
 @Service
 @Slf4j
@@ -106,7 +109,7 @@ public class ResourceServiceImpl implements ResourceService {
             unassignedDeviceRepository.saveAndFlush(unassignedDevice);
         } else {    // Module Register
             var moduleInventory = moduleInventoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId());
-            if (moduleInventory.getClassification().equals("Storage")) {  // Storage Register
+            if (moduleInventory.getClassificationId() == 6) {  // Storage Register
                 Storage storage = new Storage(moduleInventory
                         , StringUtils.capitalize(resourceRegisterForm.getSerialNumber())
                         , YearMonth.of(resourceRegisterForm.getMfgYear(), resourceRegisterForm.getMfgMonth())
@@ -220,7 +223,6 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<Storage> getRelatedStorageList(Integer specId) {
-
         return storageRepository.getRelatedStorageList(List.of(specId));
     }
 
@@ -296,7 +298,7 @@ public class ResourceServiceImpl implements ResourceService {
     public long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm) {
         var device = deviceRepository.getReferenceById(deviceModuleUpdateForm.getDeviceId());
 
-        if (deviceModuleUpdateForm.isStorageUpdate()) {
+        if (deviceModuleUpdateForm.isStorageUpdate()) {    // Storage Update
             List<Long> currentStorageIdList = storageRepository.getDeviceStorageIdList(device.getId());
             List<Long> alterStorageIdList = getUpdatableStorageIdList(deviceModuleUpdateForm, currentStorageIdList);
             if (!alterStorageIdList.isEmpty()) {
@@ -314,20 +316,23 @@ public class ResourceServiceImpl implements ResourceService {
                 }
             }
 
-        } else {
+        } else {  // other modules update
             var moduleInventory = moduleInventoryRepository.getReferenceById(deviceModuleUpdateForm.getModuleInventoryId());
             var updatedValue = deviceModuleUpdateForm.getUpdatedValue();
-
             List<ModulePack> modulePackList = device.getModulePackList();
             modulePackList
                     .stream()
                     .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
                     .findFirst()
-                    .ifPresentOrElse(modulePack -> modulePack.setQty(modulePack.getQty() + updatedValue), () -> {
+                    .ifPresentOrElse(modulePack -> {
+                        modulePack.setQty(modulePack.getQty() + updatedValue);
+                        modulePack.getPackHistory().put(LocalDateTime.now(), updatedValue);
+                    }, () -> {
                         ModulePack modulePack = new ModulePack();
                         modulePack.setModuleInventory(moduleInventory);
                         modulePack.setQty(updatedValue);
                         modulePack.setDevice(device);
+                        modulePack.setPackHistory((Map.ofEntries(entry(LocalDateTime.now(), updatedValue))));
                         if (device.getModulePackList() != null) {
                             device.getModulePackList().add(modulePack);
                         } else {
@@ -344,15 +349,15 @@ public class ResourceServiceImpl implements ResourceService {
     private void updateModulePackAndInventory(Device device, ModuleInventory moduleInventory, boolean spare) {
         if (spare) {
             moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
-            var pack = device
+            device
                     .getModulePackList()
                     .stream()
                     .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
-                    .findFirst();
-            if (pack.isPresent()) {
-                var deviceModulePack = pack.get();
-                deviceModulePack.setQty(deviceModulePack.getQty() - 1);
-            }
+                    .findFirst()
+                    .ifPresent(modulePack -> {
+                        modulePack.setQty(modulePack.getQty() - 1);
+                        modulePack.getPackHistory().put(LocalDateTime.now(), Math.negateExact(1));
+                    });
         } else {
             moduleInventory.setAvailable(moduleInventory.getAvailable() - 1);
             device
@@ -360,11 +365,15 @@ public class ResourceServiceImpl implements ResourceService {
                     .stream()
                     .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
                     .findFirst()
-                    .ifPresentOrElse(modulePack -> modulePack.setQty(modulePack.getQty() + 1), () -> {
+                    .ifPresentOrElse(modulePack -> {
+                        modulePack.setQty(modulePack.getQty() + 1);
+                        modulePack.getPackHistory().put(LocalDateTime.now(), 1);
+                    }, () -> {
                         ModulePack modulePack = new ModulePack();
                         modulePack.setModuleInventory(moduleInventory);
                         modulePack.setQty(1);
                         modulePack.setDevice(device);
+                        modulePack.setPackHistory((Map.ofEntries(entry(LocalDateTime.now(), 1))));
                         if (device.getModulePackList() != null) {
                             device.getModulePackList().add(modulePack);
                         } else {
@@ -386,16 +395,17 @@ public class ResourceServiceImpl implements ResourceService {
                 alterStorageIdList.add(storageId);
             }
         }
+
         return alterStorageIdList;
     }
 
     @Override
     public List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList) {
-
         return storageRepository
-                .fetchAssignedAndSpareList(deviceId, compatibleStorageInventoryList)
+                .fetchDeviceAssignedAndSpareList(deviceId, compatibleStorageInventoryList)
                 .stream()
                 .sorted(Comparator.comparing(Storage::isSpare))
+                .sorted(Comparator.comparing(storage -> storage.getModuleInventory().getCategoryId()))
                 .toList();
     }
 
@@ -405,7 +415,6 @@ public class ResourceServiceImpl implements ResourceService {
 
         if (currentDevice.isPresent()) {
             if (currentDevice.get().getDevicePmCatalogList() != null) {
-                log.info("Current device has catalog");
                 for (DevicePmCatalog devicePmCatalog : currentDevice.get().getDevicePmCatalogList()) {
                     devicePmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(devicePmCatalog.getNextDueDate()));
                 }

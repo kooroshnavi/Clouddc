@@ -99,6 +99,13 @@
 
                                 <option th:each="category, counter : ${moduleCategoryList}"
                                         th:value="${category.id}"
+                                        th:if="${category.value == 0}"
+                                        th:text="${counter.count + ') ' + category.classification + ' -> ' + category.category + ' -> ' + category.vendor + ' -> ' + category.spec}">
+                                </option>
+
+                                <option th:each="category, counter : ${moduleCategoryList}"
+                                        th:value="${category.id}"
+                                        th:unless="${category.value == 0}"
                                         th:text="${counter.count + ') ' + category.classification + ' -> ' + category.category + ' -> ' + category.vendor + ' -> ' + category.value + category.unit + ' -> ' + category.spec}">
                                 </option>
 
@@ -299,7 +306,7 @@
         const year = document.getElementById('year');
 
 
-        if (dropdown.value >= 16 && dropdown.value <= 19) {
+        if (dropdown.value >= 1047 && dropdown.value <= 1075) {
             serialNumber.style.display = 'block';
             location.style.display = 'block';
             mfg.style.display = 'block';

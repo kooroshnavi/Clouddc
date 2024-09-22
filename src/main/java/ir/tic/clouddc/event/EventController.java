@@ -157,13 +157,10 @@ public class EventController {
                 model.addAttribute("sortedKeySet", sortedKeySet);
                 model.addAttribute("moduleOverviewMap", moduleOverviewMap);
                 model.addAttribute("deviceModuleInventoryList", deviceModuleInventoryList);
-
             }
-
             default -> {
                 return "404";
             }
-
         }
 
         model.addAttribute("eventForm", new EventForm());

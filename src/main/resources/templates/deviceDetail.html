@@ -187,6 +187,7 @@
 
                 <div class="col" align="right">
                     <div class="dropdown">
+
                         <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">
                             رخدادهای این تجهیز
                         </button>
@@ -196,21 +197,6 @@
                             <li>
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 5)}"
                                    class="btn btn-outline-dark">1. تغییر بهره بردار</a>
-                                <hr/>
-                            </li>
-
-                            <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 6)}"
-                                        class="btn btn-outline-danger">2. مدیریت ماژول ها و ملحقات
-                                </button>
-                                <hr/>
-                            </li>
-
-                            <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                        class="btn btn-outline-danger" disabled="disabled">3.گزارش قطعی لینک (در حال
-                                    توسعه)
-                                </button>
                                 <hr/>
                             </li>
 
