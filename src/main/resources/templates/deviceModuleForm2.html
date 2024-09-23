@@ -70,8 +70,11 @@
         <div class="card">
             <div class="card-body">
 
+                <h3 class="mb-0 text-uppercase" align="center"
+                    th:text="${'فرم جزئیات و بروزرسانی ماژول های ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h3>
+                <br>
                 <h4 class="mb-0 text-uppercase" align="center"
-                    th:text="${'فرم جزئیات و بروزرسانی ماژول های ' + device.deviceCategory.category + ' ' + device.serialNumber}"></h4>
+                    th:text="${'مدل: ' + device.deviceCategory.model }"></h4>
                 <br>
                 <h5 class="mb-0 text-uppercase" align="center"
                     th:text="${'محل نصب: ' + device.location.locationCategory.category + ' ' + device.location.name}"></h5>
@@ -79,11 +82,37 @@
                 <h6 class="mb-0 text-uppercase" align="center" th:text="${'بهره بردار: ' + device.utilizer.name}"></h6>
                 <br>
 
+                <div th:if="${not device.modulePackList.isEmpty()}" class="col" align="right">
+                    <!-- Button trigger modal -->
+                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
+                            data-bs-target="#exampleScrollableModal">تاریخچه ماژول های تجهیز</button>
+                    <!-- Modal -->
+                    <div class="modal fade" id="exampleScrollableModal" tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-dialog-scrollable">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h6 class="modal-title"
+                                        th:text="${'تاریخچه ماژول های ' + device.deviceCategory.category + ' ' + device.deviceCategory.factorSize + device.deviceCategory.factor + ' <- ' + device.serialNumber}"></h6>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body">
+
+
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <br>
+
                 <div th:if="${device.deviceCategory.categoryId == 5 || device.deviceCategory.categoryId == 8 }"
-                     class="col" align="left">
+                     class="col" align="right">
                     <!-- Button trigger modal -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                            data-bs-target="#exampleLargeModal">استوریج (HDD/SSD)
+                            data-bs-target="#exampleLargeModal">بروزرسانی استوریج (HDD/SSD)
                     </button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleLargeModal" tabindex="-1"
@@ -184,7 +213,7 @@
                                     <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number"
+                                    <input type="number" required="required"
                                            th:min="${-deviceModuleMap.get(moduleInventory)}"
                                            max="-1" th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit" class="btn-group-sm btn-dark">بروزرسانی</button>
@@ -199,7 +228,7 @@
                                     <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number"
+                                    <input type="number" required="required"
                                            th:min="${-deviceModuleMap.get(moduleInventory)}"
                                            th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit2" class="btn-group-sm btn-dark">بروزرسانی</button>
@@ -213,7 +242,7 @@
                                     <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" min="1"
+                                    <input type="number" min="1" required="required"
                                            th:max="${moduleInventory.available}"
                                            th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit3" class="btn-group-sm btn-dark">بروزرسانی</button>

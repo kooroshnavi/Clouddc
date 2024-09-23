@@ -130,8 +130,8 @@ public class ResourceServiceImpl implements ResourceService {
                 } else {
                     persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleInventoryUpdate");
                     moduleInventory.setPersistence(persistence);
-                    moduleInventory.setAvailable(moduleInventory.getAvailable() + resourceRegisterForm.getQty());
                 }
+                moduleInventory.setAvailable(moduleInventory.getAvailable() + resourceRegisterForm.getQty());
             }
 
             moduleInventoryRepository.saveAndFlush(moduleInventory);
@@ -295,12 +295,12 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm) {
-        var device = deviceRepository.getReferenceById(deviceModuleUpdateForm.getDeviceId());
+    public long updateDeviceModule(ModuleUpdateForm moduleUpdateForm) {
+        var device = deviceRepository.getReferenceById(moduleUpdateForm.getDeviceId());
 
-        if (deviceModuleUpdateForm.isStorageUpdate()) {    // Storage Update
+        if (moduleUpdateForm.isStorageUpdate()) {    // Storage Update
             List<Long> currentStorageIdList = storageRepository.getDeviceStorageIdList(device.getId());
-            List<Long> alterStorageIdList = getUpdatableStorageIdList(deviceModuleUpdateForm, currentStorageIdList);
+            List<Long> alterStorageIdList = getUpdatableStorageIdList(moduleUpdateForm, currentStorageIdList);
             if (!alterStorageIdList.isEmpty()) {
                 for (Long storageId : alterStorageIdList) {
                     Storage storage = storageRepository.getReferenceById(storageId);
@@ -317,8 +317,8 @@ public class ResourceServiceImpl implements ResourceService {
             }
 
         } else {  // other modules update
-            var moduleInventory = moduleInventoryRepository.getReferenceById(deviceModuleUpdateForm.getModuleInventoryId());
-            var updatedValue = deviceModuleUpdateForm.getUpdatedValue();
+            var moduleInventory = moduleInventoryRepository.getReferenceById(moduleUpdateForm.getModuleInventoryId());
+            var updatedValue = moduleUpdateForm.getUpdatedValue();
             List<ModulePack> modulePackList = device.getModulePackList();
             modulePackList
                     .stream()
@@ -383,14 +383,14 @@ public class ResourceServiceImpl implements ResourceService {
         }
     }
 
-    private static List<Long> getUpdatableStorageIdList(DeviceModuleUpdateForm deviceModuleUpdateForm, List<Long> currentStorageIdList) {
+    private static List<Long> getUpdatableStorageIdList(ModuleUpdateForm moduleUpdateForm, List<Long> currentStorageIdList) {
         List<Long> alterStorageIdList = new ArrayList<>();
         for (Long storageId : currentStorageIdList) {
-            if (!deviceModuleUpdateForm.getStorageIdList().contains(storageId)) {
+            if (!moduleUpdateForm.getStorageIdList().contains(storageId)) {
                 alterStorageIdList.add(storageId);
             }
         }
-        for (Long storageId : deviceModuleUpdateForm.getStorageIdList()) {
+        for (Long storageId : moduleUpdateForm.getStorageIdList()) {
             if (!currentStorageIdList.contains(storageId)) {
                 alterStorageIdList.add(storageId);
             }
@@ -407,6 +407,14 @@ public class ResourceServiceImpl implements ResourceService {
                 .sorted(Comparator.comparing(Storage::isSpare))
                 .sorted(Comparator.comparing(storage -> storage.getModuleInventory().getCategoryId()))
                 .toList();
+    }
+
+    @Override
+    public void decreaseInventoryAvailability(ModuleUpdateForm moduleUpdateForm) {
+        var inventory = moduleInventoryRepository.getReferenceById(moduleUpdateForm.getModuleInventoryId());
+        inventory.setAvailable(inventory.getAvailable() + Math.negateExact(moduleUpdateForm.getUpdatedValue()));
+
+        moduleInventoryRepository.save(inventory);
     }
 
     @Override

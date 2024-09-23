@@ -91,6 +91,7 @@
                             <th>جزئیات</th>
                             <th>موجودی</th>
                             <th th:if="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">جزئیات</th>
+                            <th th:unless="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">کاهش موجودی</th>
                         </tr>
                         </thead>
 
@@ -99,7 +100,8 @@
 
                             <td th:text="${iter.count}"></td>
                             <td th:text="${moduleCategory.vendor}"></td>
-                            <td th:text="${moduleCategory.value + moduleCategory.unit + ' -> ' + moduleCategory.spec}"></td>
+                            <td th:if="${moduleCategory.value != 0}" th:text="${moduleCategory.value + moduleCategory.unit + ' -> ' + moduleCategory.spec}"></td>
+                            <td th:unless="${moduleCategory.value != 0}" th:text="${moduleCategory.spec}"></td>
                             <td th:text="${moduleCategory.available}"></td>
                             <td th:if="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">
                                 <div class="col">
@@ -107,6 +109,18 @@
                                        th:href="@{/resource/module/storage/{specId}/detail (specId=${moduleCategory.id})}"
                                        class="btn btn-outline-info">لیست جزئیات</a>
                                 </div>
+                            </td>
+                            <td th:unless="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">
+                                <form th:action="@{/resource/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                    <input type="hidden" name="moduleInventoryId" th:value="${theCategory.id}"/>
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
+                                    <input type="number" required="required"
+                                           min="1"
+                                           th:max="${theCategory.available}" th:field="*{updatedValue}"/>
+                                    <button type="submit" id="submit" class="btn-group-sm btn-dark">کاهش موجودی</button>
+                                </form>
                             </td>
                         </tr>
                         </tbody>

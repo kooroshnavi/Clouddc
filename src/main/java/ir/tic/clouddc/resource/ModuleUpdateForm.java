@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-public class DeviceModuleUpdateForm {
+public class ModuleUpdateForm {
 
     private long deviceId;
 
@@ -17,4 +17,8 @@ public class DeviceModuleUpdateForm {
     private List<Long> storageIdList = new ArrayList<>();
 
     private boolean storageUpdate;
+
+    private boolean problematic;
+
+    private long storageId;
 }

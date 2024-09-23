@@ -18,4 +18,5 @@ public interface ModuleInventoryRepository extends JpaRepository<ModuleInventory
 
     @Query("select m from ModuleInventory m where m.categoryId in :specificInventoryIdList")
     List<ModuleInventory> getDeviceCompatibleModuleInventoryList(List<Integer> specificInventoryIdList);
+
 }

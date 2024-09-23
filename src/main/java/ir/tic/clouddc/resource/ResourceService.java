@@ -48,9 +48,11 @@ public interface ResourceService {
 
     List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID);
 
-    long updateDeviceModule(DeviceModuleUpdateForm deviceModuleUpdateForm);
+    long updateDeviceModule(ModuleUpdateForm moduleUpdateForm);
 
     List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList);
+
+    void decreaseInventoryAvailability(ModuleUpdateForm moduleUpdateForm);
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();

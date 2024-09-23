@@ -32,7 +32,7 @@
 
 <body>
 
-<script th:if="${newModuleRegistered}">
+<script th:if="${newModuleRegistered || availabilityUpdated}">
     document.addEventListener('DOMContentLoaded', function () {
         pos5_success_noti();
     });

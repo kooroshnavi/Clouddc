@@ -66,13 +66,15 @@
         <br>
 
         <h5 class="card-header py-3 bg-info" align="center">
-            <strong class="mb-0">جهت افزودن ماژول به یک تجهیز پس از ثبت آن، از روی مکان تجهیز به صفحه جزئیات رفته و از طریق گزینه رخدادها اقدام نمایید.</strong>
+            <strong class="mb-0">جهت افزودن ماژول به یک تجهیز پس از ثبت آن، از روی مکان تجهیز به صفحه جزئیات رفته و از
+                طریق گزینه رخدادها اقدام نمایید.</strong>
         </h5>
         <br>
 
         <div class="card">
             <div class="card-body">
-                <h4 class="mb-0 text-uppercase" align="center" th:text="${'جزئیات موجودی ' +  inventory.vendor + '->' + inventory.category + '->' + inventory.value + inventory.unit + '->' + inventory.spec +  ' به تعداد: ' + storageList.size()}"></h4>
+                <h4 class="mb-0 text-uppercase" align="center"
+                    th:text="${'جزئیات موجودی ' +  inventory.vendor + '->' + inventory.category + '->' + inventory.value + inventory.unit + '->' + inventory.spec +  ' به تعداد: ' + storageList.size()}"></h4>
                 <br>
                 <div class="table-responsive">
                     <table id="example2" class="table table-striped table-bordered">
@@ -85,6 +87,8 @@
                             <th>شماره سریال</th>
                             <th>اتاق</th>
                             <th>وضعیت خرابی</th>
+                            <th>عملیات</th>
+
                         </tr>
                         </thead>
 
@@ -107,11 +111,28 @@
                                       class="text-bg-warning">تعیین نشده</span>
                             </td>
 
-                            <td class="clock">
-                                <span th:if="${storage.problematic}"
-                                      class="text-bg-danger">خراب است</span>
-                                <span th:unless="${storage.problematic}"
-                                      class="text-bg-success">اعلام نشده</span>
+                            <td class="clock" th:if="${storage.problematic}">
+                                <span class="text-bg-warning">خراب</span>
+                            </td>
+                            <td class="clock" th:unless="${storage.problematic}">
+                                <span class="text-bg-success">اعلام نشده</span>
+                            </td>
+
+                            <td>
+                                <form th:action="@{/resource/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                    <input type="hidden" name="moduleInventoryId"
+                                           th:value="${storage.moduleInventory.id}"/>
+                                    <input type="hidden" name="storageId" th:value="${storage.id}"/>
+                                    <input type="hidden" name="storageUpdate" th:value="${true}"/>
+                                    <button type="button" id="submit" class="btn-group-sm btn-dark">اعلام خرابی</button>
+                                </form>
+                                <br>
+                                <a type="button" class="button btn-danger"
+                                   th:href="@{/resource/module/storage/{storageId}/remove (storageId = ${storage.id})}"
+                                   )>حذف استوریج</a>
+                                <br>
                             </td>
 
                         </tr>

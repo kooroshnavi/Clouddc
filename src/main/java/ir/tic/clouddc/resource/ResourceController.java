@@ -77,14 +77,14 @@ public class ResourceController {
         model.addAttribute("compatibleModuleInventoryList", compatibleModuleInventoryList);
         model.addAttribute("deviceModuleMap", deviceModuleMap);
         model.addAttribute("deviceAssignedAndSpareStorageList", deviceAssignedAndSpareStorageList);
-        model.addAttribute("updateForm", new DeviceModuleUpdateForm());
+        model.addAttribute("updateForm", new ModuleUpdateForm());
 
         return "deviceModuleForm2";
     }
 
     @PostMapping("/device/module/update")
-    public String updateDeviceModule(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") DeviceModuleUpdateForm deviceModuleUpdateForm) {
-        long result = resourceService.updateDeviceModule(deviceModuleUpdateForm);
+    public String updateDeviceModule(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") ModuleUpdateForm moduleUpdateForm) {
+        long result = resourceService.updateDeviceModule(moduleUpdateForm);
 
         redirectAttributes.addFlashAttribute("success", true);
         redirectAttributes.addAttribute("deviceId", result);
@@ -157,6 +157,10 @@ public class ResourceController {
             model.addAttribute("newModuleRegistered", false);
         }
 
+        if (!model.containsAttribute("availabilityUpdated")) {
+            model.addAttribute("availabilityUpdated", false);
+        }
+
         return "moduleInventory";
     }
 
@@ -166,8 +170,17 @@ public class ResourceController {
         var category = inventoryDetailList.stream().findFirst();
         category.ifPresent(moduleInventory -> model.addAttribute("theCategory", moduleInventory));
         model.addAttribute("inventoryDetailList", inventoryDetailList);
+        model.addAttribute("updateForm", new ModuleUpdateForm());
 
         return "moduleDetail";
+    }
+
+    @PostMapping("/module/update")
+    public String decreaseInventoryAvailability(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") ModuleUpdateForm moduleUpdateForm){
+        resourceService.decreaseInventoryAvailability(moduleUpdateForm);
+        redirectAttributes.addFlashAttribute("availabilityUpdated", true);
+
+        return "redirect:/resource/module/inventory";
     }
 
     @GetMapping("/module/storage/{specId}/detail")
@@ -179,6 +192,7 @@ public class ResourceController {
         model.addAttribute("room1Id", CenterService.ROOM_1_ID);
         model.addAttribute("room2Id", CenterService.ROOM_2_ID);
         model.addAttribute("room412Id", CenterService.ROOM_412_ID);
+        model.addAttribute("updateForm", new ModuleUpdateForm());
 
         return "storageDetail";
     }
