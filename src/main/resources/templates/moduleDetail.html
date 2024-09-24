@@ -67,12 +67,12 @@
         <!--end breadcrumb-->
 
         <h6 class="mb-0 text-uppercase" align="center">
-            <strong class="mb-0 text-bg-warning">جهت ثبت ماژول جدید از طریق منوی دسترسی سریع اقدام نمایید.</strong>
+            <strong class="mb-0 text-bg-warning">جهت ثبت ماژول جدید و افزایش موجودی مخزن از طریق منوی دسترسی سریع اقدام نمایید.</strong>
         </h6>
         <br>
 
         <h5 class="card-header py-3 bg-info" align="center">
-            <strong class="mb-0">جهت افزودن ماژول به یک تجهیز پس از ثبت آن، از روی مکان تجهیز به صفحه جزئیات رفته و از طریق گزینه رخدادها اقدام نمایید.</strong>
+            <strong class="mb-0">جهت افزودن ماژول به یک تجهیز، از طریق صفحه جزئیات تجهیز و گزینه مدیریت ماژول های تجهیز اقدام نمایید. لینک صفحه جزئیات تجهیز در صفحه مکان آن (رک یا اتاق) قابل مشاهده است.</strong>
         </h5>
         <br>
 
@@ -102,7 +102,14 @@
                             <td th:text="${moduleCategory.vendor}"></td>
                             <td th:if="${moduleCategory.value != 0}" th:text="${moduleCategory.value + moduleCategory.unit + ' -> ' + moduleCategory.spec}"></td>
                             <td th:unless="${moduleCategory.value != 0}" th:text="${moduleCategory.spec}"></td>
-                            <td th:text="${moduleCategory.available}"></td>
+
+                            <td th:if="${moduleCategory.available >= 20}" class="text-bg-success"
+                                th:text="${moduleCategory.available}"></td>
+                            <td th:if="${moduleCategory.available < 20 && moduleCategory.available >= 10}"
+                                class="text-bg-warning" th:text="${moduleCategory.available}"></td>
+                            <td th:if="${moduleCategory.available < 10}"
+                                class="text-bg-danger" th:text="${moduleCategory.available}"></td>
+
                             <td th:if="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">
                                 <div class="col">
                                     <a

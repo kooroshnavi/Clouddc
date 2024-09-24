@@ -61,13 +61,12 @@
         <!--end breadcrumb-->
 
         <h6 class="mb-0 text-uppercase" align="center">
-            <strong class="mb-0 text-bg-warning">جهت ثبت ماژول جدید از طریق منوی دسترسی سریع اقدام نمایید.</strong>
+            <strong class="mb-0 text-bg-warning">جهت ثبت ماژول جدید و افزایش موجودی مخزن از طریق منوی دسترسی سریع اقدام نمایید.</strong>
         </h6>
         <br>
 
         <h5 class="card-header py-3 bg-info" align="center">
-            <strong class="mb-0">جهت افزودن ماژول به یک تجهیز پس از ثبت آن، از روی مکان تجهیز به صفحه جزئیات رفته و از
-                طریق گزینه رخدادها اقدام نمایید.</strong>
+            <strong class="mb-0">جهت افزودن ماژول به یک تجهیز، از طریق صفحه جزئیات تجهیز و گزینه مدیریت ماژول های تجهیز اقدام نمایید. لینک صفحه جزئیات تجهیز در صفحه مکان آن (رک یا اتاق) قابل مشاهده است.</strong>
         </h5>
         <br>
 
@@ -119,20 +118,44 @@
                             </td>
 
                             <td>
-                                <form th:action="@{/resource/module/update}"
+                                <form th:if="${not storage.problematic}" th:action="@{/resource/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit').disabled=true;">
                                     <input type="hidden" name="moduleInventoryId"
                                            th:value="${storage.moduleInventory.id}"/>
                                     <input type="hidden" name="storageId" th:value="${storage.id}"/>
                                     <input type="hidden" name="storageUpdate" th:value="${true}"/>
-                                    <button type="button" id="submit" class="btn-group-sm btn-dark">اعلام خرابی</button>
+                                    <input type="hidden" name="problematic" th:value="${true}"/>
+                                    <input type="hidden" name="storageDisable" th:value="${false}"/>
+                                    <button type="submit" id="submit" class="btn-group-sm btn-dark">اعلام خرابی</button>
+                                </form>
+
+                                <form th:unless="${not storage.problematic}" th:action="@{/resource/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit2').disabled=true;">
+                                    <input type="hidden" name="moduleInventoryId"
+                                           th:value="${storage.moduleInventory.id}"/>
+                                    <input type="hidden" name="storageId" th:value="${storage.id}"/>
+                                    <input type="hidden" name="storageUpdate" th:value="${true}"/>
+                                    <input type="hidden" name="problematic" th:value="${false}"/>
+                                    <input type="hidden" name="storageDisable" th:value="${false}"/>
+                                    <button type="submit" id="submit2" class="btn-group-sm btn-success">اعلام رفع خرابی</button>
                                 </form>
                                 <br>
-                                <a type="button" class="button btn-danger"
-                                   th:href="@{/resource/module/storage/{storageId}/remove (storageId = ${storage.id})}"
-                                   )>حذف استوریج</a>
+
+                                <form th:action="@{/resource/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit3').disabled=true;">
+                                    <input type="hidden" name="moduleInventoryId"
+                                           th:value="${storage.moduleInventory.id}"/>
+                                    <input type="hidden" name="storageId" th:value="${storage.id}"/>
+                                    <input type="hidden" name="storageUpdate" th:value="${true}"/>
+                                    <input type="hidden" name="problematic" th:value="${true}"/>
+                                    <input type="hidden" name="storageDisable" th:value="${true}"/>
+                                    <button type="submit" id="submit3" class="btn-group-sm btn-danger">حذف از مخزن</button>
+                                </form>
                                 <br>
+
                             </td>
 
                         </tr>

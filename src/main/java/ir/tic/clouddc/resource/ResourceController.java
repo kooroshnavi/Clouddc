@@ -177,7 +177,7 @@ public class ResourceController {
 
     @PostMapping("/module/update")
     public String decreaseInventoryAvailability(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") ModuleUpdateForm moduleUpdateForm){
-        resourceService.decreaseInventoryAvailability(moduleUpdateForm);
+        resourceService.inventoryUpdate(moduleUpdateForm);
         redirectAttributes.addFlashAttribute("availabilityUpdated", true);
 
         return "redirect:/resource/module/inventory";

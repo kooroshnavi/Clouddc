@@ -135,7 +135,10 @@ public final class UtilService {
             entry("UnassignedDeviceRegister", "ثبت تجهیز جدید"),
             entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک"),
             entry("StorageRegister", "ثبت ماژول جدید (هارد)"),
-            entry("ModuleInventoryUpdate", "افزودن موجودی مخزن")
+            entry("StorageProblematic", "اعلام خرابی استوریج"),
+            entry("StorageClear", "رفع خرابی استوریج"),
+            entry("StorageDisable", "حذف استوریج"),
+            entry("DecreaseInventory", "کاهش موجودی مخزن")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(

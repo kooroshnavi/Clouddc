@@ -52,7 +52,7 @@ public interface ResourceService {
 
     List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList);
 
-    void decreaseInventoryAvailability(ModuleUpdateForm moduleUpdateForm);
+    void inventoryUpdate(ModuleUpdateForm moduleUpdateForm);
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();

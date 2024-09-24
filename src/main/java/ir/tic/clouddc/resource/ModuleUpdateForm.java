@@ -16,9 +16,11 @@ public class ModuleUpdateForm {
 
     private List<Long> storageIdList = new ArrayList<>();
 
+    private long storageId;
+
     private boolean storageUpdate;
 
     private boolean problematic;
 
-    private long storageId;
+    private boolean storageDisable;
 }

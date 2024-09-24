@@ -84,8 +84,8 @@
 
                 <div th:if="${not device.modulePackList.isEmpty()}" class="col" align="right">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-outline-info" data-bs-toggle="modal"
-                            data-bs-target="#exampleScrollableModal">تاریخچه ماژول های تجهیز</button>
+                    <button hidden="hidden" type="button" class="btn btn-outline-info" data-bs-toggle="modal"
+                            data-bs-target="#exampleScrollableModal" disabled="disabled">تاریخچه ماژول های تجهیز(در حال آماده سازی)</button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleScrollableModal" tabindex="-1"
                          aria-hidden="true">
@@ -189,7 +189,9 @@
                             <td th:text="${moduleInventory.classification}"></td>
                             <td th:text="${moduleInventory.category}"></td>
                             <td th:text="${moduleInventory.vendor}"></td>
-                            <td th:text="${moduleInventory.spec + '->' + moduleInventory.value + moduleInventory.unit}"></td>
+
+                            <td th:if="${moduleInventory.value == 0}" th:text="${moduleInventory.spec}"></td>
+                            <td th:unless="${moduleInventory.value == 0}" th:text="${moduleInventory.spec + '->' + moduleInventory.value + moduleInventory.unit}"></td>
 
                             <td th:if="${moduleInventory.available >= 20}" class="text-bg-success"
                                 th:text="${moduleInventory.available}"></td>
@@ -202,9 +204,7 @@
 
                             <td th:text="${deviceModuleMap.getOrDefault(moduleInventory, 0)}"></td>
 
-                            <td th:if="${moduleInventory.classification.equals('Storage')}" class="text-primary">از طریق
-                                گزینه جزئیات Storage
-                            </td>
+                            <td th:if="${moduleInventory.classification.equals('Storage')}" class="text-primary">از طریق گزینه بروزرسانی استوریج</td>
 
                             <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available == 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
                                 <form th:action="@{/resource/device/module/update}"
@@ -228,7 +228,10 @@
                                     <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" required="required"
+                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(2 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+                                    <input th:unless="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" required="required"
                                            th:min="${-deviceModuleMap.get(moduleInventory)}"
                                            th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit2" class="btn-group-sm btn-dark">بروزرسانی</button>
@@ -242,7 +245,10 @@
                                     <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" min="1" required="required"
+                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" min="1" required="required"
+                                           th:max="${T(java.lang.Integer).min(2, moduleInventory.available)}"
+                                           th:field="*{updatedValue}"/>
+                                    <input th:unless="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" min="1" required="required"
                                            th:max="${moduleInventory.available}"
                                            th:field="*{updatedValue}"/>
                                     <button type="submit" id="submit3" class="btn-group-sm btn-dark">بروزرسانی</button>

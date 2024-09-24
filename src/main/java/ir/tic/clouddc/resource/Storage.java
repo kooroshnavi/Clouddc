@@ -36,8 +36,8 @@ public final class Storage {
     @Column(name = "Spare", nullable = false)
     private boolean spare;
 
-    @Column(name = "Active")
-    private boolean active;
+    @Column(name = "Disabled")
+    private boolean disabled; //
 
     @Column(name = "Problematic")
     private boolean problematic;
@@ -46,13 +46,13 @@ public final class Storage {
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
 
-    public Storage(ModuleInventory moduleInventory, String serialNumber, YearMonth mfg, long localityId, boolean spare, boolean active, boolean problematic) {
+    public Storage(ModuleInventory moduleInventory, String serialNumber, YearMonth mfg, long localityId, boolean spare, boolean disabled, boolean problematic) {
         this.moduleInventory = moduleInventory;
         this.serialNumber = serialNumber;
         this.mfg = mfg;
         this.localityId = localityId;
         this.spare = spare;
-        this.active = active;
+        this.disabled = disabled;
         this.problematic = problematic;
     }
 }

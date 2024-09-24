@@ -195,12 +195,12 @@ public class ResourceServiceImpl implements ResourceService {
                         .map(ModuleInventory::getAvailable)
                         .forEach(totalAvailable::addAndGet);
 
-                var category = moduleInventoryList
+                var inventory = moduleInventoryList
                         .stream()
                         .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
                         .findFirst();
 
-                category.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAvailable.get()));
+                inventory.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAvailable.get()));
             }
         }
 
@@ -223,7 +223,7 @@ public class ResourceServiceImpl implements ResourceService {
 
     @Override
     public List<Storage> getRelatedStorageList(Integer specId) {
-        return storageRepository.getRelatedStorageList(List.of(specId));
+        return storageRepository.getRelatedStorageList(List.of(specId), false);
     }
 
     @Override
@@ -402,7 +402,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList) {
         return storageRepository
-                .fetchDeviceAssignedAndSpareList(deviceId, compatibleStorageInventoryList)
+                .fetchDeviceAssignedAndSpareList(deviceId, compatibleStorageInventoryList, false)
                 .stream()
                 .sorted(Comparator.comparing(Storage::isSpare))
                 .sorted(Comparator.comparing(storage -> storage.getModuleInventory().getCategoryId()))
@@ -410,11 +410,30 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public void decreaseInventoryAvailability(ModuleUpdateForm moduleUpdateForm) {
-        var inventory = moduleInventoryRepository.getReferenceById(moduleUpdateForm.getModuleInventoryId());
-        inventory.setAvailable(inventory.getAvailable() + Math.negateExact(moduleUpdateForm.getUpdatedValue()));
+    public void inventoryUpdate(ModuleUpdateForm moduleUpdateForm) {
+        ModuleInventory moduleInventory;
+        if (moduleUpdateForm.isStorageUpdate()) {
+            var storage = storageRepository.getReferenceById(moduleUpdateForm.getStorageId());
+            moduleInventory = storage.getModuleInventory();
+            if (moduleUpdateForm.isStorageDisable()) {
+                storage.setDisabled(true);
+                moduleInventory.setAvailable(moduleInventory.getAvailable() - 1);
+                logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("StorageDisable"), personService.getCurrentPerson(), storage.getPersistence());
+            } else {
+                storage.setProblematic(moduleUpdateForm.isProblematic());
+                if (storage.isProblematic()) {
+                    logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("StorageProblematic"), personService.getCurrentPerson(), storage.getPersistence());
+                } else {
+                    logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("StorageClear"), personService.getCurrentPerson(), storage.getPersistence());
+                }
+            }
 
-        moduleInventoryRepository.save(inventory);
+        } else {
+            moduleInventory = moduleInventoryRepository.getReferenceById(moduleUpdateForm.getModuleInventoryId());
+            moduleInventory.setAvailable(moduleInventory.getAvailable() + Math.negateExact(moduleUpdateForm.getUpdatedValue()));
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DecreaseInventory"), personService.getCurrentPerson(), moduleInventory.getPersistence());
+        }
+        moduleInventoryRepository.save(moduleInventory);
     }
 
     @Override
