@@ -15,8 +15,8 @@ public interface StorageRepository extends JpaRepository<Storage, Long> {
     @Query("select s.id from Storage s where s.localityId = :localityId")
     List<Long> getDeviceStorageIdList(@Param("localityId") long localityId);
 
-    @Query("select s from Storage s where s.disabled = :disabled and s.moduleInventory.id in :storageSpecificationIdList")
-    List<Storage> getRelatedStorageList(List<Integer> storageSpecificationIdList, @Param("disabled") boolean disabled);
+    @Query("select s from Storage s where s.spare and s.disabled = :disabled and s.moduleInventory.id in :storageSpecificationIdList")
+    List<Storage> getRelatedSpareStorageList(List<Integer> storageSpecificationIdList, @Param("disabled") boolean disabled);
 
     @Query("select s from Storage s where (s.spare and s.disabled = :disabled and s.problematic = :disabled and s.moduleInventory in :compatibleStorageInventoryList) or s.localityId = :deviceId")
     List<Storage> fetchDeviceAssignedAndSpareList(@Param("deviceId") long deviceId, List<ModuleInventory> compatibleStorageInventoryList, @Param(("disabled")) boolean disabled);

@@ -222,8 +222,8 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public List<Storage> getRelatedStorageList(Integer specId) {
-        return storageRepository.getRelatedStorageList(List.of(specId), false);
+    public List<Storage> getRelatedSpareStorageList(Integer inventoryId) {
+        return storageRepository.getRelatedSpareStorageList(List.of(inventoryId), false);
     }
 
     @Override

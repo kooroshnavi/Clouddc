@@ -46,7 +46,7 @@ public class OtpServiceImpl implements OtpService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(requestDateTime));
         String otp = getRandomOTP(otpUid);
-        log.info(otp);
+        //log.info(otp);
         otpCache.put(address, otpUid);
         otpCache.put(otpUid, otp);
         otpCache.put(otp, address);

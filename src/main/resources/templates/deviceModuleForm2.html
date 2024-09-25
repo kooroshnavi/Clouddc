@@ -176,7 +176,7 @@
                             <th>نوع</th>
                             <th>سازنده</th>
                             <th>مدل و جزئیات</th>
-                            <th>موجودی اتاق ها</th>
+                            <th>موجودی</th>
                             <th>تعداد روی تجهیز</th>
                             <th>حذف/اضافه ماژول</th>
                         </tr>
@@ -206,54 +206,42 @@
 
                             <td th:if="${moduleInventory.classification.equals('Storage')}" class="text-primary">از طریق گزینه بروزرسانی استوریج</td>
 
-                            <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available == 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
+                            <td th:if="${not moduleInventory.classification.equals('Storage')}">
                                 <form th:action="@{/resource/device/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit').disabled=true;">
                                     <input type="hidden" name="storageUpdate" th:value="${false}"/>
                                     <input type="hidden" name="deviceId" th:value="${device.id}"/>
                                     <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input type="number" required="required"
+
+                                    <input th:if="${moduleInventory.classificationId == 1 && (device.deviceCategory.categoryId == 6 || device.deviceCategory.categoryId == 7)}" type="number" required="required"
                                            th:min="${-deviceModuleMap.get(moduleInventory)}"
-                                           max="-1" th:field="*{updatedValue}"/>
+                                           th:max="${T(java.lang.Integer).min(10 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+
+                                    <input th:if="${moduleInventory.classificationId == 1 && device.deviceCategory.categoryId == 5}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(4 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+
+                                    <input th:if="${moduleInventory.classificationId == 2}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(10 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+
+                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 10}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(2 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+
+                                    <input th:if="${moduleInventory.classificationId == 7 || moduleInventory.classificationId == 8}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(12 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+
+                                    <input th:if="${moduleInventory.classificationId == 9}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(1 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+
                                     <button type="submit" id="submit" class="btn-group-sm btn-dark">بروزرسانی</button>
                                 </form>
                             </td>
 
-                            <td class="text-danger"
-                                th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
-                                <form th:action="@{/resource/device/module/update}"
-                                      th:object="${updateForm}"
-                                      method="POST" onSubmit="document.getElementById('submit2').disabled=true;">
-                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
-                                    <input type="hidden" name="deviceId" th:value="${device.id}"/>
-                                    <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" required="required"
-                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
-                                           th:max="${T(java.lang.Integer).min(2 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
-                                    <input th:unless="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" required="required"
-                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
-                                           th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
-                                    <button type="submit" id="submit2" class="btn-group-sm btn-dark">بروزرسانی</button>
-                                </form>
-                            </td>
-
-                            <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) == 0)}">
-                                <form th:action="@{/resource/device/module/update}"
-                                      th:object="${updateForm}"
-                                      method="POST" onSubmit="document.getElementById('submit3').disabled=true;">
-                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
-                                    <input type="hidden" name="deviceId" th:value="${device.id}"/>
-                                    <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
-                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" min="1" required="required"
-                                           th:max="${T(java.lang.Integer).min(2, moduleInventory.available)}"
-                                           th:field="*{updatedValue}"/>
-                                    <input th:unless="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" min="1" required="required"
-                                           th:max="${moduleInventory.available}"
-                                           th:field="*{updatedValue}"/>
-                                    <button type="submit" id="submit3" class="btn-group-sm btn-dark">بروزرسانی</button>
-                                </form>
-                            </td>
                         </tr>
                         </tbody>
 

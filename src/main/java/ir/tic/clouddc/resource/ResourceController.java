@@ -57,11 +57,15 @@ public class ResourceController {
                 .toList());
         Map<ModuleInventory, Integer> deviceModuleMap = new HashMap<>();
         var packList = device.getModulePackList();
-        if (!packList.isEmpty()) {
-            for (ModulePack modulePack : device.getModulePackList()) {
-                deviceModuleMap.put(modulePack.getModuleInventory(), modulePack.getQty());
+        for (ModulePack modulePack : packList) {
+            deviceModuleMap.put(modulePack.getModuleInventory(), modulePack.getQty());
+        }
+        for (ModuleInventory moduleInventory : compatibleModuleInventoryList) {
+            if (!deviceModuleMap.containsKey(moduleInventory)) {
+                deviceModuleMap.put(moduleInventory, 0);
             }
         }
+
         compatibleModuleInventoryList.removeIf(inventory -> inventory.getAvailable() == 0 && deviceModuleMap.getOrDefault(inventory, 0) == 0);
         List<ModuleInventory> compatibleStorageInventoryList = compatibleModuleInventoryList
                 .stream()
@@ -176,16 +180,16 @@ public class ResourceController {
     }
 
     @PostMapping("/module/update")
-    public String decreaseInventoryAvailability(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") ModuleUpdateForm moduleUpdateForm){
+    public String decreaseInventoryAvailability(RedirectAttributes redirectAttributes, @ModelAttribute("updateForm") ModuleUpdateForm moduleUpdateForm) {
         resourceService.inventoryUpdate(moduleUpdateForm);
         redirectAttributes.addFlashAttribute("availabilityUpdated", true);
 
         return "redirect:/resource/module/inventory";
     }
 
-    @GetMapping("/module/storage/{specId}/detail")
-    public String showInventoryDetail_2(Model model, @PathVariable Integer specId) {
-        List<Storage> storageList = resourceService.getRelatedStorageList(specId);
+    @GetMapping("/module/storage/{inventoryId}/detail")
+    public String showInventoryDetail_2(Model model, @PathVariable Integer inventoryId) {
+        List<Storage> storageList = resourceService.getRelatedSpareStorageList(inventoryId);
         var inventory = storageList.stream().map(Storage::getModuleInventory).findAny();
         inventory.ifPresent(moduleInventory -> model.addAttribute("inventory", moduleInventory));
         model.addAttribute("storageList", storageList);

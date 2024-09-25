@@ -42,7 +42,7 @@ public interface ResourceService {
 
     List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId);
 
-    List<Storage> getRelatedStorageList(Integer specId);
+    List<Storage> getRelatedSpareStorageList(Integer specId);
 
     Map<ModuleInventory, Integer> getDeviceModuleOverview(List<ModulePack> modulePackList);
 
