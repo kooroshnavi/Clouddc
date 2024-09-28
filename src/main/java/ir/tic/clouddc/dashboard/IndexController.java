@@ -11,12 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
 @RequestMapping("/")
-public class indexController {
+public class IndexController {
 
     private final PersonService personService;
 
     @Autowired
-    public indexController(PersonService personService) {
+    public IndexController(PersonService personService) {
         this.personService = personService;
     }
 

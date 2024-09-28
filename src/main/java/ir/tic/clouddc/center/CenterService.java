@@ -15,7 +15,6 @@ public interface CenterService {
     long ROOM_2_ID = 10004;
     long ROOM_412_ID = 10005;
 
-
     Location getRefrencedLocation(Long locationId);
 
     List<Location> getLocationListExcept(List<Long> locationId);

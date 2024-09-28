@@ -6,6 +6,20 @@ import java.util.List;
 
 public interface PersonService {
 
+    interface PersonProjection_1 {
+
+        int getId();
+
+        String getName();
+
+        boolean getAssignee();
+
+        boolean getDisabled();
+
+        char getRole();
+
+        int getWorkspaceSize();
+    }
 
     Person getPersonByUsername(String name);
 
@@ -20,4 +34,6 @@ public interface PersonService {
     List<Person> getDefaultAssgineeList();
 
     Person getReferencedPerson(Integer defaultPersonId);
+
+    List<PersonProjection_1> getRegisteredPerosonList();
 }

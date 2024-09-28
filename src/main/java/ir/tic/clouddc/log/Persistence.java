@@ -23,7 +23,7 @@ public final class Persistence {
     @Column(name = "PersistenceID")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinColumn(name = "PersonID")
     private Person person;
 

@@ -24,7 +24,7 @@ public final class Storage {
     @JoinColumn(name = "SpecificationID")
     private ModuleInventory moduleInventory;
 
-    @Column(name = "SerialNumber")
+    @Column(name = "SerialNumber", nullable = false, unique = true)
     private String serialNumber;
 
     @Column(name = "MFG")

@@ -27,7 +27,7 @@ public abstract class PmInterfaceCatalog {
     @JoinColumn(name = "PmInterfaceID", nullable = false)
     private PmInterface pmInterface;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinColumn(name = "DefaultPersonID", nullable = false)
     private Person defaultPerson;
 

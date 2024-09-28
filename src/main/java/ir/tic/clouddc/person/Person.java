@@ -17,31 +17,34 @@ import java.util.List;
 public final class Person {
 
     @Id
-    private Integer id;
+    private Integer id; // 1
 
-    @Column(name = "Username")
+    @Column(name = "Username", unique = true)
     private String username;
 
     @Column(name = "FullName")
-    private String name;
+    private String name; // 2
 
-    @Column(name = "Assignable")
-    private boolean assignee; // false for manager and viewer
+    @Column(name = "Assignable", nullable = false)
+    private boolean assignee; // false for manager and viewer // 3
 
-    @Column(name = "RoleCode")
+    @Column(name = "Disabled") // 4
+    private boolean disabled;
+
+    @Column(name = "RoleCode", nullable = false)  // 5
     private char role;
+
+    @Column(name = "WorkspaceSize")
+    private Integer workSpaceSize;
 
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
 
     @OneToMany(mappedBy = "person")
-    private List<Persistence> personList;
+    private List<Persistence> persistenceList;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId
     @JoinColumn(name = "AddressID")
     private Address address;
-
-    @Transient
-    private long workspaceSize;
 }

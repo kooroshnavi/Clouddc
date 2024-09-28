@@ -57,4 +57,9 @@ final class PersonServiceImpl implements PersonService {
         return personRepository.getReferenceById(personId);
     }
 
+    @Override
+    public List<PersonProjection_1> getRegisteredPerosonList() {
+        return personRepository.getPersonProjection_1();
+    }
+
 }

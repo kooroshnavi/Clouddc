@@ -17,4 +17,12 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
 
     Person findByUsername(String name);
 
+    @Query("select person.id as id," +
+            " person.name as name," +
+            " person.assignee as assignee," +
+            " person.disabled as disabled," +
+            " person.role as role," +
+            " person.workSpaceSize as workspaceSize" +
+            " from Person person")
+    List<PersonService.PersonProjection_1> getPersonProjection_1();
 }

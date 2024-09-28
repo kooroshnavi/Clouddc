@@ -36,9 +36,6 @@ import java.util.*;
 @Service
 @Transactional
 public class PmServiceImpl implements PmService {
-
-    private static final List<Integer> locationTargetIdList = List.of(1, 2, 3, 4);
-    private static final List<Integer> deviceTargetIdList = List.of(5, 6, 7, 8, 9);
     private final PmRepository pmRepository;
     private final PmInterfaceRepository pmInterfaceRepository;
     private final PmInterfaceCatalogRepository pmInterfaceCatalogRepository;
@@ -98,6 +95,8 @@ public class PmServiceImpl implements PmService {
             catalog.setNextDueDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod())));
         }
 
+        catalog.getDefaultPerson().setWorkSpaceSize(catalog.getDefaultPerson().getWorkSpaceSize() + 1);
+
         Pm pm;
         if (catalog instanceof LocationPmCatalog) {
             pm = new GeneralLocationPm();
@@ -143,6 +142,12 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getPmInterfaceList() {
+    /*    List<Person> personList = personService.getRegisteredPerosonList();
+        for (Person person : personList
+        ) {
+            person.setWorkSpaceSize(countPersonWorkspaceSize(person.getId()));
+        }*/
+
         return pmInterfaceRepository.findAll();
     }
 
@@ -236,6 +241,8 @@ public class PmServiceImpl implements PmService {
         basePmDetail.setFinishedDate(UtilService.getDATE());
         basePmDetail.setFinishedTime(UtilService.getTime());
         basePmDetail.setActive(false);
+        var pmDetailPerson = basePmDetail.getPersistence().getPerson();
+        pmDetailPerson.setWorkSpaceSize(pmDetailPerson.getWorkSpaceSize() - 1);
         Persistence attachmentPersistence;
 
         var currentPerson = personService.getCurrentPerson();
@@ -281,6 +288,7 @@ public class PmServiceImpl implements PmService {
 
         if (active) {
             generalPmDetail.setActive(true);
+            assigneePerson.setWorkSpaceSize(assigneePerson.getWorkSpaceSize() + 1);
         } else {
             generalPmDetail.setActive(false);
             generalPmDetail.setFinishedDate(generalPmDetail.getRegisterDate());
@@ -298,6 +306,7 @@ public class PmServiceImpl implements PmService {
         if (catalog.getPmList().stream().filter(Pm::isActive).count() == 1) {
             catalog.setActive(false);
         }
+
         pm.setActive(false);
 
         var pmInterface = catalog.getPmInterface();
@@ -321,13 +330,7 @@ public class PmServiceImpl implements PmService {
             assignPersonList = personService.getPersonListExcept(List.of(pmOwnerUsername, currentUsername));
         }
 
-        if (!assignPersonList.isEmpty()) {
-            for (Person person : assignPersonList) {
-                person.setWorkspaceSize(countPersonWorkspaceSize(person.getId()));
-            }
-        }
-
-        return assignPersonList.stream().sorted(Comparator.comparing(Person::getWorkspaceSize)).toList();
+        return assignPersonList.stream().sorted(Comparator.comparing(Person::getWorkSpaceSize)).toList();
     }
 
     @Override
@@ -498,7 +501,7 @@ public class PmServiceImpl implements PmService {
         return pmRepository.countActiveByPmInterface(pmInterfaceId, true);
     }
 
-    private long countPersonWorkspaceSize(Integer personId) {
+    private int countPersonWorkspaceSize(Integer personId) {
         return pmDetailRepository.countActiveByPerson(personId, true);
     }
 
