@@ -25,11 +25,11 @@ public final class Person {
     @Column(name = "FullName")
     private String name; // 2
 
-    @Column(name = "Assignable", nullable = false)
-    private boolean assignee; // false for manager and viewer // 3
-
     @Column(name = "Disabled") // 4
     private boolean disabled;
+
+    @Column(name = "Assignable", nullable = false)
+    private boolean assignee; // false for manager and viewer // 3
 
     @Column(name = "RoleCode", nullable = false)  // 5
     private char role;

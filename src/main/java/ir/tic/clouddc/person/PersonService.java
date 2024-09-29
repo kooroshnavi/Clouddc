@@ -3,8 +3,17 @@ package ir.tic.clouddc.person;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public interface PersonService {
+
+    boolean checkPhoneExistence(PersonRegisterForm personRegisterForm);
+
+    String initPhoneRegister(String phoneNumber) throws ExecutionException;
+
+    void registerNewPerson(PersonRegisterForm personRegisterForm);
+
+    String validateOTP(PersonRegisterForm personRegisterForm) throws ExecutionException;
 
     interface PersonProjection_1 {
 

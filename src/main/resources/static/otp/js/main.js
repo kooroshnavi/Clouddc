@@ -6,7 +6,7 @@ function timer(remaining) {
   m = m < 10 ? "0" + m : m;
   s = s < 10 ? "0" + s : s;
   h = h < 10 ? "0" + h : h;
-  document.getElementById("countdown").innerHTML = ` آخرین کد ارسالی تا  ${s} : ${m} : ${h} معتبر است`;
+  document.getElementById("countdown").innerHTML = ` آخرین کد ارسالی تا  ${s} : ${m} : ${h} اعتبار دارد.`;
   remaining -= 1;
   if (remaining >= 0 && timerOn) {
     setTimeout(function () {
@@ -19,7 +19,6 @@ function timer(remaining) {
   if (!timerOn) {
     return;
   }
-  document.getElementById("resend").innerHTML = `Don't receive the code?
-  <span class="font-weight-bold text-color cursor" onclick="timer(60)">Resend</span>`;
+  document.getElementById("countdown").innerHTML = `اعتبار کد ارسالی به پایان رسید. لطفا مجددا درخواست را ارسال کنید.`;
 }
 timer(secondsLeft);

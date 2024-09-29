@@ -1,16 +1,22 @@
 package ir.tic.clouddc.person;
 
+import jakarta.validation.Valid;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 @Controller
 @RequestMapping("/person")
+@Slf4j
 public class PersonController {
 
     private final PersonService personService;
@@ -28,8 +34,66 @@ public class PersonController {
                 .sorted(Comparator.comparing(PersonService.PersonProjection_1::getWorkspaceSize).reversed())
                 .toList();
         model.addAttribute("personProjection1List", personProjection1List);
-        model.addAttribute("personRegisterForm", new PersonRegisterForm());
+
+        if (!model.containsAttribute("personRegisterForm")) {
+            model.addAttribute("personRegisterForm", new PersonRegisterForm());
+        }
+        if (!model.containsAttribute("exist")) {
+            model.addAttribute("exist", false);
+        }
+        if (!model.containsAttribute("newPerson")) {
+            model.addAttribute("newPerson", false);
+        }
+        if (!model.containsAttribute("registerInitialized")) {
+            model.addAttribute("registerInitialized", false);
+        }
+        if (!model.containsAttribute("badOTP")) {
+            model.addAttribute("badOTP", false);
+        }
 
         return "userView";
     }
+
+    @RequestMapping(value = "/OTPForm", method = {RequestMethod.GET, RequestMethod.POST})
+    public String OTPForm(Model model, RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
+        var exist = personService.checkPhoneExistence(personRegisterForm);
+        if (exist) {
+            redirectAttributes.addFlashAttribute("exist", true);
+            redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
+
+            return "redirect:/person/list";
+        }
+        String expiryTime = personService.initPhoneRegister(personRegisterForm.getPhoneNumber());
+        LocalDateTime expiry = LocalDateTime.parse(expiryTime);
+        redirectAttributes.addFlashAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
+        redirectAttributes.addFlashAttribute("registerInitialized", true);
+        redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
+        redirectAttributes.addFlashAttribute("exist", false);
+        if (!model.containsAttribute("badOTP")) {
+            redirectAttributes.addFlashAttribute("badOTP", false);
+        } else {
+            redirectAttributes.addFlashAttribute("badOTP", true);
+        }
+
+        return "redirect:/person/list";
+    }
+
+    @PostMapping("/register")
+    private String registerPerson(RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
+        log.info(personRegisterForm.getPhoneNumber());
+        String OTPValidate = personService.validateOTP(personRegisterForm);
+        log.info(String.valueOf(OTPValidate));
+        if (OTPValidate.equals("0")) {
+            personService.registerNewPerson(personRegisterForm);
+        } else {
+            redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
+            redirectAttributes.addFlashAttribute("badOTP", true);
+
+            return "redirect:/person/OTPForm";
+        }
+        redirectAttributes.addFlashAttribute("newPerson", true);
+
+        return "redirect:/person/list";
+    }
+
 }

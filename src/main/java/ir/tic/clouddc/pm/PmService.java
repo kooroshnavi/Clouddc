@@ -27,7 +27,7 @@ public interface PmService {
 
     boolean getPmDetail_4(PmDetail pmDetail);
 
-    List<Pm> getActivePmList(boolean active, boolean workspace);
+    List<Pm> getActivePmList(boolean workspace, @Nullable Integer personId);
 
     void pmInterfaceRegister(PmInterfaceRegisterForm pmInterfaceRegisterForm) throws IOException;
 

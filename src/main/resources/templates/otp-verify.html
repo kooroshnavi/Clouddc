@@ -61,6 +61,7 @@
 <script th:inline="javascript">
     const secondsLeft = [[${secondsLeft}]];
 </script>
+<script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
 <script th:inline="javascript">
 
     const form = document.getElementById('form');
@@ -116,7 +117,6 @@
         }
     }
 </script>
-<script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
 <script src="/login/js/jquery.min.js"></script>
 <script src="/login/js/popper.js"></script>
 <script src="/login/js/bootstrap.min.js"></script>

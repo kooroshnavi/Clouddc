@@ -230,7 +230,6 @@ public class PmController {
         var pm = pmService.getPm(pmUpdateForm.getPmId());
         if (pm.isPresent()) {
             pmService.updatePm(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
-
             redirectAttributes.addAttribute("pmId", pmUpdateForm.getPmId());
             redirectAttributes.addFlashAttribute("updated", true);
 
@@ -242,7 +241,7 @@ public class PmController {
 
     @RequestMapping(value = "/workspace", method = {RequestMethod.GET, RequestMethod.POST})
     public String showWorkspace(Model model) {
-        var activePmList = pmService.getActivePmList(true, true);
+        var activePmList = pmService.getActivePmList(true, null);
         model.addAttribute("workspace", true);
         model.addAttribute("activePmList", activePmList);
 
@@ -251,8 +250,17 @@ public class PmController {
 
     @GetMapping("/active/list")
     public String showActivePmList(Model model) {
-        var activePmList = pmService.getActivePmList(true, false);
+        var activePmList = pmService.getActivePmList(false, null);
         model.addAttribute("workspace", false);
+        model.addAttribute("activePmList", activePmList);
+
+        return "activePmList";
+    }
+
+    @GetMapping("/{personId}/workspace")
+    public String showUserWorkspace(Model model, @PathVariable Integer personId) {
+        var activePmList = pmService.getActivePmList(true, personId);
+        model.addAttribute("workspace", true);
         model.addAttribute("activePmList", activePmList);
 
         return "activePmList";

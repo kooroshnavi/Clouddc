@@ -37,7 +37,7 @@
 
 <body>
 
-<script th:if="${newDevice}">
+<script th:if="${newPerson}">
     document.addEventListener('DOMContentLoaded', function () {
         pos5_success_noti();
     });
@@ -82,7 +82,8 @@
         <div class="card" align="center">
             <div class="card-body">
                 <h6 class="card-header py-3 bg-info" align="center">
-                    <strong class="mb-0">همکار گرامی، امکان ثبت شماره تلفن های تکراری یا فاقد حساب تیک گرام وجود ندارد.</strong>
+                    <strong class="mb-0">همکار گرامی، امکان ثبت شماره تلفن های تکراری یا فاقد حساب تیک گرام وجود
+                        ندارد.</strong>
                 </h6>
                 <div class="d-flex align-items-center">
                 </div>
@@ -93,7 +94,138 @@
                     <h5 class="card-title">آکاردئون بیسک</h5>
                     <div class="my-3 border-top"></div>
                     <div class="accordion" id="accordionExample">
-                        <div class="accordion-item">
+
+                        <div th:if="${registerInitialized}" class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    آکاردئون مورد شماره 1
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <strong>فرم ثبت نام کاربر جدید</strong>
+                                    <div class="border p-3 rounded">
+                                        <form class="was-validated" th:action="@{/person/register}"
+                                              th:object="${personRegisterForm}"  enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+
+                                            <div class="text-bg-warning">
+                                                <span id="countdown"></span>
+                                            </div>
+                                            <br>
+
+                                            <div class="mb-sm-5">
+                                                <label for="input" class="form-check">نام</label>
+                                                <input type="text" class="form-control" id="input" min="2"
+                                                       maxlength="15"
+                                                       required="required" dir="rtl" placeholder="نام"
+                                                       onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                                                       oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
+                                                       th:field="*{firstName}">
+                                            </div>
+                                            <br>
+
+                                            <div class="mb-sm-5">
+                                                <label for="input2" class="form-check">نام خانوادگی</label>
+                                                <input type="text" class="form-control" id="input2" min="3"
+                                                       maxlength="15"
+                                                       required="required" dir="rtl" placeholder="نام خانوادگی"
+                                                       onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                                                       oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
+                                                       th:field="*{lastName}">
+                                            </div>
+                                            <br>
+
+                                            <div class="form-group">
+                                                <label for="phoneNumber" class="form-check">تلفن همراه ثبت شده</label>
+                                                <input type="number" size="11" dir="ltr"
+                                                       th:field="*{phoneNumber}"
+                                                       name="username" class="form-control"
+                                                       placeholder="Ticgram Phone Number"
+                                                       required="required" disabled="disabled">
+                                            </div>
+                                            <br>
+                                            <input type="hidden" name="phoneNumber" th:value="${personRegisterForm.phoneNumber}"/>
+
+
+                                            <div class="mb-3">
+                                                <label class="form-label">نقش کاربر</label>
+                                                <label>
+                                                    <select class="single-select" th:field="*{roleCode}" required="required">
+                                                        <option th:value="0">کارشناس سالن</option>
+                                                        <option th:value="1">مسئول سالن</option>
+                                                        <option th:value="2">مشاهده سامانه</option>
+                                                    </select>
+                                                </label>
+                                                <hr/>
+                                            </div>
+                                            <br>
+
+
+                                            <div class="form-group">
+                                                <label th:if="${badOTP}" for="phoneNumber" class="text-bg-warning">کد ارسالی اشتباه است. لطفا آخرین کد ارسالی به تیک گرام را وارد کنید.</label>
+                                                <label th:unless="${badOTP}" for="phoneNumber" class="form-check">کد ثبت نام ارسالی به تیک گرام را وارد نمایید.</label>
+                                                <input type="number" size="6" dir="ltr"
+                                                       th:field="*{OTPCode}"
+                                                       name="username" class="form-control"
+                                                       placeholder="کد ارسالی به تیک گرام"
+                                                       required="required">
+                                            </div>
+                                            <br>
+
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value=""
+                                                           id="invalidCheck"
+                                                           required="required">
+                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                                    <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                                </div>
+                                                <hr/>
+                                            </div>
+
+                                            <div class="col">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#exampleWarningModal">بررسی
+                                                </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="exampleWarningModal" tabindex="-1"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog">
+                                                        <div class="modal-content text-bg-primary">
+                                                            <div class="modal-header border-dark">
+                                                                <h5 class="modal-title text-dark">همکار گرامی</h5>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-dark">
+                                                                <p>کد تایید ثبت نام از طریق تیک گرام ارسال می گردد.</p>
+                                                            </div>
+                                                            <div class="modal-footer border-dark">
+                                                                <button type="button" class="btn btn-light"
+                                                                        data-bs-dismiss="modal">
+                                                                    بستن
+                                                                </button>
+                                                                <button type="submit" id="submit" class="btn btn-dark">
+                                                                    ارسال کد تیک گرام
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div th:unless="${registerInitialized}" class="accordion-item">
                             <h2 class="accordion-header" id="headingTwo">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -106,56 +238,33 @@
                                     <strong>فرم ثبت نام کاربر جدید</strong>
                                     <hr>
                                     <div class="border p-3 rounded">
-
-                                        <form id="form" class="was-validated" th:action="@{/person/register}"
-                                              th:object="${personRegisterForm}"
-                                              enctype="multipart/form-data">
-
-                                            <div class="mb-sm-5">
-                                                <label for="input" class="form-check">نام</label>
-                                                <input type="text" class="form-control" id="input" min="2" maxlength="15"
-                                                       required="required" dir="rtl" placeholder="نام"
-                                                       onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
-                                                       oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
-                                                       th:field="*{firstName}">
-                                            </div>
-                                            <br>
-
-                                            <div class="mb-sm-5">
-                                                <label for="input2" class="form-check">نام خانوادگی</label>
-                                                <input type="text" class="form-control" id="input2" min="3" maxlength="15"
-                                                       required="required" dir="rtl" placeholder="نام خانوادگی"
-                                                       onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
-                                                       oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
-                                                       th:field="*{firstName}">
-                                            </div>
-                                            <br>
+                                        <form id="form" class="was-validated" m th:action="@{/person/OTPForm}"
+                                              th:object="${personRegisterForm}" method="Post" onSubmit="document.getElementById('submit2').disabled=true;">
 
                                             <div class="form-group">
-                                                <label for="phoneNumber" class="form-check">تلفن همراه دارای تیک گرام</label>
-                                                <input type="number" id="phoneNumber" size="11" dir="ltr" th:field="*{phoneNumber}"
-                                                       name="username" class="form-control" placeholder="Ticgram Phone Number"
+                                                <label for="phoneNumber" class="for-check">تلفن همراه تیک گرام</label>
+                                                <input type="number" id="phoneNumber" size="11" dir="ltr"
+                                                       th:field="*{phoneNumber}"
+                                                       name="username" class="form-control"
+                                                       placeholder="Ticgram Phone Number"
                                                        required="required">
                                             </div>
                                             <br>
 
-                                            <div class="mb-3">
-                                                <label class="form-label">نقش کاربر</label>
-                                                <label>
-                                                    <select class="single-select" th:field="*{roleCode}">
-                                                        <option th:value="1">کارشناس سالن</option>
-                                                        <option th:value="2">مسئول سالن</option>
-                                                    </select>
-                                                </label>
-                                                <hr/>
+                                            <div th:if="${exist}">
+                                                <h6 class="mb-0 text-uppercase" align="center">
+                                                    <strong class="mb-0 text-bg-warning">شماره تلفن تکراری است.</strong>
+                                                </h6>
+                                                <br>
                                             </div>
 
                                             <div class="col">
                                                 <div class="form-check">
-                                                    <input class="form-check-input" type="checkbox" value="" id="invalidCheck"
+                                                    <input class="form-check-input" type="checkbox" value=""
+                                                           id="invalidCheck"
                                                            required="required">
-                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن
-                                                        هستم</label>
+                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات
+                                                        صحیح مطمئن هستم</label>
                                                     <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
                                                 </div>
                                                 <hr/>
@@ -163,25 +272,32 @@
 
                                             <div class="col">
                                                 <!-- Button trigger modal -->
-                                                <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#exampleWarningModal">بررسی</button>
+                                                <button type="button" class="btn btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#exampleWarningModal">بررسی
+                                                </button>
                                                 <!-- Modal -->
-                                                <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
+                                                <div class="modal fade" id="exampleWarningModal" tabindex="-1"
+                                                     aria-hidden="true">
                                                     <div class="modal-dialog modal-lg modal-dialog">
                                                         <div class="modal-content text-bg-primary">
                                                             <div class="modal-header border-dark">
                                                                 <h5 class="modal-title text-dark">همکار گرامی</h5>
-                                                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
                                                                         aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body text-dark">
-                                                                <p>کد تایید ثبت نام از طریق تیک گرام ارسال می گردد.</p>
+                                                                <p>کد تایید ثبت نام روی تیک گرام ارسال می گردد.</p>
                                                             </div>
                                                             <div class="modal-footer border-dark">
-                                                                <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                                                                <button type="button" class="btn btn-light"
+                                                                        data-bs-dismiss="modal">
                                                                     بستن
                                                                 </button>
-                                                                <button type="submit" id="submit" class="btn btn-dark">ارسال کد تیک گرام</button>
+                                                                <button type="submit" id="submit2" class="btn btn-dark">
+                                                                    ارسال کد تیک گرام
+                                                                </button>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -224,7 +340,8 @@
                                                 <div class="col">
                                                     <a th:text="${person.name}"
                                                        th:href="@{/person/{personId}/edit (personId=${person.id})}"
-                                                       class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                                       class="btn btn-outline-warning px-10 radius-30"
+                                                       data-bs-toggle="tooltip"
                                                        data-bs-placement="top"
                                                        title="ویرایش جزئیات"></a>
                                                 </div>
@@ -235,7 +352,17 @@
                                             <td th:if="${person.assignee}" class="text-bg-info">دارد</td>
                                             <td th:unless="${person.assignee}" class="text-bg-warning">ندارد</td>
 
-                                            <td th:text="${person.workspaceSize}"></td>
+                                            <td th:if="${person.workspaceSize == 0}">صفر</td>
+                                            <td th:unless="${person.workspaceSize == 0}">
+                                                <div class="col">
+                                                    <a th:text="${person.workspaceSize}"
+                                                       th:href="@{/pm/{personId}/workspace (personId=${person.id})}"
+                                                       class="btn btn-outline-info"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-placement="top"
+                                                       title="مشاهده کارتابل کاربر"></a>
+                                                </div>
+                                            </td>
 
                                         </tr>
                                         </tbody>
@@ -290,7 +417,6 @@
 <script src="/panel/assets/js/table-datatable.js"></script>
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
-
 <script>
     function clsAlphaNoOnly(e) {  // Accept only alpha numerics, no special characters
         var regex = new RegExp("^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF\u200C\u200F ]+$");
@@ -309,7 +435,6 @@
         return clsAlphaNoOnly(this.event); // window.event
     }
 </script>
-
 <script th:inline="javascript">
     const form = document.getElementById('form');
     form.addEventListener('submit', (e) => {
@@ -329,6 +454,10 @@
         }
     }
 </script>
+<script th:inline="javascript">
+    const secondsLeft = [[${secondsLeft}]];
+</script>
+<script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
 
 </body>
 

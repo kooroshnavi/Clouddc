@@ -77,23 +77,37 @@ public class SoapNotificationService implements NotificationService {
                 "@: " +
                 persianDateTime +
                 System.lineSeparator();
+
         soapClientService.sendMessage("09127016653", otpMessage);
+    }
+
+    @Override
+    public void sendRegisterOTPMessage(String phoneNumber, String otpCode) {
+        final String otpMessage = "کد ثبت نام" +
+                System.lineSeparator() +
+                otpCode +
+                System.lineSeparator() +
+                "اعتبار 10 دقیقه" +
+                System.lineSeparator();
+
+        soapClientService.sendMessage(phoneNumber, otpMessage);
     }
 
     @Override
     public void sendOTPMessage(String address, String otp, String machine, String date) {
         final String otpMessage =
                 otp +
-                System.lineSeparator() +
-                "آدرس ماشین: " +
-                machine +
-                System.lineSeparator() +
-                "تاریخ و ساعت درخواست: " +
-                date +
-                System.lineSeparator() +
-                System.lineSeparator()+
-                "امکان استفاده مجدد تا 12 ساعت" +
-                System.lineSeparator();
+                        System.lineSeparator() +
+                        "آدرس ماشین: " +
+                        machine +
+                        System.lineSeparator() +
+                        "تاریخ و ساعت درخواست: " +
+                        date +
+                        System.lineSeparator() +
+                        System.lineSeparator() +
+                        "امکان استفاده مجدد تا 12 ساعت" +
+                        System.lineSeparator();
+
         soapClientService.sendMessage(address, otpMessage);
     }
 }

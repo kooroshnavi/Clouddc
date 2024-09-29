@@ -479,19 +479,25 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getActivePmList(boolean active, boolean workspace) {
+    public List<Pm> getActivePmList(boolean workspace, @Nullable Integer personId) {
         List<Pm> activePmList;
         if (workspace) {
-            activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getCurrentUsername(), active);
-
+            if (personId == null) {
+                activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getCurrentUsername(), true);
+            } else {
+                activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getReferencedPerson(personId).getUsername(), true);
+            }
         } else {
-            activePmList = pmDetailRepository.fetchActivePmList(active);
+            activePmList = pmDetailRepository.fetchActivePmList(true);
         }
 
         if (!activePmList.isEmpty()) {
             setPmTransients(activePmList);
 
-            return activePmList.stream().sorted(Comparator.comparing(Pm::getDelay).reversed()).toList();
+            return activePmList
+                    .stream()
+                    .sorted(Comparator.comparing(Pm::getDelay).reversed())
+                    .toList();
         }
         return activePmList;
     }
@@ -499,10 +505,6 @@ public class PmServiceImpl implements PmService {
     @Override
     public Long getPmInterfaceActivePmCount(Integer pmInterfaceId) {
         return pmRepository.countActiveByPmInterface(pmInterfaceId, true);
-    }
-
-    private int countPersonWorkspaceSize(Integer personId) {
-        return pmDetailRepository.countActiveByPerson(personId, true);
     }
 
     @Override

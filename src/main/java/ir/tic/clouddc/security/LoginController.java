@@ -2,7 +2,7 @@ package ir.tic.clouddc.security;
 
 import ir.tic.clouddc.otp.OtpForm;
 import ir.tic.clouddc.otp.OtpRequest;
-import ir.tic.clouddc.otp.OtpService;
+import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.person.Address;
 import ir.tic.clouddc.person.AddressRepository;
 import ir.tic.clouddc.utils.UtilService;
@@ -33,11 +33,11 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class LoginController {
 
-    private final OtpService otpService;
+    private final OTPService otpService;
     private final AddressRepository addressRepository;
 
     @Autowired
-    public LoginController(OtpService otpService, AddressRepository addressRepository) {
+    public LoginController(OTPService otpService, AddressRepository addressRepository) {
         this.otpService = otpService;
         this.addressRepository = addressRepository;
     }
@@ -90,7 +90,7 @@ public class LoginController {
                 UUID otpUid = UUID.randomUUID();
                 UUID expiryTimeUUID = UUID.nameUUIDFromBytes(otpUid.toString().getBytes(StandardCharsets.UTF_8));
 
-                otpService.generateOtp(otpRequest.getAddress()
+                otpService.generateLoginOTP(otpRequest.getAddress()
                         , otpUid.toString()
                         , expiryTimeUUID.toString()
                         , request.getRemoteAddr()

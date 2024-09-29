@@ -1,6 +1,6 @@
 package ir.tic.clouddc.security;
 
-import ir.tic.clouddc.otp.OtpService;
+import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.person.AddressRepository;
 import ir.tic.clouddc.person.PersonService;
 import lombok.extern.slf4j.Slf4j;
@@ -24,13 +24,13 @@ import java.util.concurrent.ExecutionException;
 @Slf4j
 public class OTPAuthenticationProvider implements AuthenticationProvider {
 
-    private final OtpService otpService;
+    private final OTPService otpService;
     private final PersonService personService;
     private final AddressRepository addressRepository;
     private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");  // char role: 0.1.2.3.4
 
     @Autowired
-    public OTPAuthenticationProvider(OtpService otpService, PersonService personService, AddressRepository addressRepository) {
+    public OTPAuthenticationProvider(OTPService otpService, PersonService personService, AddressRepository addressRepository) {
         this.otpService = otpService;
         this.personService = personService;
         this.addressRepository = addressRepository;
@@ -46,7 +46,7 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
 
         String result;
         try {
-            result = otpService.verifyOtp(otpUid, providedOtp);
+            result = otpService.verifyLoginOTP(otpUid, providedOtp);
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         }
