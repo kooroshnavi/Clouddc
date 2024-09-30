@@ -5,6 +5,7 @@ import ir.tic.clouddc.otp.OtpRequest;
 import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.person.Address;
 import ir.tic.clouddc.person.AddressRepository;
+import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -36,10 +37,13 @@ public class LoginController {
     private final OTPService otpService;
     private final AddressRepository addressRepository;
 
+    private final PersonService personService;
+
     @Autowired
-    public LoginController(OTPService otpService, AddressRepository addressRepository) {
+    public LoginController(OTPService otpService, AddressRepository addressRepository, PersonService personService) {
         this.otpService = otpService;
         this.addressRepository = addressRepository;
+        this.personService = personService;
     }
 
     @GetMapping("/login")
@@ -67,6 +71,10 @@ public class LoginController {
             model.addAttribute("notFound", false);
         }
 
+        if (!model.containsAttribute("disabled")) {
+            model.addAttribute("disabled", false);
+        }
+
         model.addAttribute("date", UtilService.getCurrentDate());
         model.addAttribute("remoteAddress", request.getRemoteAddr());
 
@@ -86,7 +94,14 @@ public class LoginController {
         }
 
         if (otpService.getOtpUid(otpRequest.getAddress()).isBlank()) {
-            if (userIsKnown(otpRequest.getAddress())) {
+            var address = userIsKnown(otpRequest.getAddress());
+            if (address.isPresent()) {
+                var person = personService.getReferencedPerson(address.get().getId());
+                if (!person.isEnabled()) {
+                    redirectAttributes.addFlashAttribute("disabled", true);
+
+                    return "redirect:/login";
+                }
                 UUID otpUid = UUID.randomUUID();
                 UUID expiryTimeUUID = UUID.nameUUIDFromBytes(otpUid.toString().getBytes(StandardCharsets.UTF_8));
 
@@ -135,9 +150,8 @@ public class LoginController {
         return "otp-verify";
     }
 
-    private boolean userIsKnown(String address) {
-        Optional<Address> personAddress = addressRepository.findByValue(address);
+    private Optional<Address> userIsKnown(String address) {
 
-        return personAddress.isPresent();
+        return addressRepository.findByValue(address);
     }
 }

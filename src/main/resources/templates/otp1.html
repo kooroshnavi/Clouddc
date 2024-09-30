@@ -91,10 +91,8 @@
                             خروج از سیستم انجام شد.
                         </div>
 
-                        <div th:if="${notFound}" class="alert-warning">
-                            شماره وارد شده در لیست کاربران این سامانه یافت نشد.
-                        </div>
-
+                        <div th:if="${notFound}" class="alert-warning">شماره وارد شده در لیست کاربران این سامانه یافت نشد.</div>
+                        <div th:if="${disabled}" class="alert-danger">حساب کاربری غیرفعال می باشد.</div>
                         <br>
 
                         <div class="form-group">
@@ -126,10 +124,8 @@
     <h6>
         <span class="bg-primary" th:text="${'IP Address: '   + remoteAddress}"></span>
     </h6>
+
 </section>
-
-</body>
-
 
 <script src="/login/js/jquery.min.js"></script>
 <script src="/login/js/popper.js"></script>
@@ -156,6 +152,7 @@
 <script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 </body>
 </html>
 

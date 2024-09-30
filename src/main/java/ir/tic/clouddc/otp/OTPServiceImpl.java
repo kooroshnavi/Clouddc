@@ -5,6 +5,7 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.person.Address;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -130,9 +131,21 @@ public class OTPServiceImpl implements OTPService {
 
                 return "0";
             } else {
-
                 return "403";
             }
+        }
+    }
+
+    @Override
+    public void invalidateLoginOTP(Address address) throws ExecutionException {
+        var phoneNumber = address.getValue();
+        var uid = loginOTPCache.get(phoneNumber);
+        if (!uid.isBlank()) {
+            var otp = loginOTPCache.get(uid);
+            loginOTPCache.invalidate(uid);
+            loginOTPCache.invalidate(phoneNumber);
+            loginOTPCache.invalidate(otp);
+            loginOTPCache.invalidate(UUID.nameUUIDFromBytes(uid.getBytes(StandardCharsets.UTF_8)).toString());
         }
     }
 }

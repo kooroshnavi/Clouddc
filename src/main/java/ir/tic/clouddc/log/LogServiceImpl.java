@@ -45,6 +45,7 @@ public final class LogServiceImpl implements LogService {
     public Persistence persistenceSetup(Person person) {
         Persistence persistence = new Persistence();
         persistence.setPerson(person);
+
         return persistence;
     }
 

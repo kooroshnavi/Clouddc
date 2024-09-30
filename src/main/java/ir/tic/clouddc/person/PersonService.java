@@ -11,7 +11,7 @@ public interface PersonService {
 
     String initPhoneRegister(String phoneNumber) throws ExecutionException;
 
-    void registerNewPerson(PersonRegisterForm personRegisterForm);
+    void registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException;
 
     String validateOTP(PersonRegisterForm personRegisterForm) throws ExecutionException;
 
@@ -23,7 +23,7 @@ public interface PersonService {
 
         boolean getAssignee();
 
-        boolean getDisabled();
+        boolean getEnabled();
 
         char getRole();
 

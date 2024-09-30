@@ -8,6 +8,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
+import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import java.time.LocalDateTime;
 
@@ -18,9 +21,11 @@ public class SecurityConfig {
 
     private final NotificationService notificationService;
     private final OTPFailureHandler otpFailureHandler;
+    private final HeaderWriterLogoutHandler clearSiteData;
 
     @Autowired
     public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler) {
+        clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
     }
@@ -41,9 +46,13 @@ public class SecurityConfig {
                         })
                 )
 
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                )
+
                 .logout(logout -> logout
+                        .addLogoutHandler(clearSiteData)
                         .invalidateHttpSession(true)
-                        .deleteCookies("JSESSIONID")
                         .clearAuthentication(true)
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
@@ -63,5 +72,11 @@ public class SecurityConfig {
 
         return http.build();
     }
+
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
+    }
+
 
 }

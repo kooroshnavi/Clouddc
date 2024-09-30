@@ -38,6 +38,7 @@ public class HTTPSConnectivity {
         connector.setSecure(false);
         connector.setPort(80);
         connector.setRedirectPort(serverPortHttps);
+
         return connector;
     }
 }

@@ -1,5 +1,7 @@
 package ir.tic.clouddc.otp;
 
+import ir.tic.clouddc.person.Address;
+
 import java.time.LocalDateTime;
 import java.util.concurrent.ExecutionException;
 
@@ -16,4 +18,6 @@ public interface OTPService {
     String generatePersonRegisterOTP(String phoneNumber) throws ExecutionException;
 
     String verifyPersonRegisterOTP(String phoneNumber, String otpCode) throws ExecutionException;
+
+    void invalidateLoginOTP(Address address) throws ExecutionException;
 }

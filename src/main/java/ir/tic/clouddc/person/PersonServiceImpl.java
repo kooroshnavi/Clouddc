@@ -1,6 +1,8 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.otp.OTPService;
+import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,22 +44,43 @@ public final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void registerNewPerson(PersonRegisterForm personRegisterForm) {
-        log.info("Register Method");
-        Person person = new Person();
-        Address address = new Address();
-        var firstName = personRegisterForm.getFirstName().trim();
-        var lastName = personRegisterForm.getLastName().trim();
-        person.setName(lastName + " " + firstName);
-        UUID username = UUID.randomUUID();
-        person.setUsername(username.toString());
-        person.setRole(personRegisterForm.getRoleCode());
-        person.setAssignee(person.getRole() != 2);
-        person.setWorkSpaceSize(0);
-        person.setDisabled(false);
-        address.setValue(personRegisterForm.getPhoneNumber());
-        person.setAddress(address);
+    public void registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException {
+        Person person;
+        Persistence persistence;
+        if (personRegisterForm.getPersonId() != null) { // Update Person Info
+            person = personRepository.getReferenceById(personRegisterForm.getPersonId());
+            if (person.isEnabled() && !personRegisterForm.isEnabled()) {
+                person.setEnabled(false);
+                otpService.invalidateLoginOTP(person.getAddress());
+                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonDetailUpdated");
+            } else if (!person.isEnabled() && personRegisterForm.isEnabled()) {
+                person.setEnabled(true);
+                person.setRole(personRegisterForm.getRoleCode());
+                person.setAssignee(person.getRole() != 2);
+                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonDetailUpdated");
+            } else if (person.isEnabled() && person.getRole() != personRegisterForm.getRoleCode()) {
+                person.setRole(personRegisterForm.getRoleCode());
+                person.setAssignee(person.getRole() != 2);
+                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonDetailUpdated");
+            }
 
+        } else {    // Register New Person
+            person = new Person();
+            Address address = new Address();
+            var firstName = personRegisterForm.getFirstName().trim();
+            var lastName = personRegisterForm.getLastName().trim();
+            person.setName(lastName + " " + firstName);
+            UUID username = UUID.randomUUID();
+            person.setUsername(username.toString());
+            person.setRole(personRegisterForm.getRoleCode());
+            person.setAssignee(person.getRole() != 2);
+            person.setWorkSpaceSize(0);
+            person.setEnabled(true);
+            address.setValue(personRegisterForm.getPhoneNumber());
+            person.setAddress(address);
+            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonRegistered");
+
+        }
         personRepository.saveAndFlush(person);
     }
 

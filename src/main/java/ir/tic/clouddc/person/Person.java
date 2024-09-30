@@ -25,8 +25,8 @@ public final class Person {
     @Column(name = "FullName")
     private String name; // 2
 
-    @Column(name = "Disabled") // 4
-    private boolean disabled;
+    @Column(name = "Enabled") // 4
+    private boolean enabled;
 
     @Column(name = "Assignable", nullable = false)
     private boolean assignee; // false for manager and viewer // 3
@@ -40,8 +40,11 @@ public final class Person {
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
 
-    @OneToMany(mappedBy = "person")
+    @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<Persistence> persistenceList;
+
+    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    private List<LoginHistory> loginHistoryList;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId

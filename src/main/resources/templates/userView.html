@@ -95,7 +95,7 @@
                     <div class="my-3 border-top"></div>
                     <div class="accordion" id="accordionExample">
 
-                        <div th:if="${registerInitialized}" class="accordion-item">
+                        <div th:if="${registerInitialized || update}" class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -108,14 +108,15 @@
                                     <strong>فرم ثبت نام کاربر جدید</strong>
                                     <div class="border p-3 rounded">
                                         <form class="was-validated" th:action="@{/person/register}"
-                                              th:object="${personRegisterForm}"  enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                              th:object="${personRegisterForm}" enctype="multipart/form-data"
+                                              method="POST" onSubmit="document.getElementById('submit').disabled=true;">
 
-                                            <div class="text-bg-warning">
+                                            <div th:if="${registerInitialized}" class="text-bg-warning">
                                                 <span id="countdown"></span>
                                             </div>
-                                            <br>
+                                            <br th:if="${registerInitialized}">
 
-                                            <div class="mb-sm-5">
+                                            <div th:if="${registerInitialized}" class="mb-sm-5">
                                                 <label for="input" class="form-check">نام</label>
                                                 <input type="text" class="form-control" id="input" min="2"
                                                        maxlength="15"
@@ -124,9 +125,9 @@
                                                        oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
                                                        th:field="*{firstName}">
                                             </div>
-                                            <br>
+                                            <br th:if="${registerInitialized}">
 
-                                            <div class="mb-sm-5">
+                                            <div th:if="${registerInitialized}" class="mb-sm-5">
                                                 <label for="input2" class="form-check">نام خانوادگی</label>
                                                 <input type="text" class="form-control" id="input2" min="3"
                                                        maxlength="15"
@@ -135,9 +136,9 @@
                                                        oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
                                                        th:field="*{lastName}">
                                             </div>
-                                            <br>
+                                            <br th:if="${registerInitialized}">
 
-                                            <div class="form-group">
+                                            <div th:if="${registerInitialized}" class="form-group">
                                                 <label for="phoneNumber" class="form-check">تلفن همراه ثبت شده</label>
                                                 <input type="number" size="11" dir="ltr"
                                                        th:field="*{phoneNumber}"
@@ -145,14 +146,49 @@
                                                        placeholder="Ticgram Phone Number"
                                                        required="required" disabled="disabled">
                                             </div>
+                                            <br th:if="${registerInitialized}">
+                                            <input th:if="${registerInitialized}" type="hidden" name="phoneNumber"
+                                                   th:value="${personRegisterForm.phoneNumber}"/>
+
+                                            <input th:if="${update}" type="hidden" name="personId"
+                                                   th:value="${personRegisterForm.personId}"/>
+
+                                            <div th:if="${update && personRegisterForm.freeWorkSpace}"
+                                                 class="col-12">
+                                                <input class="form-check-input" type="checkbox"
+                                                       id="flexSwitchCheckDefault" th:field="*{enabled}" onchange="toggleTextBox()">
+                                                <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال
+                                                    سازی - در صورت غیرفعالسازی، کاربر امکان ورود به سامانه نخواهد
+                                                    داشت.</label>
+                                            </div>
+
+                                            <div th:if="${update && not personRegisterForm.freeWorkSpace}"
+                                                 class="col-12">
+                                                <input class="form-check-input" type="checkbox"
+                                                       id="flexSwitchCheckCheckedDisabled" checked="checked"
+                                                       disabled="disabled">
+                                                <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">کاربر
+                                                    فعال است - جهت غیر فعالسازی کاربر، وظایف کارتابلش را خاتمه دهید یا
+                                                    به همکار دیگری منتسب کنید تا کارتابل خالی شود.</label>
+                                            </div>
                                             <br>
-                                            <input type="hidden" name="phoneNumber" th:value="${personRegisterForm.phoneNumber}"/>
 
-
-                                            <div class="mb-3">
+                                            <div th:if="${registerInitialized}" class="mb-3">
                                                 <label class="form-label">نقش کاربر</label>
                                                 <label>
-                                                    <select class="single-select" th:field="*{roleCode}" required="required">
+                                                    <select class="single-select" th:field="*{roleCode}"
+                                                            required="required">
+                                                        <option th:value="0">کارشناس سالن</option>
+                                                        <option th:value="1">مسئول سالن</option>
+                                                        <option th:value="2">مشاهده سامانه</option>
+                                                    </select>
+                                                </label>
+                                                <hr/>
+                                            </div>
+                                            <div id="role" th:if="${update}" class="mb-3">
+                                                <label for="list" class="form-label">نقش کاربر
+                                                    <select id="list" class="single-select" th:field="*{roleCode}"
+                                                            required="required">
                                                         <option th:value="0">کارشناس سالن</option>
                                                         <option th:value="1">مسئول سالن</option>
                                                         <option th:value="2">مشاهده سامانه</option>
@@ -162,24 +198,27 @@
                                             </div>
                                             <br>
 
-
-                                            <div class="form-group">
-                                                <label th:if="${badOTP}" for="phoneNumber" class="text-bg-warning">کد ارسالی اشتباه است. لطفا آخرین کد ارسالی به تیک گرام را وارد کنید.</label>
-                                                <label th:unless="${badOTP}" for="phoneNumber" class="form-check">کد ثبت نام ارسالی به تیک گرام را وارد نمایید.</label>
+                                            <div th:if="${registerInitialized}" class="form-group">
+                                                <label th:if="${badOTP}" for="phoneNumber" class="text-bg-warning">کد
+                                                    ارسالی اشتباه است. لطفا آخرین کد ارسالی به تیک گرام را وارد
+                                                    کنید.</label>
+                                                <label th:unless="${badOTP}" for="phoneNumber" class="form-check">کد ثبت
+                                                    نام ارسالی به تیک گرام را وارد نمایید.</label>
                                                 <input type="number" size="6" dir="ltr"
                                                        th:field="*{OTPCode}"
                                                        name="username" class="form-control"
                                                        placeholder="کد ارسالی به تیک گرام"
                                                        required="required">
                                             </div>
-                                            <br>
+                                            <br th:if="${registerInitialized}">
 
                                             <div class="col">
                                                 <div class="form-check">
                                                     <input class="form-check-input" type="checkbox" value=""
                                                            id="invalidCheck"
                                                            required="required">
-                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات
+                                                        صحیح مطمئن هستم</label>
                                                     <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
                                                 </div>
                                                 <hr/>
@@ -203,7 +242,11 @@
                                                                         aria-label="Close"></button>
                                                             </div>
                                                             <div class="modal-body text-dark">
-                                                                <p>کد تایید ثبت نام از طریق تیک گرام ارسال می گردد.</p>
+                                                                <p th:if="${registerInitialized}">پس از تایید، اطلاعات
+                                                                    کاربر جدید در لیست کاربران همین صفحه قابل مشاهده
+                                                                    خواهد بود.</p>
+                                                                <p th:if="${update}">پس از تایید، اطلاعات کاربر بر اساس
+                                                                    فرم تکمیل شده بروزرسانی می گردد.</p>
                                                             </div>
                                                             <div class="modal-footer border-dark">
                                                                 <button type="button" class="btn btn-light"
@@ -211,7 +254,7 @@
                                                                     بستن
                                                                 </button>
                                                                 <button type="submit" id="submit" class="btn btn-dark">
-                                                                    ارسال کد تیک گرام
+                                                                    تایید
                                                                 </button>
                                                             </div>
                                                         </div>
@@ -239,7 +282,8 @@
                                     <hr>
                                     <div class="border p-3 rounded">
                                         <form id="form" class="was-validated" m th:action="@{/person/OTPForm}"
-                                              th:object="${personRegisterForm}" method="Post" onSubmit="document.getElementById('submit2').disabled=true;">
+                                              th:object="${personRegisterForm}" method="Post"
+                                              onSubmit="document.getElementById('submit2').disabled=true;">
 
                                             <div class="form-group">
                                                 <label for="phoneNumber" class="for-check">تلفن همراه تیک گرام</label>
@@ -339,15 +383,15 @@
                                             <td>
                                                 <div class="col">
                                                     <a th:text="${person.name}"
-                                                       th:href="@{/person/{personId}/edit (personId=${person.id})}"
+                                                       th:href="@{/person/{personId}/detail (personId=${person.id})}"
                                                        class="btn btn-outline-warning px-10 radius-30"
                                                        data-bs-toggle="tooltip"
                                                        data-bs-placement="top"
                                                        title="ویرایش جزئیات"></a>
                                                 </div>
                                             </td>
-                                            <td th:if="${person.disabled}" class="text-bg-danger">غیرفعال</td>
-                                            <td th:unless="${person.disabled}" class="text-bg-primary">فعال</td>
+                                            <td th:if="${person.enabled}" class="text-bg-primary">فعال</td>
+                                            <td th:unless="${person.enabled}" class="text-bg-danger">غیرفعال</td>
 
                                             <td th:if="${person.assignee}" class="text-bg-info">دارد</td>
                                             <td th:unless="${person.assignee}" class="text-bg-warning">ندارد</td>
@@ -458,6 +502,32 @@
     const secondsLeft = [[${secondsLeft}]];
 </script>
 <script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
+<script>
+    function toggleTextBox() {
+        const activation = document.getElementById('flexSwitchCheckDefault');
+        const role = document.getElementById('role');
+        const list = document.getElementById('list');
+
+        if (activation.checked === true) {
+            role.style.display = 'block';
+            role.hidden = false;
+            role.disabled = false;
+
+            list.style.display = 'block';
+            list.hidden = false;
+            list.disabled = false;
+        } else {
+            console.log("HERE")
+            role.style.display = 'none';
+            role.hidden = true;
+            role.disabled = true;
+
+            list.style.display = 'none';
+            list.hidden = true;
+            list.disabled = true;
+        }
+    }
+</script>
 
 </body>
 

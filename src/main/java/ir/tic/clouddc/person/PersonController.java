@@ -50,12 +50,16 @@ public class PersonController {
         if (!model.containsAttribute("badOTP")) {
             model.addAttribute("badOTP", false);
         }
+        if (!model.containsAttribute("update")) {
+            model.addAttribute("update", false);
+        }
 
         return "userView";
     }
 
     @RequestMapping(value = "/OTPForm", method = {RequestMethod.GET, RequestMethod.POST})
     public String OTPForm(Model model, RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
+
         var exist = personService.checkPhoneExistence(personRegisterForm);
         if (exist) {
             redirectAttributes.addFlashAttribute("exist", true);
@@ -68,7 +72,6 @@ public class PersonController {
         redirectAttributes.addFlashAttribute("secondsLeft", LocalDateTime.now().until(expiry, ChronoUnit.SECONDS));
         redirectAttributes.addFlashAttribute("registerInitialized", true);
         redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
-        redirectAttributes.addFlashAttribute("exist", false);
         if (!model.containsAttribute("badOTP")) {
             redirectAttributes.addFlashAttribute("badOTP", false);
         } else {
@@ -80,18 +83,42 @@ public class PersonController {
 
     @PostMapping("/register")
     private String registerPerson(RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
-        log.info(personRegisterForm.getPhoneNumber());
-        String OTPValidate = personService.validateOTP(personRegisterForm);
-        log.info(String.valueOf(OTPValidate));
-        if (OTPValidate.equals("0")) {
+        if (personRegisterForm.getPersonId() != null) {
+            log.info("Updating Person");// Update Person Info
             personService.registerNewPerson(personRegisterForm);
         } else {
-            redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
-            redirectAttributes.addFlashAttribute("badOTP", true);
+            var exist = personService.checkPhoneExistence(personRegisterForm);
+            if (exist) {
+                redirectAttributes.addFlashAttribute("exist", true);
+                redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
 
-            return "redirect:/person/OTPForm";
+                return "redirect:/person/list";
+            }
+            String OTPValidate = personService.validateOTP(personRegisterForm);
+            if (OTPValidate.equals("0")) {
+                personService.registerNewPerson(personRegisterForm);
+            } else {
+                redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
+                redirectAttributes.addFlashAttribute("badOTP", true);
+
+                return "redirect:/person/OTPForm";
+            }
         }
         redirectAttributes.addFlashAttribute("newPerson", true);
+
+        return "redirect:/person/list";
+    }
+
+    @GetMapping("/{personId}/detail")
+    public String getPersonDetailUpdate(RedirectAttributes redirectAttributes, @PathVariable Integer personId) {
+        var person = personService.getReferencedPerson(personId);
+        PersonRegisterForm personRegisterForm = new PersonRegisterForm();
+        personRegisterForm.setPersonId(person.getId());
+        personRegisterForm.setEnabled(person.isEnabled());
+        personRegisterForm.setRoleCode(person.getRole());
+        personRegisterForm.setFreeWorkSpace(person.getWorkSpaceSize() <= 0);
+        redirectAttributes.addFlashAttribute("update", true);
+        redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
 
         return "redirect:/person/list";
     }

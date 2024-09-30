@@ -16,4 +16,10 @@ public class PersonRegisterForm {
     private char roleCode;
 
     private String OTPCode;
+
+    private Integer personId;
+
+    private boolean enabled;
+
+    private boolean freeWorkSpace;
 }

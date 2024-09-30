@@ -20,7 +20,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("select person.id as id," +
             " person.name as name," +
             " person.assignee as assignee," +
-            " person.disabled as disabled," +
+            " person.enabled as enabled," +
             " person.role as role," +
             " person.workSpaceSize as workspaceSize" +
             " from Person person")
