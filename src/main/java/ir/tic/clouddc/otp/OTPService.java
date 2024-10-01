@@ -20,4 +20,6 @@ public interface OTPService {
     String verifyPersonRegisterOTP(String phoneNumber, String otpCode) throws ExecutionException;
 
     void invalidateLoginOTP(Address address) throws ExecutionException;
+
+    String getPersonAddress(String otpUID) throws ExecutionException;
 }

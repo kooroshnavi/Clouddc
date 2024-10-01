@@ -5,6 +5,7 @@ import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
+import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -18,10 +19,13 @@ import java.util.concurrent.ExecutionException;
 
 @Slf4j
 @Service
-public final class PersonServiceImpl implements PersonService {
+@Transactional
+public class PersonServiceImpl implements PersonService {
 
     private final PersonRepository personRepository;
+
     private final OTPService otpService;
+
     private final AddressRepository addressRepository;
 
     private final LogService logService;
@@ -100,6 +104,18 @@ public final class PersonServiceImpl implements PersonService {
     @Override
     public String validateOTP(PersonRegisterForm personRegisterForm) throws ExecutionException {
         return otpService.verifyPersonRegisterOTP(personRegisterForm.getPhoneNumber(), personRegisterForm.getOTPCode());
+    }
+
+    @Override
+    public void registerLoginHistory(String address, String remoteAddr, boolean successful) {
+        var person = personRepository.fetchByPhoneNumber(address);
+        LoginHistory loginHistory = new LoginHistory(person, remoteAddr, UtilService.getDATE(), UtilService.getTime(), successful);
+        if (person.getLoginHistoryList() != null) {
+            person.getLoginHistoryList().add(loginHistory);
+        } else {
+            person.setLoginHistoryList(List.of(loginHistory));
+        }
+        personRepository.saveAndFlush(person);
     }
 
     @Override

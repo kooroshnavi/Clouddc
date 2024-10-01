@@ -15,6 +15,8 @@ public interface PersonService {
 
     String validateOTP(PersonRegisterForm personRegisterForm) throws ExecutionException;
 
+    void registerLoginHistory(String address, String remoteAddr, boolean successful);
+
     interface PersonProjection_1 {
 
         int getId();

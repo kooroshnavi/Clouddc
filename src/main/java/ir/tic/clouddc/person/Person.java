@@ -43,7 +43,7 @@ public final class Person {
     @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<Persistence> persistenceList;
 
-    @OneToMany(mappedBy = "person", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<LoginHistory> loginHistoryList;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})

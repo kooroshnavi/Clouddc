@@ -148,4 +148,14 @@ public class OTPServiceImpl implements OTPService {
             loginOTPCache.invalidate(UUID.nameUUIDFromBytes(uid.getBytes(StandardCharsets.UTF_8)).toString());
         }
     }
+
+    @Override
+    public String getPersonAddress(String otpUID) throws ExecutionException {
+       var key =  loginOTPCache.get(otpUID);
+       var address = loginOTPCache.get(key);
+       if (address.isBlank()) {
+           return null;
+       }
+       return address;
+    }
 }

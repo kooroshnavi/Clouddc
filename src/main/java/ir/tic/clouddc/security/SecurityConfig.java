@@ -1,6 +1,8 @@
 package ir.tic.clouddc.security;
 
 import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.person.PersonService;
+import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -20,11 +22,16 @@ import java.time.LocalDateTime;
 public class SecurityConfig {
 
     private final NotificationService notificationService;
+
     private final OTPFailureHandler otpFailureHandler;
+
     private final HeaderWriterLogoutHandler clearSiteData;
 
+    private final PersonService personService;
+
     @Autowired
-    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler) {
+    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService) {
+        this.personService = personService;
         clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
@@ -38,11 +45,17 @@ public class SecurityConfig {
                         .permitAll()
                         .failureHandler(otpFailureHandler)
                         .successHandler((request, response, authentication) -> {
+                            var localDate = UtilService.getDATE();
+                            var localTime = UtilService.getTime();
                             response.sendRedirect("/");
                             notificationService.sendSuccessLoginMessage(
                                     authentication.getName()
                                     , request.getRemoteAddr()
-                                    , LocalDateTime.now());
+                                    , LocalDateTime.of(localDate, localTime));
+                            personService.registerLoginHistory(personService
+                                            .getPersonByUsername(authentication.getName()).getAddress().getValue()
+                                    , request.getRemoteAddr()
+                                    , true);
                         })
                 )
 

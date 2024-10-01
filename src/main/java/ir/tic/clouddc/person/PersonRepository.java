@@ -26,4 +26,7 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
             " person.workSpaceSize as workspaceSize" +
             " from Person person")
     List<PersonService.PersonProjection_1> getPersonProjection_1();
+
+    @Query("select p from Person p where p.address.value = :phoneNumber")
+    Person fetchByPhoneNumber(@Param("phoneNumber") String phoneNumber);
 }

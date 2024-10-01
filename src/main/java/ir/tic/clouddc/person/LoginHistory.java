@@ -33,10 +33,14 @@ public final class LoginHistory {
     @Column(name = "Time")
     private LocalTime localTime;
 
-    public LoginHistory(Person person, String remoteAddress, LocalDate localDate, LocalTime localTime) {
+    @Column(name = "Successful")
+    private boolean successful;
+
+    public LoginHistory(Person person, String remoteAddress, LocalDate localDate, LocalTime localTime, boolean isSuccessful) {
         this.person = person;
         this.remoteAddress = remoteAddress;
         this.localDate = localDate;
         this.localTime = localTime;
+        this.successful = isSuccessful;
     }
 }
