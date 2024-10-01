@@ -11,7 +11,7 @@ public interface PersonService {
 
     String initPhoneRegister(String phoneNumber) throws ExecutionException;
 
-    void registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException;
+    boolean registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException;
 
     String validateOTP(PersonRegisterForm personRegisterForm) throws ExecutionException;
 

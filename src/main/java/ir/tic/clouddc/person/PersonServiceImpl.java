@@ -1,5 +1,6 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.utils.UtilService;
@@ -23,19 +24,21 @@ public final class PersonServiceImpl implements PersonService {
     private final OTPService otpService;
     private final AddressRepository addressRepository;
 
+    private final LogService logService;
+
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository, OTPService otpService, AddressRepository addressRepository) {
+    public PersonServiceImpl(PersonRepository personRepository, OTPService otpService, AddressRepository addressRepository, LogService logService) {
         this.personRepository = personRepository;
         this.otpService = otpService;
         this.addressRepository = addressRepository;
+        this.logService = logService;
     }
 
     @Override
     public boolean checkPhoneExistence(PersonRegisterForm personRegisterForm) {
-        boolean exist = addressRepository.existsByValue(personRegisterForm.getPhoneNumber());
 
-        return exist;
+        return addressRepository.existsByValue(personRegisterForm.getPhoneNumber());
     }
 
     @Override
@@ -44,24 +47,31 @@ public final class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException {
+    public boolean registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException {
         Person person;
-        Persistence persistence;
         if (personRegisterForm.getPersonId() != null) { // Update Person Info
             person = personRepository.getReferenceById(personRegisterForm.getPersonId());
             if (person.isEnabled() && !personRegisterForm.isEnabled()) {
                 person.setEnabled(false);
                 otpService.invalidateLoginOTP(person.getAddress());
-                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonDetailUpdated");
+                logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("DisablePerson"), person, getCurrentPerson(), "PersonUpdate");
+
+                return true;
             } else if (!person.isEnabled() && personRegisterForm.isEnabled()) {
                 person.setEnabled(true);
                 person.setRole(personRegisterForm.getRoleCode());
-                person.setAssignee(person.getRole() != 2);
-                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonDetailUpdated");
+                person.setAssignee(person.getRole() != '2');
+                logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("EnablePerson"), person, getCurrentPerson(), "PersonUpdate");
+
+                return true;
             } else if (person.isEnabled() && person.getRole() != personRegisterForm.getRoleCode()) {
                 person.setRole(personRegisterForm.getRoleCode());
-                person.setAssignee(person.getRole() != 2);
-                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonDetailUpdated");
+                person.setAssignee(person.getRole() != '2');
+                logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("PersonRole"), person, getCurrentPerson(), "PersonUpdate");
+
+                return true;
+            } else {
+                return false;
             }
 
         } else {    // Register New Person
@@ -73,15 +83,18 @@ public final class PersonServiceImpl implements PersonService {
             UUID username = UUID.randomUUID();
             person.setUsername(username.toString());
             person.setRole(personRegisterForm.getRoleCode());
-            person.setAssignee(person.getRole() != 2);
+            person.setAssignee(person.getRole() != '2');
             person.setWorkSpaceSize(0);
             person.setEnabled(true);
             address.setValue(personRegisterForm.getPhoneNumber());
             person.setAddress(address);
-            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), getCurrentPerson(), "PersonRegistered");
+            Persistence persistence = new Persistence(person, "PersonRegister");
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("RegPerson"), getCurrentPerson(), persistence);
+            person.setPersistenceList(List.of(persistence));
+            personRepository.saveAndFlush(person);
 
+            return true;
         }
-        personRepository.saveAndFlush(person);
     }
 
     @Override
@@ -91,7 +104,7 @@ public final class PersonServiceImpl implements PersonService {
 
     @Override
     public Person getPersonByUsername(String name) {
-        return personRepository.findByUsername(name);
+        return personRepository.fetchByUsername(name);
     }
 
     @Override
@@ -101,7 +114,10 @@ public final class PersonServiceImpl implements PersonService {
 
     @Override
     public Person getCurrentPerson() {
-        return getPersonByUsername(SecurityContextHolder.getContext().getAuthentication().getName());
+        return getPersonByUsername(SecurityContextHolder
+                .getContext()
+                .getAuthentication()
+                .getName());
     }
 
     @Override
@@ -116,7 +132,7 @@ public final class PersonServiceImpl implements PersonService {
 
     @Override
     public List<Person> getDefaultAssgineeList() {
-        return personRepository.findAllByAssignee(true);
+        return personRepository.findAllByAssigneeAndEnabled(true, true);
     }
 
     @Override
@@ -128,5 +144,4 @@ public final class PersonServiceImpl implements PersonService {
     public List<PersonProjection_1> getRegisteredPerosonList() {
         return personRepository.getPersonProjection_1();
     }
-
 }

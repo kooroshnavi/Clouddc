@@ -103,7 +103,7 @@ public class ResourceServiceImpl implements ResourceService {
             unassignedDevice.setSerialNumber(StringUtils.capitalize(resourceRegisterForm.getSerialNumber()));
             unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
             unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
-            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
+            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister", "DeviceRegister");
             unassignedDevice.setPersistence(persistence);
 
             unassignedDeviceRepository.saveAndFlush(unassignedDevice);
@@ -115,7 +115,7 @@ public class ResourceServiceImpl implements ResourceService {
                         , YearMonth.of(resourceRegisterForm.getMfgYear(), resourceRegisterForm.getMfgMonth())
                         , resourceRegisterForm.getLocale()
                         , true, false, false);
-                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "StorageRegister");
+                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "StorageRegister", "StorageRegister");
                 storage.setPersistence(persistence);
                 moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
                 if (moduleInventory.getStorageList() != null) {
@@ -128,7 +128,7 @@ public class ResourceServiceImpl implements ResourceService {
                 if (moduleInventory.getPersistence() != null) {
                     logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), "ModuleInventoryUpdate", personService.getCurrentPerson(), moduleInventory.getPersistence());
                 } else {
-                    persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleInventoryUpdate");
+                    persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleInventoryUpdate", "ModuleRegister");
                     moduleInventory.setPersistence(persistence);
                 }
                 moduleInventory.setAvailable(moduleInventory.getAvailable() + resourceRegisterForm.getQty());
@@ -156,6 +156,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public boolean newDevicePresentCheck() {
         var count = unassignedDeviceRepository.count();
+
         return count != 0;
     }
 
@@ -307,11 +308,11 @@ public class ResourceServiceImpl implements ResourceService {
                     if (storage.isSpare()) {
                         storage.setSpare(false);
                         storage.setLocalityId(device.getId());
-                        updateModulePackAndInventory(device, storage.getModuleInventory(), false);
+                        updateStorageModulePackAndInventory(device, storage.getModuleInventory(), false);
                     } else {
                         storage.setSpare(true);
                         storage.setLocalityId(CenterService.ROOM_1_ID);
-                        updateModulePackAndInventory(device, storage.getModuleInventory(), true);
+                        updateStorageModulePackAndInventory(device, storage.getModuleInventory(), true);
                     }
                 }
             }
@@ -327,12 +328,21 @@ public class ResourceServiceImpl implements ResourceService {
                     .ifPresentOrElse(modulePack -> {
                         modulePack.setQty(modulePack.getQty() + updatedValue);
                         modulePack.getPackHistory().put(LocalDateTime.now(), updatedValue);
+                        if (updatedValue > 0) {
+                            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceModule"), personService.getCurrentPerson(), modulePack.getPersistence());
+                        } else {
+                            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("decreaseDeviceModule"), personService.getCurrentPerson(), modulePack.getPersistence());
+                        }
                     }, () -> {
                         ModulePack modulePack = new ModulePack();
                         modulePack.setModuleInventory(moduleInventory);
                         modulePack.setQty(updatedValue);
                         modulePack.setDevice(device);
                         modulePack.setPackHistory((Map.ofEntries(entry(LocalDateTime.now(), updatedValue))));
+                        Persistence persistence = logService.persistenceSetup(personService.getCurrentPerson(), "DeviceModuleUpdate");
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceModule"), personService.getCurrentPerson(), persistence);
+                        modulePack.setPersistence(persistence);
+
                         if (device.getModulePackList() != null) {
                             device.getModulePackList().add(modulePack);
                         } else {
@@ -346,7 +356,7 @@ public class ResourceServiceImpl implements ResourceService {
         return deviceRepository.saveAndFlush(device).getId();
     }
 
-    private void updateModulePackAndInventory(Device device, ModuleInventory moduleInventory, boolean spare) {
+    private void updateStorageModulePackAndInventory(Device device, ModuleInventory moduleInventory, boolean spare) {
         if (spare) {
             moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
             device
@@ -357,6 +367,7 @@ public class ResourceServiceImpl implements ResourceService {
                     .ifPresent(modulePack -> {
                         modulePack.setQty(modulePack.getQty() - 1);
                         modulePack.getPackHistory().put(LocalDateTime.now(), Math.negateExact(1));
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("decreaseDeviceStorage"), personService.getCurrentPerson(), modulePack.getPersistence());
                     });
         } else {
             moduleInventory.setAvailable(moduleInventory.getAvailable() - 1);
@@ -368,12 +379,16 @@ public class ResourceServiceImpl implements ResourceService {
                     .ifPresentOrElse(modulePack -> {
                         modulePack.setQty(modulePack.getQty() + 1);
                         modulePack.getPackHistory().put(LocalDateTime.now(), 1);
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceStorage"), personService.getCurrentPerson(), modulePack.getPersistence());
                     }, () -> {
                         ModulePack modulePack = new ModulePack();
                         modulePack.setModuleInventory(moduleInventory);
                         modulePack.setQty(1);
                         modulePack.setDevice(device);
                         modulePack.setPackHistory((Map.ofEntries(entry(LocalDateTime.now(), 1))));
+                        Persistence persistence = logService.persistenceSetup(personService.getCurrentPerson(), "DeviceModuleUpdate");
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceStorage"), personService.getCurrentPerson(), persistence);
+                        modulePack.setPersistence(persistence);
                         if (device.getModulePackList() != null) {
                             device.getModulePackList().add(modulePack);
                         } else {

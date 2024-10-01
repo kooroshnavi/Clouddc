@@ -7,9 +7,9 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface LogService {
-    Persistence newPersistenceInitialization(String logMessageKey);
+    Persistence newPersistenceInitialization(String logMessageKey, Person currentPerson, String category);
 
-    Persistence persistenceSetup(Person person);
+    Persistence persistenceSetup(Person person, String category);
 
     void historyUpdate(LocalDate date, LocalTime time, String logMessage, Person person, Persistence persistence);
 
@@ -17,5 +17,5 @@ public interface LogService {
 
     List<Long> getSupervisorPmInterfaceEditFilePersiscentceIdList(String stringPmInterfaceId);
 
-    void registerIndependentPersistence(String logMessage);
+    void registerIndependentPersistence(String logMessage, Person persistencePerson, Person historyPerson, String category);
 }

@@ -10,12 +10,13 @@ import java.util.List;
 @Repository
 public interface PersonRepository extends JpaRepository<Person, Integer> {
 
-    List<Person> findAllByAssignee(boolean assignee);
+    List<Person> findAllByAssigneeAndEnabled(boolean assignee, boolean enabled);
 
-    @Query("SELECT p from Person p where p.username not in :usernameList and p.assignee = :assignee")
+    @Query("SELECT p from Person p where p.enabled and p.username not in :usernameList and p.assignee = :assignee")
     List<Person> fetchAssignablePersonList(List<String> usernameList, @Param("assignee") boolean assignee);
 
-    Person findByUsername(String name);
+    @Query("SELECT p from Person p where p.username = :name")
+    Person fetchByUsername(String name);
 
     @Query("select person.id as id," +
             " person.name as name," +

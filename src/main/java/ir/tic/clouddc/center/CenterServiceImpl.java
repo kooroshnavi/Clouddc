@@ -1,7 +1,6 @@
 package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.resource.Device;
@@ -24,22 +23,16 @@ public class CenterServiceImpl implements CenterService {
 
     private final PersonService personService;
 
-    private final NotificationService notificationService;
-
     private final LogService logService;
 
     private final LocationRepository locationRepository;
 
-    private final LocationPmCatalogRepository locationPmCatalogRepository;
-
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, LogService logService, LocationRepository locationRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
-        this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
-        this.locationPmCatalogRepository = locationPmCatalogRepository;
     }
 
 
@@ -103,7 +96,7 @@ public class CenterServiceImpl implements CenterService {
         locationRepository.save(rack);
 
         var logMessage = " بروزرسانی جانمایی رک " + rack.getName() + " - " + rack.getHall().getName();
-        logService.registerIndependentPersistence(logMessage);
+        logService.registerIndependentPersistence(logMessage, personService.getCurrentPerson(), personService.getCurrentPerson(), "RackOrdering");
     }
 
     @Override
@@ -120,20 +113,6 @@ public class CenterServiceImpl implements CenterService {
         return optionalLocation;
     }
 
-    @Override
-    public LocationStatus getCurrentLocationStatus(Location location) {
-        //var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
-     /*   if (locationStatus.isPresent()) {
-            return locationStatus.get();
-        } else {
-            LocationStatus defaultLocationStatus = new LocationStatus();
-            defaultLocationStatus.setDoor(true);
-            defaultLocationStatus.setVentilation(true);
-            defaultLocationStatus.setPower(true);
-            return defaultLocationStatus;
-        }*/
-        return null;
-    }
 
     @Override
     public Model getCenterLandingPageModel(Model model) {

@@ -83,9 +83,10 @@ public class PersonController {
 
     @PostMapping("/register")
     private String registerPerson(RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
+        boolean changed;
         if (personRegisterForm.getPersonId() != null) {
             log.info("Updating Person");// Update Person Info
-            personService.registerNewPerson(personRegisterForm);
+            changed = personService.registerNewPerson(personRegisterForm);
         } else {
             var exist = personService.checkPhoneExistence(personRegisterForm);
             if (exist) {
@@ -96,7 +97,7 @@ public class PersonController {
             }
             String OTPValidate = personService.validateOTP(personRegisterForm);
             if (OTPValidate.equals("0")) {
-                personService.registerNewPerson(personRegisterForm);
+                changed = personService.registerNewPerson(personRegisterForm);
             } else {
                 redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
                 redirectAttributes.addFlashAttribute("badOTP", true);
@@ -104,7 +105,9 @@ public class PersonController {
                 return "redirect:/person/OTPForm";
             }
         }
-        redirectAttributes.addFlashAttribute("newPerson", true);
+        if (changed) {
+            redirectAttributes.addFlashAttribute("newPerson", true);
+        }
 
         return "redirect:/person/list";
     }

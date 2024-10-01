@@ -138,7 +138,15 @@ public final class UtilService {
             entry("StorageProblematic", "اعلام خرابی استوریج"),
             entry("StorageClear", "رفع خرابی استوریج"),
             entry("StorageDisable", "حذف استوریج"),
-            entry("DecreaseInventory", "کاهش موجودی مخزن")
+            entry("DecreaseInventory", "کاهش موجودی مخزن"),
+            entry("RegPerson", "ثبت نام کاربر"),
+            entry("DisablePerson", "غیرفعالسازی کاربر"),
+            entry("EnablePerson", "فعالسازی کاربر"),
+            entry("PersonRole", "بروزرسانی نقش کاربر"),
+            entry("increaseDeviceModule", "افزایش ماژول های تجهیز"),
+            entry("decreaseDeviceModule", "کاهش ماژول های تجهیز"),
+            entry("decreaseDeviceStorage", "حذف یک استوریج از روی تجهیز"),
+            entry("increaseDeviceStorage", "افزودن یک استوریج به تجهیز")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(

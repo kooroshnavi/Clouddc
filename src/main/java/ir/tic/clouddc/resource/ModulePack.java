@@ -1,6 +1,7 @@
 package ir.tic.clouddc.resource;
 
 
+import ir.tic.clouddc.log.Persistence;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,5 +39,9 @@ public final class ModulePack {
     @MapKeyColumn(name = "LocalDateTime")
     @Column(name = "Balance")
     private Map<LocalDateTime, Integer> packHistory;
+
+    @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    @JoinColumn(name = "PersistenceID")
+    private Persistence persistence;
 
 }

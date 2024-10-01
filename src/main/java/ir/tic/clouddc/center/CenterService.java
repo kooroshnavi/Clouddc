@@ -34,8 +34,6 @@ public interface CenterService {
 
     void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList);
 
-    LocationStatus getCurrentLocationStatus(Location location);
-
     Model getCenterLandingPageModel(Model model);
 
     List<CenterIdNameProjection> getCenterIdAndNameList();

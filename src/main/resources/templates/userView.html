@@ -171,6 +171,8 @@
                                                     فعال است - جهت غیر فعالسازی کاربر، وظایف کارتابلش را خاتمه دهید یا
                                                     به همکار دیگری منتسب کنید تا کارتابل خالی شود.</label>
                                             </div>
+                                            <input th:if="${update && not personRegisterForm.freeWorkSpace}" type="hidden" name="enabled"
+                                                   th:value="${true}"/>
                                             <br>
 
                                             <div th:if="${registerInitialized}" class="mb-3">

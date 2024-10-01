@@ -120,10 +120,6 @@ public final class EventServiceImpl implements EventService {
         return resourceService.getReferencedUtilizer(utilizerId);
     }
 
-    @Override
-    public LocationStatus getCurrentLocationStatus(Location location) {
-        return centerService.getCurrentLocationStatus(location);
-    }
 
     @Override
     public List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList) {
@@ -522,9 +518,9 @@ public final class EventServiceImpl implements EventService {
         eventDetail.setRegisterTime(UtilService.getTime());
         Persistence persistence;
         if (eventForm.getEventId() != null) {
-            persistence = logService.newPersistenceInitialization("EventUpdate");
+            persistence = logService.newPersistenceInitialization("EventUpdate", personService.getCurrentPerson(), "Event");
         } else {
-            persistence = logService.newPersistenceInitialization("EventRegister");
+            persistence = logService.newPersistenceInitialization("EventRegister", personService.getCurrentPerson(), "Event");
         }
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
@@ -643,11 +639,6 @@ public final class EventServiceImpl implements EventService {
             eventDetail.setPersianRegisterDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
             eventDetail.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(eventDetail.getRegisterDate(), eventDetail.getRegisterTime()));
         }
-    }
-
-    @Override
-    public List<EventCategory> getEventCategoryList() {
-        return eventCategoryRepository.findAll();
     }
 
     @Override

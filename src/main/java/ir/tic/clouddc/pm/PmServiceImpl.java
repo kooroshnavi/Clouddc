@@ -115,7 +115,7 @@ public class PmServiceImpl implements PmService {
         generalPmDetail.setActive(true);
         generalPmDetail.setRegisterDate(UtilService.getDATE());
         generalPmDetail.setRegisterTime(UtilService.getTime());
-        generalPmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
+        generalPmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson(), "Pm"));
         generalPmDetail.setPm(pm);
         pm.setPmDetailList(List.of(generalPmDetail));
 
@@ -280,7 +280,7 @@ public class PmServiceImpl implements PmService {
     private PmDetail setupNewPmDetail(Integer personId, boolean active) {
         GeneralPmDetail generalPmDetail = new GeneralPmDetail();
         var assigneePerson = personService.getReferencedPerson(personId);
-        Persistence persistence = logService.persistenceSetup(assigneePerson);
+        Persistence persistence = logService.persistenceSetup(assigneePerson, "Pm");
         generalPmDetail.setPersistence(persistence);
         generalPmDetail.setRegisterDate(UtilService.getDATE());
         generalPmDetail.setRegisterTime(UtilService.getTime());
@@ -416,7 +416,7 @@ public class PmServiceImpl implements PmService {
         PmInterfaceCatalog newCatalog;
         var currentPerson = personService.getCurrentPerson();
 
-        if (catalogForm.getPmInterfaceCatalogId() != null) {
+        if (catalogForm.getPmInterfaceCatalogId() != null) {   // update catalog
             newCatalog = pmInterfaceCatalogRepository.getReferenceById(catalogForm.getPmInterfaceCatalogId());
             persistence = newCatalog.getPersistence();
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("CatalogUpdate"), currentPerson, persistence);
@@ -425,7 +425,7 @@ public class PmServiceImpl implements PmService {
             newCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
 
         } else {
-            if (catalogForm.getLocationId() != null) {
+            if (catalogForm.getLocationId() != null) { // Register location catalog
                 LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
                 locationPmCatalog.setLocation(centerService.getRefrencedLocation(catalogForm.getLocationId()));
                 locationPmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
@@ -434,12 +434,12 @@ public class PmServiceImpl implements PmService {
                 locationPmCatalog.setHistory(false);
                 locationPmCatalog.setActive(false);
                 locationPmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
-                persistence = logService.newPersistenceInitialization("CatalogRegister");
+                persistence = logService.newPersistenceInitialization("CatalogRegister", personService.getCurrentPerson(), "LocationPmCatalog");
                 locationPmCatalog.setPersistence(persistence);
 
                 newCatalog = locationPmCatalog;
 
-            } else {
+            } else { // Register Device catalog
                 DevicePmCatalog devicePmCatalog = new DevicePmCatalog();
                 devicePmCatalog.setDevice(resourceService.getReferencedDevice(catalogForm.getDeviceId()));
                 devicePmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
@@ -448,7 +448,7 @@ public class PmServiceImpl implements PmService {
                 devicePmCatalog.setHistory(false);
                 devicePmCatalog.setActive(false);
                 devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
-                persistence = logService.newPersistenceInitialization("CatalogRegister");
+                persistence = logService.newPersistenceInitialization("CatalogRegister", personService.getCurrentPerson(), "DevicePmCatalog");
                 devicePmCatalog.setPersistence(persistence);
 
                 newCatalog = devicePmCatalog;
@@ -543,7 +543,7 @@ public class PmServiceImpl implements PmService {
             pmInterface.setCategoryId(UtilService.PM_CATEGORY_ID.get(pmInterfaceRegisterForm.getTarget()));
             pmInterface.setCategory(UtilService.PM_CATEGORY.get(pmInterface.getCategoryId()));
             pmInterface.setGeneralPm(true);
-            persistence = logService.newPersistenceInitialization("PmInterfaceRegister");
+            persistence = logService.newPersistenceInitialization("PmInterfaceRegister", personService.getCurrentPerson(), "PmInterfaceRegister");
             pmInterface.setPersistence(persistence);
         }
 
@@ -557,7 +557,7 @@ public class PmServiceImpl implements PmService {
                 fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), persistence);
             } else {
                 logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmInterfaceUpdateSupervisorFile"), currentPerson, persistence);
-                var newPersistence = logService.newPersistenceInitialization(pmInterface.getId().toString());
+                var newPersistence = logService.newPersistenceInitialization(pmInterface.getId().toString(), personService.getCurrentPerson(), "Pm-File");
                 fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), newPersistence);
             }
         }

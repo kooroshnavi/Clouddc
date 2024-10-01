@@ -2,7 +2,6 @@ package ir.tic.clouddc.event;
 
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.center.Location;
-import ir.tic.clouddc.center.LocationStatus;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.resource.*;
 import org.springframework.ui.Model;
@@ -16,8 +15,6 @@ import java.util.Optional;
 public interface EventService {
 
     void registerEvent(EventForm eventForm, LocalDate validDate) throws IOException;
-
-    List<EventCategory> getEventCategoryList();
 
     List<CenterService.CenterIdNameProjection> getCenterIdAndNameList();
 
@@ -40,8 +37,6 @@ public interface EventService {
     int getActiveEventPercentage();
 
     LocationStatusForm getLocationStatusForm(Location location);
-
-    LocationStatus getCurrentLocationStatus(Location location);
 
     List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList);
 
