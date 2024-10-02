@@ -6,11 +6,11 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         html,
         body {
         }
+
         .glow-on-hover {
             width: 220px;
             height: 50px;
@@ -82,7 +82,6 @@
             }
         }
     </style>
-
     <!--plugins-->
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/rackStyle.css" rel="stylesheet"/>
@@ -155,23 +154,33 @@
 
                 <div class="col" align="right">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای مکان</button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#exampleScrollableModal">راهنمای مکان
+                    </button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">تعریف مکان در این سیستم</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>* مکان در این سامانه شامل سه محل در مرکزداده می شود که عبارتند از: 1.هال (یا سالن) - 2. رک 3. اتاق یا انبار</p>
-                                    <p>* این سه مکان بعضا دارای اشتراکاتی هستند مثلا در رک و اتاق می توان تجهیز قرار داد. هر سالن یک لیست از رک دارد. بنابراین هر رک متعلق به یک سالن است. در اتاق معمولا تجهیزات یدک وجود دارد.</p>
-                                    <p>* می توان هر مکان اشاره شده را به کاتالوگ یک PM که دسته بندی آن "مکان" است افزود.</p>
-                                    <p>* با توجه به نوع مکان یا تجهیز، رخدادهایی در آن اتفاق می افتد که می بایست جزئیات آن ثبت و مستند گردد. از طریق صفحه هر مکان یا تجهیز می توانید رخداد مدنظر را ثبت نمایید.</p>
+                                    <p>* مکان در این سامانه شامل سه محل در مرکزداده می شود که عبارتند از: 1.هال (یا
+                                        سالن) - 2. رک 3. اتاق یا انبار</p>
+                                    <p>* این سه مکان بعضا دارای اشتراکاتی هستند مثلا در رک و اتاق می توان تجهیز قرار
+                                        داد. هر سالن یک لیست از رک دارد. بنابراین هر رک متعلق به یک سالن است. در اتاق
+                                        معمولا تجهیزات یدک وجود دارد.</p>
+                                    <p>* می توان هر مکان اشاره شده را به کاتالوگ یک PM که دسته بندی آن "مکان" است
+                                        افزود.</p>
+                                    <p>* با توجه به نوع مکان یا تجهیز، رخدادهایی در آن اتفاق می افتد که می بایست جزئیات
+                                        آن ثبت و مستند گردد. از طریق صفحه هر مکان یا تجهیز می توانید رخداد مدنظر را ثبت
+                                        نمایید.</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -181,18 +190,20 @@
 
                 <div class="col" align="right">
                     <div class="dropdown">
-                        <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">رخدادهای این مکان</button>
+                        <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">
+                            رخدادهای این مکان
+                        </button>
 
                         <ul class="dropdown-menu">
 
-                            <li>
+                            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 1)}"
                                    class="btn btn-outline-dark">1. ثبت رخداد عمومی</a>
                                 <hr/>
                             </li>
 
                             <li th:if="${location.assignable}"
-                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 2)}"
                                    class="btn btn-outline-dark"
                                    th:text="${'2. نصب تجهیزات جدید در  ' + location.locationCategory.category + ' ' + location.name}">
@@ -201,14 +212,14 @@
                             </li>
 
                             <li th:if="${location.assignable}"
-                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 3)}"
                                    class="btn btn-outline-dark">3. تغییر بهره بردار</a>
                                 <hr/>
                             </li>
 
                             <li th:if="${location.assignable}"
-                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                                sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 4)}"
                                    class="btn btn-outline-dark"
                                    th:text="${'4. جابجایی تجهیزات  ' + location.locationCategory.category + ' ' + location.name}">
@@ -217,13 +228,10 @@
                             </li>
 
                             <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${location.id}, categoryId = 6)}"
-                                        class="btn btn-outline-danger" disabled="disabled">چک لیست (در حال توسعه)</button>
-                                <hr/>
+                                <a th:href="@{/event/{typeId}/{targetId}/list (typeId=${1}, targetId=${location.id})}"
+                                   class="btn btn-outline-primary">تاریخچه</a>
                             </li>
 
-                            <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${1}, targetId=${location.id})}"
-                                   class="btn btn-outline-primary">تاریخچه</a></li>
                         </ul>
                     </div>
                 </div>
@@ -237,14 +245,17 @@
                         <th scope="col">نام</th>
                         <th scope="col">مرکز</th>
                         <th th:if="${location.locationCategory.categoryId == 2}" scope="col">سالن</th>
-                        <th th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" scope="col">تعداد تجهیز مستقر در رک</th>
+                        <th th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}"
+                            scope="col">تعداد تجهیز مستقر در رک
+                        </th>
                         <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             scope="col">توضیحات
                         </th>
                         <th th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}"
                             scope="col">توضیحات
                         </th>
-                        <th th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}" scope="col">
+                        <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}"
+                            scope="col">
                             بهره
                             بردار
                         </th>
@@ -259,14 +270,15 @@
 
                         <td th:if="${location.locationCategory.categoryId == 2}" th:text="${rack.hall.name}"></td>
 
-                        <td th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:text="${rackDevicePositionMap.size()}"></td>
+                        <td th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}"
+                            th:text="${rackDevicePositionMap.size()}"></td>
 
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1000}"
                             th:text="${rack.description}"></td>
                         <td th:if="${location.locationCategory.categoryId == 2 && rack.utilizer.id == 1001}">تخصیص نشده
                             - خالی
                         </td>
-                        <td th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}">
+                        <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:if="${location.locationCategory.categoryId == 3  || (location.locationCategory.categoryId == 2 && rack.utilizer.id > 1001)}">
                             <div th:if="${location.locationCategory.categoryId == 2}" class="col">
                                 <a th:text="${rack.utilizer.name}"
                                    th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${rack.utilizer.id})}"
@@ -289,10 +301,13 @@
 
         <!--Device view (Rack)-->
 
-        <h4 th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" class="mb-0 text-bg-primary">آرایش رک</h4>
+        <h4 th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}"
+            class="mb-0 text-bg-primary">آرایش رک</h4>
         <br>
 
-        <a th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}" th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
+        <a sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')"
+           th:if="${location.locationCategory.categoryId == 2 && !rackDevicePositionMap.isEmpty()}"
+           th:href="@{/center/rack/{rackId}/deviceOrder (rackId=${location.id})}"
            class="btn btn-outline-warning"
            th:text="'جانمایی تجهیزات رک ' + ${location.name}">
         </a>
@@ -301,9 +316,11 @@
 
             <div class="bi-hdd-rack-fill" th:text="${rack.name}"></div>
 
-            <ol class="rack">
-                <li th:each="position, iter : ${rackDevicePositionMap.keySet().stream().sorted().toList()}" class='large'>
-                    <a th:href="@{/resource/device/{deviceId}/detail (deviceId=${rackDevicePositionMap.get(position).id})}" class="btn-sm px-sm-1"
+            <ol c class="rack">
+                <li th:each="position, iter : ${rackDevicePositionMap.keySet().stream().sorted().toList()}"
+                    class='large'>
+                    <a th:href="@{/resource/device/{deviceId}/detail (deviceId=${rackDevicePositionMap.get(position).id})}"
+                       class="btn-sm px-sm-1"
                        th:text="${rackDevicePositionMap.get(position).deviceCategory.model + ' - ' + rackDevicePositionMap.get(position).deviceCategory.factorSize + rackDevicePositionMap.get(position).deviceCategory.factor}"
                        data-bs-toggle="tooltip"
                        data-bs-placement="bottom" th:title="${rackDevicePositionMap.get(position).serialNumber}">
@@ -325,7 +342,8 @@
                         <tr>
                             <th>ردیف</th>
                             <th>نوع تجهیز</th>
-                            <th>شماره سریال</th>
+                            <th>مدل</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">شماره سریال</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -334,8 +352,10 @@
 
                             <td th:text="${iter.count}"></td>
                             <td th:text="${device.deviceCategory.category} "></td>
+                            <td th:if="${device.deviceCategory.factorSize == 0}" th:text="${device.deviceCategory.model} "></td>
+                            <td th:unless="${device.deviceCategory.factorSize == 0}" th:text="${device.deviceCategory.model + ' -> ' + device.deviceCategory.factorSize + device.deviceCategory.factor} "></td>
 
-                            <td>
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">
                                 <div class="col">
                                     <a th:text="${device.serialNumber}"
                                        th:href="@{/resource/device/{deviceId}/detail(deviceId=${device.id})}"
@@ -343,19 +363,13 @@
                                        data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                 </div>
                             </td>
-
                         </tr>
-
                         </tbody>
-
                     </table>
                 </div>
             </div>
         </div>
         <!--Device table (Room)-->
-
-        <!--Module table (Room)-->
-        <!--Module table (Room)-->
 
         <!--Rack table (Salon)-->
         <h4 th:if="${location.locationCategory.categoryId == 1}" class="mb-0 text-bg-primary">رک های سالن</h4>
@@ -368,7 +382,7 @@
                             <th>ردیف</th>
                             <th>نام رک</th>
                             <th>تعداد تجهیز نصب شده</th>
-                            <th>بهره بردار</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">بهره بردار</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -376,22 +390,17 @@
                         <tr th:each="rack, counter : ${rackList}">
 
                             <td th:text="${counter.count}"></td>
-
                             <td>
                                 <a th:text="${rack.name}"
                                    th:href="@{/center/location/{locationId}/detail (locationId=${rack.id})}"
                                    class="btn btn-outline-info px-10 radius-30" data-bs-toggle="tooltip"
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
-
                             <td th:text="${rack.devicePositionMap.size()}"></td>
-                            <td th:text="${rack.utilizer.name} "></td>
-
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:text="${rack.utilizer.name} "></td>
 
                         </tr>
-
                         </tbody>
-
                     </table>
                 </div>
             </div>
@@ -404,7 +413,7 @@
             th:text="${'Pm های ' + location.locationCategory.category + ' ' + location.name}"></h5>
         <br>
 
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
+        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
             <div class="ui-dialog-buttonpane" align="center">
                 <a th:href="@{/pm/catalog/location/{locationId}/form(locationId=${location.id})}"
                    class="btn btn-outline-success"
@@ -504,7 +513,6 @@
 
     </main>
     <!--end page main-->
-
 
     <!--start overlay-->
     <div class="overlay nav-toggle-icon"></div>

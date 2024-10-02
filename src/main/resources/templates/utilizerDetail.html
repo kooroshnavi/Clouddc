@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -108,7 +107,7 @@
                     <tr>
                         <th scope="col">نام</th>
                         <th scope="col">تعداد رک در اختیار</th>
-                        <th scope="col">تعداد تجهیز در اختیار</th>
+                        <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" scope="col">تعداد تجهیز در اختیار</th>
                     </tr>
                     </thead>
 
@@ -118,7 +117,7 @@
                         <td th:if="${utilizer.messenger}" class="bg-success" th:text="${utilizer.name}"></td>
                         <td th:unless="${utilizer.messenger}" th:text="${utilizer.name}"></td>
                         <td th:text="${rackList.size()}"></td>
-                        <td th:text="${deviceList.size()}"></td>
+                        <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:text="${deviceList.size()}"></td>
                     </tr>
                     </tbody>
                 </table>

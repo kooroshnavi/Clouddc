@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
->
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head>
     <!-- Required meta tags -->
@@ -39,13 +39,13 @@
 <body>
 
 <script th:if="${newDevice}">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         pos5_success_noti();
     });
 </script>
 
 <script th:if="${exist}">
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         pos3_warning_noti();
     });
 </script>
@@ -96,8 +96,10 @@
 
                 <div class="card-body">
 
-                    <form class="was-validated" th:action="@{/resource/device/register}" th:object="${deviceRegisterForm}"
-                          enctype="multipart/form-data" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                    <form class="was-validated" th:action="@{/resource/device/register}"
+                          th:object="${deviceRegisterForm}"
+                          enctype="multipart/form-data" method="POST"
+                          onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div class="mb-3">
                             <label class="form-label">انتخاب نوع تجهیز از میان مدل های موجود</label>
@@ -119,10 +121,12 @@
                         </div>
 
                         <div class="mb-3">
-                        <label for="input" class="form-check">شماره سریال تجهیز</label>
-                        <input type="text" class="form-control" id="input" maxlength="40" required="required" dir="ltr" placeholder="SerialNumber"
-                               onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
-                               oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);" th:field="*{serialNumber}">
+                            <label for="input" class="form-check">شماره سریال تجهیز</label>
+                            <input type="text" class="form-control" id="input" maxlength="40" required="required"
+                                   dir="ltr" placeholder="SerialNumber"
+                                   onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                                   oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
+                                   th:field="*{serialNumber}">
                         </div>
 
                         <div th:if="${exist}">
@@ -130,23 +134,27 @@
                                 <strong class="mb-0 text-bg-warning">شماره سریال تکراری است</strong>
                             </h6>
                             <br>
-                            <a th:if="${!existedUnassigned}" th:href="@{/resource/device/{deviceId}/detail  (deviceId = ${existedDeviceId})}" th:text="${' جزئیات تجهیز با شماره سریال ' + existedSerialNumber}">مشاهده تجهیز با شماره سریال ارائه شده</a>
+                            <a th:if="${!existedUnassigned}"
+                               th:href="@{/resource/device/{deviceId}/detail  (deviceId = ${existedDeviceId})}"
+                               th:text="${' جزئیات تجهیز با شماره سریال ' + existedSerialNumber}">مشاهده تجهیز با شماره
+                                سریال ارائه شده</a>
                         </div>
 
-                        <div class="col">
+                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                             <div class="form-check">
-                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
-                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
+                                <input class="form-check-input" type="checkbox" value="" id="invalidCheck"
+                                       required="required">
+                                <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن
+                                    هستم</label>
                                 <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
                             </div>
                             <hr/>
                         </div>
 
-                        <div class="col">
+                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
-                                    data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید
-                            </button>
+                                    data-bs-target="#exampleWarningModal">ثبت اولیه تجهیز جدید</button>
                             <!-- Modal -->
                             <div class="modal fade" id="exampleWarningModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog">
@@ -157,14 +165,14 @@
                                                     aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body text-dark">
-                                            <p>پس از تایید جهت ثبت نهایی تجهیز (اختصاص مکان و بهره بردار) به صفحه رک یا اتاق مربوطه مراجعه و از طریق گزینه 'نصب تجهیزات جدید' اقدام نمایید.</p>
+                                            <p>پس از تایید جهت ثبت نهایی تجهیز (اختصاص مکان و بهره بردار) به صفحه رک یا
+                                                اتاق مربوطه مراجعه و از طریق گزینه 'نصب تجهیزات جدید' اقدام نمایید.</p>
                                         </div>
                                         <div class="modal-footer border-dark">
                                             <button type="button" class="btn btn-light" data-bs-dismiss="modal">
                                                 بستن
                                             </button>
-                                            <button type="submit" id="submit" class="btn btn-dark">تایید
-                                            </button>
+                                            <button type="submit" id="submit" class="btn btn-dark">تایید</button>
                                         </div>
                                     </div>
                                 </div>
@@ -197,7 +205,8 @@
                                      class="d-flex align-items-center">
                                 </div>
                             </td>
-                            <td th:if="${newDevice && iter.first}" class="text-bg-success" th:text="${device.serialNumber}"></td>
+                            <td th:if="${newDevice && iter.first}" class="text-bg-success"
+                                th:text="${device.serialNumber}"></td>
 
                             <td th:unless="${newDevice && iter.first}" th:text="${iter.count}"></td>
                             <td th:unless="${newDevice && iter.first}">
@@ -207,11 +216,13 @@
                             </td>
                             <td th:unless="${newDevice && iter.first}" th:text="${device.serialNumber}"></td>
 
-                            <td th:if="${device.categoryId == 5}" th:text="${device.vendor + ' - ' + device.model + ' - ' + device.factorSize + ' ' + device.factor}"/>
+                            <td th:if="${device.categoryId == 5}"
+                                th:text="${device.vendor + ' - ' + device.model + ' - ' + device.factorSize + ' ' + device.factor}"/>
                             <td th:if="${device.categoryId != 5}" th:text="${device.vendor + ' - ' + device.model}"/>
 
                             <td>
-                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت مکان</button>
+                                <button class="font-weight-bold text-bg-danger" disabled="disabled">در انتظار ثبت مکان
+                                </button>
                             </td>
 
                         </tr>
@@ -278,6 +289,7 @@
         e.preventDefault();
         return false;
     }
+
     function clsAlphaNoOnly2() {  // Accept only alpha numerics, no special characters
         return clsAlphaNoOnly(this.event); // window.event
     }

@@ -117,6 +117,7 @@ public class ResourceController {
             model.addAttribute("utilizer", utilizer);
             model.addAttribute("rackList", utilizer.getRackList());
             model.addAttribute("deviceList", utilizer.getDeviceList());
+
             return "utilizerDetail";
         }
 

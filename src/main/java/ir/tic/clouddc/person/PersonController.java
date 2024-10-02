@@ -53,13 +53,21 @@ public class PersonController {
         if (!model.containsAttribute("update")) {
             model.addAttribute("update", false);
         }
+        var currentPersonRoleList = personService.getCurrentPersonRoleList();
+        if (currentPersonRoleList.stream().anyMatch(grantedAuthority
+                -> grantedAuthority.getAuthority().equals("ADMIN")
+                || grantedAuthority.getAuthority().equals("SUPERVISOR")
+                || grantedAuthority.getAuthority().equals("MANAGER"))) {
+            model.addAttribute("permission", true);
+        } else {
+            model.addAttribute("permission", false);
+        }
 
         return "userView";
     }
 
     @RequestMapping(value = "/OTPForm", method = {RequestMethod.GET, RequestMethod.POST})
     public String OTPForm(Model model, RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
-
         var exist = personService.checkPhoneExistence(personRegisterForm);
         if (exist) {
             redirectAttributes.addFlashAttribute("exist", true);
@@ -85,7 +93,7 @@ public class PersonController {
     private String registerPerson(RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
         boolean changed;
         if (personRegisterForm.getPersonId() != null) {
-            log.info("Updating Person");// Update Person Info
+            log.info("Updating Person");    // Update Person Info
             changed = personService.registerNewPerson(personRegisterForm);
         } else {
             var exist = personService.checkPhoneExistence(personRegisterForm);
@@ -113,7 +121,7 @@ public class PersonController {
     }
 
     @GetMapping("/{personId}/detail")
-    public String getPersonDetailUpdate(RedirectAttributes redirectAttributes, @PathVariable Integer personId) {
+    public String getPersonDetailForm(RedirectAttributes redirectAttributes, @PathVariable Integer personId) {
         var person = personService.getReferencedPerson(personId);
         PersonRegisterForm personRegisterForm = new PersonRegisterForm();
         personRegisterForm.setPersonId(person.getId());

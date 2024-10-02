@@ -48,7 +48,9 @@ public class LoginController {
 
     @GetMapping("/login")
     public String showLoginForm(@RequestParam(value = "error", required = false) String error,
-                                @RequestParam(value = "logout", required = false) String logout, HttpServletRequest request, Model model) throws UnknownHostException, SocketException {
+                                @RequestParam(value = "logout", required = false) String logout,
+                                @RequestParam(value = "multiple", required = false) String multiple,
+                                HttpServletRequest request, Model model) throws UnknownHostException, SocketException {
 
         var OTPForm = UtilService.createChallenge(new OtpForm());
 
@@ -61,6 +63,10 @@ public class LoginController {
 
         if (logout != null) {
             model.addAttribute("logout", logout);
+        }
+
+        if (multiple != null) {
+            model.addAttribute("multiple", multiple);
         }
 
         if (!model.containsAttribute("error")) {

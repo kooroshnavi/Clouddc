@@ -10,6 +10,7 @@ import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
@@ -96,6 +97,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void resourceRegister(ResourceRegisterForm resourceRegisterForm, int resourceType) {
         Persistence persistence;
         if (resourceType == 1) {    // Device Register
@@ -296,6 +298,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public long updateDeviceModule(ModuleUpdateForm moduleUpdateForm) {
         var device = deviceRepository.getReferenceById(moduleUpdateForm.getDeviceId());
 
@@ -425,6 +428,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void inventoryUpdate(ModuleUpdateForm moduleUpdateForm) {
         ModuleInventory moduleInventory;
         if (moduleUpdateForm.isStorageUpdate()) {

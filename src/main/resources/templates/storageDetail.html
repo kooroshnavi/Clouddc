@@ -61,22 +61,26 @@
         <!--end breadcrumb-->
 
         <h5 class="mb-0 text-uppercase" align="center">
-            <strong class="mb-0 text-bg-success">جهت ثبت و افزایش موجودی مخزن از طریق منوی دسترسی سریع اقدام نمایید.</strong>
+            <strong class="mb-0 text-bg-success">جهت ثبت و افزایش موجودی مخزن از طریق منوی دسترسی سریع اقدام
+                نمایید.</strong>
         </h5>
         <br>
 
         <h5 class="card-header py-3 bg-info" align="center">
-            <strong class="mb-0">این لیست بیانگر موجودی اضافی استوریج ها (موجودی اتاق) می باشد. استوریج هایی که به تجهیزات اضافه شده، در بخش جزئیات هر تجهیز نمایش داده می شود.</strong>
+            <strong class="mb-0">این لیست بیانگر موجودی اضافی استوریج ها (موجودی اتاق) می باشد. استوریج هایی که به
+                تجهیزات اضافه شده، در بخش جزئیات هر تجهیز نمایش داده می شود.</strong>
         </h5>
         <br>
 
         <h5 class="card-header py-3 bg-danger" align="center">
-            <strong class="mb-0">در صورت انتخاب گزینه حذف، استوریج انتخابی از مخزن حذف و موجودی یک واحد کاهش می یابد.</strong>
+            <strong class="mb-0">در صورت انتخاب گزینه حذف، استوریج انتخابی از مخزن حذف و موجودی یک واحد کاهش می
+                یابد.</strong>
         </h5>
         <br>
 
         <h5 class="card-header py-3 bg-warning" align="center">
-            <strong class="mb-0">در صورت اعلام خرابی، موجودی تغییر نمی کند اما امکان افزودن استوریج خراب به تجهیز ممکن نخواهد بود.</strong>
+            <strong class="mb-0">در صورت اعلام خرابی، موجودی تغییر نمی کند اما امکان افزودن استوریج خراب به تجهیز ممکن
+                نخواهد بود.</strong>
         </h5>
         <br>
 
@@ -93,11 +97,10 @@
                             <th>ردیف</th>
                             <th>شناسه هارد</th>
                             <th>سال ساخت</th>
-                            <th>شماره سریال</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">شماره سریال</th>
                             <th>اتاق</th>
                             <th>وضعیت خرابی</th>
-                            <th>عملیات</th>
-
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">عملیات</th>
                         </tr>
                         </thead>
 
@@ -107,7 +110,7 @@
                             <td th:text="${iter.count}"></td>
                             <td th:text="${storage.id}"></td>
                             <td th:text="${storage.mfg}"></td>
-                            <td th:text="${storage.serialNumber}"></td>
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:text="${storage.serialNumber}"></td>
 
                             <td class="clock">
                                 <span th:if="${storage.localityId == room1Id}"
@@ -127,7 +130,7 @@
                                 <span class="text-bg-success">اعلام نشده</span>
                             </td>
 
-                            <td>
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                                 <form th:if="${not storage.problematic}" th:action="@{/resource/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit').disabled=true;">
@@ -149,7 +152,9 @@
                                     <input type="hidden" name="storageUpdate" th:value="${true}"/>
                                     <input type="hidden" name="problematic" th:value="${false}"/>
                                     <input type="hidden" name="storageDisable" th:value="${false}"/>
-                                    <button type="submit" id="submit2" class="btn-group-sm btn-success">اعلام رفع خرابی</button>
+                                    <button type="submit" id="submit2" class="btn-group-sm btn-success">اعلام رفع
+                                        خرابی
+                                    </button>
                                 </form>
                                 <br>
 
@@ -162,10 +167,10 @@
                                     <input type="hidden" name="storageUpdate" th:value="${true}"/>
                                     <input type="hidden" name="problematic" th:value="${true}"/>
                                     <input type="hidden" name="storageDisable" th:value="${true}"/>
-                                    <button type="submit" id="submit3" class="btn-group-sm btn-danger">حذف از مخزن</button>
+                                    <button type="submit" id="submit3" class="btn-group-sm btn-danger">حذف از مخزن
+                                    </button>
                                 </form>
                                 <br>
-
                             </td>
 
                         </tr>

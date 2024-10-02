@@ -12,7 +12,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-public final class LogServiceImpl implements LogService {
+public class LogServiceImpl implements LogService {
 
     private final PersistenceRepository persistenceRepository;
 

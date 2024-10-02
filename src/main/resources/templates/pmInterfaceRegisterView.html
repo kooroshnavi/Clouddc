@@ -202,8 +202,7 @@
                                 </div>
                                 <hr/>
 
-
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR')" class="col">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
                                         <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
@@ -216,7 +215,7 @@
                                 <input th:if="${not enablementAccess}" type="hidden" name="enabled" th:value="${pmInterface.enabled}"/>
                                 <input th:if="${isUpdate}" type="hidden" name="pmInterfaceId" th:value="${pmInterface.id}"/>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR')" class="col">
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                             data-bs-target="#exampleWarningModal">ثبت

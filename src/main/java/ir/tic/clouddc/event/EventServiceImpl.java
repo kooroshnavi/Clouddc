@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -25,7 +26,7 @@ import java.util.*;
 
 @Slf4j
 @Service
-public final class EventServiceImpl implements EventService {
+public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
 
@@ -127,6 +128,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void registerEvent(EventForm eventForm, LocalDate validDate) throws IOException {
         Event event;
         switch (eventForm.getEventCategoryId()) {
@@ -558,6 +560,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Event getEventHistory(Long eventId) {
         var optionalEvent = eventRepository.findById(eventId);
         Event event;
@@ -598,6 +601,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void updateGeneralEvent(EventForm eventForm) throws IOException {
         var event = eventRepository.getReferenceById(eventForm.getEventId());
         eventPersistence(eventForm, event);

@@ -9,6 +9,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
@@ -32,7 +34,7 @@ public class SecurityConfig {
     @Autowired
     public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService) {
         this.personService = personService;
-        clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
+        this.clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
     }
@@ -61,6 +63,7 @@ public class SecurityConfig {
 
                 .sessionManagement(session -> session
                         .maximumSessions(1)
+                        .sessionRegistry(sessionRegistry())
                 )
 
                 .logout(logout -> logout
@@ -91,5 +94,8 @@ public class SecurityConfig {
         return new HttpSessionEventPublisher();
     }
 
-
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
 }

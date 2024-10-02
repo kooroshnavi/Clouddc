@@ -93,6 +93,7 @@
 
                         <div th:if="${notFound}" class="alert-warning">شماره وارد شده در لیست کاربران این سامانه یافت نشد.</div>
                         <div th:if="${disabled}" class="alert-danger">حساب کاربری غیرفعال می باشد.</div>
+                        <div th:if="${multiple}" class="alert-danger">به دلیل عدم خروج از سیستم قبلی، در حال حاضر امکان ورود از این سیستم وجود ندارد.</div>
                         <br>
 
                         <div class="form-group">

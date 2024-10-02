@@ -221,7 +221,8 @@ public class PmServiceImpl implements PmService {
                         -> grantedAuthority.getAuthority().equals("ADMIN")
                         || grantedAuthority.getAuthority().equals("SUPERVISOR"))) {
             return true;
-        } else return currentPmDetailUsername.equals(personService.getCurrentUsername());
+        } else
+            return currentPmDetailUsername.equals(personService.getCurrentUsername());
     }
 
 
@@ -411,6 +412,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public Integer registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) {
         Persistence persistence;
         PmInterfaceCatalog newCatalog;

@@ -1,12 +1,10 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         html,
         body {
@@ -75,7 +73,6 @@
             100% { background-position: 0 0; }
         }
     </style>
-
     <!--plugins-->
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
@@ -83,7 +80,6 @@
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
-
     <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
     <link href="/panel/assets/css/style.css" rel="stylesheet"/>
@@ -130,7 +126,6 @@
     <!--start content-->
     <main class="page-content">
 
-
         <!--breadcrumb-->
 
         <!--end breadcrumb-->
@@ -142,15 +137,14 @@
         </h5>
         <br>
 
-
         <div class="card">
 
             <div class="card-body">
 
-                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col" align="center">
+                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR')" class="col" align="center">
                     <a type="button" th:href="@{/pm/register/form}" class="btn btn-outline-warning">تعریف PM جدید</a>
                 </div>
-                <br sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                <br sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR')">
 
                 <div align="right">
                     <!-- Button trigger modal -->
@@ -245,7 +239,7 @@
                                             </li>
                                             <br>
 
-                                            <li align="center"><a th:href="@{/pm/{pmInterfaceId}/edit (pmInterfaceId=${pmInterface.id})}"
+                                            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR')" align="center"><a th:href="@{/pm/{pmInterfaceId}/edit (pmInterfaceId=${pmInterface.id})}"
                                                                   class="btn btn-outline-warning">ویرایش</a>
                                             </li>
 

@@ -6,7 +6,6 @@ import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
-import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -56,14 +55,10 @@ public class PmController {
     }
 
     @GetMapping("/register/form")
-    @ModifyProtection
     public String showPmInterfaceForm(Model model) {
-
         model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
         model.addAttribute("isUpdate", false);
         model.addAttribute("enablementAccess", true);
-
-
         if (!model.containsAttribute("error")) {
             model.addAttribute("error", false);
         }
@@ -72,7 +67,6 @@ public class PmController {
     }
 
     @GetMapping("/{pmInterfaceId}/edit")
-    @ModifyProtection
     public String pmInterfaceEditForm(Model model, @PathVariable Integer pmInterfaceId) {
         if (Objects.equals(pmInterfaceId, null) || pmInterfaceId == 0 || pmInterfaceId < 0) {
             return "404";
@@ -103,7 +97,7 @@ public class PmController {
         return pmInterfaceRegisterForm;
     }
 
-    @PostMapping(value = "/register")  /// General Pm only
+    @PostMapping(value = "/register")
     public String pmInterfacePost(
             RedirectAttributes redirectAttributes,
             @Valid @ModelAttribute("pmInterfaceRegisterForm") PmInterfaceRegisterForm pmInterfaceRegisterForm,
@@ -303,7 +297,6 @@ public class PmController {
     }
 
     @GetMapping("/catalog/{catalogId}/edit")
-    @ModifyProtection
     public String catalogEditForm(Model model, @PathVariable Long catalogId) {
         if (Objects.equals(catalogId, null) || catalogId == 0 || catalogId < 0) {
             return "404";
@@ -334,7 +327,6 @@ public class PmController {
     }
 
     @PostMapping("/catalog/register")
-    @ModifyProtection
     public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm, RedirectAttributes redirectAttributes) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);

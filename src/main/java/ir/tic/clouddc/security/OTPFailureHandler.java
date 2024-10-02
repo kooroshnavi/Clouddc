@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.CredentialsExpiredException;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler;
 import org.springframework.stereotype.Component;
@@ -42,12 +43,13 @@ public class OTPFailureHandler extends SimpleUrlAuthenticationFailureHandler {
             } catch (ExecutionException e) {
                 throw new RuntimeException(e);
             }
-        } else {
+        } else if (exception.getClass().equals(CredentialsExpiredException.class)) {
             redirectURL = "/login";
+        } else {
+            redirectURL = "/login?multiple=true";
         }
 
         super.setDefaultFailureUrl(redirectURL);
         super.onAuthenticationFailure(request, response, exception);
     }
-
 }

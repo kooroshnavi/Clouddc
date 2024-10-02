@@ -25,6 +25,7 @@ public final class SoapClientService {
 
     @Value("${soap.principal}")
     private String principal;
+
     @Value("${soap.credential}")
     private String credential;
 

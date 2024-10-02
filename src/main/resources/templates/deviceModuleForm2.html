@@ -152,7 +152,7 @@
                                             <button type="button" class="btn btn-secondary"
                                                     data-bs-dismiss="modal">بستن
                                             </button>
-                                            <button type="submit" class="btn btn-primary">ذخیره تغییرات</button>
+                                            <button sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" type="submit" class="btn btn-primary">ذخیره تغییرات</button>
                                         </div>
 
                                     </form>
@@ -178,7 +178,7 @@
                             <th>مدل و جزئیات</th>
                             <th>موجودی</th>
                             <th>تعداد روی تجهیز</th>
-                            <th>حذف/اضافه ماژول</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">حذف/اضافه ماژول</th>
                         </tr>
                         </thead>
 
@@ -204,9 +204,9 @@
 
                             <td th:text="${deviceModuleMap.getOrDefault(moduleInventory, 0)}"></td>
 
-                            <td th:if="${moduleInventory.classification.equals('Storage')}" class="text-primary">از طریق گزینه بروزرسانی استوریج</td>
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" th:if="${moduleInventory.classification.equals('Storage')}" class="text-primary">از طریق گزینه بروزرسانی استوریج</td>
 
-                            <td th:if="${not moduleInventory.classification.equals('Storage')}">
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" th:if="${not moduleInventory.classification.equals('Storage')}">
                                 <form th:action="@{/resource/device/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit').disabled=true;">

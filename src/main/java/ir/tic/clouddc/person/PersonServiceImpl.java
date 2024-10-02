@@ -8,6 +8,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -30,7 +31,6 @@ public class PersonServiceImpl implements PersonService {
 
     private final LogService logService;
 
-
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository, OTPService otpService, AddressRepository addressRepository, LogService logService) {
         this.personRepository = personRepository;
@@ -46,18 +46,30 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
     public String initPhoneRegister(String phoneNumber) throws ExecutionException {
         return otpService.generatePersonRegisterOTP(phoneNumber);
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')")
     public boolean registerNewPerson(PersonRegisterForm personRegisterForm) throws ExecutionException {
         Person person;
         if (personRegisterForm.getPersonId() != null) { // Update Person Info
             person = personRepository.getReferenceById(personRegisterForm.getPersonId());
             if (person.isEnabled() && !personRegisterForm.isEnabled()) {
                 person.setEnabled(false);
+                person.setAssignee(false);
                 otpService.invalidateLoginOTP(person.getAddress());
+
+           /*     List<String> loggedUserList = sessionRegistry
+                        .getAllPrincipals()
+                        .stream()
+                        .filter(a -> a instanceof String)
+                        .map(String.class::cast)
+                        .toList();
+                log.info(loggedUserList.toString());*/
+
                 logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("DisablePerson"), person, getCurrentPerson(), "PersonUpdate");
 
                 return true;

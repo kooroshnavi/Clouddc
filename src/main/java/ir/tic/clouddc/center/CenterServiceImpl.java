@@ -9,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -36,8 +37,8 @@ public class CenterServiceImpl implements CenterService {
     }
 
 
-
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
         return locationRepository.getReferenceById(locationId);
     }
@@ -79,6 +80,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList) {
         var location = Hibernate.unproxy(getRefrencedLocation(rackId), Location.class);
         Rack rack = (Rack) location;
@@ -100,6 +102,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Optional<Location> getLocation(Long locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
@@ -112,7 +115,6 @@ public class CenterServiceImpl implements CenterService {
 
         return optionalLocation;
     }
-
 
     @Override
     public Model getCenterLandingPageModel(Model model) {

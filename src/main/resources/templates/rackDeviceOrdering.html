@@ -1,14 +1,12 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="icon" href="/panel/assets/images/favicon-32x32.png" type="image/png"/>
     <!--plugins-->
-
     <style>
         body {
             color: #333333;
@@ -331,22 +329,30 @@
 
                         <div class="col" align="right">
                             <!-- Button trigger modal -->
-                            <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#examplePrimaryModal">نکات مرتبط</button>
+                            <button type="button" class="btn btn-info" data-bs-toggle="modal"
+                                    data-bs-target="#examplePrimaryModal">نکات مرتبط
+                            </button>
                             <!-- Modal -->
                             <div class="modal fade" id="examplePrimaryModal" tabindex="-1" aria-hidden="true">
                                 <div class="modal-dialog modal-lg modal-dialog-centered">
                                     <div class="modal-content bg-body">
                                         <div class="modal-header">
                                             <h5 class="modal-title">جانمایی تجهیزات رک</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                    aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <p>* روی یک ردیف کلیک کرده و با جابجایی به ردیف مدنظر ببرید و رها کنید تا جابجایی را ببینید (Drag & Drop). پس از رسیدن به چینش صحیح آن را ذخیره کنید.</p>
-                                            <p>* جانمایی صرفا ترتیب چینش تجهیزات درون رک را نمایش می دهد و نمایانگر یونیت رک نیست.</p>
+                                            <p>* روی یک ردیف کلیک کرده و با جابجایی به ردیف مدنظر ببرید و رها کنید تا
+                                                جابجایی را ببینید (Drag & Drop). پس از رسیدن به چینش صحیح آن را ذخیره
+                                                کنید.</p>
+                                            <p>* جانمایی صرفا ترتیب چینش تجهیزات درون رک را نمایش می دهد و نمایانگر
+                                                یونیت رک نیست.</p>
                                             <p>* این قابلیت آزمایشی است.</p>
                                         </div>
                                         <div class="modal-footer">
-                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                                                بستن
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -372,7 +378,8 @@
 
                                     <tbody>
 
-                                    <tr th:id="${position}" th:each="position, iter : ${rack.devicePositionMap.keySet().stream().sorted().toList()}">
+                                    <tr th:id="${position}"
+                                        th:each="position, iter : ${rack.devicePositionMap.keySet().stream().sorted().toList()}">
 
                                         <td th:text="${iter.count}"></td>
                                         <td th:text="${rack.devicePositionMap.get(position).serialNumber}">
@@ -391,8 +398,7 @@
 
                                 <br/>
 
-
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                             data-bs-target="#exampleWarningModal">ذخیره

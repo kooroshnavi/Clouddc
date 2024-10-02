@@ -96,7 +96,7 @@
                             <th>جزئیات</th>
                             <th>موجودی</th>
                             <th th:if="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">جزئیات</th>
-                            <th th:unless="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">کاهش موجودی</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" th:unless="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">کاهش موجودی</th>
                         </tr>
                         </thead>
 
@@ -122,7 +122,7 @@
                                        class="btn btn-outline-info">لیست جزئیات</a>
                                 </div>
                             </td>
-                            <td th:unless="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" th:unless="${(theCategory.categoryId == 10 || theCategory.categoryId == 11) && not theCategory.storageList.isEmpty()}">
                                 <form th:action="@{/resource/module/update}"
                                       th:object="${updateForm}"
                                       method="POST" onSubmit="document.getElementById('submit').disabled=true;">
@@ -134,6 +134,7 @@
                                     <button type="submit" id="submit" class="btn-group-sm btn-dark">کاهش موجودی</button>
                                 </form>
                             </td>
+
                         </tr>
                         </tbody>
 
