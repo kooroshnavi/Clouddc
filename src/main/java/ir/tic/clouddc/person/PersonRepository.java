@@ -18,15 +18,22 @@ public interface PersonRepository extends JpaRepository<Person, Integer> {
     @Query("SELECT p from Person p where p.username = :name")
     Person fetchByUsername(String name);
 
+    @Query("select p from Person p")
+    List<Person> fetchTotalPersonList();
+
     @Query("select person.id as id," +
             " person.name as name," +
             " person.assignee as assignee," +
             " person.enabled as enabled," +
             " person.role as role," +
-            " person.workSpaceSize as workspaceSize" +
+            " person.workspaceSize as workspaceSize," +
+            " person.latestLoginHistory as latestLoginHistory" +
             " from Person person")
-    List<PersonService.PersonProjection_1> getPersonProjection_1();
+    List<Person> getPersonProjection_1();
 
     @Query("select p from Person p where p.address.value = :phoneNumber")
     Person fetchByPhoneNumber(@Param("phoneNumber") String phoneNumber);
+
+    @Query("select p from Person p where p.role in :roleCodeList")
+    List<Person> fetchAccessiblePersonList(List<Character> roleCodeList);
 }

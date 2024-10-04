@@ -13,9 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 
 @Slf4j
@@ -30,6 +28,7 @@ public class PersonServiceImpl implements PersonService {
     private final AddressRepository addressRepository;
 
     private final LogService logService;
+
 
     @Autowired
     public PersonServiceImpl(PersonRepository personRepository, OTPService otpService, AddressRepository addressRepository, LogService logService) {
@@ -100,7 +99,7 @@ public class PersonServiceImpl implements PersonService {
             person.setUsername(username.toString());
             person.setRole(personRegisterForm.getRoleCode());
             person.setAssignee(person.getRole() != '2');
-            person.setWorkSpaceSize(0);
+            person.setWorkspaceSize(0);
             person.setEnabled(true);
             address.setValue(personRegisterForm.getPhoneNumber());
             person.setAddress(address);
@@ -126,6 +125,9 @@ public class PersonServiceImpl implements PersonService {
             person.getLoginHistoryList().add(loginHistory);
         } else {
             person.setLoginHistoryList(List.of(loginHistory));
+        }
+        if (successful) {
+            person.setLatestLoginHistory(loginHistory);
         }
         personRepository.saveAndFlush(person);
     }
@@ -169,7 +171,57 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public List<PersonProjection_1> getRegisteredPerosonList() {
-        return personRepository.getPersonProjection_1();
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER', 'OPERATOR')")
+    public List<Person> getRegisteredPerosonList() {
+        List<Person> personList = new ArrayList<>();
+        var currentPersonRoleList = getCurrentPersonRoleList();
+        if (currentPersonRoleList
+                .stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN")
+                        || grantedAuthority.getAuthority().equals("MANAGER"))) {
+            personList = personRepository.fetchTotalPersonList();
+
+        } else if (currentPersonRoleList
+                .stream()
+                .anyMatch(grantedAuthority
+                        -> grantedAuthority.getAuthority().equals("SUPERVISOR"))) {
+            personList = personRepository.fetchAccessiblePersonList(List.of('0', '1'));
+        } else {
+            personList = List.of(getCurrentPerson());
+        }
+
+        for (Person person : personList) {
+            if (person.getLatestLoginHistory() != null) {
+                var persianLoginDateTime = UtilService
+                        .getFormattedPersianDateAndTime(person.getLatestLoginHistory().getLocalDate()
+                                , person.getLatestLoginHistory().getLocalTime());
+                person.setPersianLoginTime(persianLoginDateTime);
+            }
+        }
+        return personList
+                .stream()
+                .sorted(Comparator.comparing(Person::isEnabled)
+                        .thenComparing(Person::getWorkspaceSize).reversed())
+                .toList();
+    }
+
+    @Override
+    @PreAuthorize("(#targetUsername == authentication.name || hasAnyAuthority('ADMIN', 'MANAGER', 'SUPERVISOR')) ")
+    public List<LoginHistory> getLoginHistoryList(Person targetPerson, String targetUsername) {
+        var currentPerson = getCurrentPerson();
+        if (currentPerson.getRole() == '1' && targetPerson.getRole() != '0' && targetPerson.getRole() != '1') {
+            return Collections.emptyList();
+        }
+        var loginList = targetPerson.getLoginHistoryList();
+        if (!loginList.isEmpty()) {
+            for (LoginHistory loginHistory : loginList) {
+                loginHistory.setPersianLoginDate(UtilService.getFormattedPersianDateAndTime(loginHistory.getLocalDate(), loginHistory.getLocalTime()));
+            }
+        }
+
+        return loginList
+                .stream()
+                .sorted(Comparator.comparing(LoginHistory::getLocalDate).reversed())
+                .toList();
     }
 }

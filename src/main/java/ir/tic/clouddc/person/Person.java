@@ -35,7 +35,7 @@ public final class Person {
     private char role;
 
     @Column(name = "WorkspaceSize")
-    private Integer workSpaceSize;
+    private Integer workspaceSize;
 
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
@@ -46,8 +46,15 @@ public final class Person {
     @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<LoginHistory> loginHistoryList;
 
+    @OneToOne
+    @JoinColumn(name = "LatestLoginHistoryID")
+    private LoginHistory latestLoginHistory;
+
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId
     @JoinColumn(name = "AddressID")
     private Address address;
+
+    @Transient
+    private String persianLoginTime;
 }

@@ -210,6 +210,7 @@ public final class UtilService {
 
     public static String getFormattedPersianDate(LocalDate date) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
         return dateFormatter.format(PersianDate.fromGregorian(date));
     }
 
@@ -221,11 +222,11 @@ public final class UtilService {
         return dayName + " - " + formattedTime;
     }
 
-    public static void setTodayReportId(Long todayReportId) {
-        TODAY_REPORT_ID = todayReportId;
-    }
+    public static String getFormattedPersianDateAndTime(LocalDate date, LocalTime time) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        var persianDate = getFormattedPersianDate(date);
+        var formattedTime = timeFormatter.format(time);
 
-    public static Long getTodayReportId() {
-        return TODAY_REPORT_ID;
+        return persianDate + " - " + formattedTime;
     }
 }

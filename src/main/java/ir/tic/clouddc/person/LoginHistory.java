@@ -36,6 +36,9 @@ public final class LoginHistory {
     @Column(name = "Successful")
     private boolean successful;
 
+    @Transient
+    private String persianLoginDate;
+
     public LoginHistory(Person person, String remoteAddress, LocalDate localDate, LocalTime localTime, boolean isSuccessful) {
         this.person = person;
         this.remoteAddress = remoteAddress;

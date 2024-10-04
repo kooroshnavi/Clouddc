@@ -17,21 +17,6 @@ public interface PersonService {
 
     void registerLoginHistory(String address, String remoteAddr, boolean successful);
 
-    interface PersonProjection_1 {
-
-        int getId();
-
-        String getName();
-
-        boolean getAssignee();
-
-        boolean getEnabled();
-
-        char getRole();
-
-        int getWorkspaceSize();
-    }
-
     Person getPersonByUsername(String name);
 
     List<Person> getPersonListExcept(List<String> ignoreUsernameList);
@@ -46,5 +31,7 @@ public interface PersonService {
 
     Person getReferencedPerson(Integer defaultPersonId);
 
-    List<PersonProjection_1> getRegisteredPerosonList();
+    List<Person> getRegisteredPerosonList();
+
+    List<LoginHistory> getLoginHistoryList(Person targetPerson, String targetUsername);
 }

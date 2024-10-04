@@ -35,6 +35,7 @@ import java.util.concurrent.ExecutionException;
 public class LoginController {
 
     private final OTPService otpService;
+
     private final AddressRepository addressRepository;
 
     private final PersonService personService;
@@ -53,7 +54,6 @@ public class LoginController {
                                 HttpServletRequest request, Model model) throws UnknownHostException, SocketException {
 
         var OTPForm = UtilService.createChallenge(new OtpForm());
-
         model.addAttribute("index", OTPForm.getIndex());
         model.addAttribute("otpRequest", OTPForm);
 

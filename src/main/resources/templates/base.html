@@ -1,6 +1,6 @@
 <!doctype html>
-<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
-      xmlns="http://www.w3.org/1999/html">
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org" xmlns="http://www.w3.org/1999/html"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
 
 <head th:fragment="links">
     <!-- Required meta tags -->
@@ -239,7 +239,7 @@
                 </ul>
             </li>
 
-            <li>
+            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER', 'OPERATOR')">
                 <a href="javascript:" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-file-code-fill"></i>
                     </div>

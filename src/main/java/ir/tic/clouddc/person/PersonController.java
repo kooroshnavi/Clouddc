@@ -10,7 +10,6 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
@@ -28,12 +27,9 @@ public class PersonController {
 
     @GetMapping("/list")
     public String showPersonList(Model model) {
-        List<PersonService.PersonProjection_1> personProjection1List = personService
-                .getRegisteredPerosonList()
-                .stream()
-                .sorted(Comparator.comparing(PersonService.PersonProjection_1::getWorkspaceSize).reversed())
-                .toList();
-        model.addAttribute("personProjection1List", personProjection1List);
+        List<Person> personList = personService
+                .getRegisteredPerosonList();
+        model.addAttribute("personProjection1List", personList);
 
         if (!model.containsAttribute("personRegisterForm")) {
             model.addAttribute("personRegisterForm", new PersonRegisterForm());
@@ -127,11 +123,23 @@ public class PersonController {
         personRegisterForm.setPersonId(person.getId());
         personRegisterForm.setEnabled(person.isEnabled());
         personRegisterForm.setRoleCode(person.getRole());
-        personRegisterForm.setFreeWorkSpace(person.getWorkSpaceSize() <= 0);
+        personRegisterForm.setFreeWorkSpace(person.getWorkspaceSize() <= 0);
         redirectAttributes.addFlashAttribute("update", true);
         redirectAttributes.addFlashAttribute("personRegisterForm", personRegisterForm);
 
         return "redirect:/person/list";
     }
 
+    @GetMapping("/{personId}/loginHistory")
+    public String showPersonLoginHistory(Model model, @PathVariable Integer personId) {
+        var targetPerson = personService.getReferencedPerson(personId);
+        List<LoginHistory> loginHistoryList = personService.getLoginHistoryList(targetPerson, targetPerson.getUsername());
+        if (loginHistoryList.isEmpty()) {
+            return "403";
+        }
+        model.addAttribute("targetPerson", targetPerson);
+        model.addAttribute("loginHistoryList", loginHistoryList);
+
+        return "loginHistoryList";
+    }
 }
