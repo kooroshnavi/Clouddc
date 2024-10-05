@@ -77,20 +77,16 @@
 
         <div class="card" align="center">
             <div class="card-body">
-                <h6 sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="card-header py-3 bg-info" align="center">
-                    <strong class="mb-0">همکار گرامی، امکان ثبت شماره تلفن های تکراری یا فاقد حساب تیک گرام وجود
-                        ندارد.</strong>
-                </h6>
+
                 <div class="d-flex align-items-center"></div>
-                <hr/>
 
                 <div class="card-body">
 
-                    <h5 class="card-title">کاربران سامانه</h5>
                     <div class="my-3 border-top"></div>
                     <div class="accordion" id="accordionExample">
 
-                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" th:if="${registerInitialized || update}" class="accordion-item">
+                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                             th:if="${registerInitialized || update}" class="accordion-item">
                             <h2 class="accordion-header" id="headingOne">
                                 <button class="accordion-button" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
@@ -112,9 +108,9 @@
                                             <br th:if="${registerInitialized}">
 
                                             <div th:if="${registerInitialized}" class="mb-sm-5">
-                                                <label for="input" class="form-check">نام</label>
+                                                <label for="input" class="form-check">نام (کیبورد فارسی)</label>
                                                 <input type="text" class="form-control" id="input" min="2"
-                                                       maxlength="15"
+                                                       maxlength="20"
                                                        required="required" dir="rtl" placeholder="نام"
                                                        onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
                                                        oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
@@ -123,9 +119,9 @@
                                             <br th:if="${registerInitialized}">
 
                                             <div th:if="${registerInitialized}" class="mb-sm-5">
-                                                <label for="input2" class="form-check">نام خانوادگی</label>
-                                                <input type="text" class="form-control" id="input2" min="3"
-                                                       maxlength="15"
+                                                <label for="input2" class="form-check">نام خانوادگی (کیبورد فارسی)</label>
+                                                <input type="text" class="form-control" id="input2" min="2"
+                                                       maxlength="20"
                                                        required="required" dir="rtl" placeholder="نام خانوادگی"
                                                        onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
                                                        oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
@@ -151,7 +147,8 @@
                                             <div th:if="${update && personRegisterForm.freeWorkSpace}"
                                                  class="col-12">
                                                 <input class="form-check-input" type="checkbox"
-                                                       id="flexSwitchCheckDefault" th:field="*{enabled}" onchange="toggleTextBox()">
+                                                       id="flexSwitchCheckDefault" th:field="*{enabled}"
+                                                       onchange="toggleTextBox()">
                                                 <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال
                                                     سازی - در صورت غیرفعالسازی، کاربر امکان ورود به سامانه نخواهد
                                                     داشت.</label>
@@ -166,7 +163,8 @@
                                                     فعال است - جهت غیر فعالسازی کاربر، وظایف کارتابلش را خاتمه دهید یا
                                                     به همکار دیگری منتسب کنید تا کارتابل خالی شود.</label>
                                             </div>
-                                            <input th:if="${update && not personRegisterForm.freeWorkSpace}" type="hidden" name="enabled"
+                                            <input th:if="${update && not personRegisterForm.freeWorkSpace}"
+                                                   type="hidden" name="enabled"
                                                    th:value="${true}"/>
                                             <br>
 
@@ -177,7 +175,12 @@
                                                             required="required">
                                                         <option th:value="0">کارشناس سالن</option>
                                                         <option th:value="1">مسئول سالن</option>
-                                                        <option th:value="2">مشاهده سامانه</option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="2">مشاهده محدود سامانه (دسترسی میهمان)
+                                                        </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="3">مشاهده مدیران (امکان مشاهده تمام بخش ها)
+                                                        </option>
                                                     </select>
                                                 </label>
                                                 <hr/>
@@ -189,7 +192,12 @@
                                                             required="required">
                                                         <option th:value="0">کارشناس سالن</option>
                                                         <option th:value="1">مسئول سالن</option>
-                                                        <option th:value="2">مشاهده سامانه</option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="2">مشاهده محدود سامانه (دسترسی میهمان)
+                                                        </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="3">مشاهده مدیران (امکان مشاهده تمام بخش ها)
+                                                        </option>
                                                     </select>
                                                 </label>
                                                 <hr/>
@@ -266,7 +274,8 @@
                             </div>
                         </div>
 
-                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" th:unless="${registerInitialized}" class="accordion-item">
+                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                             th:unless="${registerInitialized}" class="accordion-item">
                             <h2 class="accordion-header" id="headingTwo">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
@@ -276,8 +285,12 @@
                             <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
                                  data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <strong>فرم ثبت نام کاربر جدید</strong>
-                                    <hr>
+                                    <h6 sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                                        class="card-header py-3 bg-info" align="center">
+                                        <strong class="mb-0">همکار گرامی، امکان ثبت شماره تلفن های تکراری یا فاقد حساب
+                                            تیک گرام وجود
+                                            ندارد.</strong>
+                                    </h6>
                                     <div class="border p-3 rounded">
                                         <form id="form" class="was-validated" m th:action="@{/person/OTPForm}"
                                               th:object="${personRegisterForm}" method="Post"
@@ -352,17 +365,16 @@
                             </div>
                         </div>
 
-                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER', 'OPERATOR')" class="accordion-item">
+                        <div class="accordion-item">
                             <h2 class="accordion-header" id="headingThree">
                                 <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
                                         data-bs-target="#collapseThree" aria-expanded="false"
-                                        aria-controls="collapseThree">لیست کاربران
+                                        aria-controls="collapseThree">اطلاعات کاربر
                                 </button>
                             </h2>
                             <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
                                  data-bs-parent="#accordionExample">
                                 <div class="accordion-body">
-                                    <strong>جزئیات کاربران</strong>
                                     <table id="example2" class="table mb-0">
                                         <thead class="table-dark">
                                         <tr>
@@ -410,7 +422,9 @@
                                                 </div>
                                             </td>
 
-                                            <td th:if="${person.latestLoginHistory == null}" class="text-bg-secondary">وارد نشده</td>
+                                            <td th:if="${person.latestLoginHistory == null}" class="text-bg-secondary">
+                                                وارد نشده
+                                            </td>
                                             <td th:unless="${person.latestLoginHistory == null}">
                                                 <div class="col">
                                                     <a th:text="${person.persianLoginTime}"

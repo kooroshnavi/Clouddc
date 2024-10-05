@@ -111,7 +111,7 @@ public class OTPServiceImpl implements OTPService {
         UUID expiryTimeUUID = UUID.nameUUIDFromBytes(phoneNumber.getBytes(StandardCharsets.UTF_8));
         if (personRegisterOTPCache.get(phoneNumber).isBlank()) {
             String OTPCode = getRandomOTP();
-            log.info(OTPCode);
+           // log.info(OTPCode);
             personRegisterOTPCache.put(phoneNumber, OTPCode);
             personRegisterOTPCache.put(expiryTimeUUID.toString(), LocalDateTime.now().plusMinutes(REGISTER_EXPIRE_MIN).toString());
             notificationService.sendRegisterOTPMessage(phoneNumber, OTPCode);

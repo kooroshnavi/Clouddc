@@ -89,7 +89,6 @@ public class PersonController {
     private String registerPerson(RedirectAttributes redirectAttributes, @Valid @ModelAttribute("personRegisterForm") PersonRegisterForm personRegisterForm) throws ExecutionException {
         boolean changed;
         if (personRegisterForm.getPersonId() != null) {
-            log.info("Updating Person");    // Update Person Info
             changed = personService.registerNewPerson(personRegisterForm);
         } else {
             var exist = personService.checkPhoneExistence(personRegisterForm);

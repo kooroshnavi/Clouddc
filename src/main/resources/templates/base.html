@@ -88,7 +88,7 @@
                                     </a>
                                 </div>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <a th:href="@{/resource/device/unassigned}">
                                         <div class="apps p-2 radius-10 text-center">
                                             <div class="apps-icon-box mb-1 text-white bg-gradient-purple">
@@ -99,7 +99,7 @@
                                     </a>
                                 </div>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <a th:href="@{/resource/module/register/form}">
                                         <div class="apps p-2 radius-10 text-center">
                                             <div class="apps-icon-box mb-1 text-white bg-gradient-purple">
@@ -212,15 +212,13 @@
                     <div class="menu-title">وظایف دوره ای (PM)</div>
                 </a>
                 <ul>
-
-                    <li>
+                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                         <a th:href="@{/pm/workspace}" href="/pm/interface/list"><i class="bi bi-circle"></i>کارتابل</a>
                     </li>
                     <li><a href="/pm/active/list"><i class="bi bi-circle"></i>وظایف فعال جاری</a>
                     </li>
                     <li><a href="/pm/interface/list"><i class="bi bi-circle"></i>مدیریت وظایف</a>
                     </li>
-
                 </ul>
             </li>
             <li>
@@ -239,14 +237,14 @@
                 </ul>
             </li>
 
-            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER', 'OPERATOR')">
+            <li>
                 <a href="javascript:" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-file-code-fill"></i>
                     </div>
                     <div class="menu-title">سامانه</div>
                 </a>
                 <ul>
-                    <li><a href="/person/list"><i class="bi bi-circle"></i>لیست کاربران</a></li>
+                    <li><a href="/person/list"><i class="bi bi-circle"></i>اطلاعات کاربری</a></li>
                 </ul>
             </li>
 

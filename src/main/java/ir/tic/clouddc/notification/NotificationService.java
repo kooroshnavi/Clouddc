@@ -15,4 +15,6 @@ public interface NotificationService {
     void sendExceptionMessage(String message, LocalDateTime dateTime);
 
     void sendRegisterOTPMessage(String phoneNumber, String otpCode);
+
+    void sendPersonWelcomingMessage(String personName ,String phoneNumber, char role);
 }

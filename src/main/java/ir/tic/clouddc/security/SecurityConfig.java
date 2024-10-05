@@ -50,12 +50,14 @@ public class SecurityConfig {
                             var localDate = UtilService.getDATE();
                             var localTime = UtilService.getTime();
                             response.sendRedirect("/");
+                            String address = personService.getPersonAddressByUsername(authentication.getName());
+
                             notificationService.sendSuccessLoginMessage(
-                                    authentication.getName()
+                                    address
                                     , request.getRemoteAddr()
                                     , LocalDateTime.of(localDate, localTime));
-                            personService.registerLoginHistory(personService
-                                            .getPersonByUsername(authentication.getName()).getAddress().getValue()
+
+                            personService.registerLoginHistory(address
                                     , request.getRemoteAddr()
                                     , true);
                         })

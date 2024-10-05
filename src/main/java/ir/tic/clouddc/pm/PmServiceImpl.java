@@ -7,7 +7,6 @@ import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.resource.Device;
@@ -43,12 +42,11 @@ public class PmServiceImpl implements PmService {
     private final CenterService centerService;
     private final ResourceService resourceService;
     private final PersonService personService;
-    private final NotificationService notificationService;
     private final LogService logService;
     private final FileService fileService;
 
     @Autowired
-    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmInterfaceCatalogRepository pmInterfaceCatalogRepository, PmDetailRepository pmDetailRepository, CenterService centerService, ResourceService resourceService, PersonService personService, NotificationService notificationService, LogService logService, FileService fileService) {
+    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmInterfaceCatalogRepository pmInterfaceCatalogRepository, PmDetailRepository pmDetailRepository, CenterService centerService, ResourceService resourceService, PersonService personService, LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.pmInterfaceRepository = pmInterfaceRepository;
         this.pmInterfaceCatalogRepository = pmInterfaceCatalogRepository;
@@ -56,7 +54,6 @@ public class PmServiceImpl implements PmService {
         this.centerService = centerService;
         this.resourceService = resourceService;
         this.personService = personService;
-        this.notificationService = notificationService;
         this.logService = logService;
         this.fileService = fileService;
 
@@ -160,6 +157,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public List<PmDetail> getPmDetail_2(Pm pm) {
         if (pm.getPmDetailList() != null) {
             var sortedPmDetailList = pm
@@ -322,6 +320,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public List<Person> getAssignPersonList(String pmOwnerUsername) {
         List<Person> assignPersonList;
         var currentUsername = personService.getCurrentUsername();
@@ -335,6 +334,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public List<Person> getDefaultPersonList() {
         return personService.getDefaultAssgineeList();
     }
@@ -481,6 +481,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public List<Pm> getActivePmList(boolean workspace, @Nullable Integer personId) {
         List<Pm> activePmList;
         if (workspace) {

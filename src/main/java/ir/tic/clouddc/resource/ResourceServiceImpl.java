@@ -211,11 +211,13 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public List<ModuleInventory> getModuleCategoryList() {
         return moduleInventoryRepository.findAll();
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId) {
         return moduleInventoryRepository
                 .getRelatedModuleInventoryList(categoryId)
@@ -225,6 +227,7 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public List<Storage> getRelatedSpareStorageList(Integer inventoryId) {
         return storageRepository.getRelatedSpareStorageList(List.of(inventoryId), false);
     }

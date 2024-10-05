@@ -34,4 +34,6 @@ public interface PersonService {
     List<Person> getRegisteredPerosonList();
 
     List<LoginHistory> getLoginHistoryList(Person targetPerson, String targetUsername);
+
+    String getPersonAddressByUsername(String username);
 }

@@ -2,6 +2,7 @@ package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
+import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
@@ -29,13 +30,16 @@ public class PersonServiceImpl implements PersonService {
 
     private final LogService logService;
 
+    private final NotificationService notificationService;
+
 
     @Autowired
-    public PersonServiceImpl(PersonRepository personRepository, OTPService otpService, AddressRepository addressRepository, LogService logService) {
+    public PersonServiceImpl(PersonRepository personRepository, OTPService otpService, AddressRepository addressRepository, LogService logService, NotificationService notificationService) {
         this.personRepository = personRepository;
         this.otpService = otpService;
         this.addressRepository = addressRepository;
         this.logService = logService;
+        this.notificationService = notificationService;
     }
 
     @Override
@@ -61,27 +65,19 @@ public class PersonServiceImpl implements PersonService {
                 person.setAssignee(false);
                 otpService.invalidateLoginOTP(person.getAddress());
 
-           /*     List<String> loggedUserList = sessionRegistry
-                        .getAllPrincipals()
-                        .stream()
-                        .filter(a -> a instanceof String)
-                        .map(String.class::cast)
-                        .toList();
-                log.info(loggedUserList.toString());*/
-
                 logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("DisablePerson"), person, getCurrentPerson(), "PersonUpdate");
 
                 return true;
             } else if (!person.isEnabled() && personRegisterForm.isEnabled()) {
                 person.setEnabled(true);
                 person.setRole(personRegisterForm.getRoleCode());
-                person.setAssignee(person.getRole() != '2');
+                person.setAssignee(person.getRole() == '0' || person.getRole() == '1');
                 logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("EnablePerson"), person, getCurrentPerson(), "PersonUpdate");
 
                 return true;
             } else if (person.isEnabled() && person.getRole() != personRegisterForm.getRoleCode()) {
                 person.setRole(personRegisterForm.getRoleCode());
-                person.setAssignee(person.getRole() != '2');
+                person.setAssignee(person.getRole() == '0' || person.getRole() == '1');
                 logService.registerIndependentPersistence(UtilService.LOG_MESSAGE.get("PersonRole"), person, getCurrentPerson(), "PersonUpdate");
 
                 return true;
@@ -98,7 +94,7 @@ public class PersonServiceImpl implements PersonService {
             UUID username = UUID.randomUUID();
             person.setUsername(username.toString());
             person.setRole(personRegisterForm.getRoleCode());
-            person.setAssignee(person.getRole() != '2');
+            person.setAssignee(person.getRole() == '0' || person.getRole() == '1');
             person.setWorkspaceSize(0);
             person.setEnabled(true);
             address.setValue(personRegisterForm.getPhoneNumber());
@@ -107,6 +103,7 @@ public class PersonServiceImpl implements PersonService {
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("RegPerson"), getCurrentPerson(), persistence);
             person.setPersistenceList(List.of(persistence));
             personRepository.saveAndFlush(person);
+            notificationService.sendPersonWelcomingMessage(person.getName(), personRegisterForm.getPhoneNumber(), person.getRole());
 
             return true;
         }
@@ -171,9 +168,8 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER', 'OPERATOR')")
     public List<Person> getRegisteredPerosonList() {
-        List<Person> personList = new ArrayList<>();
+        List<Person> personList;
         var currentPersonRoleList = getCurrentPersonRoleList();
         if (currentPersonRoleList
                 .stream()
@@ -223,5 +219,10 @@ public class PersonServiceImpl implements PersonService {
                 .stream()
                 .sorted(Comparator.comparing(LoginHistory::getLocalDate).reversed())
                 .toList();
+    }
+
+    @Override
+    public String getPersonAddressByUsername(String username) {
+        return personRepository.fetchPersonAddressByUsername(username);
     }
 }
