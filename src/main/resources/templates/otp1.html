@@ -54,6 +54,12 @@
     });
 </script>
 
+<script th:if="${not allowed}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos4_error_noti();
+    });
+</script>
+
 <section class="ftco-section">
 
     <img src="/login/images/TIC%20Logo7.png" alt="TIC.IR">
@@ -84,7 +90,7 @@
             <div class="col-md-6 col-lg-4">
                 <div class="login-wrap p-0">
 
-                    <form id="form" class="was-validated" th:action="@{/login/otp}" th:object="${otpRequest}"
+                    <form th:if="${allowed}" id="form" class="was-validated" th:action="@{/login/otp}" th:object="${otpRequest}"
                           method="Post" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div th:if="${logout}" class="alert-success">
@@ -116,6 +122,7 @@
                         </div>
 
                     </form>
+                    <div th:unless="${allowed}" class="alert-danger">در حال حاضر امکان ورود از طریق این سیستم وجود ندارد. لطفا بعدا امتحان کنید و از ثبت نام شماره تلفن ارسالی در سامانه اطمینان یابید.</div>
 
                 </div>
             </div>
@@ -123,6 +130,7 @@
     </div>
 
     <h6>
+        <br>
         <span class="bg-primary" th:text="${'IP Address: '   + remoteAddress}"></span>
     </h6>
 

@@ -22,4 +22,8 @@ public interface OTPService {
     void invalidateLoginOTP(Address address) throws ExecutionException;
 
     String getPersonAddress(String otpUID) throws ExecutionException;
+
+    boolean verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException;
+
+    boolean loginPageAvailable(String remoteAddr) throws ExecutionException;
 }

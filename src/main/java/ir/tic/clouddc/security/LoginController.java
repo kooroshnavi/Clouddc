@@ -51,11 +51,15 @@ public class LoginController {
     public String showLoginForm(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "logout", required = false) String logout,
                                 @RequestParam(value = "multiple", required = false) String multiple,
-                                HttpServletRequest request, Model model) throws UnknownHostException, SocketException {
+                                HttpServletRequest request, Model model) throws UnknownHostException, SocketException, ExecutionException {
 
-        var OTPForm = UtilService.createChallenge(new OtpForm());
-        model.addAttribute("index", OTPForm.getIndex());
-        model.addAttribute("otpRequest", OTPForm);
+        boolean allowed = otpService.loginPageAvailable(request.getRemoteAddr());
+        if (allowed) {
+            var OTPForm = UtilService.createChallenge(new OtpForm());
+            model.addAttribute("index", OTPForm.getIndex());
+            model.addAttribute("otpRequest", OTPForm);
+        }
+        model.addAttribute("allowed", allowed);
 
         if (error != null) {
             model.addAttribute("error", error);
@@ -79,6 +83,10 @@ public class LoginController {
 
         if (!model.containsAttribute("disabled")) {
             model.addAttribute("disabled", false);
+        }
+
+        if (!model.containsAttribute("allowed")) {
+            model.addAttribute("allowed", true);
         }
 
         model.addAttribute("date", UtilService.getCurrentDate());
@@ -124,7 +132,9 @@ public class LoginController {
 
                 return "otp-verify";
             } else {
+                boolean allowed = otpService.verifyUnregisteredIPAddress(request.getRemoteAddr());
                 redirectAttributes.addFlashAttribute("notFound", true);
+                redirectAttributes.addFlashAttribute("allowed", allowed);
 
                 return "redirect:/login";
             }

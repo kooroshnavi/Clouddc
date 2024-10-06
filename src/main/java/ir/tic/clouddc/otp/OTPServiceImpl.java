@@ -27,6 +27,12 @@ public class OTPServiceImpl implements OTPService {
 
     private static final long REGISTER_EXPIRE_MIN = 10;
 
+    private static final long IP_LIMITED_EXPIRE_HOUR = 100;
+
+    private static final int MAXIMUM_UNREGISTERED_TRIES = 5;
+
+    private final LoadingCache<String, Integer> machineLimitedCache;
+
     private final LoadingCache<String, String> loginOTPCache;
 
     private final LoadingCache<String, String> personRegisterOTPCache;
@@ -35,6 +41,8 @@ public class OTPServiceImpl implements OTPService {
 
     @Autowired
     public OTPServiceImpl(NotificationService notificationService) {
+        this.notificationService = notificationService;
+
         personRegisterOTPCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(REGISTER_EXPIRE_MIN, TimeUnit.MINUTES)
                 .build(new CacheLoader<>() {
@@ -53,7 +61,15 @@ public class OTPServiceImpl implements OTPService {
                     }
                 });
 
-        this.notificationService = notificationService;
+        machineLimitedCache = CacheBuilder.newBuilder()
+                .expireAfterAccess(IP_LIMITED_EXPIRE_HOUR, TimeUnit.SECONDS)
+                .build(new CacheLoader<>() {
+                    @Override
+                    public Integer load(String s) {
+                        return -1;
+                    }
+                });
+
     }
 
     @Override
@@ -111,7 +127,7 @@ public class OTPServiceImpl implements OTPService {
         UUID expiryTimeUUID = UUID.nameUUIDFromBytes(phoneNumber.getBytes(StandardCharsets.UTF_8));
         if (personRegisterOTPCache.get(phoneNumber).isBlank()) {
             String OTPCode = getRandomOTP();
-           // log.info(OTPCode);
+            // log.info(OTPCode);
             personRegisterOTPCache.put(phoneNumber, OTPCode);
             personRegisterOTPCache.put(expiryTimeUUID.toString(), LocalDateTime.now().plusMinutes(REGISTER_EXPIRE_MIN).toString());
             notificationService.sendRegisterOTPMessage(phoneNumber, OTPCode);
@@ -151,11 +167,34 @@ public class OTPServiceImpl implements OTPService {
 
     @Override
     public String getPersonAddress(String otpUID) throws ExecutionException {
-       var key =  loginOTPCache.get(otpUID);
-       var address = loginOTPCache.get(key);
-       if (address.isBlank()) {
-           return null;
-       }
-       return address;
+        var key = loginOTPCache.get(otpUID);
+        var address = loginOTPCache.get(key);
+        if (address.isBlank()) {
+            return null;
+        }
+        return address;
+    }
+
+    @Override
+    public boolean verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException {
+        int tries = machineLimitedCache.get(remoteAddr);
+        if (tries == -1) {
+            machineLimitedCache.put(remoteAddr, 1);
+
+            return true;
+        } else if (tries < MAXIMUM_UNREGISTERED_TRIES) {
+            tries += 1;
+            machineLimitedCache.put(remoteAddr, tries);
+
+            return true;
+        } else {
+
+            return false;
+        }
+    }
+
+    @Override
+    public boolean loginPageAvailable(String remoteAddr) throws ExecutionException {
+        return machineLimitedCache.get(remoteAddr) < MAXIMUM_UNREGISTERED_TRIES;
     }
 }
