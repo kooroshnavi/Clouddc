@@ -259,7 +259,7 @@
                                     <hr/>
                                 </div>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
                                         <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
@@ -268,7 +268,7 @@
                                     <hr/>
                                 </div>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                             data-bs-target="#exampleWarningModal">ثبت

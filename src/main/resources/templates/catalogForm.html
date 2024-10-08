@@ -144,10 +144,9 @@
                                     <input class="form-check-input" type="checkbox" id="flexSwitchCheckCheckedDisabled" checked="checked" disabled="disabled">
                                     <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">فعال - جهت غیر فعالسازی، ابتدا می بایست وظایف فعال این کاتالوگ خاتمه یابد.</label>
                                 </div>
-
                                 <br>
 
-                                <div class="col-12">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col-12">
                                     <div class="form-check">
                                         <input class="form-check-input" type="checkbox" value="" id="invalidCheck" required="required">
                                         <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات صحیح مطمئن هستم</label>
@@ -156,7 +155,7 @@
                                     <hr/>
                                 </div>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <!-- Button trigger modal -->
                                     <button type="button" class="btn btn-warning" data-bs-toggle="modal"
                                             data-bs-target="#exampleWarningModal">ثبت

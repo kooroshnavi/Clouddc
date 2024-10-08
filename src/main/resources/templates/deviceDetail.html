@@ -6,7 +6,6 @@
     <!-- Required meta tags -->
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-
     <style>
         html,
         body {
@@ -90,6 +89,7 @@
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
     <!-- Bootstrap CSS -->
+    <link href="/deleteButton/style.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
     <link href="/panel/assets/css/style.css" rel="stylesheet"/>
@@ -98,7 +98,6 @@
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -107,6 +106,7 @@
     <link href="/panel/assets/css/clock.css" rel="stylesheet">
 
     <title>جزئیات تجهیز</title>
+
 </head>
 
 <body>
@@ -152,32 +152,37 @@
 
                 <div class="col" align="right">
                     <!-- Button trigger modal -->
-                    <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#exampleScrollableModal">راهنمای تجهیز</button>
+                    <button type="button" class="btn btn-success" data-bs-toggle="modal"
+                            data-bs-target="#exampleScrollableModal">راهنمای تجهیز
+                    </button>
                     <!-- Modal -->
                     <div class="modal fade" id="exampleScrollableModal" tabindex="-1" aria-hidden="true">
                         <div class="modal-dialog modal-dialog-scrollable">
                             <div class="modal-content">
                                 <div class="modal-header">
                                     <h5 class="modal-title">تجهیز</h5>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body">
-                                    <p>* تجهیزات مورد استفاده در مرکزداده و ثبت شده در این سیستم عبارتند از: انواع سرور - سوئیچ - فایروال - انکلوژر</p>
+                                    <p>* تجهیزات مورد استفاده در مرکزداده و ثبت شده در این سیستم عبارتند از: انواع سرور
+                                        - سوئیچ - فایروال - انکلوژر</p>
                                     <p>* هر تجهیز دارای بهره بردار و مکان نصب است که می تواند رک یا اتاق باشد.</p>
                                     <p>* PM های متناسب با تجهیز می بایست تعریف و جهت اجرا به تجهیزات منتسب شوند.</p>
                                 </div>
                                 <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن</button>
+                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">بستن
+                                    </button>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <BR>
-
+                <br>
 
                 <div class="col" align="right">
                     <div class="dropdown">
+
                         <button type="button" class="glow-on-hover" data-bs-toggle="dropdown" aria-expanded="false">
                             رخدادهای این تجهیز
                         </button>
@@ -187,28 +192,6 @@
                             <li>
                                 <a th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 5)}"
                                    class="btn btn-outline-dark">1. تغییر بهره بردار</a>
-                                <hr/>
-                            </li>
-
-                            <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 6)}"
-                                        class="btn btn-outline-danger" disabled="disabled">2. چک لیست (در حال توسعه)
-                                </button>
-                                <hr/>
-                            </li>
-
-                            <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                        class="btn btn-outline-danger" disabled="disabled">3. قطعی لینک (در حال توسعه)
-                                </button>
-                                <hr/>
-                            </li>
-
-                            <li>
-                                <button th:href="@{/event/category/{categoryId}/{targetId}/form (targetId=${device.id}, categoryId = 3)}"
-                                        class="btn btn-outline-danger" disabled="disabled">4. جابجایی ماژول (در حال
-                                    توسعه)
-                                </button>
                                 <hr/>
                             </li>
 
@@ -264,23 +247,59 @@
                 </table>
             </div>
         </div>
+        <br>
 
+        <h4 th:if="${not moduleMap.isEmpty()}" class="mb-0 text-bg-primary">ماژول ها و ملحقات</h4>
+        <br th:if="${not moduleMap.isEmpty()}">
+        <div align="right" class="col">
+            <div class="ui-dialog-buttonpane">
+                <a th:href="@{/resource/device/{deviceId}/module/form (deviceId=${device.id})}"
+                   class="btn btn-outline-primary">مدیریت ماژول های تجهیز</a>
+            </div>
+        </div>
+        <div th:if="${not moduleMap.isEmpty()}" class="card">
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table mb-0 table-primary table-striped">
+                        <thead>
+                        <tr>
+                            <th>ردیف</th>
+                            <th>طبقه بندی</th>
+                            <th>نوع</th>
+                            <th>تعداد روی تجهیز</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+
+                        <tr th:each=" moduleInventory , iter : ${sortedKeyList}">
+                            <td th:text="${iter.count}"></td>
+                            <td th:text="${moduleInventory.classification}"></td>
+                            <td th:text="${moduleInventory.category}"></td>
+                            <td th:text="${moduleMap.get(moduleInventory)}"></td>
+                        </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <br>
         <!--Pm table-->
-        <h6 class="mb-0 text-uppercase">Pm های تجهیز</h6>
-        <hr/>
-        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')" class="col">
-
+        <h4 class="mb-0 text-bg-info">لیست PM</h4>
+        <br>
+        <div align="right" sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
             <div class="ui-dialog-buttonpane">
                 <a th:href="@{/pm/catalog/device/{deviceId}/form (deviceId=${device.id})}"
-                   class="btn btn-outline-success"> تعریف Pm جدید برای این تجهیز
+                   class="btn btn-outline-info"> تعریف Pm جدید برای این تجهیز
                 </a>
             </div>
-
         </div>
+
         <div class="card">
             <div class="card-body">
                 <div class="table-responsive">
-                    <table class="table mb-0 table-dark table-striped">
+                    <table class="table mb-0 table-info table-striped">
                         <thead>
                         <tr>
                             <th>ردیف</th>
@@ -299,13 +318,23 @@
                             <td th:text="${iter.count}"></td>
                             <td th:text="${catalog.pmInterface.category}"></td>
 
-                            <td>
+                            <td th:if="${catalog.pmInterface.enabled}">
                                 <div class="col">
                                     <a th:text="${catalog.pmInterface.title}"
                                        th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
                                        class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
                                        data-bs-placement="top"
-                                       title="ویرایش Pm روی این تجهیز" disabled="disabled"></a>
+                                       title="ویرایش Pm روی این تجهیز"></a>
+                                </div>
+                            </td>
+
+                            <td th:if="${not catalog.pmInterface.enabled}">
+                                <div class="col">
+                                    <button th:text="${catalog.pmInterface.title}"
+                                            th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
+                                            class="btn btn-outline-warning px-10 radius-30" data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            disabled="disabled"></button>
                                 </div>
                             </td>
 

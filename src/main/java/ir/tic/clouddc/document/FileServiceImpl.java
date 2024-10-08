@@ -4,7 +4,6 @@ import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
@@ -26,7 +24,6 @@ public class FileServiceImpl implements FileService {
     private final LogService logService;
 
     private final PersonService personService;
-
 
     @Autowired
     public FileServiceImpl(MetaDataRepository metaDataRepository, LogService logService, PersonService personService) {
@@ -88,11 +85,8 @@ public class FileServiceImpl implements FileService {
     public void disableDocument(Long metadataId, @Param("documentOwner") Integer documentOwnerId, @Param("requester") Integer requesterId) {
         var deleteDate = UtilService.validateNextDue(UtilService.getDATE().plusDays(7));
         metaDataRepository.disableMetadata(metadataId, false, deleteDate);
-        log.info(String.valueOf(documentOwnerId));
-        log.info(String.valueOf(requesterId));
         var persistence = metaDataRepository.fetchMetaDataPersistence(metadataId);
         logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DisableAttachment"), personService.getReferencedPerson(requesterId), persistence);
-        log.info(String.valueOf(metadataId));
     }
 
     @Override
@@ -115,5 +109,4 @@ public class FileServiceImpl implements FileService {
         }
         return "No file were removed.";
     }
-
 }

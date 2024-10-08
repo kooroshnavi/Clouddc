@@ -100,7 +100,7 @@
                             <th>دسته بندی</th>
                             <th>تاریخ ثبت گزارش</th>
                             <th>تاریخ وقوع</th>
-                            <th>وضعیت</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')"v>وضعیت</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -121,7 +121,7 @@
                             <td th:unless="${eventRegisterSuccessful && iter.first}" th:text="${event.persianEventDate}" data-bs-toggle="tooltip" data-bs-placement="top"
                                 th:title="${event.persianEventDay}" dir="rtl"></td>
 
-                            <td dir="rtl">
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" dir="rtl">
                                 <div class="col">
                                     <a
                                        th:href="@{/event/{eventId}/detail(eventId=${event.id})}"

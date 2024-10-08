@@ -4,7 +4,6 @@
     <title>شرکت ارتباطات زیرساخت</title>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
-
     <link href="/login/css/style.css" rel="stylesheet">
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
@@ -49,51 +48,59 @@
 
     showTime();
 </script>
-
 <script th:if="${error}">
     document.addEventListener('DOMContentLoaded', function () {
         pos3_formCaptchaWarning();
     });
 </script>
 
+<script th:if="${not allowed}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos4_error_noti();
+    });
+</script>
+
 <section class="ftco-section">
+
+    <img src="/login/images/TIC%20Logo7.png" alt="TIC.IR">
+    <h6>
+        <strong class="text-justify text-light">اداره کل خدمات و فناوری های نوین</strong>
+    </h6>
+    <br>
+
     <div class="container">
-
-        <h5>
-            <strong th:text="${date}">سامانه نگه داری و پایش زیرساخت ابر</strong>
-            <span class="bg-success" id="clock"></span>
-        </h5>
-
 
         <div class="row justify-content-center">
             <div class="col-md-6 text-center mb-5">
-                <h2 class="heading-section">
-                    <strong>سامانه نگه داری و پایش زیرساخت ابر</strong>
-                </h2>
+
+                <h4 class="heading-section">
+                    <strong>سامانه مدیریت اطلاعات زیرساخت ابر</strong>
+                </h4>
+
+                <h6>
+                    <span class="text-sm-center alert-success" th:text="${date}"></span>
+                </h6>
+                <h6>
+                    <span class="text-sm-center alert-success" id="clock"></span>
+                </h6>
             </div>
         </div>
 
-
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
-
                 <div class="login-wrap p-0">
 
-                    <form id="form" class="was-validated" th:action="@{/login/otp}" th:object="${otpRequest}"
+                    <form th:if="${allowed}" id="form" class="was-validated" th:action="@{/login/otp}" th:object="${otpRequest}"
                           method="Post" onSubmit="document.getElementById('submit').disabled=true;">
 
                         <div th:if="${logout}" class="alert-success">
                             خروج از سیستم انجام شد.
                         </div>
 
-                        <div th:if="${notFound}" class="alert-warning">
-                            شماره وارد شده در لیست کاربران این سامانه یافت نشد.
-                        </div>
+                        <div th:if="${notFound}" class="alert-warning">شماره وارد شده در لیست کاربران این سامانه یافت نشد.</div>
+                        <div th:if="${disabled}" class="alert-danger">حساب کاربری غیرفعال می باشد.</div>
+                        <div th:if="${multiple}" class="alert-danger">به دلیل عدم خروج از سیستم قبلی، در حال حاضر امکان ورود از این سیستم وجود ندارد.</div>
                         <br>
-
-                        <div th:if="${error2}" class="alert-warning">
-                            شماره موبایل را به درستی وارد نمایید.
-                        </div>
 
                         <div class="form-group">
                             <input type="number" id="phoneNumber" size="11" dir="ltr" th:field="*{address}"
@@ -101,13 +108,10 @@
                                    required="required">
                         </div>
 
-
-                            <div class="form-group">
-                                <hr/>
-                                <input type="text" th:field="*{challenge}" class="form-group" disabled="disabled">
-                                <input type="number" dir="ltr" th:field="*{providedAnswer}" class="form-group"
-                                       required="required">
-                            </div>
+                        <div class="form-group">
+                            <input type="text" th:field="*{challenge}" class="form-group" disabled="disabled">
+                            <input type="number" th:field="*{providedAnswer}" required="required" value="" dir="ltr">
+                        </div>
 
                         <input type="hidden" name="index" th:value="${index}"/>
 
@@ -116,14 +120,20 @@
                             <button type="submit" id="submit" class="form-control btn btn-primary submit px-3">بررسی
                             </button>
                         </div>
+
                     </form>
+                    <div th:unless="${allowed}" class="alert-danger">در حال حاضر امکان ورود از طریق این سیستم وجود ندارد. لطفا بعدا امتحان کنید و از ثبت نام شماره تلفن ارسالی در سامانه اطمینان یابید.</div>
+
                 </div>
             </div>
         </div>
     </div>
+
     <h6>
-        <span class="bg-warning" th:text="${'آدرس آی پی شما: '   + remoteAddress}"></span>
+        <br>
+        <span class="bg-primary" th:text="${'IP Address: '   + remoteAddress}"></span>
     </h6>
+
 </section>
 
 <script src="/login/js/jquery.min.js"></script>
@@ -151,6 +161,7 @@
 <script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+
 </body>
 </html>
 

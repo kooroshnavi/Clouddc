@@ -19,14 +19,14 @@ public final class UtilService {
     private static LocalDate DATE;
     private static Long TODAY_REPORT_ID;
     private static final List<String> FORM_CAPTCHA_CHALLENGE = List.of(
-            "هفده پانزده",
+            "هفده پانزده",   // 0
             "ده بیست و سه نود و پنج",
             "چهل و یک هفده",
             "دوازده بیست و دو",
             "هشتاد و نه نود",
             "دویست و پنج دوصفر",
             "پانصد دویست",
-            "هشتاد و هشت هشتاد و نه",
+            "هشتاد و هشت هفتاد",
             "یازده صدویک",
             "بیست و پنج هفده",
             "هفت هشت نه ده",
@@ -34,8 +34,32 @@ public final class UtilService {
             "نوزده پنجاه سی",
             "هزار و سیصد و هفتاد",
             "یازده نودوهفت",
-            "نود و نه صد",
-            "چهارده صفرسه");
+            "نود و نه صد",  // 15
+            "چهارده صفرسه", // 16
+            "هجده نوزده بیست", //17
+            "یازده سیزده صفریک",
+            "شانزده هفتادوشش",
+            "بیست و هفت صفرهشت",
+            "چهارده صفرچهار",
+            "دویست و پنجاه ده", //22
+            "ششصد صدودوازده",
+            "سی و سه پنجاه", //24
+            "پانصد شصت بیست",
+            "هشتادوشش  سیزده",
+            "هشتاد و نه پنجاه و شش",
+            "چهارده بیست و پنج", //28
+            "شصت هفتاد ده",
+            "دویست دویست",
+            "نوزده نودویک",
+            "ده بیست و نه", //32
+            "سیزده چهل و شش",
+            "دوازده چهل و پنج", //34
+            "نودوهشت شصت",  //35
+            "هفتادویک چهل و یک", //36
+            "هفتادوچهار هشتاد", //37
+            "چهل و هشت هشتاد",
+            "پانزده سی و شش"
+    );
     public static final Map<Integer, Integer> FORM_CAPTCHA_RESULT = Map.ofEntries(
             entry(0, 1715),
             entry(1, 102395),
@@ -44,7 +68,7 @@ public final class UtilService {
             entry(4, 8990),
             entry(5, 20500),
             entry(6, 500200),
-            entry(7, 8889),
+            entry(7, 8870),
             entry(8, 11101),
             entry(9, 2517),
             entry(10, 78910),
@@ -53,7 +77,30 @@ public final class UtilService {
             entry(13, 1370),
             entry(14, 1197),
             entry(15, 99100),
-            entry(16, 1403)
+            entry(16, 1403),
+            entry(17, 181920),
+            entry(18, 111301),
+            entry(19, 1676),
+            entry(20, 2708),
+            entry(21, 1404),
+            entry(22, 25010),
+            entry(23, 600112),
+            entry(24, 3350),
+            entry(25, 5006020),
+            entry(26, 8613),
+            entry(27, 8956),
+            entry(28, 1425),
+            entry(29, 607010),
+            entry(30, 200200),
+            entry(31, 1991),
+            entry(32, 1029),
+            entry(33, 1346),
+            entry(34, 1245),
+            entry(35, 9860),
+            entry(36, 7141),
+            entry(37, 7480),
+            entry(38, 4880),
+            entry(39, 1536)
     );
 
     public static DTOForm createChallenge(DTOForm dtoForm) {
@@ -86,7 +133,20 @@ public final class UtilService {
             entry("CatalogRegister", "ثبت کاتالوگ"),
             entry("CatalogUpdate", "بروزرسانی کاتالوگ"),
             entry("UnassignedDeviceRegister", "ثبت تجهیز جدید"),
-            entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک")
+            entry("RackDeviceOrderUpdated", "بروزرسانی جانمایی رک"),
+            entry("StorageRegister", "ثبت ماژول جدید (هارد)"),
+            entry("StorageProblematic", "اعلام خرابی استوریج"),
+            entry("StorageClear", "رفع خرابی استوریج"),
+            entry("StorageDisable", "حذف استوریج"),
+            entry("DecreaseInventory", "کاهش موجودی مخزن"),
+            entry("RegPerson", "ثبت نام کاربر"),
+            entry("DisablePerson", "غیرفعالسازی کاربر"),
+            entry("EnablePerson", "فعالسازی کاربر"),
+            entry("PersonRole", "بروزرسانی نقش کاربر"),
+            entry("increaseDeviceModule", "افزایش ماژول های تجهیز"),
+            entry("decreaseDeviceModule", "کاهش ماژول های تجهیز"),
+            entry("decreaseDeviceStorage", "حذف یک استوریج از روی تجهیز"),
+            entry("increaseDeviceStorage", "افزودن یک استوریج به تجهیز")
     );
 
     public static final Map<Integer, String> PM_CATEGORY = Map.ofEntries(
@@ -150,6 +210,7 @@ public final class UtilService {
 
     public static String getFormattedPersianDate(LocalDate date) {
         DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy/MM/dd");
+
         return dateFormatter.format(PersianDate.fromGregorian(date));
     }
 
@@ -161,11 +222,11 @@ public final class UtilService {
         return dayName + " - " + formattedTime;
     }
 
-    public static void setTodayReportId(Long todayReportId) {
-        TODAY_REPORT_ID = todayReportId;
-    }
+    public static String getFormattedPersianDateAndTime(LocalDate date, LocalTime time) {
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+        var persianDate = getFormattedPersianDate(date);
+        var formattedTime = timeFormatter.format(time);
 
-    public static Long getTodayReportId() {
-        return TODAY_REPORT_ID;
+        return persianDate + " - " + formattedTime;
     }
 }

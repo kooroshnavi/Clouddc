@@ -1,0 +1,562 @@
+<!doctype html>
+<html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/select2/css/select2-bootstrap4.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
+    <!-- Bootstrap CSS -->
+    <link href="/panel/assets/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/bootstrap-extended.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/style.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/icons.css" rel="stylesheet">
+    <link href="/panel/assets/css/roboto.css" rel="stylesheet">
+    <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
+    <!-- loader-->
+    <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
+    <!--Theme Styles-->
+    <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/semi-dark.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/header-colors.css" rel="stylesheet"/>
+    <link href="/panel/assets/css/clock.css" rel="stylesheet">
+
+    <title>کاربران سامانه</title>
+</head>
+
+<body>
+
+<script th:if="${newPerson}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
+
+<script th:if="${exist}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos3_warning_noti();
+    });
+</script>
+
+<!--start wrapper-->
+<div class="wrapper">
+    <!--start top header-->
+    <header th:replace="~{base :: header}"></header>
+    <!--end top header-->
+
+    <!--start sidebar -->
+    <aside class="sidebar-wrapper" data-simplebar="true" th:replace="~{base :: sidebar}"></aside>
+    <!--end sidebar -->
+
+    <!--start content-->
+    <main class="page-content">
+        <!--breadcrumb-->
+        <div class="page-breadcrumb d-none d-sm-flex align-items-center mb-3">
+            <div class="breadcrumb-title pe-3">سامانه</div>
+            <div class="ps-3">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb mb-0 p-0">
+                        <li class="breadcrumb-item"><a href="/"><i class="bx bx-home-alt"></i></a>
+                        </li>
+                        <li class="breadcrumb-item active" aria-current="page">کاربران</li>
+                    </ol>
+                </nav>
+            </div>
+        </div>
+        <!--end breadcrumb-->
+
+        <hr/>
+
+        <div class="card" align="center">
+            <div class="card-body">
+
+                <div class="d-flex align-items-center"></div>
+
+                <div class="card-body">
+
+                    <div class="my-3 border-top"></div>
+                    <div class="accordion" id="accordionExample">
+
+                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                             th:if="${registerInitialized || update}" class="accordion-item">
+                            <h2 class="accordion-header" id="headingOne">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                                    فرم ثبت نام / بروزرسانی اطلاعات کاربر
+                                </button>
+                            </h2>
+                            <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <strong>فرم ثبت نام کاربر جدید</strong>
+                                    <div class="border p-3 rounded">
+                                        <form class="was-validated" th:action="@{/person/register}"
+                                              th:object="${personRegisterForm}" enctype="multipart/form-data"
+                                              method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+
+                                            <div th:if="${registerInitialized}" class="text-bg-warning">
+                                                <span id="countdown"></span>
+                                            </div>
+                                            <br th:if="${registerInitialized}">
+
+                                            <div th:if="${registerInitialized}" class="mb-sm-5">
+                                                <label for="input" class="form-check">نام (کیبورد فارسی)</label>
+                                                <input type="text" class="form-control" id="input" min="2"
+                                                       maxlength="20"
+                                                       required="required" dir="rtl" placeholder="نام"
+                                                       onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                                                       oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
+                                                       th:field="*{firstName}">
+                                            </div>
+                                            <br th:if="${registerInitialized}">
+
+                                            <div th:if="${registerInitialized}" class="mb-sm-5">
+                                                <label for="input2" class="form-check">نام خانوادگی (کیبورد فارسی)</label>
+                                                <input type="text" class="form-control" id="input2" min="2"
+                                                       maxlength="20"
+                                                       required="required" dir="rtl" placeholder="نام خانوادگی"
+                                                       onkeypress="clsAlphaNoOnly2()" onpaste="return false;"
+                                                       oninput="let p=this.selectionStart;this.value=this.value.toUpperCase();this.setSelectionRange(p, p);"
+                                                       th:field="*{lastName}">
+                                            </div>
+                                            <br th:if="${registerInitialized}">
+
+                                            <div th:if="${registerInitialized}" class="form-group">
+                                                <label for="phoneNumber" class="form-check">تلفن همراه ثبت شده</label>
+                                                <input type="number" size="11" dir="ltr"
+                                                       th:field="*{phoneNumber}"
+                                                       name="username" class="form-control"
+                                                       placeholder="Ticgram Phone Number"
+                                                       required="required" disabled="disabled">
+                                            </div>
+                                            <br th:if="${registerInitialized}">
+                                            <input th:if="${registerInitialized}" type="hidden" name="phoneNumber"
+                                                   th:value="${personRegisterForm.phoneNumber}"/>
+
+                                            <input th:if="${update}" type="hidden" name="personId"
+                                                   th:value="${personRegisterForm.personId}"/>
+
+                                            <div th:if="${update && personRegisterForm.freeWorkSpace}"
+                                                 class="col-12">
+                                                <input class="form-check-input" type="checkbox"
+                                                       id="flexSwitchCheckDefault" th:field="*{enabled}"
+                                                       onchange="toggleTextBox()">
+                                                <label class="form-check-label" for="flexSwitchCheckDefault">وضعیت فعال
+                                                    سازی - در صورت غیرفعالسازی، کاربر امکان ورود به سامانه نخواهد
+                                                    داشت.</label>
+                                            </div>
+
+                                            <div th:if="${update && not personRegisterForm.freeWorkSpace}"
+                                                 class="col-12">
+                                                <input class="form-check-input" type="checkbox"
+                                                       id="flexSwitchCheckCheckedDisabled" checked="checked"
+                                                       disabled="disabled">
+                                                <label class="form-check-label" for="flexSwitchCheckCheckedDisabled">کاربر
+                                                    فعال است - جهت غیر فعالسازی کاربر، وظایف کارتابلش را خاتمه دهید یا
+                                                    به همکار دیگری منتسب کنید تا کارتابل خالی شود.</label>
+                                            </div>
+                                            <input th:if="${update && not personRegisterForm.freeWorkSpace}"
+                                                   type="hidden" name="enabled"
+                                                   th:value="${true}"/>
+                                            <br>
+
+                                            <div th:if="${registerInitialized}" class="mb-3">
+                                                <label class="form-label">نقش کاربر</label>
+                                                <label>
+                                                    <select class="single-select" th:field="*{roleCode}"
+                                                            required="required">
+                                                        <option th:value="0">کارشناس سالن</option>
+                                                        <option th:value="1">مسئول سالن</option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="2">مشاهده محدود سامانه (دسترسی میهمان)
+                                                        </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="3">مشاهده مدیران (امکان مشاهده تمام بخش ها)
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                                <hr/>
+                                            </div>
+
+                                            <div id="role" th:if="${update}" class="mb-3">
+                                                <label for="list" class="form-label">نقش کاربر
+                                                    <select id="list" class="single-select" th:field="*{roleCode}"
+                                                            required="required">
+                                                        <option th:value="0">کارشناس سالن</option>
+                                                        <option th:value="1">مسئول سالن</option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="2">مشاهده محدود سامانه (دسترسی میهمان)
+                                                        </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="3">مشاهده مدیران (امکان مشاهده تمام بخش ها)
+                                                        </option>
+                                                    </select>
+                                                </label>
+                                                <hr/>
+                                            </div>
+                                            <br>
+
+                                            <div th:if="${registerInitialized}" class="form-group">
+                                                <label th:if="${badOTP}" for="phoneNumber" class="text-bg-warning">کد
+                                                    ارسالی اشتباه است. لطفا آخرین کد ارسالی به تیک گرام را وارد
+                                                    کنید.</label>
+                                                <label th:unless="${badOTP}" for="phoneNumber" class="form-check">کد ثبت
+                                                    نام ارسالی به تیک گرام را وارد نمایید.</label>
+                                                <input type="number" size="6" dir="ltr"
+                                                       th:field="*{OTPCode}"
+                                                       name="username" class="form-control"
+                                                       placeholder="کد ارسالی به تیک گرام"
+                                                       required="required">
+                                            </div>
+                                            <br th:if="${registerInitialized}">
+
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value=""
+                                                           id="invalidCheck"
+                                                           required="required">
+                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات
+                                                        صحیح مطمئن هستم</label>
+                                                    <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                                </div>
+                                                <hr/>
+                                            </div>
+
+                                            <div class="col">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#exampleWarningModal">بررسی
+                                                </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="exampleWarningModal" tabindex="-1"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog">
+                                                        <div class="modal-content text-bg-primary">
+                                                            <div class="modal-header border-dark">
+                                                                <h5 class="modal-title text-dark">همکار گرامی</h5>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-dark">
+                                                                <p th:if="${registerInitialized}">پس از تایید، اطلاعات
+                                                                    کاربر جدید در لیست کاربران همین صفحه قابل مشاهده
+                                                                    خواهد بود.</p>
+                                                                <p th:if="${update}">پس از تایید، اطلاعات کاربر بر اساس
+                                                                    فرم تکمیل شده بروزرسانی می گردد.</p>
+                                                            </div>
+                                                            <div class="modal-footer border-dark">
+                                                                <button type="button" class="btn btn-light"
+                                                                        data-bs-dismiss="modal">
+                                                                    بستن
+                                                                </button>
+                                                                <button type="submit" id="submit" class="btn btn-dark">
+                                                                    تایید
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                             th:unless="${registerInitialized}" class="accordion-item">
+                            <h2 class="accordion-header" id="headingTwo">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                                    ثبت کاربر جدید
+                                </button>
+                            </h2>
+                            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <h6 sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                                        class="card-header py-3 bg-info" align="center">
+                                        <strong class="mb-0">همکار گرامی، امکان ثبت شماره تلفن های تکراری یا فاقد حساب
+                                            تیک گرام وجود
+                                            ندارد.</strong>
+                                    </h6>
+                                    <div class="border p-3 rounded">
+                                        <form id="form" class="was-validated" m th:action="@{/person/OTPForm}"
+                                              th:object="${personRegisterForm}" method="Post"
+                                              onSubmit="document.getElementById('submit2').disabled=true;">
+
+                                            <div class="form-group">
+                                                <label for="phoneNumber" class="for-check">تلفن همراه تیک گرام</label>
+                                                <input type="number" id="phoneNumber" size="11" dir="ltr"
+                                                       th:field="*{phoneNumber}"
+                                                       name="username" class="form-control"
+                                                       placeholder="Ticgram Phone Number"
+                                                       required="required">
+                                            </div>
+                                            <br>
+
+                                            <div th:if="${exist}">
+                                                <h6 class="mb-0 text-uppercase" align="center">
+                                                    <strong class="mb-0 text-bg-warning">شماره تلفن تکراری است.</strong>
+                                                </h6>
+                                                <br>
+                                            </div>
+
+                                            <div class="col">
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value=""
+                                                           id="invalidCheck"
+                                                           required="required">
+                                                    <label class="form-check-label" for="invalidCheck">از ثبت اطلاعات
+                                                        صحیح مطمئن هستم</label>
+                                                    <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل کنید</div>
+                                                </div>
+                                                <hr/>
+                                            </div>
+
+                                            <div class="col">
+                                                <!-- Button trigger modal -->
+                                                <button type="button" class="btn btn-outline-primary"
+                                                        data-bs-toggle="modal"
+                                                        data-bs-target="#exampleWarningModal">بررسی
+                                                </button>
+                                                <!-- Modal -->
+                                                <div class="modal fade" id="exampleWarningModal" tabindex="-1"
+                                                     aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg modal-dialog">
+                                                        <div class="modal-content text-bg-primary">
+                                                            <div class="modal-header border-dark">
+                                                                <h5 class="modal-title text-dark">همکار گرامی</h5>
+                                                                <button type="button" class="btn-close"
+                                                                        data-bs-dismiss="modal"
+                                                                        aria-label="Close"></button>
+                                                            </div>
+                                                            <div class="modal-body text-dark">
+                                                                <p>کد تایید ثبت نام روی تیک گرام ارسال می گردد.</p>
+                                                            </div>
+                                                            <div class="modal-footer border-dark">
+                                                                <button type="button" class="btn btn-light"
+                                                                        data-bs-dismiss="modal">
+                                                                    بستن
+                                                                </button>
+                                                                <button type="submit" id="submit2" class="btn btn-dark">
+                                                                    ارسال کد تیک گرام
+                                                                </button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="headingThree">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                                        data-bs-target="#collapseThree" aria-expanded="false"
+                                        aria-controls="collapseThree">اطلاعات کاربر
+                                </button>
+                            </h2>
+                            <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree"
+                                 data-bs-parent="#accordionExample">
+                                <div class="accordion-body">
+                                    <table id="example2" class="table mb-0">
+                                        <thead class="table-dark">
+                                        <tr>
+                                            <th>ردیف</th>
+                                            <th>نام کاربر</th>
+                                            <th>وضعیت</th>
+                                            <th>امکان انجام وظایف (Pm)</th>
+                                            <th>تعداد وظایف کارتابل</th>
+                                            <th>آخرین ورود</th>
+                                        </tr>
+                                        </thead>
+
+                                        <tbody>
+                                        <tr th:each="person, iter : ${personProjection1List}">
+
+                                            <td th:text="${iter.count}"></td>
+
+                                            <td th:if="${permission}">
+                                                <div class="col">
+                                                    <a th:text="${person.name}"
+                                                       th:href="@{/person/{personId}/detail (personId=${person.id})}"
+                                                       class="btn btn-outline-success"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-placement="top"
+                                                       title="ویرایش جزئیات"></a>
+                                                </div>
+                                            </td>
+                                            <td th:unless="${permission}" th:text="${person.name}"></td>
+
+                                            <td th:if="${person.enabled}" class="text-bg-primary">فعال</td>
+                                            <td th:unless="${person.enabled}" class="text-bg-danger">غیرفعال</td>
+
+                                            <td th:if="${person.assignee}" class="text-bg-info">دارد</td>
+                                            <td th:unless="${person.assignee}" class="text-bg-dark">ندارد</td>
+
+                                            <td th:if="${person.workspaceSize == 0}">خالی</td>
+                                            <td th:unless="${person.workspaceSize == 0}">
+                                                <div class="col">
+                                                    <a th:text="${person.workspaceSize}"
+                                                       th:href="@{/pm/{personId}/workspace (personId=${person.id})}"
+                                                       class="btn btn-outline-warning"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-placement="top"
+                                                       title="مشاهده کارتابل کاربر"></a>
+                                                </div>
+                                            </td>
+
+                                            <td th:if="${person.latestLoginHistory == null}" class="text-bg-secondary">
+                                                وارد نشده
+                                            </td>
+                                            <td th:unless="${person.latestLoginHistory == null}">
+                                                <div class="col">
+                                                    <a th:text="${person.persianLoginTime}"
+                                                       th:href="@{/person/{personId}/loginHistory (personId=${person.id})}"
+                                                       class="btn btn-outline-dark"
+                                                       data-bs-toggle="tooltip"
+                                                       data-bs-placement="top"
+                                                       title="تاریخچه ورود"></a>
+                                                </div>
+                                            </td>
+
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!--End attachment table-->
+
+    </main>
+    <!--end page main-->
+
+    <!--start overlay-->
+    <div class="overlay nav-toggle-icon"></div>
+    <!--end overlay-->
+
+    <!--Start Back To Top Button-->
+    <a href="javaScript:" class="back-to-top"><i class='bx bxs-up-arrow-alt'></i></a>
+    <!--End Back To Top Button-->
+
+    <!--start switcher-->
+    <div class="switcher-body" th:replace="~{base :: switcher}"></div>
+    <!--end switcher-->
+
+</div>
+<!--end wrapper-->
+
+<!-- Bootstrap bundle JS -->
+<script src="/panel/assets/js/bootstrap.bundle.min.js"></script>
+<!--plugins-->
+
+
+<script src="/panel/assets/js/jquery.min.js"></script>
+<script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
+<script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
+
+<!--notification js -->
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
+<script src="/panel/assets/js/pace.min.js"></script>
+<script src="/panel/assets/plugins/select2/js/select2.min.js"></script>
+<script src="/panel/assets/js/form-select2.js"></script>
+
+<script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>
+<script src="/panel/assets/plugins/datatable/js/dataTables.bootstrap5.min.js"></script>
+<script src="/panel/assets/js/table-datatable.js"></script>
+<!--app-->
+<script src="/panel/assets/js/app.js"></script>
+<script>
+    function clsAlphaNoOnly(e) {  // Accept only alpha numerics, no special characters
+        var regex = new RegExp("^[\u0600-\u06FF\uFB8A\u067E\u0686\u06AF\u200C\u200F ]+$");
+        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+        if (str === 32) {
+            return false;
+        }
+        if (regex.test(str)) {
+            return true;
+        }
+        e.preventDefault();
+        return false;
+    }
+
+    function clsAlphaNoOnly2() {  // Accept only alpha numerics, no special characters
+        return clsAlphaNoOnly(this.event); // window.event
+    }
+</script>
+<script th:inline="javascript">
+    const form = document.getElementById('form');
+    form.addEventListener('submit', (e) => {
+        if (phoneNumberSyntax(e) === true) {
+            document.getElementById('submit').disabled = true;
+            form.submit()
+        }
+    });
+
+    function phoneNumberSyntax(e) {
+        const phoneNumber = document.getElementById('phoneNumber').value;
+        if (phoneNumber === "" || phoneNumber.length !== 11) {
+            alert("شماره تلفن همراه را به درستی وارد نمایید.");
+            e.preventDefault();
+        } else {
+            return true;
+        }
+    }
+</script>
+<script th:inline="javascript">
+    const secondsLeft = [[${secondsLeft}]];
+</script>
+<script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
+<script>
+    function toggleTextBox() {
+        const activation = document.getElementById('flexSwitchCheckDefault');
+        const role = document.getElementById('role');
+        const list = document.getElementById('list');
+
+        if (activation.checked === true) {
+            role.style.display = 'block';
+            role.hidden = false;
+            role.disabled = false;
+
+            list.style.display = 'block';
+            list.hidden = false;
+            list.disabled = false;
+        } else {
+            console.log("HERE")
+            role.style.display = 'none';
+            role.hidden = true;
+            role.disabled = true;
+
+            list.style.display = 'none';
+            list.hidden = true;
+            list.disabled = true;
+        }
+    }
+</script>
+
+</body>
+
+</html>

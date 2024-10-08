@@ -3,7 +3,6 @@ package ir.tic.clouddc.resource;
 import ir.tic.clouddc.center.CenterService;
 import ir.tic.clouddc.event.DeviceCheckList;
 import ir.tic.clouddc.event.DeviceStatusForm;
-import ir.tic.clouddc.event.EventLandingForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
@@ -11,12 +10,16 @@ import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
-import java.sql.SQLException;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
+import java.time.YearMonth;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static java.util.Map.entry;
 
 @Service
 @Slf4j
@@ -30,25 +33,28 @@ public class ResourceServiceImpl implements ResourceService {
 
     private final SupplierRepository supplierRepository;
 
-    private final CenterService centerService;
-
     private final UtilizerRepository utilizerRepository;
 
     private final LogService logService;
 
     private final PersonService personService;
 
+    private final ModuleInventoryRepository moduleInventoryRepository;
+
+    private final StorageRepository storageRepository;
+
 
     @Autowired
-    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, CenterService centerService, UtilizerRepository utilizerRepository, LogService logService, PersonService personService) {
+    public ResourceServiceImpl(DeviceRepository deviceRepository, UnassignedDeviceRepository unassignedDeviceRepository, DeviceCategoryRepository deviceCategoryRepository, SupplierRepository supplierRepository, UtilizerRepository utilizerRepository, LogService logService, PersonService personService, ModuleInventoryRepository moduleInventoryRepository, StorageRepository storageRepository) {
         this.deviceRepository = deviceRepository;
         this.unassignedDeviceRepository = unassignedDeviceRepository;
         this.deviceCategoryRepository = deviceCategoryRepository;
         this.supplierRepository = supplierRepository;
-        this.centerService = centerService;
         this.utilizerRepository = utilizerRepository;
         this.logService = logService;
         this.personService = personService;
+        this.moduleInventoryRepository = moduleInventoryRepository;
+        this.storageRepository = storageRepository;
     }
 
     @Override
@@ -61,10 +67,6 @@ public class ResourceServiceImpl implements ResourceService {
         return utilizerRepository.getReferenceById(utilizerId);
     }
 
-    @Override
-    public List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId) {
-        return deviceRepository.getProjection2List(locationId);
-    }
 
     @Override
     public List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList() {
@@ -82,23 +84,60 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
-    public boolean checkDeviceExistence(String serialNumber) {
-        boolean deviceExist = deviceRepository.existsBySerialNumber(serialNumber);
-        boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
+    public boolean checkResourceExistence(String serialNumber, int resourceType) {
+        boolean exists;
+        if (resourceType == 1) {
+            exists = deviceRepository.existsBySerialNumber(serialNumber);
+            boolean UnassignedDeviceExist = unassignedDeviceRepository.existsBySerialNumber(serialNumber);
 
-        return deviceExist || UnassignedDeviceExist;
+            return exists || UnassignedDeviceExist;
+        } else {
+            return storageRepository.existsBySerialNumber(serialNumber);
+        }
     }
 
     @Override
-    public void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm) {
-        UnassignedDevice unassignedDevice = new UnassignedDevice();
-        unassignedDevice.setSerialNumber(StringUtils.capitalize(deviceRegisterForm.getSerialNumber()));
-        unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(deviceRegisterForm.getDeviceCategoryId()));
-        unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
-        Persistence persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister");
-        unassignedDevice.setPersistence(persistence);
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
+    public void resourceRegister(ResourceRegisterForm resourceRegisterForm, int resourceType) {
+        Persistence persistence;
+        if (resourceType == 1) {    // Device Register
+            UnassignedDevice unassignedDevice = new UnassignedDevice();
+            unassignedDevice.setSerialNumber(StringUtils.capitalize(resourceRegisterForm.getSerialNumber()));
+            unassignedDevice.setDeviceCategory(deviceCategoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId()));
+            unassignedDevice.setRemovalDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(7)));
+            persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "UnassignedDeviceRegister", "DeviceRegister");
+            unassignedDevice.setPersistence(persistence);
 
-        unassignedDeviceRepository.saveAndFlush(unassignedDevice);
+            unassignedDeviceRepository.saveAndFlush(unassignedDevice);
+        } else {    // Module Register
+            var moduleInventory = moduleInventoryRepository.getReferenceById(resourceRegisterForm.getResourceCategoryId());
+            if (moduleInventory.getClassificationId() == 6) {  // Storage Register
+                Storage storage = new Storage(moduleInventory
+                        , StringUtils.capitalize(resourceRegisterForm.getSerialNumber())
+                        , YearMonth.of(resourceRegisterForm.getMfgYear(), resourceRegisterForm.getMfgMonth())
+                        , resourceRegisterForm.getLocale()
+                        , true, false, false);
+                persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "StorageRegister", "StorageRegister");
+                storage.setPersistence(persistence);
+                moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
+                if (moduleInventory.getStorageList() != null) {
+                    moduleInventory.getStorageList().add(storage);
+                } else {
+                    moduleInventory.setStorageList(List.of(storage));
+                }
+
+            } else {    // Other Modules
+                if (moduleInventory.getPersistence() != null) {
+                    logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), "ModuleInventoryUpdate", personService.getCurrentPerson(), moduleInventory.getPersistence());
+                } else {
+                    persistence = new Persistence(UtilService.getDATE(), UtilService.getTime(), personService.getCurrentPerson(), "ModuleInventoryUpdate", "ModuleRegister");
+                    moduleInventory.setPersistence(persistence);
+                }
+                moduleInventory.setAvailable(moduleInventory.getAvailable() + resourceRegisterForm.getQty());
+            }
+
+            moduleInventoryRepository.saveAndFlush(moduleInventory);
+        }
     }
 
     @Override
@@ -119,6 +158,7 @@ public class ResourceServiceImpl implements ResourceService {
     @Override
     public boolean newDevicePresentCheck() {
         var count = unassignedDeviceRepository.count();
+
         return count != 0;
     }
 
@@ -139,12 +179,291 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public Map<ModuleInventory, Integer> getModuleOverviewMap() {
+        Map<ModuleInventory, Integer> deviceModuleOverviewMap = new HashMap<>();
+        List<ModuleInventory> moduleInventoryList = moduleInventoryRepository.getAvailableList();
+
+        if (!moduleInventoryList.isEmpty()) {
+            List<Integer> distinctList = moduleInventoryList
+                    .stream()
+                    .map(ModuleInventory::getCategoryId)
+                    .distinct()
+                    .toList();
+
+            for (Integer categoryId : distinctList) {
+                AtomicInteger totalAvailable = new AtomicInteger();
+                moduleInventoryList
+                        .stream()
+                        .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                        .map(ModuleInventory::getAvailable)
+                        .forEach(totalAvailable::addAndGet);
+
+                var inventory = moduleInventoryList
+                        .stream()
+                        .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                        .findFirst();
+
+                inventory.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAvailable.get()));
+            }
+        }
+
+        return deviceModuleOverviewMap;  // Tomorrow: this view
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
+    public List<ModuleInventory> getModuleCategoryList() {
+        return moduleInventoryRepository.findAll();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
+    public List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId) {
+        return moduleInventoryRepository
+                .getRelatedModuleInventoryList(categoryId)
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getAvailable).reversed())
+                .toList();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
+    public List<Storage> getRelatedSpareStorageList(Integer inventoryId) {
+        return storageRepository.getRelatedSpareStorageList(List.of(inventoryId), false);
+    }
+
+    @Override
+    public Map<ModuleInventory, Integer> getDeviceModuleOverview(List<ModulePack> modulePackList) {
+        Map<ModuleInventory, Integer> deviceModuleOverviewMap = new HashMap<>();
+
+        if (!modulePackList.isEmpty()) {
+            List<Integer> distinctCategoryIdList = modulePackList
+                    .stream()
+                    .map(ModulePack::getModuleInventory)
+                    .map(ModuleInventory::getCategoryId)
+                    .distinct()
+                    .toList();
+
+            for (Integer categoryId : distinctCategoryIdList) {
+                AtomicInteger totalAssigned = new AtomicInteger();
+                modulePackList
+                        .stream()
+                        .filter(modulePack -> modulePack.getModuleInventory().getCategoryId() == categoryId)
+                        .map(ModulePack::getQty)
+                        .forEach(totalAssigned::addAndGet);
+
+                if (totalAssigned.get() > 0) {
+                    var inventory = modulePackList
+                            .stream()
+                            .map(ModulePack::getModuleInventory)
+                            .filter(moduleInventory -> moduleInventory.getCategoryId() == categoryId)
+                            .findFirst();
+
+                    inventory.ifPresent(moduleInventory -> deviceModuleOverviewMap.put(moduleInventory, totalAssigned.get()));
+                }
+            }
+        }
+
+        return deviceModuleOverviewMap;
+    }
+
+    @Override
+    public List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID) {
+        switch (deviceCategoryID) {
+            case 1, 2, 5 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 8, 10, 11, 12, 13, 14, 15, 16));
+            }
+            case 3, 4 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 8, 11, 12, 14, 15, 16));
+            }
+            case 6 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 3, 4, 5, 8, 9));
+            }
+            case 7, 8 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 5, 8, 9));
+            }
+            case 9, 10, 13 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 3, 4, 5, 8, 9));
+            }
+            case 11 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 2, 5, 8));
+            }
+            case 12 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(8, 10, 12, 16));
+            }
+            case 14 -> {
+                return moduleInventoryRepository.getDeviceCompatibleModuleInventoryList(List.of(1, 5, 8));
+            }
+            default -> {
+                return new ArrayList<>();
+            }
+        }
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
+    public long updateDeviceModule(ModuleUpdateForm moduleUpdateForm) {
+        var device = deviceRepository.getReferenceById(moduleUpdateForm.getDeviceId());
+
+        if (moduleUpdateForm.isStorageUpdate()) {    // Storage Update
+            List<Long> currentStorageIdList = storageRepository.getDeviceStorageIdList(device.getId());
+            List<Long> alterStorageIdList = getUpdatableStorageIdList(moduleUpdateForm, currentStorageIdList);
+            if (!alterStorageIdList.isEmpty()) {
+                for (Long storageId : alterStorageIdList) {
+                    Storage storage = storageRepository.getReferenceById(storageId);
+                    if (storage.isSpare()) {
+                        storage.setSpare(false);
+                        storage.setLocalityId(device.getId());
+                        updateStorageModulePackAndInventory(device, storage.getModuleInventory(), false);
+                    } else {
+                        storage.setSpare(true);
+                        storage.setLocalityId(CenterService.ROOM_1_ID);
+                        updateStorageModulePackAndInventory(device, storage.getModuleInventory(), true);
+                    }
+                }
+            }
+
+        } else {  // other modules update
+            var moduleInventory = moduleInventoryRepository.getReferenceById(moduleUpdateForm.getModuleInventoryId());
+            var updatedValue = moduleUpdateForm.getUpdatedValue();
+            List<ModulePack> modulePackList = device.getModulePackList();
+            modulePackList
+                    .stream()
+                    .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                    .findFirst()
+                    .ifPresentOrElse(modulePack -> {
+                        modulePack.setQty(modulePack.getQty() + updatedValue);
+                        modulePack.getPackHistory().put(LocalDateTime.now(), updatedValue);
+                        if (updatedValue > 0) {
+                            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceModule"), personService.getCurrentPerson(), modulePack.getPersistence());
+                        } else {
+                            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("decreaseDeviceModule"), personService.getCurrentPerson(), modulePack.getPersistence());
+                        }
+                    }, () -> {
+                        ModulePack modulePack = new ModulePack();
+                        modulePack.setModuleInventory(moduleInventory);
+                        modulePack.setQty(updatedValue);
+                        modulePack.setDevice(device);
+                        modulePack.setPackHistory((Map.ofEntries(entry(LocalDateTime.now(), updatedValue))));
+                        Persistence persistence = logService.persistenceSetup(personService.getCurrentPerson(), "DeviceModuleUpdate");
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceModule"), personService.getCurrentPerson(), persistence);
+                        modulePack.setPersistence(persistence);
+
+                        if (device.getModulePackList() != null) {
+                            device.getModulePackList().add(modulePack);
+                        } else {
+                            device.setModulePackList(List.of(modulePack));
+                        }
+                    });
+
+            moduleInventory.setAvailable(moduleInventory.getAvailable() + Math.negateExact(updatedValue));
+        }
+
+        return deviceRepository.saveAndFlush(device).getId();
+    }
+
+    private void updateStorageModulePackAndInventory(Device device, ModuleInventory moduleInventory, boolean spare) {
+        if (spare) {
+            moduleInventory.setAvailable(moduleInventory.getAvailable() + 1);
+            device
+                    .getModulePackList()
+                    .stream()
+                    .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                    .findFirst()
+                    .ifPresent(modulePack -> {
+                        modulePack.setQty(modulePack.getQty() - 1);
+                        modulePack.getPackHistory().put(LocalDateTime.now(), Math.negateExact(1));
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("decreaseDeviceStorage"), personService.getCurrentPerson(), modulePack.getPersistence());
+                    });
+        } else {
+            moduleInventory.setAvailable(moduleInventory.getAvailable() - 1);
+            device
+                    .getModulePackList()
+                    .stream()
+                    .filter(modulePack -> modulePack.getModuleInventory() == moduleInventory)
+                    .findFirst()
+                    .ifPresentOrElse(modulePack -> {
+                        modulePack.setQty(modulePack.getQty() + 1);
+                        modulePack.getPackHistory().put(LocalDateTime.now(), 1);
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceStorage"), personService.getCurrentPerson(), modulePack.getPersistence());
+                    }, () -> {
+                        ModulePack modulePack = new ModulePack();
+                        modulePack.setModuleInventory(moduleInventory);
+                        modulePack.setQty(1);
+                        modulePack.setDevice(device);
+                        modulePack.setPackHistory((Map.ofEntries(entry(LocalDateTime.now(), 1))));
+                        Persistence persistence = logService.persistenceSetup(personService.getCurrentPerson(), "DeviceModuleUpdate");
+                        logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("increaseDeviceStorage"), personService.getCurrentPerson(), persistence);
+                        modulePack.setPersistence(persistence);
+                        if (device.getModulePackList() != null) {
+                            device.getModulePackList().add(modulePack);
+                        } else {
+                            device.setModulePackList(List.of(modulePack));
+                        }
+                    });
+        }
+    }
+
+    private static List<Long> getUpdatableStorageIdList(ModuleUpdateForm moduleUpdateForm, List<Long> currentStorageIdList) {
+        List<Long> alterStorageIdList = new ArrayList<>();
+        for (Long storageId : currentStorageIdList) {
+            if (!moduleUpdateForm.getStorageIdList().contains(storageId)) {
+                alterStorageIdList.add(storageId);
+            }
+        }
+        for (Long storageId : moduleUpdateForm.getStorageIdList()) {
+            if (!currentStorageIdList.contains(storageId)) {
+                alterStorageIdList.add(storageId);
+            }
+        }
+
+        return alterStorageIdList;
+    }
+
+    @Override
+    public List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList) {
+        return storageRepository
+                .fetchDeviceAssignedAndSpareList(deviceId, compatibleStorageInventoryList, false)
+                .stream()
+                .sorted(Comparator.comparing(Storage::isSpare))
+                .sorted(Comparator.comparing(storage -> storage.getModuleInventory().getCategoryId()))
+                .toList();
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
+    public void inventoryUpdate(ModuleUpdateForm moduleUpdateForm) {
+        ModuleInventory moduleInventory;
+        if (moduleUpdateForm.isStorageUpdate()) {
+            var storage = storageRepository.getReferenceById(moduleUpdateForm.getStorageId());
+            moduleInventory = storage.getModuleInventory();
+            if (moduleUpdateForm.isStorageDisable()) {
+                storage.setDisabled(true);
+                moduleInventory.setAvailable(moduleInventory.getAvailable() - 1);
+                logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("StorageDisable"), personService.getCurrentPerson(), storage.getPersistence());
+            } else {
+                storage.setProblematic(moduleUpdateForm.isProblematic());
+                if (storage.isProblematic()) {
+                    logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("StorageProblematic"), personService.getCurrentPerson(), storage.getPersistence());
+                } else {
+                    logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("StorageClear"), personService.getCurrentPerson(), storage.getPersistence());
+                }
+            }
+
+        } else {
+            moduleInventory = moduleInventoryRepository.getReferenceById(moduleUpdateForm.getModuleInventoryId());
+            moduleInventory.setAvailable(moduleInventory.getAvailable() + Math.negateExact(moduleUpdateForm.getUpdatedValue()));
+            logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("DecreaseInventory"), personService.getCurrentPerson(), moduleInventory.getPersistence());
+        }
+        moduleInventoryRepository.save(moduleInventory);
+    }
+
+    @Override
     public Optional<Device> getDevice(Long deviceId) {
         Optional<Device> currentDevice = deviceRepository.findById(deviceId);
 
         if (currentDevice.isPresent()) {
             if (currentDevice.get().getDevicePmCatalogList() != null) {
-                log.info("Current device has catalog");
                 for (DevicePmCatalog devicePmCatalog : currentDevice.get().getDevicePmCatalogList()) {
                     devicePmCatalog.setPersianNextDue(UtilService.getFormattedPersianDate(devicePmCatalog.getNextDueDate()));
                 }
@@ -232,39 +551,6 @@ public class ResourceServiceImpl implements ResourceService {
             return defaultDeviceStatus;
         }*/
         return null;
-    }
-
-
-    private Device registerNewDevice(EventLandingForm eventLandingForm) throws SQLException {
-
-        switch (eventLandingForm.getDevice().getDeviceCategory().getCategory()) {
-            case "Server" -> {   /// Server
-                Server srv = new Server();
-                srv.setSerialNumber(eventLandingForm.getSerialNumber());
-                srv.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
-                srv.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                return deviceRepository.save(srv);
-            }
-            case "Switch" -> { /// Switch
-                Switch sw = new Switch();
-                sw.setSerialNumber(eventLandingForm.getSerialNumber());
-                sw.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
-                sw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                return deviceRepository.save(sw);
-            }
-
-            case "Firewall" -> { /// Firewall
-                Firewall fw = new Firewall();
-                fw.setSerialNumber(eventLandingForm.getSerialNumber());
-                fw.setLocation(centerService.getRefrencedLocation(eventLandingForm.getLocationId()));
-                fw.setUtilizer(getUtilizer(eventLandingForm.getUtilizerId()));
-                return deviceRepository.save(fw);
-            }
-
-            default -> {
-                return null;
-            }
-        }
     }
 }
 

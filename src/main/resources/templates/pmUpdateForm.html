@@ -192,7 +192,7 @@
                                                         </option>
                                                         <option class="text-bg-success" th:value="0">اتمام وظیفه</option>
                                                         <option class="text-bg-warning" th:each="person : ${assignPersonList}"
-                                                                th:value="${person.id}" th:text="${person.name + ' - ' + 'وظایف کارتابل: ' + person.getWorkspaceSize()}"></option>
+                                                                th:value="${person.id}" th:text="${person.name + ' - ' + 'وظایف کارتابل: ' + person.workspaceSize}"></option>
                                                     </select>
                                                 </label>
                                             </div>

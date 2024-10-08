@@ -5,6 +5,7 @@ import ir.tic.clouddc.event.DeviceStatusForm;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface ResourceService {
@@ -13,17 +14,15 @@ public interface ResourceService {
 
     Utilizer getReferencedUtilizer(Integer utilizerId) throws EntityNotFoundException;
 
-    List<DeviceIdUtilizerId_Projection2> getDeviceProjection2(Long locationId);
-
     List<DeviceIdSerialCategoryVendor_Projection1> getNewDeviceList();
 
     List<Device> getLocationDeviceList(Long locationId);
 
     List<DeviceCategory> getdeviceCategoryList();
 
-    boolean checkDeviceExistence(String serialNumber);
+    boolean checkResourceExistence(String serialNumber, int resourceType);
 
-    void registerUnassignedDevice(DeviceRegisterForm deviceRegisterForm);
+    void resourceRegister(ResourceRegisterForm resourceRegisterForm, int resourceType);
 
     UnassignedDevice getReferencedUnassignedDevice(Integer unassignedDeviceId);
 
@@ -36,6 +35,24 @@ public interface ResourceService {
     String scheduleUnassignedDeviceRemoval();
 
     List<Utilizer> getUtilierList();
+
+    Map<ModuleInventory, Integer> getModuleOverviewMap();
+
+    List<ModuleInventory> getModuleCategoryList();
+
+    List<ModuleInventory> getRelatedModuleInventoryList(Integer categoryId);
+
+    List<Storage> getRelatedSpareStorageList(Integer specId);
+
+    Map<ModuleInventory, Integer> getDeviceModuleOverview(List<ModulePack> modulePackList);
+
+    List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID);
+
+    long updateDeviceModule(ModuleUpdateForm moduleUpdateForm);
+
+    List<Storage> getDeviceAssignedAndSpareStorageList(long deviceId, List<ModuleInventory> compatibleStorageInventoryList);
+
+    void inventoryUpdate(ModuleUpdateForm moduleUpdateForm);
 
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
@@ -57,6 +74,7 @@ public interface ResourceService {
 
     interface DeviceIdUtilizerId_Projection2 {
         Long getDeviceId();
+
         Integer getDeviceUtilizerId();
     }
 
@@ -65,7 +83,6 @@ public interface ResourceService {
 
         String getName();
     }
-
 
     Optional<Device> getDevice(Long deviceId);
 

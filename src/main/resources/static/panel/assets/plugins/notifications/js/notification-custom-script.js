@@ -217,7 +217,7 @@ function pos4_error_noti() {
 		size: 'mini',
 		continueDelayOnInactiveTab: false,
 		position: 'bottom left',
-		msg: 'Lorem ipsum dolor sit amet hears farmer indemnity inherent.'
+		msg: 'تعداد درخواست ارسالی بیش از حد مجاز است.'
 	});
 }
 

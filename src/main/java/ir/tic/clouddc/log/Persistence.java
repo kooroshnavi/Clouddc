@@ -23,20 +23,25 @@ public final class Persistence {
     @Column(name = "PersistenceID")
     private Long id;
 
-    @ManyToOne(cascade = CascadeType.MERGE)
+    @ManyToOne(cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinColumn(name = "PersonID")
     private Person person;
+
+    @Column(name = "Category")
+    private String category;
 
     @OneToMany(mappedBy = "persistence", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<LogHistory> logHistoryList;
 
-    public Persistence(LocalDate date, LocalTime time, Person owner, String logMessageKey) {
-        this.setPerson(owner);
+    public Persistence(LocalDate date, LocalTime time, Person owner, String logMessageKey, String category) {
+        this.person = owner;
+        this.category = category;
         LogHistory logHistory = new LogHistory(date, time, owner, this, UtilService.LOG_MESSAGE.get(logMessageKey), true);
         this.setLogHistoryList(List.of(logHistory));
     }
 
-    public Persistence(Person person) {
+    public Persistence(Person person, String category) {
         this.person = person;
+        this.category = category;
     }
 }

@@ -1,7 +1,6 @@
 package ir.tic.clouddc.center;
 
 import ir.tic.clouddc.log.LogService;
-import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.resource.Device;
@@ -10,6 +9,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
@@ -24,25 +24,21 @@ public class CenterServiceImpl implements CenterService {
 
     private final PersonService personService;
 
-    private final NotificationService notificationService;
-
     private final LogService logService;
 
     private final LocationRepository locationRepository;
 
-    private final LocationPmCatalogRepository locationPmCatalogRepository;
-
     @Autowired
-    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, NotificationService notificationService, LogService logService, LocationRepository locationRepository, LocationPmCatalogRepository locationPmCatalogRepository) {
+    CenterServiceImpl(CenterRepository centerRepository, PersonService personService, LogService logService, LocationRepository locationRepository) {
         this.centerRepository = centerRepository;
         this.personService = personService;
-        this.notificationService = notificationService;
         this.logService = logService;
         this.locationRepository = locationRepository;
-        this.locationPmCatalogRepository = locationPmCatalogRepository;
     }
 
+
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
         return locationRepository.getReferenceById(locationId);
     }
@@ -84,6 +80,7 @@ public class CenterServiceImpl implements CenterService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void updateRackDevicePosition(Long rackId, Set<String> newPositionStringList) {
         var location = Hibernate.unproxy(getRefrencedLocation(rackId), Location.class);
         Rack rack = (Rack) location;
@@ -101,10 +98,11 @@ public class CenterServiceImpl implements CenterService {
         locationRepository.save(rack);
 
         var logMessage = " بروزرسانی جانمایی رک " + rack.getName() + " - " + rack.getHall().getName();
-        logService.registerIndependentPersistence(logMessage);
+        logService.registerIndependentPersistence(logMessage, personService.getCurrentPerson(), personService.getCurrentPerson(), "RackOrdering");
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Optional<Location> getLocation(Long locationId) {
         Optional<Location> optionalLocation = locationRepository.findById(locationId);
         if (optionalLocation.isPresent()) {
@@ -116,21 +114,6 @@ public class CenterServiceImpl implements CenterService {
         }
 
         return optionalLocation;
-    }
-
-    @Override
-    public LocationStatus getCurrentLocationStatus(Location location) {
-        //var locationStatus = locationStatusRepository.findByLocationAndActive(location, true);
-     /*   if (locationStatus.isPresent()) {
-            return locationStatus.get();
-        } else {
-            LocationStatus defaultLocationStatus = new LocationStatus();
-            defaultLocationStatus.setDoor(true);
-            defaultLocationStatus.setVentilation(true);
-            defaultLocationStatus.setPower(true);
-            return defaultLocationStatus;
-        }*/
-        return null;
     }
 
     @Override

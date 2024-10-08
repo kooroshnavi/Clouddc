@@ -25,12 +25,13 @@ public final class SoapClientService {
 
     @Value("${soap.principal}")
     private String principal;
+
     @Value("${soap.credential}")
     private String credential;
 
     private static final String WEBSERVICE_URL = "http://emas.tic.ir/sendingsmsto.asmx";
 
-    private static final String HEADER = "     'سامانه نگه داری و پایش زیرساخت ابر'    ";
+    private static final String HEADER = "     'سامانه مدیریت اطلاعات زیرساخت ابر'    ";
 
     private String message;
 

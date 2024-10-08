@@ -7,5 +7,7 @@ import java.util.Optional;
 
 @Repository
 public interface AddressRepository extends JpaRepository<Address, Integer> {
+
+    boolean existsByValue(String phoneNumber);
     Optional<Address> findByValue(String value);
 }

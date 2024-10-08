@@ -1,7 +1,6 @@
 <!doctype html>
 <html lang="en" class="semi-dark" dir="rtl" xmlns:th="http://www.thymeleaf.org"
       xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
-
 <head>
     <!-- Required meta tags -->
     <meta charset="utf-8">
@@ -18,10 +17,8 @@
     <link href="/panel/assets/css/icons.css" rel="stylesheet">
     <link href="/panel/assets/css/roboto.css" rel="stylesheet">
     <link href="/panel/assets/css/bootstrap-icons.css" rel="stylesheet">
-
     <!-- loader-->
     <link href="/panel/assets/css/pace.min.css" rel="stylesheet"/>
-
     <!--Theme Styles-->
     <link href="/panel/assets/css/dark-theme.css" rel="stylesheet"/>
     <link href="/panel/assets/css/light-theme.css" rel="stylesheet"/>
@@ -80,8 +77,8 @@
                             <th>ردیف</th>
                             <th>بهره بردار</th>
                             <th>تعداد رک در اختیار</th>
-                            <th>تعداد تجهیز در اختیار</th>
-                            <th>جزئیات</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">تعداد تجهیز در اختیار</th>
+                            <th sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">جزئیات</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -92,9 +89,9 @@
                             <td th:if="${utilizer.messenger}" class="text-bg-success" th:text="${utilizer.name}" dir="rtl"></td>
                             <td th:unless="${utilizer.messenger}" th:text="${utilizer.name}" dir="rtl"></td>
                             <td th:text="${utilizer.rackList.size()}" dir="rtl"></td>
-                            <td th:text="${utilizer.deviceList.size()}" dir="rtl"></td>
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:text="${utilizer.deviceList.size()}" dir="rtl"></td>
 
-                            <td dir="rtl">
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" dir="rtl">
                                 <div class="col">
                                     <a
                                        th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${utilizer.id})}"

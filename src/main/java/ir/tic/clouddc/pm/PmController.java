@@ -6,7 +6,6 @@ import ir.tic.clouddc.center.Rack;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.resource.Device;
 import ir.tic.clouddc.resource.DevicePmCatalog;
-import ir.tic.clouddc.security.ModifyProtection;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +33,6 @@ public class PmController {
 
     private final PmService pmService;
 
-
     @Autowired
     public PmController(PmServiceImpl taskService) {
         this.pmService = taskService;
@@ -57,14 +55,10 @@ public class PmController {
     }
 
     @GetMapping("/register/form")
-    @ModifyProtection
     public String showPmInterfaceForm(Model model) {
-
         model.addAttribute("pmInterfaceRegisterForm", new PmInterfaceRegisterForm());
         model.addAttribute("isUpdate", false);
         model.addAttribute("enablementAccess", true);
-
-
         if (!model.containsAttribute("error")) {
             model.addAttribute("error", false);
         }
@@ -73,7 +67,6 @@ public class PmController {
     }
 
     @GetMapping("/{pmInterfaceId}/edit")
-    @ModifyProtection
     public String pmInterfaceEditForm(Model model, @PathVariable Integer pmInterfaceId) {
         if (Objects.equals(pmInterfaceId, null) || pmInterfaceId == 0 || pmInterfaceId < 0) {
             return "404";
@@ -104,7 +97,7 @@ public class PmController {
         return pmInterfaceRegisterForm;
     }
 
-    @PostMapping(value = "/register")  /// General Pm only
+    @PostMapping(value = "/register")
     public String pmInterfacePost(
             RedirectAttributes redirectAttributes,
             @Valid @ModelAttribute("pmInterfaceRegisterForm") PmInterfaceRegisterForm pmInterfaceRegisterForm,
@@ -112,7 +105,6 @@ public class PmController {
             Errors errors) throws IOException {
 
         if (errors.hasErrors()) {
-            log.error("Failed to register task due to validation error on input data: {}", errors);
             redirectAttributes.addFlashAttribute("error", true);
 
             return "redirect:/pm/register/form";
@@ -173,7 +165,6 @@ public class PmController {
 
         if (activeDetail.isPresent()) {
             var permission = pmService.getPmDetail_4(activeDetail.get());
-            log.info(String.valueOf(permission));
             model.addAttribute("permission", permission);
         }
 
@@ -233,7 +224,6 @@ public class PmController {
         var pm = pmService.getPm(pmUpdateForm.getPmId());
         if (pm.isPresent()) {
             pmService.updatePm(pmUpdateForm, pm.get(), pmUpdateForm.getOwnerUsername());
-
             redirectAttributes.addAttribute("pmId", pmUpdateForm.getPmId());
             redirectAttributes.addFlashAttribute("updated", true);
 
@@ -245,7 +235,7 @@ public class PmController {
 
     @RequestMapping(value = "/workspace", method = {RequestMethod.GET, RequestMethod.POST})
     public String showWorkspace(Model model) {
-        var activePmList = pmService.getActivePmList(true, true);
+        var activePmList = pmService.getActivePmList(true, null);
         model.addAttribute("workspace", true);
         model.addAttribute("activePmList", activePmList);
 
@@ -254,8 +244,17 @@ public class PmController {
 
     @GetMapping("/active/list")
     public String showActivePmList(Model model) {
-        var activePmList = pmService.getActivePmList(true, false);
+        var activePmList = pmService.getActivePmList(false, null);
         model.addAttribute("workspace", false);
+        model.addAttribute("activePmList", activePmList);
+
+        return "activePmList";
+    }
+
+    @GetMapping("/{personId}/workspace")
+    public String showUserWorkspace(Model model, @PathVariable Integer personId) {
+        var activePmList = pmService.getActivePmList(true, personId);
+        model.addAttribute("workspace", true);
         model.addAttribute("activePmList", activePmList);
 
         return "activePmList";
@@ -265,8 +264,8 @@ public class PmController {
     public String showLocationCatalogForm(Model model, @PathVariable Long locationId) throws SQLException {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
         Location location = pmService.getReferencedLocation(locationId);
-
         List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(location, null);
+
         model.addAttribute("defaultPersonList", defaultPersonList);
         model.addAttribute("pmInterfaceList", pmInterfaceList);
         model.addAttribute("catalogForm", new CatalogForm());
@@ -283,8 +282,8 @@ public class PmController {
     public String showDeviceCatalogForm(Model model, @PathVariable Long deviceId) throws SQLException {
         List<Person> defaultPersonList = pmService.getDefaultPersonList();
         Device device = pmService.getDevice(deviceId);
-
         List<PmInterface> pmInterfaceList = pmService.getNonCatalogedPmInterfaceList(null, device);
+
         model.addAttribute("defaultPersonList", defaultPersonList);
         model.addAttribute("pmInterfaceList", pmInterfaceList);
         model.addAttribute("catalogForm", new CatalogForm());
@@ -298,7 +297,6 @@ public class PmController {
     }
 
     @GetMapping("/catalog/{catalogId}/edit")
-    @ModifyProtection
     public String catalogEditForm(Model model, @PathVariable Long catalogId) {
         if (Objects.equals(catalogId, null) || catalogId == 0 || catalogId < 0) {
             return "404";
@@ -329,11 +327,9 @@ public class PmController {
     }
 
     @PostMapping("/catalog/register")
-    @ModifyProtection
     public String pmCatalogRegister(@ModelAttribute CatalogForm catalogForm, RedirectAttributes redirectAttributes) throws SQLException {
         var nextDue = catalogForm.getNextDue();
         var validDate = LocalDate.parse(nextDue);
-        log.info(String.valueOf(validDate));
         if (validDate.isBefore(UtilService.getDATE())) {
             return "403";
         }
@@ -399,5 +395,4 @@ public class PmController {
 
         return "catalogPmList";
     }
-
 }

@@ -7,7 +7,6 @@ import ir.tic.clouddc.document.FileService;
 import ir.tic.clouddc.document.MetaData;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Person;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.resource.Device;
@@ -36,9 +35,6 @@ import java.util.*;
 @Service
 @Transactional
 public class PmServiceImpl implements PmService {
-
-    private static final List<Integer> locationTargetIdList = List.of(1, 2, 3, 4);
-    private static final List<Integer> deviceTargetIdList = List.of(5, 6, 7, 8, 9);
     private final PmRepository pmRepository;
     private final PmInterfaceRepository pmInterfaceRepository;
     private final PmInterfaceCatalogRepository pmInterfaceCatalogRepository;
@@ -46,12 +42,11 @@ public class PmServiceImpl implements PmService {
     private final CenterService centerService;
     private final ResourceService resourceService;
     private final PersonService personService;
-    private final NotificationService notificationService;
     private final LogService logService;
     private final FileService fileService;
 
     @Autowired
-    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmInterfaceCatalogRepository pmInterfaceCatalogRepository, PmDetailRepository pmDetailRepository, CenterService centerService, ResourceService resourceService, PersonService personService, NotificationService notificationService, LogService logService, FileService fileService) {
+    PmServiceImpl(PmRepository pmRepository, PmInterfaceRepository pmInterfaceRepository, PmInterfaceCatalogRepository pmInterfaceCatalogRepository, PmDetailRepository pmDetailRepository, CenterService centerService, ResourceService resourceService, PersonService personService, LogService logService, FileService fileService) {
         this.pmRepository = pmRepository;
         this.pmInterfaceRepository = pmInterfaceRepository;
         this.pmInterfaceCatalogRepository = pmInterfaceCatalogRepository;
@@ -59,7 +54,6 @@ public class PmServiceImpl implements PmService {
         this.centerService = centerService;
         this.resourceService = resourceService;
         this.personService = personService;
-        this.notificationService = notificationService;
         this.logService = logService;
         this.fileService = fileService;
 
@@ -98,6 +92,8 @@ public class PmServiceImpl implements PmService {
             catalog.setNextDueDate(UtilService.validateNextDue(UtilService.getDATE().plusDays(pmInterface.getPeriod())));
         }
 
+        catalog.getDefaultPerson().setWorkspaceSize(catalog.getDefaultPerson().getWorkspaceSize() + 1);
+
         Pm pm;
         if (catalog instanceof LocationPmCatalog) {
             pm = new GeneralLocationPm();
@@ -116,7 +112,7 @@ public class PmServiceImpl implements PmService {
         generalPmDetail.setActive(true);
         generalPmDetail.setRegisterDate(UtilService.getDATE());
         generalPmDetail.setRegisterTime(UtilService.getTime());
-        generalPmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson()));
+        generalPmDetail.setPersistence(logService.persistenceSetup(catalog.getDefaultPerson(), "Pm"));
         generalPmDetail.setPm(pm);
         pm.setPmDetailList(List.of(generalPmDetail));
 
@@ -143,6 +139,7 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getPmInterfaceList() {
+
         return pmInterfaceRepository.findAll();
     }
 
@@ -155,6 +152,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public List<PmDetail> getPmDetail_2(Pm pm) {
         if (pm.getPmDetailList() != null) {
             var sortedPmDetailList = pm
@@ -188,7 +186,12 @@ public class PmServiceImpl implements PmService {
             for (Pm pm : pmList) {
                 pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
                 if (pm.isActive()) {
-                    pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get().getPersistence().getPerson().getName());
+                    pm
+                            .getPmDetailList()
+                            .stream()
+                            .filter(PmDetail::isActive)
+                            .findFirst()
+                            .ifPresent(pmDetail -> pmDetail.getPm().setActivePersonName(pmDetail.getPersistence().getPerson().getName()));
                 } else {
                     pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
                     pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
@@ -216,7 +219,8 @@ public class PmServiceImpl implements PmService {
                         -> grantedAuthority.getAuthority().equals("ADMIN")
                         || grantedAuthority.getAuthority().equals("SUPERVISOR"))) {
             return true;
-        } else return currentPmDetailUsername.equals(personService.getCurrentUsername());
+        } else
+            return currentPmDetailUsername.equals(personService.getCurrentUsername());
     }
 
 
@@ -236,6 +240,8 @@ public class PmServiceImpl implements PmService {
         basePmDetail.setFinishedDate(UtilService.getDATE());
         basePmDetail.setFinishedTime(UtilService.getTime());
         basePmDetail.setActive(false);
+        var pmDetailPerson = basePmDetail.getPersistence().getPerson();
+        pmDetailPerson.setWorkspaceSize(pmDetailPerson.getWorkspaceSize() - 1);
         Persistence attachmentPersistence;
 
         var currentPerson = personService.getCurrentPerson();
@@ -273,7 +279,7 @@ public class PmServiceImpl implements PmService {
     private PmDetail setupNewPmDetail(Integer personId, boolean active) {
         GeneralPmDetail generalPmDetail = new GeneralPmDetail();
         var assigneePerson = personService.getReferencedPerson(personId);
-        Persistence persistence = logService.persistenceSetup(assigneePerson);
+        Persistence persistence = logService.persistenceSetup(assigneePerson, "Pm");
         generalPmDetail.setPersistence(persistence);
         generalPmDetail.setRegisterDate(UtilService.getDATE());
         generalPmDetail.setRegisterTime(UtilService.getTime());
@@ -281,6 +287,7 @@ public class PmServiceImpl implements PmService {
 
         if (active) {
             generalPmDetail.setActive(true);
+            assigneePerson.setWorkspaceSize(assigneePerson.getWorkspaceSize() + 1);
         } else {
             generalPmDetail.setActive(false);
             generalPmDetail.setFinishedDate(generalPmDetail.getRegisterDate());
@@ -298,6 +305,7 @@ public class PmServiceImpl implements PmService {
         if (catalog.getPmList().stream().filter(Pm::isActive).count() == 1) {
             catalog.setActive(false);
         }
+
         pm.setActive(false);
 
         var pmInterface = catalog.getPmInterface();
@@ -312,6 +320,7 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public List<Person> getAssignPersonList(String pmOwnerUsername) {
         List<Person> assignPersonList;
         var currentUsername = personService.getCurrentUsername();
@@ -321,16 +330,11 @@ public class PmServiceImpl implements PmService {
             assignPersonList = personService.getPersonListExcept(List.of(pmOwnerUsername, currentUsername));
         }
 
-        if (!assignPersonList.isEmpty()) {
-            for (Person person : assignPersonList) {
-                person.setWorkspaceSize(countPersonWorkspaceSize(person.getId()));
-            }
-        }
-
         return assignPersonList.stream().sorted(Comparator.comparing(Person::getWorkspaceSize)).toList();
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public List<Person> getDefaultPersonList() {
         return personService.getDefaultAssgineeList();
     }
@@ -385,12 +389,12 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Location getReferencedLocation(Long locationId) throws SQLException {
+    public Location getReferencedLocation(Long locationId) {
         return centerService.getRefrencedLocation(locationId);
     }
 
     @Override
-    public Device getDevice(Long deviceId) throws SQLException {
+    public Device getDevice(Long deviceId) {
         return resourceService.getReferencedDevice(deviceId);
     }
 
@@ -408,12 +412,13 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public Integer registerNewCatalog(CatalogForm catalogForm, LocalDate validDate) {
         Persistence persistence;
         PmInterfaceCatalog newCatalog;
         var currentPerson = personService.getCurrentPerson();
 
-        if (catalogForm.getPmInterfaceCatalogId() != null) {
+        if (catalogForm.getPmInterfaceCatalogId() != null) {   // update catalog
             newCatalog = pmInterfaceCatalogRepository.getReferenceById(catalogForm.getPmInterfaceCatalogId());
             persistence = newCatalog.getPersistence();
             logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("CatalogUpdate"), currentPerson, persistence);
@@ -422,7 +427,7 @@ public class PmServiceImpl implements PmService {
             newCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
 
         } else {
-            if (catalogForm.getLocationId() != null) {
+            if (catalogForm.getLocationId() != null) { // Register location catalog
                 LocationPmCatalog locationPmCatalog = new LocationPmCatalog();
                 locationPmCatalog.setLocation(centerService.getRefrencedLocation(catalogForm.getLocationId()));
                 locationPmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
@@ -431,12 +436,12 @@ public class PmServiceImpl implements PmService {
                 locationPmCatalog.setHistory(false);
                 locationPmCatalog.setActive(false);
                 locationPmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
-                persistence = logService.newPersistenceInitialization("CatalogRegister");
+                persistence = logService.newPersistenceInitialization("CatalogRegister", personService.getCurrentPerson(), "LocationPmCatalog");
                 locationPmCatalog.setPersistence(persistence);
 
                 newCatalog = locationPmCatalog;
 
-            } else {
+            } else { // Register Device catalog
                 DevicePmCatalog devicePmCatalog = new DevicePmCatalog();
                 devicePmCatalog.setDevice(resourceService.getReferencedDevice(catalogForm.getDeviceId()));
                 devicePmCatalog.setDefaultPerson(personService.getReferencedPerson(catalogForm.getDefaultPersonId()));
@@ -445,7 +450,7 @@ public class PmServiceImpl implements PmService {
                 devicePmCatalog.setHistory(false);
                 devicePmCatalog.setActive(false);
                 devicePmCatalog.setNextDueDate(UtilService.validateNextDue(validDate));
-                persistence = logService.newPersistenceInitialization("CatalogRegister");
+                persistence = logService.newPersistenceInitialization("CatalogRegister", personService.getCurrentPerson(), "DevicePmCatalog");
                 devicePmCatalog.setPersistence(persistence);
 
                 newCatalog = devicePmCatalog;
@@ -476,19 +481,26 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public List<Pm> getActivePmList(boolean active, boolean workspace) {
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
+    public List<Pm> getActivePmList(boolean workspace, @Nullable Integer personId) {
         List<Pm> activePmList;
         if (workspace) {
-            activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getCurrentUsername(), active);
-
+            if (personId == null) {
+                activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getCurrentUsername(), true);
+            } else {
+                activePmList = pmDetailRepository.fetchWorkspacePmList(personService.getReferencedPerson(personId).getUsername(), true);
+            }
         } else {
-            activePmList = pmDetailRepository.fetchActivePmList(active);
+            activePmList = pmDetailRepository.fetchActivePmList(true);
         }
 
         if (!activePmList.isEmpty()) {
             setPmTransients(activePmList);
 
-            return activePmList.stream().sorted(Comparator.comparing(Pm::getDelay).reversed()).toList();
+            return activePmList
+                    .stream()
+                    .sorted(Comparator.comparing(Pm::getDelay).reversed())
+                    .toList();
         }
         return activePmList;
     }
@@ -496,10 +508,6 @@ public class PmServiceImpl implements PmService {
     @Override
     public Long getPmInterfaceActivePmCount(Integer pmInterfaceId) {
         return pmRepository.countActiveByPmInterface(pmInterfaceId, true);
-    }
-
-    private long countPersonWorkspaceSize(Integer personId) {
-        return pmDetailRepository.countActiveByPerson(personId, true);
     }
 
     @Override
@@ -538,7 +546,7 @@ public class PmServiceImpl implements PmService {
             pmInterface.setCategoryId(UtilService.PM_CATEGORY_ID.get(pmInterfaceRegisterForm.getTarget()));
             pmInterface.setCategory(UtilService.PM_CATEGORY.get(pmInterface.getCategoryId()));
             pmInterface.setGeneralPm(true);
-            persistence = logService.newPersistenceInitialization("PmInterfaceRegister");
+            persistence = logService.newPersistenceInitialization("PmInterfaceRegister", personService.getCurrentPerson(), "PmInterfaceRegister");
             pmInterface.setPersistence(persistence);
         }
 
@@ -552,7 +560,7 @@ public class PmServiceImpl implements PmService {
                 fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), persistence);
             } else {
                 logService.historyUpdate(UtilService.getDATE(), UtilService.getTime(), UtilService.LOG_MESSAGE.get("PmInterfaceUpdateSupervisorFile"), currentPerson, persistence);
-                var newPersistence = logService.newPersistenceInitialization(pmInterface.getId().toString());
+                var newPersistence = logService.newPersistenceInitialization(pmInterface.getId().toString(), personService.getCurrentPerson(), "Pm-File");
                 fileService.registerAttachment(pmInterfaceRegisterForm.getFile(), newPersistence);
             }
         }

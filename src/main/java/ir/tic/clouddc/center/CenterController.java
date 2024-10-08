@@ -29,7 +29,7 @@ public class CenterController {
         return "centerLandingPage";
     }
 
-    @GetMapping("/location/{locationId}/detail") // Covers Room Rack and salon
+    @GetMapping("/location/{locationId}/detail") // Covers Room Rack and Hall
     public String showLocationDetail(Model model, @PathVariable Long locationId) {
         var baseLocation = centerService.getLocation(locationId);
         if (baseLocation.isPresent()) {
@@ -77,9 +77,6 @@ public class CenterController {
     public String updateRackDevicePosition(RedirectAttributes redirectAttributes, @ModelAttribute("rackDeviceOrderForm") RackDeviceOrderForm rackDeviceOrderForm) {
         var order = rackDeviceOrderForm.getOrderList().get(0);
         var stringDeviceOrderIdSet = StringUtils.commaDelimitedListToSet(order);
-        log.info(String.valueOf(stringDeviceOrderIdSet));
-        log.info(String.valueOf(stringDeviceOrderIdSet.size()));
-
         if (!stringDeviceOrderIdSet.isEmpty()) {
             centerService.updateRackDevicePosition(rackDeviceOrderForm.getRackId(), stringDeviceOrderIdSet);
             redirectAttributes.addFlashAttribute("devicePositionUpdated", true);

@@ -17,25 +17,38 @@ import java.util.List;
 public final class Person {
 
     @Id
-    private Integer id;
+    private Integer id; // 1
 
-    @Column(name = "Username")
+    @Column(name = "Username", unique = true)
     private String username;
 
     @Column(name = "FullName")
-    private String name;
+    private String name; // 2
 
-    @Column(name = "Assignable")
-    private boolean assignee; // false for manager and viewer
+    @Column(name = "Enabled") // 4
+    private boolean enabled;
 
-    @Column(name = "RoleCode")
+    @Column(name = "Assignable", nullable = false)
+    private boolean assignee; // false for manager and viewer // 3
+
+    @Column(name = "RoleCode", nullable = false)  // 5
     private char role;
+
+    @Column(name = "WorkspaceSize")
+    private Integer workspaceSize;
 
     @OneToMany(mappedBy = "defaultPerson")
     private List<LocationPmCatalog> locationPmCatalogList;
 
-    @OneToMany(mappedBy = "person")
-    private List<Persistence> personList;
+    @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<Persistence> persistenceList;
+
+    @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<LoginHistory> loginHistoryList;
+
+    @OneToOne
+    @JoinColumn(name = "LatestLoginHistoryID")
+    private LoginHistory latestLoginHistory;
 
     @OneToOne(fetch = FetchType.LAZY, cascade = {CascadeType.ALL})
     @MapsId
@@ -43,5 +56,5 @@ public final class Person {
     private Address address;
 
     @Transient
-    private long workspaceSize;
+    private String persianLoginTime;
 }

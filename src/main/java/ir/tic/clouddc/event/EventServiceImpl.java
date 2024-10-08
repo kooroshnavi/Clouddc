@@ -13,6 +13,7 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
@@ -25,22 +26,29 @@ import java.util.*;
 
 @Slf4j
 @Service
-public final class EventServiceImpl implements EventService {
+public class EventServiceImpl implements EventService {
 
     private final EventRepository eventRepository;
+
     private final EventDetailRepository eventDetailRepository;
+
     private final EventCategoryRepository eventCategoryRepository;
+
     private final CenterService centerService;
+
     private final PersonService personService;
+
     private final FileService fileService;
+
     private final LogService logService;
+
     private final ResourceService resourceService;
+
     private static final int General_Event_Category_ID = 1;
     private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
     private static final int DEVICE_MOVEMENT_EVENT_CATEGORY_ID = 4;
     private static final int DEVICE_UTILIZER_EVENT_CATEGORY_ID = 5;
-
 
     @Autowired
     public EventServiceImpl(
@@ -113,10 +121,6 @@ public final class EventServiceImpl implements EventService {
         return resourceService.getReferencedUtilizer(utilizerId);
     }
 
-    @Override
-    public LocationStatus getCurrentLocationStatus(Location location) {
-        return centerService.getCurrentLocationStatus(location);
-    }
 
     @Override
     public List<ResourceService.UtilizerIdNameProjection> getUtilizerList(List<Integer> utilizerIdList) {
@@ -124,6 +128,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void registerEvent(EventForm eventForm, LocalDate validDate) throws IOException {
         Event event;
         switch (eventForm.getEventCategoryId()) {
@@ -515,9 +520,9 @@ public final class EventServiceImpl implements EventService {
         eventDetail.setRegisterTime(UtilService.getTime());
         Persistence persistence;
         if (eventForm.getEventId() != null) {
-            persistence = logService.newPersistenceInitialization("EventUpdate");
+            persistence = logService.newPersistenceInitialization("EventUpdate", personService.getCurrentPerson(), "Event");
         } else {
-            persistence = logService.newPersistenceInitialization("EventRegister");
+            persistence = logService.newPersistenceInitialization("EventRegister", personService.getCurrentPerson(), "Event");
         }
         eventDetail.setPersistence(persistence);
         eventDetail.setDescription(eventForm.getDescription());
@@ -555,6 +560,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Event getEventHistory(Long eventId) {
         var optionalEvent = eventRepository.findById(eventId);
         Event event;
@@ -595,6 +601,7 @@ public final class EventServiceImpl implements EventService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')")
     public void updateGeneralEvent(EventForm eventForm) throws IOException {
         var event = eventRepository.getReferenceById(eventForm.getEventId());
         eventPersistence(eventForm, event);
@@ -603,6 +610,20 @@ public final class EventServiceImpl implements EventService {
     @Override
     public boolean newDevicePresentCheck() {
         return resourceService.newDevicePresentCheck();
+    }
+
+    @Override
+    public List<ModuleInventory> getDeviceCompatibleModuleInventoryList(Integer deviceCategoryID) {
+        return resourceService
+                .getDeviceCompatibleModuleInventoryList(deviceCategoryID)
+                .stream()
+                .sorted(Comparator.comparing(ModuleInventory::getClassification))
+                .toList();
+    }
+
+    @Override
+    public Map<ModuleInventory, Integer> getDeviceModuleOverviewMap(List<ModulePack> packList) {
+        return resourceService.getDeviceModuleOverview(packList);
     }
 
     @Override
@@ -622,11 +643,6 @@ public final class EventServiceImpl implements EventService {
             eventDetail.setPersianRegisterDate(UtilService.getFormattedPersianDate(eventDetail.getRegisterDate()));
             eventDetail.setPersianRegisterDayTime(UtilService.getFormattedPersianDayTime(eventDetail.getRegisterDate(), eventDetail.getRegisterTime()));
         }
-    }
-
-    @Override
-    public List<EventCategory> getEventCategoryList() {
-        return eventCategoryRepository.findAll();
     }
 
     @Override

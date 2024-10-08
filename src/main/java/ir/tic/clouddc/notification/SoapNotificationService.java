@@ -1,10 +1,8 @@
 package ir.tic.clouddc.notification;
 
 import com.github.mfathi91.time.PersianDateTime;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.soap2.SoapClientService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -15,21 +13,16 @@ public class SoapNotificationService implements NotificationService {
 
     private final SoapClientService soapClientService;
 
-    private final PersonService personService;
 
     @Autowired
-    public SoapNotificationService(SoapClientService soapClientService, @Lazy PersonService personService) {
+    public SoapNotificationService(SoapClientService soapClientService) {
         this.soapClientService = soapClientService;
-        this.personService = personService;
     }
 
     @Override
-    public void sendSuccessLoginMessage(String personName, String ipAddress, LocalDateTime originDatetime) {
+    public void sendSuccessLoginMessage(String personAddress, String ipAddress, LocalDateTime originDatetime) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(originDatetime));
-        var person = personService.getPersonByUsername(personName);
-        var address = person.getAddress().getValue();
-
         final String message =
                 "ورود موفق" +
                         System.lineSeparator() +
@@ -40,7 +33,7 @@ public class SoapNotificationService implements NotificationService {
                         persianDateTime +
                         System.lineSeparator();
 
-        soapClientService.sendMessage(address, message);
+        soapClientService.sendMessage(personAddress, message);
     }
 
     @Override
@@ -57,7 +50,6 @@ public class SoapNotificationService implements NotificationService {
                         System.lineSeparator() +
                         "در کارتابل شما قرار گرفت." +
                         System.lineSeparator();
-
 
         soapClientService.sendMessage(address, message);
     }
@@ -77,23 +69,82 @@ public class SoapNotificationService implements NotificationService {
                 "@: " +
                 persianDateTime +
                 System.lineSeparator();
+
         soapClientService.sendMessage("09127016653", otpMessage);
+    }
+
+    @Override
+    public void sendRegisterOTPMessage(String phoneNumber, String otpCode) {
+        final String otpMessage = "کد ثبت نام:" +
+                System.lineSeparator() +
+                otpCode +
+                System.lineSeparator() +
+                "اعتبار 10 دقیقه" +
+                System.lineSeparator();
+
+        soapClientService.sendMessage(phoneNumber, otpMessage);
+    }
+
+    @Override
+    public void sendPersonWelcomingMessage(String personName, String phoneNumber, char role) {
+        String welcomingMessage;
+        if (role == '0' || role == '1') {
+            welcomingMessage =
+                    "همکار گرامی، " +
+                            personName + "،" +
+                            " با سلام و احترام، خوش آمدید." +
+                            System.lineSeparator() +
+                            System.lineSeparator() +
+                            "ثبت نام شما انجام شد. نام کاربری شماره تلفن همراه و کد ورود از طریق تیک گرام ارسال خواهد شد." +
+                            System.lineSeparator() +
+                            "در این سامانه اطلاعات و رخدادهای مرتبط با تجهیزات شبکه ابر زیرساخت، ثبت، بروزرسانی و گزارش گیری می گردد. " +
+                            System.lineSeparator() +
+                            "لذا خواهشمندست در ثبت اطلاعات هر بخش دقت لازم را به عمل آورید. " +
+                            System.lineSeparator() +
+                            "* توسعه ادامه دارد. خواهشمندست بازخوردهای خود را مطرح فرمایید." +
+                            System.lineSeparator() +
+                            "در حال حاضر دسترسی صرفا در بستر شبکه داخلی TIC امکان پذیر است." +
+                            System.lineSeparator() +
+                            System.lineSeparator() +
+                            "Clouddc.tic.ir";
+
+        } else {
+            welcomingMessage =
+                    "همکار گرامی، " +
+                            personName + "،" +
+                            " با سلام و احترام، خوش آمدید." +
+                            System.lineSeparator() +
+                            System.lineSeparator() +
+                            "ثبت نام شما انجام شد. نام کاربری شماره تلفن همراه و کد ورود از طریق تیک گرام ارسال خواهد شد." +
+                            System.lineSeparator() +
+                            "در این سامانه اطلاعات و رخدادهای مرتبط با تجهیزات شبکه ابر زیرساخت، ثبت، بروزرسانی و گزارش گیری می گردد. " +
+                            System.lineSeparator() +
+                            "* توسعه ادامه دارد. خواهشمندست بازخوردهای خود را مطرح فرمایید." +
+                            System.lineSeparator() +
+                            "در حال حاضر دسترسی صرفا در بستر شبکه داخلی TIC امکان پذیر است." +
+                            System.lineSeparator() +
+                            System.lineSeparator() +
+                            "Clouddc.tic.ir";
+
+        }
+        soapClientService.sendMessage(phoneNumber, welcomingMessage);
     }
 
     @Override
     public void sendOTPMessage(String address, String otp, String machine, String date) {
         final String otpMessage =
                 otp +
-                System.lineSeparator() +
-                "آدرس ماشین: " +
-                machine +
-                System.lineSeparator() +
-                "تاریخ و ساعت درخواست: " +
-                date +
-                System.lineSeparator() +
-                System.lineSeparator()+
-                "امکان استفاده مجدد تا 12 ساعت" +
-                System.lineSeparator();
+                        System.lineSeparator() +
+                        "آدرس ماشین: " +
+                        machine +
+                        System.lineSeparator() +
+                        "تاریخ و ساعت درخواست: " +
+                        date +
+                        System.lineSeparator() +
+                        System.lineSeparator() +
+                        "امکان استفاده مجدد تا 12 ساعت" +
+                        System.lineSeparator();
+
         soapClientService.sendMessage(address, otpMessage);
     }
 }

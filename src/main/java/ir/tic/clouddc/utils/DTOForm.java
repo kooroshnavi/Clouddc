@@ -7,7 +7,7 @@ public abstract class DTOForm {
 
     private String challenge;
 
-    private int providedAnswer;
+    private Integer providedAnswer = null;
 
     private int index;
 }

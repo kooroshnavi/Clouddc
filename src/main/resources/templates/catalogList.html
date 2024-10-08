@@ -206,7 +206,7 @@
                                                                   class="btn btn-outline-secondary">تاریخچه وظایف آرشیو</a></li>
                                             <br>
 
-                                            <li align="center"><a th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
+                                            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" align="center"><a th:href="@{/pm/catalog/{catalogId}/edit (catalogId=${catalog.id})}"
                                                                   class="btn btn-outline-warning">ویرایش</a></li>
 
                                         </ul>

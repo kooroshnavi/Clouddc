@@ -13,60 +13,59 @@
 <!--$%adsense%$-->
 <main class="cd__main">
     <!-- Start DEMO HTML (Use the following code into your project)-->
-    <body class="container-fluid bg-body-tertiary d-block">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
-            <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
-                <div class="card-body p-5 text-center">
-                    <h4></h4>
-                    <p dir="rtl">همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
+    <div class="container-fluid bg-body-tertiary d-block">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4" style="min-width: 500px;">
+                <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
+                    <div class="card-body p-5 text-center">
+                        <h4></h4>
+                        <p dir="rtl">همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
 
-                    <div th:if="${invalid}" class="alert-warning" dir="rtl">
-                        کد وارد شده اشتباه است.
-                    </div>
-
-                    <form id="form" class="otp-form" th:action="@{/login}" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
-                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
-                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
-                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
-                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
-                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
-                        <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
-
-                        <!-- Store OTP Value -->
-                        <input type="hidden" th:value="${otpUid}" name="username"/>
-                        <input type="hidden" id="userOTP" class="otp-value" name="password"/>
-                        <div class="d-grid mt-4">
-                            <button onclick="OTPVerifyFn()" class="btn btn-primary" id="submit" type="submit">بررسی</button>
+                        <div th:if="${invalid}" class="alert-warning" dir="rtl">
+                            کد وارد شده اشتباه است.
                         </div>
-                    </form>
 
-                    <div class="text-bg-info mt-5">
-                        <span class="d-block mobile-text" id="countdown"></span>
+                        <form id="form" class="otp-form" th:action="@{/login}" method="Post">
+                            <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                            <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                            <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                            <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                            <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+                            <input class="otp-field" type="text" name="opt-field[]" maxlength=1>
+
+                            <!-- Store OTP Value -->
+                            <input type="hidden" th:value="${otpUid}" name="username"/>
+                            <input type="hidden" id="userOTP" class="otp-value" name="password"/>
+                            <div class="d-grid mt-4">
+                                <button onclick="OTPVerifyFn()" class="btn btn-primary" id="submit" type="submit">
+                                    بررسی
+                                </button>
+                            </div>
+                        </form>
+
+                        <div class="text-bg-info mt-5">
+                            <span class="d-block mobile-text" id="countdown"></span>
+                        </div>
+
                     </div>
-
                 </div>
             </div>
         </div>
-    </div>
 
-    </body>
+    </div>
 </main>
 
-<!-- Script JS -->
 <script th:src="@{/otp/js/jquery.min.js}"></script>
 <script th:src="@{/otp/js/bootstrap.bundle.min.js}"></script>
 <script th:src="@{/otp/js/script.js}"></script>
-
 <script th:inline="javascript">
     const secondsLeft = [[${secondsLeft}]];
 </script>
-
+<script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
 <script th:inline="javascript">
+
     const form = document.getElementById('form');
-
     form.addEventListener('submit', (e) => {
-
         $(".otp-form *:input[type!=hidden]:first").focus();
         let otp_fields = $(".otp-form .otp-field"),
             otp_value_field = $(".otp-form .otp-value");
@@ -103,7 +102,8 @@
             });
 
         if (OTPVerifyFn(e) === true) {
-            form.submit()
+            document.getElementById('submit').disabled = true;
+            form.submit();
         }
     });
 
@@ -112,17 +112,15 @@
         if (userOtp === "" || userOtp.length < 6) {
             alert("کد ورود یک عدد ۶ رقمی است.");
             e.preventDefault();
-        }
-        else {
+        } else {
             return true;
         }
     }
 </script>
-<script type="text/javascript" th:src="@{/otp/js/main.js}"></script>
 <script src="/login/js/jquery.min.js"></script>
 <script src="/login/js/popper.js"></script>
 <script src="/login/js/bootstrap.min.js"></script>
 <script src="/login/js/main.js"></script>
-<!--$%analytics%$-->
+
 </body>
 </html>

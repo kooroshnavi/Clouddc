@@ -27,5 +27,5 @@ public interface PmDetailRepository extends JpaRepository<PmDetail, Long> {
     List<Pm> fetchActivePmList(boolean active);
 
     @Query("select count (p) from PmDetail p where p.persistence.person.id = :personId and p.active = :active")
-    long countActiveByPerson(@Param("personId") Integer id, @Param("active") boolean active);
+    int countActiveByPerson(@Param("personId") Integer personId, @Param("active") boolean active);
 }

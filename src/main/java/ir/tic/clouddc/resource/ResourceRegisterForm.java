@@ -4,15 +4,21 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 
-import java.util.Arrays;
-
 @Data
-public class DeviceRegisterForm {
+public class ResourceRegisterForm {
 
     @NotNull
     @Size(min = 5, max = 40)
     private String serialNumber;
 
     @NotNull
-    private Integer deviceCategoryId;
+    private Integer resourceCategoryId;
+
+    private int qty;
+
+    private long locale;
+
+    private int mfgYear;
+
+    private int mfgMonth;
 }

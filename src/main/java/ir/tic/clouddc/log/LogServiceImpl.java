@@ -1,7 +1,6 @@
 package ir.tic.clouddc.log;
 
 import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,38 +12,33 @@ import java.util.List;
 
 @Service
 @Slf4j
-public final class LogServiceImpl implements LogService {
+public class LogServiceImpl implements LogService {
 
     private final PersistenceRepository persistenceRepository;
 
     private final LogHistoryRepository logHistoryRepository;
 
-    private final WorkflowRepository workflowRepository;
-
-    private final PersonService personService;
-
     @Autowired
-    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository, WorkflowRepository workflowRepository, PersonService personService) {
+    public LogServiceImpl(PersistenceRepository persistenceRepository, LogHistoryRepository logHistoryRepository) {
         this.persistenceRepository = persistenceRepository;
         this.logHistoryRepository = logHistoryRepository;
-        this.workflowRepository = workflowRepository;
-        this.personService = personService;
     }
 
     @Override
-    public Persistence newPersistenceInitialization(String logMessageKey) {
-        var currentPerson = personService.getCurrentPerson();
-        Persistence persistence = new Persistence(currentPerson);
-        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), currentPerson, persistence, UtilService.LOG_MESSAGE.get(logMessageKey), true);
+    public Persistence newPersistenceInitialization(String logMessageKey, Person person, String category) {
+        Persistence persistence = new Persistence(person, category);
+        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), person, persistence, UtilService.LOG_MESSAGE.get(logMessageKey), true);
         persistence.setLogHistoryList(List.of(logHistory));
 
         return persistence;
     }
 
     @Override
-    public Persistence persistenceSetup(Person person) {
+    public Persistence persistenceSetup(Person person, String category) {
         Persistence persistence = new Persistence();
         persistence.setPerson(person);
+        persistence.setCategory(category);
+
         return persistence;
     }
 
@@ -78,10 +72,9 @@ public final class LogServiceImpl implements LogService {
     }
 
     @Override
-    public void registerIndependentPersistence(String logMessage) {
-        var currentPerson = personService.getCurrentPerson();
-        Persistence persistence = persistenceSetup(currentPerson);
-        historyUpdate(UtilService.getDATE(), UtilService.getTime(), logMessage, currentPerson, persistence);
+    public void registerIndependentPersistence(String logMessage, Person persistencePerson, Person historyPerson, String category) {
+        Persistence persistence = persistenceSetup(persistencePerson, category);
+        historyUpdate(UtilService.getDATE(), UtilService.getTime(), logMessage, historyPerson, persistence);
 
         persistenceRepository.save(persistence);
     }
