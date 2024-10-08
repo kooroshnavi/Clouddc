@@ -139,11 +139,6 @@ public class PmServiceImpl implements PmService {
 
     @Override
     public List<PmInterface> getPmInterfaceList() {
-    /*    List<Person> personList = personService.getRegisteredPerosonList();
-        for (Person person : personList
-        ) {
-            person.setWorkSpaceSize(countPersonWorkspaceSize(person.getId()));
-        }*/
 
         return pmInterfaceRepository.findAll();
     }
@@ -191,7 +186,12 @@ public class PmServiceImpl implements PmService {
             for (Pm pm : pmList) {
                 pm.setPersianDueDate(UtilService.getFormattedPersianDate(pm.getDueDate()));
                 if (pm.isActive()) {
-                    pm.setActivePersonName(pm.getPmDetailList().stream().filter(PmDetail::isActive).findFirst().get().getPersistence().getPerson().getName());
+                    pm
+                            .getPmDetailList()
+                            .stream()
+                            .filter(PmDetail::isActive)
+                            .findFirst()
+                            .ifPresent(pmDetail -> pmDetail.getPm().setActivePersonName(pmDetail.getPersistence().getPerson().getName()));
                 } else {
                     pm.setPersianFinishedDate(UtilService.getFormattedPersianDate(pm.getFinishedDate()));
                     pm.setPersianFinishedDayTime(UtilService.getFormattedPersianDayTime(pm.getFinishedDate(), pm.getFinishedTime()));
@@ -389,12 +389,12 @@ public class PmServiceImpl implements PmService {
     }
 
     @Override
-    public Location getReferencedLocation(Long locationId) throws SQLException {
+    public Location getReferencedLocation(Long locationId) {
         return centerService.getRefrencedLocation(locationId);
     }
 
     @Override
-    public Device getDevice(Long deviceId) throws SQLException {
+    public Device getDevice(Long deviceId) {
         return resourceService.getReferencedDevice(deviceId);
     }
 

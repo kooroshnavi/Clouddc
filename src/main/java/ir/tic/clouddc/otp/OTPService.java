@@ -23,7 +23,7 @@ public interface OTPService {
 
     String getPersonAddress(String otpUID) throws ExecutionException;
 
-    boolean verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException;
+    void verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException;
 
-    boolean loginPageAvailable(String remoteAddr) throws ExecutionException;
+    boolean loginPageAvailability(String remoteAddr) throws ExecutionException;
 }

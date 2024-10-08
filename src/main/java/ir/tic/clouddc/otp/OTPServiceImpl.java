@@ -176,25 +176,18 @@ public class OTPServiceImpl implements OTPService {
     }
 
     @Override
-    public boolean verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException {
+    public void verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException {
         int tries = machineLimitedCache.get(remoteAddr);
         if (tries == -1) {
             machineLimitedCache.put(remoteAddr, 1);
-
-            return true;
-        } else if (tries < MAXIMUM_UNREGISTERED_TRIES) {
+        } else {
             tries += 1;
             machineLimitedCache.put(remoteAddr, tries);
-
-            return true;
-        } else {
-
-            return false;
         }
     }
 
     @Override
-    public boolean loginPageAvailable(String remoteAddr) throws ExecutionException {
+    public boolean loginPageAvailability(String remoteAddr) throws ExecutionException {
         return machineLimitedCache.get(remoteAddr) < MAXIMUM_UNREGISTERED_TRIES;
     }
 }

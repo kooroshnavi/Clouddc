@@ -1,8 +1,8 @@
 package ir.tic.clouddc.security;
 
+import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.otp.OtpForm;
 import ir.tic.clouddc.otp.OtpRequest;
-import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.person.Address;
 import ir.tic.clouddc.person.AddressRepository;
 import ir.tic.clouddc.person.PersonService;
@@ -20,8 +20,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -51,9 +49,9 @@ public class LoginController {
     public String showLoginForm(@RequestParam(value = "error", required = false) String error,
                                 @RequestParam(value = "logout", required = false) String logout,
                                 @RequestParam(value = "multiple", required = false) String multiple,
-                                HttpServletRequest request, Model model) throws UnknownHostException, SocketException, ExecutionException {
+                                HttpServletRequest request, Model model) throws ExecutionException {
 
-        boolean allowed = otpService.loginPageAvailable(request.getRemoteAddr());
+        boolean allowed = otpService.loginPageAvailability(request.getRemoteAddr());
         if (allowed) {
             var OTPForm = UtilService.createChallenge(new OtpForm());
             model.addAttribute("index", OTPForm.getIndex());
@@ -85,10 +83,6 @@ public class LoginController {
             model.addAttribute("disabled", false);
         }
 
-        if (!model.containsAttribute("allowed")) {
-            model.addAttribute("allowed", true);
-        }
-
         model.addAttribute("date", UtilService.getCurrentDate());
         model.addAttribute("remoteAddress", request.getRemoteAddr());
 
@@ -112,6 +106,7 @@ public class LoginController {
             if (address.isPresent()) {
                 var person = personService.getReferencedPerson(address.get().getId());
                 if (!person.isEnabled()) {
+                    otpService.verifyUnregisteredIPAddress(request.getRemoteAddr());
                     redirectAttributes.addFlashAttribute("disabled", true);
 
                     return "redirect:/login";
@@ -132,9 +127,8 @@ public class LoginController {
 
                 return "otp-verify";
             } else {
-                boolean allowed = otpService.verifyUnregisteredIPAddress(request.getRemoteAddr());
+                otpService.verifyUnregisteredIPAddress(request.getRemoteAddr());
                 redirectAttributes.addFlashAttribute("notFound", true);
-                redirectAttributes.addFlashAttribute("allowed", allowed);
 
                 return "redirect:/login";
             }

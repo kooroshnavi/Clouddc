@@ -4,7 +4,6 @@ import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Slf4j
 public class FileServiceImpl implements FileService {
 
     private final MetaDataRepository metaDataRepository;
