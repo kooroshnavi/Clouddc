@@ -13,7 +13,6 @@ public class SoapNotificationService implements NotificationService {
 
     private final SoapClientService soapClientService;
 
-
     @Autowired
     public SoapNotificationService(SoapClientService soapClientService) {
         this.soapClientService = soapClientService;

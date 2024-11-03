@@ -43,7 +43,7 @@ public abstract class Event {
     @JoinColumn(name = "EventCategoryID")
     private EventCategory eventCategory;
 
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "event")
+    @OneToMany(mappedBy = "event")
     private List<EventDetail> eventDetailList;
 
     @ElementCollection(fetch = FetchType.LAZY)

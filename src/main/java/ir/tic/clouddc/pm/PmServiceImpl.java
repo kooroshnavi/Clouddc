@@ -35,6 +35,7 @@ import java.util.*;
 @Service
 @Transactional
 public class PmServiceImpl implements PmService {
+
     private final PmRepository pmRepository;
     private final PmInterfaceRepository pmInterfaceRepository;
     private final PmInterfaceCatalogRepository pmInterfaceCatalogRepository;
@@ -56,14 +57,11 @@ public class PmServiceImpl implements PmService {
         this.personService = personService;
         this.logService = logService;
         this.fileService = fileService;
-
     }
 
     public String updateTodayPmList() {
         final List<PmInterfaceCatalog> todayCatalogList = pmInterfaceCatalogRepository.getTodayCatalogList
-                (UtilService.getDATE(),
-                        true,
-                        true);
+                (UtilService.getDATE(), true, true);
 
         List<Pm> activePmList = pmRepository.findAllByActive(true);
 
@@ -78,6 +76,7 @@ public class PmServiceImpl implements PmService {
         }
         if (!totalPmList.isEmpty()) {
             pmRepository.saveAll(totalPmList);
+
             return "Pm Scheduler Successful @: " + LocalDateTime.now();
         }
         return "No pm schedules for today." + LocalDateTime.now();
@@ -160,8 +159,10 @@ public class PmServiceImpl implements PmService {
                     .sorted(Comparator.comparing(PmDetail::getId).reversed())
                     .toList();
             setPmDetailTransients(sortedPmDetailList);
+
             return sortedPmDetailList;
         }
+
         return new ArrayList<>();
     }
 

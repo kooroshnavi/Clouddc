@@ -36,7 +36,6 @@ public class CenterServiceImpl implements CenterService {
         this.locationRepository = locationRepository;
     }
 
-
     @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')")
     public Location getRefrencedLocation(Long locationId) throws EntityNotFoundException {
@@ -169,6 +168,7 @@ public class CenterServiceImpl implements CenterService {
         model.addAttribute("person", person);
         model.addAttribute("role", authenticated.getAuthorities());
         model.addAttribute("date", UtilService.getCurrentDate());
+
         return model;
     }
 }

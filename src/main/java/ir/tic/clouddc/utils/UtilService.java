@@ -1,6 +1,9 @@
 package ir.tic.clouddc.utils;
 
 import com.github.mfathi91.time.PersianDate;
+import ir.tic.clouddc.report.DailyReport;
+import ir.tic.clouddc.report.ReportService;
+import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -14,10 +17,15 @@ import java.util.Random;
 
 import static java.util.Map.entry;
 
+@Component
 public final class UtilService {
 
     private static LocalDate DATE;
-    private static Long TODAY_REPORT_ID;
+
+    private final ReportService reportService;
+
+    private static long ACTIVE_TODAY_REPORT_ID;
+
     private static final List<String> FORM_CAPTCHA_CHALLENGE = List.of(
             "هفده پانزده",   // 0
             "ده بیست و سه نود و پنج",
@@ -102,6 +110,10 @@ public final class UtilService {
             entry(38, 4880),
             entry(39, 1536)
     );
+
+    public UtilService(ReportService reportService) {
+        this.reportService = reportService;
+    }
 
     public static DTOForm createChallenge(DTOForm dtoForm) {
         var challengeIndex = new Random().nextInt(FORM_CAPTCHA_CHALLENGE.size());
@@ -228,5 +240,13 @@ public final class UtilService {
         var formattedTime = timeFormatter.format(time);
 
         return persianDate + " - " + formattedTime;
+    }
+
+    public static void setTodayReportID(long todayReportID) {
+        ACTIVE_TODAY_REPORT_ID = todayReportID;
+    }
+
+    public DailyReport getReferencedTodayReport() {
+        return reportService.getReferencedTodayReport(ACTIVE_TODAY_REPORT_ID);
     }
 }

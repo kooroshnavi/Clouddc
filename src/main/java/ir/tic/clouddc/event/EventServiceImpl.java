@@ -44,6 +44,8 @@ public class EventServiceImpl implements EventService {
 
     private final ResourceService resourceService;
 
+    private final UtilService utilService;
+
     private static final int General_Event_Category_ID = 1;
     private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
@@ -57,7 +59,7 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , FileService fileService,
-            LogService logService, ResourceService resourceService) {
+            LogService logService, ResourceService resourceService, UtilService utilService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
@@ -66,6 +68,7 @@ public class EventServiceImpl implements EventService {
         this.resourceService = resourceService;
         this.fileService = fileService;
         this.logService = logService;
+        this.utilService = utilService;
     }
 
 
@@ -158,19 +161,6 @@ public class EventServiceImpl implements EventService {
         }
 
         finalizeEvent(eventForm, validDate, event);
-    }
-
-    private LocationCheckList locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
-        var currentStatus = locationStatusForm.getCurrentLocationStatus();
-        LocationCheckList locationCheckList = new LocationCheckList();
-        // locationCheckList.setLocationStatus(currentStatus);
-        // locationCheckList.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
-        // locationCheckList.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
-        // locationCheckList.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
-        //locationCheckList.setLocation(locationStatusForm.getLocation());
-        locationCheckList.setActive(false);
-
-        return locationCheckList;
     }
 
     private Event generalEventRegister_1(EventForm eventForm) {
@@ -571,7 +561,7 @@ public class EventServiceImpl implements EventService {
 
             return event;
         }
-        throw new NoSuchElementException();
+        throw new NoSuchElementException("s");
     }
 
     @Override

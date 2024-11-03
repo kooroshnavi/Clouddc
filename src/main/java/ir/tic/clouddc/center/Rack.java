@@ -28,7 +28,7 @@ public final class Rack extends Location {
     @Column(name = "Description")
     private String description;
 
-    @OneToMany(fetch = FetchType.LAZY)
+    @OneToMany(fetch = FetchType.LAZY, cascade = {CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH, CascadeType.PERSIST})
     @JoinTable(name = "RackPositionDeviceMap", schema = "Center",
             joinColumns = {@JoinColumn(name = "RackID", referencedColumnName = "LocationID")},
             inverseJoinColumns = {@JoinColumn(name = "DeviceID", referencedColumnName = "DeviceID")})
