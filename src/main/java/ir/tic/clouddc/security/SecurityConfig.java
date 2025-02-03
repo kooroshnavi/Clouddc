@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.core.session.SessionRegistry;
@@ -20,9 +21,13 @@ import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
-import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.CertificateException;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -38,9 +43,12 @@ public class SecurityConfig {
 
     private final PersonService personService;
 
+    private final ResourceLoader resourceLoader;
+
     @Autowired
-    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService) throws FileNotFoundException, SSLException {
+    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService, ResourceLoader resourceLoader) throws FileNotFoundException, SSLException {
         this.personService = personService;
+        this.resourceLoader = resourceLoader;
         this.clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
@@ -112,22 +120,14 @@ public class SecurityConfig {
     }
 
     @Bean
-    public SslContext sslContext() {
-        try (FileInputStream keyStoreFileInputStream = new
-                FileInputStream("C:\\Users\\tic\\IdeaProjects\\Clouddc\\src\\main\\resources\\tic-client-certificate.p12")) {
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(keyStoreFileInputStream,"292odzr4".toCharArray());
-            KeyManagerFactory keyManagerFactory =
-                    KeyManagerFactory.getInstance("SunX509");
-            keyManagerFactory.init(keyStore, "292odzr4".toCharArray());
+    public SslContext sslContext() throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException, IOException, CertificateException {
+        KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+        keyStore.load(resourceLoader.getResource("classpath:tic-client-certificate.p12").getInputStream(), "292odzr4".toCharArray());
+        KeyManagerFactory keyManagerFactory = KeyManagerFactory.getInstance("SunX509");
+        keyManagerFactory.init(keyStore, "292odzr4".toCharArray());
 
-            return SslContextBuilder.forClient()
-                    .keyManager(keyManagerFactory)
-                    .build();
-
-        } catch (Exception e) {
-            log.error("An error has occurred: ", e);
-        }
-        return null;
+        return SslContextBuilder.forClient()
+                .keyManager(keyManagerFactory)
+                .build();
     }
 }
