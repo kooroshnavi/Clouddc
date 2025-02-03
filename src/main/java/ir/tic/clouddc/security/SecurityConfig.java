@@ -1,5 +1,7 @@
 package ir.tic.clouddc.security;
 
+import io.netty.handler.ssl.SslContext;
+import io.netty.handler.ssl.SslContextBuilder;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
@@ -16,6 +18,11 @@ import org.springframework.security.web.authentication.logout.HeaderWriterLogout
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
 
+import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.SSLException;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.security.KeyStore;
 import java.time.LocalDateTime;
 
 @Configuration
@@ -32,12 +39,13 @@ public class SecurityConfig {
     private final PersonService personService;
 
     @Autowired
-    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService) {
+    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService) throws FileNotFoundException, SSLException {
         this.personService = personService;
         this.clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
     }
+
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -85,6 +93,8 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("fonts/**")
                         .permitAll()
+                        .requestMatchers("/api/**")
+                        .permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -99,5 +109,25 @@ public class SecurityConfig {
     @Bean
     public SessionRegistry sessionRegistry() {
         return new SessionRegistryImpl();
+    }
+
+    @Bean
+    public SslContext sslContext() {
+        try (FileInputStream keyStoreFileInputStream = new
+                FileInputStream("C:\\Users\\tic\\IdeaProjects\\Clouddc\\src\\main\\resources\\tic-client-certificate.p12")) {
+            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+            keyStore.load(keyStoreFileInputStream,"292odzr4".toCharArray());
+            KeyManagerFactory keyManagerFactory =
+                    KeyManagerFactory.getInstance("SunX509");
+            keyManagerFactory.init(keyStore, "292odzr4".toCharArray());
+
+            return SslContextBuilder.forClient()
+                    .keyManager(keyManagerFactory)
+                    .build();
+
+        } catch (Exception e) {
+            log.error("An error has occurred: ", e);
+        }
+        return null;
     }
 }
