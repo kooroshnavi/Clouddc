@@ -2,22 +2,22 @@ package ir.tic.clouddc.dashboard;
 
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import ir.tic.clouddc.api.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.io.FileNotFoundException;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/dashboard")
-public class DashboardRest {
+public class DashboardRestController {
 
     private final DashboardService dashboardService;
 
     @Autowired
-    public DashboardRest(DashboardService dashboardService) {
+    public DashboardRestController(DashboardService dashboardService) {
         this.dashboardService = dashboardService;
     }
 
@@ -27,8 +27,13 @@ public class DashboardRest {
         return "Hello World";
     }
 
-    @GetMapping("/ceph")
-    public List<Response> getApiResult() throws JsonProcessingException {
-        return dashboardService.getCephResponseList();
+    @GetMapping("/ceph/cluster")
+    public Response getCephClusterData() throws JsonProcessingException {
+        return dashboardService.getCephClusterResponseList();
+    }
+
+    @GetMapping("/ceph/messenger/usage")
+    public Response getCephUsageData() throws JsonProcessingException {
+        return dashboardService.getCephMessengerUsageResponseList();
     }
 }

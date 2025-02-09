@@ -1,10 +1,11 @@
 package ir.tic.clouddc.dashboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-
-import java.util.List;
+import ir.tic.clouddc.api.Response;
 
 public interface DashboardService {
 
-    List<Response> getCephResponseList() throws JsonProcessingException;
+    Response getCephClusterResponseList() throws JsonProcessingException;
+
+    Response getCephMessengerUsageResponseList() throws JsonProcessingException;
 }

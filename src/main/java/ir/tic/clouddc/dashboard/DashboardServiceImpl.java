@@ -2,6 +2,8 @@ package ir.tic.clouddc.dashboard;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import ir.tic.clouddc.api.ApiResponseService;
+import ir.tic.clouddc.api.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
@@ -20,77 +22,77 @@ public class DashboardServiceImpl implements DashboardService {
 
     private static final String BASE_URL = "https://monitoring.it.tic.ir/ts-p/api/v1/query";
 
-    private static final String CEPH_TOTAL_CAPACITY_QUERY = "?query=ceph_cluster_total_bytes{filter}";
+    private static final String CEPH_CLUSTER_TOTAL_CAPACITY_QUERY = "?query=ceph_cluster_total_bytes{filter}";
 
-    private static final String CEPH_USED_CAPACITY_QUERY = "?query=ceph_cluster_total_used_raw_bytes{filter}";
+    private static final String CEPH_CLUSTER_USED_CAPACITY_QUERY = "?query=ceph_cluster_total_used_raw_bytes{filter}";
 
-    private static final String Ceph_Filter_Value_1 = "{namespace='prod-ceph'}";
+    private static final String CEPH_CLUSTER_FILTER = "{namespace='prod-ceph'}";
 
-    private static final int CEPH_TOTAL_CAPACITY_ID = 1;
+    private static final String MESSENGER_USAGE_QUERY = "?query=sum(radosgw_usage_bucket_bytes{CEPH_USAGE_FILTER})*10";
 
-    private static final int CEPH_USED_CAPACITY_ID = 2;
+    private static final List<String> CEPH_USAGE_MESSENGER_FILTER = Arrays.asList(
+            "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-brp'}",
+            "{cluster='ceph',owner='soroush',service='prod-ceph-rgw-exporter-brp'}",
+            "{cluster='ceph',owner='gap',service='prod-ceph-rgw-exporter-brp'}",
+            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-brp'}");
 
-    private static final List<String> messengerList = Arrays.asList("bale", "soroush", "gap", "igap");
+    private static final List<String> CEPH_USAGE_MESSENGER_TITLE = Arrays.asList(
+            "بله",
+            "سروش پلاس",
+            "گپ",
+            "آیگپ");
+    List<DashboardResult> dashboardResultList;
 
-    private static final String MESSENGER_USAGE_QUERY_1 = "?query=sum(radosgw_usage_bucket_bytes{cluster=\"ceph\",owner=\"bale\",service=\"prod-ceph-rgw-exporter-brp\"})*1.5";
-
-    private static final String MESSENGER_USAGE_QUERY_2 = "?query=sum(radosgw_usage_bucket_bytes{filter2})";
-
-    private static final String Ceph_Filter_Value_2 = "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-brp'}";
+    private final ApiResponseService apiResponseService;
 
     @Autowired
-    public DashboardServiceImpl(WebClient webClient) {
+    public DashboardServiceImpl(WebClient webClient, ApiResponseService apiResponseService) {
         this.webClient = webClient;
+        this.apiResponseService = apiResponseService;
     }
 
     @Override
-    public List<Response> getCephResponseList() throws JsonProcessingException {
-
-        List<Response> cephResponseList = new ArrayList<>();
+    public Response getCephClusterResponseList() throws JsonProcessingException {
+        dashboardResultList = new ArrayList<>();
 
         // 1. Total Capacity
-        //  cephResponseList.add(fetchAndPrepareResponse(CEPH_TOTAL_CAPACITY_ID, CEPH_TOTAL_CAPACITY_QUERY, Ceph_Filter_Value_1, "حجم کل کلاستر ذخیره سازی سبزسیستم"));
+        dashboardResultList.add(fetchAndPrepareResponse(0, CEPH_CLUSTER_TOTAL_CAPACITY_QUERY, CEPH_CLUSTER_FILTER, "حجم کل کلاستر"));
 
         // 2. Used Capacity
-        //  cephResponseList.add(fetchAndPrepareResponse(CEPH_USED_CAPACITY_ID, CEPH_USED_CAPACITY_QUERY, Ceph_Filter_Value_1, "حجم مصرف شده کلاستر ذخیره سازی سبزسیستم"));
+        dashboardResultList.add(fetchAndPrepareResponse(1, CEPH_CLUSTER_USED_CAPACITY_QUERY, CEPH_CLUSTER_FILTER, "حجم مصرف شده کلاستر"));
 
-        // 3. messenger usage
-        for (int i = 0; i < 1; i++) {
-            String apiResponse = usageApiCall(i, MESSENGER_USAGE_QUERY_1, Ceph_Filter_Value_2);
-            CephApiData apiData = modelExtract(apiResponse);
-            String resultValue1 = makeResponseValue(apiData);
-            cephResponseList.add(new Response(i + 3, "title", resultValue1, "PB"));
-            String apiResponse2 = usageApiCall(i, MESSENGER_USAGE_QUERY_2, Ceph_Filter_Value_2);
-            CephApiData apiData2 = modelExtract(apiResponse2);
-            String resultValue2 = makeResponseValue(apiData);
-            cephResponseList.add(new Response(i + 3, "title", resultValue2, "PB"));
-
-        }
-
-        return cephResponseList;
+        return apiResponseService.createResponse("آمار استوریج سبزسیستم - CEPH", dashboardResultList);
     }
 
-    private String usageApiCall(int i, String messengerUsageQuery1, String cephFilterValue2) {
-        return webClient
-                .get()
-                .uri(BASE_URL + messengerUsageQuery1, cephFilterValue2, messengerList.get(i))
-                .retrieve()
-                .bodyToMono(String.class)
-                .block();
+    @Override
+    public Response getCephMessengerUsageResponseList() throws JsonProcessingException {
+        dashboardResultList = new ArrayList<>();
+        int counter = 0;
+        do {
+            var response = fetchAndPrepareResponse(
+                    counter,
+                    MESSENGER_USAGE_QUERY,
+                    CEPH_USAGE_MESSENGER_FILTER.get(counter),
+                    CEPH_USAGE_MESSENGER_TITLE.get(counter));
+            dashboardResultList.add(response);
+            counter += 1;
+        } while (counter < 4);
+
+        return apiResponseService.createResponse( "استوریج سبزسیستم - حجم مصرفی پیام رسان ها", dashboardResultList);
     }
 
-    private Response fetchAndPrepareResponse(int id, String query, String filterValue, String title) throws JsonProcessingException {
 
-        String apiResponse = apiCall(query, filterValue);
+    private DashboardResult fetchAndPrepareResponse(int id, String query, String filterValue, String title) throws JsonProcessingException {
+        CephApiData apiData = apiCall(query, filterValue);
+        var response = makeResponseValue(apiData);
+        response.setId(id + 1);
+        response.setTitle(title);
 
-        CephApiData apiData = modelExtract(apiResponse);
-
-        String resultValue = makeResponseValue(apiData);
-
-        return new Response(id, title, resultValue, "PB");
+        return response;
     }
 
-    private String makeResponseValue(CephApiData apiData) {
+    private DashboardResult makeResponseValue(CephApiData apiData) {
+        DashboardResult dashboardResult = new DashboardResult();
         String bytesString = apiData
                 .getData()
                 .getResult()
@@ -98,23 +100,41 @@ public class DashboardServiceImpl implements DashboardService {
                 .getValue()
                 .get(1)
                 .toString();
-        BigDecimal petaBytes = new BigDecimal(bytesString);
-        BigDecimal finalValue = petaBytes.divide(new BigDecimal("1000").pow(5), 1, RoundingMode.HALF_UP);
-        DecimalFormat df = new DecimalFormat("00.0");
+        BigDecimal output = new BigDecimal(bytesString);
+        BigDecimal petaBytes = output.divide(new BigDecimal("1000").pow(5), 3, RoundingMode.HALF_UP);
+        dashboardResult.setValue(String.valueOf(petaBytes));
+        BigDecimal displayValue;
 
-        return bytesString;
+        if (petaBytes.compareTo(BigDecimal.ONE) >= 0) {
+            displayValue = petaBytes;
+            dashboardResult.setUnit("PB");
+        } else {
+            BigDecimal divide = new BigDecimal("1").divide(new BigDecimal("1024").pow(1), RoundingMode.HALF_UP);
+            if (petaBytes.compareTo(new BigDecimal("1024")) < 0 && petaBytes.compareTo(BigDecimal.ONE) < 0 && petaBytes.compareTo(divide) >= 0) {
+                displayValue = petaBytes.multiply(new BigDecimal("1024"));
+                dashboardResult.setUnit("TB");
+            } else if (petaBytes.compareTo(divide) < 0 && petaBytes.compareTo(new BigDecimal("1").divide(new BigDecimal("1024").pow(2), RoundingMode.HALF_UP)) >= 0) {
+                displayValue = petaBytes.multiply(new BigDecimal("1024").pow(2));
+                dashboardResult.setUnit("GB");
+            } else {
+                displayValue = petaBytes.multiply(new BigDecimal("1024").pow(3));
+                dashboardResult.setUnit("KB");
+            }
+        }
+        DecimalFormat df = new DecimalFormat("0.0");
+        String formattedValue = df.format(displayValue);
+        dashboardResult.setValue(formattedValue);
+
+        return dashboardResult;
     }
 
-    private String apiCall(String query, String filterValue) {
-        return webClient
+    private CephApiData apiCall(String query, String filterValue) throws JsonProcessingException {
+        String jsonResponse = webClient
                 .get()
                 .uri(BASE_URL + query, filterValue)
                 .retrieve()
                 .bodyToMono(String.class)
                 .block();
-    }
-
-    private static CephApiData modelExtract(String jsonResponse) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
 
         return objectMapper.readValue(jsonResponse, CephApiData.class);

@@ -1,11 +1,16 @@
 package ir.tic.clouddc.dashboard;
 
+import ir.tic.clouddc.api.Result;
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
-@Data
 @AllArgsConstructor
-public class Response {
+@NoArgsConstructor
+@Getter
+@Setter
+public class DashboardResult extends Result {
 
     private int id;
 

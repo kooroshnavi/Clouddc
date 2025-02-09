@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -56,7 +57,8 @@ public class SecurityConfig {
 
 
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+    @Order(1)
+    public SecurityFilterChain mvcFilterChain(HttpSecurity http) throws Exception {
         http
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
@@ -101,13 +103,14 @@ public class SecurityConfig {
                         .permitAll()
                         .requestMatchers("fonts/**")
                         .permitAll()
-                        .requestMatchers("/api/**")
+                        .requestMatchers("/api/dashboard/**")
                         .permitAll()
                         .anyRequest().authenticated()
                 );
 
         return http.build();
     }
+
 
     @Bean
     public HttpSessionEventPublisher httpSessionEventPublisher() {

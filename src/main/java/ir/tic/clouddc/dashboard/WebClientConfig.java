@@ -20,6 +20,7 @@ public class WebClientConfig {
     public WebClientConfig(SslContext sslContext) {
         this.sslContext = sslContext;
     }
+
     @Bean
     public WebClient webClient() {
         HttpClient httpClient = HttpClient
@@ -32,8 +33,9 @@ public class WebClientConfig {
         uriBuilderFactory.setEncodingMode(DefaultUriBuilderFactory.EncodingMode.VALUES_ONLY);
 
         return WebClient.builder()
+                //   .baseUrl(BASE_URL)
                 .uriBuilderFactory(uriBuilderFactory)
-                //  .baseUrl(BASE_URL)
+                //      .baseUrl(BASE_URL)
                 //   .defaultCookie("cookieKey", "cookieValue")
                 .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
                 //     .defaultUriVariables(Collections.singletonMap("url", "http://localhost:8080"))
