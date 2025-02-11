@@ -2,6 +2,7 @@ package ir.tic.clouddc.security;
 
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
+import ir.tic.clouddc.exception.MvcExceptionHandler;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
@@ -13,12 +14,17 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.session.SessionRegistry;
 import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HeaderWriterLogoutHandler;
 import org.springframework.security.web.header.writers.ClearSiteDataHeaderWriter;
 import org.springframework.security.web.session.HttpSessionEventPublisher;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
+import org.springframework.security.web.util.matcher.NegatedRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLException;
@@ -46,10 +52,16 @@ public class SecurityConfig {
 
     private final ResourceLoader resourceLoader;
 
+    private final ApiAuthenticationFilter apiAuthenticationFilter;
+
+    private final MvcExceptionHandler mvcExceptionHandler;
+
     @Autowired
-    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService, ResourceLoader resourceLoader) throws FileNotFoundException, SSLException {
+    public SecurityConfig(NotificationService notificationService, OTPFailureHandler otpFailureHandler, PersonService personService, ResourceLoader resourceLoader, ApiAuthenticationFilter apiAuthenticationFilter, MvcExceptionHandler mvcExceptionHandler) throws FileNotFoundException, SSLException {
         this.personService = personService;
         this.resourceLoader = resourceLoader;
+        this.apiAuthenticationFilter = apiAuthenticationFilter;
+        this.mvcExceptionHandler = mvcExceptionHandler;
         this.clearSiteData = new HeaderWriterLogoutHandler(new ClearSiteDataHeaderWriter(ClearSiteDataHeaderWriter.Directive.ALL));
         this.notificationService = notificationService;
         this.otpFailureHandler = otpFailureHandler;
@@ -58,8 +70,21 @@ public class SecurityConfig {
 
     @Bean
     @Order(1)
-    public SecurityFilterChain mvcFilterChain(HttpSecurity http) throws Exception {
+    public SecurityFilterChain apiSecurityFilterChain(HttpSecurity http) throws Exception {
         http
+                .securityMatcher(new NegatedRequestMatcher(new OrRequestMatcher(new AntPathRequestMatcher("/api/**"))))
+                .authorizeHttpRequests(auth -> auth.anyRequest().authenticated())
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .addFilterBefore(apiAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain mvcSecurityFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/login")
                 .formLogin(formLogin -> formLogin
                         .loginPage("/login")
                         .permitAll()
@@ -93,20 +118,19 @@ public class SecurityConfig {
                         .logoutSuccessUrl("/login?logout=true")
                         .permitAll()
                 )
-                // other configuration options
-                .authorizeHttpRequests(authCustomizer -> authCustomizer
-                        .requestMatchers("login/**")
-                        .permitAll()
-                        .requestMatchers("otp/**")
-                        .permitAll()
-                        .requestMatchers("panel/**")
-                        .permitAll()
-                        .requestMatchers("fonts/**")
-                        .permitAll()
-                        .requestMatchers("/api/dashboard/**")
-                        .permitAll()
-                        .anyRequest().authenticated()
-                );
+                // other configuration options;
+
+        .authorizeHttpRequests(authCustomizer -> authCustomizer
+                .requestMatchers("/login**")
+                .permitAll()
+                .requestMatchers("/otp/**")
+                .permitAll()
+                .requestMatchers("/panel/**")
+                .permitAll()
+                .requestMatchers("/fonts/**")
+                .permitAll()
+                .anyRequest().authenticated()
+        );
 
         return http.build();
     }

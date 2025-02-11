@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.tic.clouddc.api.ApiResponseService;
 import ir.tic.clouddc.api.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -52,6 +53,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('API_GET_AUTH')")
     public Response getCephClusterResponseList() throws JsonProcessingException {
         dashboardResultList = new ArrayList<>();
 
@@ -65,6 +67,7 @@ public class DashboardServiceImpl implements DashboardService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('API_GET_AUTH')")
     public Response getCephMessengerUsageResponseList() throws JsonProcessingException {
         dashboardResultList = new ArrayList<>();
         int counter = 0;

@@ -17,12 +17,12 @@ import java.util.NoSuchElementException;
 
 @Slf4j
 @ControllerAdvice
-public class GlobalExceptionHandler {
+public class MvcExceptionHandler {
 
     private final NotificationService notificationService;
 
     @Autowired
-    public GlobalExceptionHandler(NotificationService notificationService) {
+    public MvcExceptionHandler(NotificationService notificationService) {
         this.notificationService = notificationService;
     }
 

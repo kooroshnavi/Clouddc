@@ -16,6 +16,7 @@ import java.util.List;
 @Getter
 @Setter
 public final class AuthToken {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "TokenID")
