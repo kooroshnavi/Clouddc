@@ -24,6 +24,7 @@ import java.util.List;
 
 @Service
 public class DataServiceImpl implements DataService {
+
     private final WebClient webClient;
 
     private static final String BASE_URL = "https://monitoring.it.tic.ir/ts-p/api/v1/query";
