@@ -94,16 +94,38 @@ public class SoapNotificationService implements NotificationService {
                             " با سلام و احترام، خوش آمدید." +
                             System.lineSeparator() +
                             System.lineSeparator() +
-                            "ثبت نام شما انجام شد. نام کاربری شماره تلفن همراه و کد ورود از طریق تیک گرام ارسال خواهد شد." +
+                            "ثبت نام تان انجام شد. نام کاربری شماره تلفن همراه و کد ورود را از طریق تیک گرام می فرستیم." +
                             System.lineSeparator() +
                             "در این سامانه اطلاعات و رخدادهای مرتبط با تجهیزات شبکه ابر زیرساخت، ثبت، بروزرسانی و گزارش گیری می گردد. " +
                             System.lineSeparator() +
                             "لذا خواهشمندست در ثبت اطلاعات هر بخش دقت لازم را به عمل آورید. " +
                             System.lineSeparator() +
-                            "* توسعه ادامه دارد. خواهشمندست بازخوردهای خود را مطرح فرمایید." +
+                            "توسعه و بهبود فعلا ادامه دارد. نظرات شما ارزشمند است. آنها را بگویید چه رودررو چه پشت سر" +
                             System.lineSeparator() +
-                            "در حال حاضر دسترسی صرفا در بستر شبکه داخلی TIC امکان پذیر است." +
+                            "در حال حاضر صرفا در شبکه داخلی TIC در دسترس هستیم." +
                             System.lineSeparator() +
+                            System.lineSeparator() +
+                            "اداره کل خدمات و فناوری های نوین - معاونت فناوری اطلاعات" +
+                            System.lineSeparator() +
+                            "Clouddc.tic.ir";
+
+        } else if (role == '6') {
+            welcomingMessage =
+                    "همکار گرامی، " +
+                            personName + "،" +
+                            " با سلام و احترام، خوش آمدید." +
+                            System.lineSeparator() +
+                            System.lineSeparator() +
+                            "ثبت نام انجام شد. نام کاربری شماره تلفن همراه و کد ورود را از طریق تیک گرام می فرستیم." +
+                            System.lineSeparator() +
+                            "صدور و مدیریت توکن وب سرویس داشبوردهای ابری از طریق این سامانه امکان پذیر است." +
+                            System.lineSeparator() +
+                            "در حال حاضر صرفا در شبکه داخلی TIC در دسترس هستیم." +
+                            System.lineSeparator() +
+                            "توسعه و بهبود فعلا ادامه دارد. نظرات شما ارزشمند است. آنها را بگویید چه رودررو چه پشت سر" +
+                            System.lineSeparator() +
+                            System.lineSeparator() +
+                            "اداره کل خدمات و فناوری های نوین - معاونت فناوری اطلاعات" +
                             System.lineSeparator() +
                             "Clouddc.tic.ir";
 
@@ -122,6 +144,8 @@ public class SoapNotificationService implements NotificationService {
                             System.lineSeparator() +
                             "در حال حاضر دسترسی صرفا در بستر شبکه داخلی TIC امکان پذیر است." +
                             System.lineSeparator() +
+                            System.lineSeparator() +
+                            "اداره کل خدمات و فناوری های نوین - معاونت فناوری اطلاعات" +
                             System.lineSeparator() +
                             "Clouddc.tic.ir";
 

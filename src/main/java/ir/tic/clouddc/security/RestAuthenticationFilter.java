@@ -1,8 +1,8 @@
 package ir.tic.clouddc.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ir.tic.clouddc.rpc.response.ErrorResult;
-import ir.tic.clouddc.rpc.response.Response;
+import ir.tic.clouddc.api.response.ErrorResult;
+import ir.tic.clouddc.api.response.Response;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -21,20 +21,20 @@ public class RestAuthenticationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String RPC_URL_1 = "/rpc/ceph/cluster";
+    private static final String API_URL_1 = "/api/ceph/cluster";
 
-    private static final String RPC_URL_2 = "/rpc/ceph/messenger/usage";
+    private static final String API_URL_2 = "/api/ceph/messenger/usage";
 
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         var requestURI = request.getRequestURI();
         boolean error = false;
-        if (!requestURI.contains("rpc")) {
+        if (!requestURI.contains("api")) {
             filterChain.doFilter(request, response);
         } else {
             if (checkURLValidity(requestURI)) {
-                var authentication = RestAuthenticationService.authenticate(request);
+                var authentication = ApiAuthenticationService.authenticate(request);
                 if (authentication.isPresent()) {
                     SecurityContextHolder.getContext().setAuthentication(authentication.get());
                     filterChain.doFilter(request, response);
@@ -63,6 +63,6 @@ public class RestAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean checkURLValidity(String requestURI) {
-        return requestURI.equals(RPC_URL_1) || requestURI.equals(RPC_URL_2);
+        return requestURI.equals(API_URL_1) || requestURI.equals(API_URL_2);
     }
 }

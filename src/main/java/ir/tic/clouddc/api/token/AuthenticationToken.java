@@ -1,8 +1,8 @@
-package ir.tic.clouddc.rpc.token;
+package ir.tic.clouddc.api.token;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import ir.tic.clouddc.person.Person;
-import ir.tic.clouddc.rpc.response.Result;
+import ir.tic.clouddc.api.response.Result;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

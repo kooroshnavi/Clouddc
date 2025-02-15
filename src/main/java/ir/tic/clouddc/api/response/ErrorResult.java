@@ -1,4 +1,4 @@
-package ir.tic.clouddc.rpc.response;
+package ir.tic.clouddc.api.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

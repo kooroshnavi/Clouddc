@@ -1,9 +1,8 @@
-package ir.tic.clouddc.rpc.token;
+package ir.tic.clouddc.api.token;
 
 import ir.tic.clouddc.person.PersonService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.annotation.PostConstruct;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.http.HttpServletRequest;
 import org.apache.commons.text.RandomStringGenerator;
 import org.hibernate.Hibernate;
@@ -20,6 +19,7 @@ import java.util.List;
 
 @Service
 public class TokenServiceImpl implements TokenService {
+
     private final TokenRepository tokenRepository;
 
     private final RequestRecordRepository requestRecordRepository;
@@ -37,18 +37,14 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public boolean hasToken() {
-        return tokenRepository.existsByValidAndPersonUsernameAndAndExpiryDateIsGreaterThanEqual(true, personService.getCurrentUsername(), UtilService.getDATE());
+        return tokenRepository.existsByValidAndPersonUsernameAndExpiryDateIsGreaterThanEqual(true, personService.getCurrentUsername(), UtilService.getDATE());
     }
 
     @Override
     @PreAuthorize("hasAnyAuthority('ADMIN', 'WEBSERVICE')")
     public AuthenticationToken getToken(Integer tokenId) {
         AuthenticationToken authenticationToken;
-        try {
-            authenticationToken = tokenRepository.getReferenceById(tokenId);
-        } catch (EntityNotFoundException exception) {
-            return null;
-        }
+        authenticationToken = tokenRepository.getReferenceById(tokenId);
         authenticationToken.setPersianRegisterDate(UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime()));
         authenticationToken.setPersianExpiryDate(UtilService.getFormattedPersianDate(authenticationToken.getExpiryDate()));
 
@@ -74,6 +70,7 @@ public class TokenServiceImpl implements TokenService {
     public void revokeToken() {
         var username = personService.getCurrentUsername();
         tokenRepository.revokeToken(username, false, UtilService.getDATE());
+
         validTokens = tokenRepository.getValidTokens();
     }
 
@@ -91,6 +88,7 @@ public class TokenServiceImpl implements TokenService {
         authenticationToken.setRegisterDate(LocalDateTime.now());
         authenticationToken.setPerson(personService.getCurrentPerson());
         tokenRepository.save(authenticationToken);
+
         validTokens = tokenRepository.getValidTokens();
     }
 
@@ -116,6 +114,7 @@ public class TokenServiceImpl implements TokenService {
                 authenticationToken.setPersianExpiryDate(UtilService.getFormattedPersianDate(authenticationToken.getExpiryDate()));
             });
         }
+
         return personTokenList;
     }
 

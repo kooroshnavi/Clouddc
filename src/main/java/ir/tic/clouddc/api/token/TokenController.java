@@ -1,4 +1,4 @@
-package ir.tic.clouddc.rpc.token;
+package ir.tic.clouddc.api.token;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -11,7 +11,7 @@ import java.util.Comparator;
 import java.util.List;
 
 @Controller
-@RequestMapping("/webservice")
+@RequestMapping("/webservice/token")
 public class TokenController {
 
     private final TokenService tokenService;
@@ -20,8 +20,8 @@ public class TokenController {
         this.tokenService = tokenService;
     }
 
-    @GetMapping("/token")
-    public String tokenView1(Model model) {
+    @GetMapping
+    public String tokenView(Model model) {
         var tokenList = tokenService.getTokenList().stream().sorted(Comparator.comparing(AuthenticationToken::isValid).reversed()).toList();
         model.addAttribute("tokenList", tokenList);
         if (!model.containsAttribute("hasToken")) {
@@ -39,7 +39,7 @@ public class TokenController {
         return "tokenView";
     }
 
-    @GetMapping("/token/register")
+    @GetMapping("/register")
     public String registerToken(RedirectAttributes redirectAttributes) {
         boolean hasToken = tokenService.hasToken();
         if (hasToken) {
@@ -48,10 +48,11 @@ public class TokenController {
             tokenService.register();
             redirectAttributes.addFlashAttribute("success", true);
         }
+
         return "redirect:/webservice/token";
     }
 
-    @GetMapping("/token/{tokenId}/history")
+    @GetMapping("/{tokenId}/history")
     public String showTokenHistory(Model model, @PathVariable Integer tokenId) {
         var token = tokenService.getToken(tokenId);
         if (token == null) {
@@ -65,7 +66,7 @@ public class TokenController {
         return "tokenHistoryList";
     }
 
-    @GetMapping("/token/revoke")
+    @GetMapping("/revoke")
     public String revokeToken(RedirectAttributes redirectAttributes) {
         boolean hasToken = tokenService.hasToken();
         if (hasToken) {
@@ -75,6 +76,7 @@ public class TokenController {
         else {
             redirectAttributes.addFlashAttribute("hasToken", true);
         }
+
         return "redirect:/webservice/token";
     }
 }

@@ -1,23 +1,22 @@
-package ir.tic.clouddc.rpc.response;
+package ir.tic.clouddc.api.data;
 
+import ir.tic.clouddc.api.response.Result;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.List;
-
 @AllArgsConstructor
 @NoArgsConstructor
 @Getter
 @Setter
-public class Response {
+public class CephResult extends Result {
 
-    private String status; // OK -- Error
+    private int id;
 
     private String title;
 
-    private String localDateTime;
+    private String value;
 
-    List<? extends Result> resultList;
+    private String unit;
 }

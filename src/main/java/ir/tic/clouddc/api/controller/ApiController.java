@@ -1,9 +1,9 @@
-package ir.tic.clouddc.rpc.controller;
+package ir.tic.clouddc.api.controller;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import ir.tic.clouddc.rpc.data.DataService;
-import ir.tic.clouddc.rpc.response.Response;
-import ir.tic.clouddc.rpc.token.TokenService;
+import ir.tic.clouddc.api.data.DataService;
+import ir.tic.clouddc.api.response.Response;
+import ir.tic.clouddc.api.token.TokenService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,14 +16,15 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.Objects;
 
 @RestController
-@RequestMapping("/rpc")
-public class RpcController {
+@RequestMapping("/api")
+public class ApiController {
+
     private final TokenService tokenService;
 
     private final DataService dataService;
 
     @Autowired
-    public RpcController(TokenService tokenService, DataService dataService) {
+    public ApiController(TokenService tokenService, DataService dataService) {
         this.tokenService = tokenService;
         this.dataService = dataService;
     }

@@ -1,4 +1,4 @@
-package ir.tic.clouddc.rpc.token;
+package ir.tic.clouddc.api.token;
 
 import jakarta.servlet.http.HttpServletRequest;
 

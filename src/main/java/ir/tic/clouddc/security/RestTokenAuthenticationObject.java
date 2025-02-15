@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import java.util.Collection;
 
 public class RestTokenAuthenticationObject extends AbstractAuthenticationToken {
+
     private final String tokenId;
 
     public RestTokenAuthenticationObject(Collection<? extends GrantedAuthority> authorities, String tokenId) {

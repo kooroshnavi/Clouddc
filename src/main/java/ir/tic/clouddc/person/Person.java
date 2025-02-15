@@ -2,7 +2,7 @@ package ir.tic.clouddc.person;
 
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.rpc.token.AuthenticationToken;
+import ir.tic.clouddc.api.token.AuthenticationToken;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;

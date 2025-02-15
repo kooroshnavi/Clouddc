@@ -1,6 +1,6 @@
 package ir.tic.clouddc.security;
 
-import ir.tic.clouddc.rpc.token.TokenServiceImpl;
+import ir.tic.clouddc.api.token.TokenServiceImpl;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -10,7 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 @Slf4j
-public class RestAuthenticationService {
+public class ApiAuthenticationService {
+
     private static final String AUTH_TOKEN_HEADER_NAME = "AUTH-TOKEN";
 
     public static Optional<Authentication> authenticate(HttpServletRequest request) {

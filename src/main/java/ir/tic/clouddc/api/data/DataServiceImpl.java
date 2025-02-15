@@ -1,10 +1,10 @@
-package ir.tic.clouddc.rpc.data;
+package ir.tic.clouddc.api.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import ir.tic.clouddc.rpc.response.ErrorResult;
-import ir.tic.clouddc.rpc.response.Response;
-import ir.tic.clouddc.rpc.response.Result;
+import ir.tic.clouddc.api.response.ErrorResult;
+import ir.tic.clouddc.api.response.Response;
+import ir.tic.clouddc.api.response.Result;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -105,7 +105,6 @@ public class DataServiceImpl implements DataService {
                 , cephDataResultList);
     }
 
-
     private Result fetchAndPrepareResult(int id, String query, String filterValue, String title) throws JsonProcessingException {
         var remoteResult = grabRemoteData(query, filterValue);
         if (remoteResult instanceof RemoteResult remoteValidData) {
@@ -171,6 +170,6 @@ public class DataServiceImpl implements DataService {
     }
 
     private Mono<? extends Throwable> remoteErrorHandler() {
-        return Mono.error(new UnavailableException("Unavailable"));
+        return Mono.error(new UnavailableException("Remote API Unavailable"));
     }
 }

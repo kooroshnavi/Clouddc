@@ -1,7 +1,7 @@
-package ir.tic.clouddc.rpc.data;
+package ir.tic.clouddc.api.data;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import ir.tic.clouddc.rpc.response.Response;
+import ir.tic.clouddc.api.response.Response;
 
 public interface DataService {
 
