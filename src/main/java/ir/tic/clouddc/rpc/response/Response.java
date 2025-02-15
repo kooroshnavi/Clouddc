@@ -1,4 +1,4 @@
-package ir.tic.clouddc.api;
+package ir.tic.clouddc.rpc.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -11,7 +11,9 @@ import java.util.List;
 @NoArgsConstructor
 @Getter
 @Setter
-public final class Response {
+public class Response {
+
+    private String status; // OK -- Error
 
     private String title;
 

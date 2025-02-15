@@ -27,7 +27,7 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
     private final OTPService otpService;
     private final PersonService personService;
     private final AddressRepository addressRepository;
-    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");  // char role: 0.1.2.3.4
+    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN", "WEBSERVICE");  // char role: 0.1.2.3.4
 
     @Autowired
     public OTPAuthenticationProvider(OTPService otpService, PersonService personService, AddressRepository addressRepository) {
@@ -71,6 +71,7 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
                 personRoles.add(new SimpleGrantedAuthority(ROLES.get(1)));
                 personRoles.add(new SimpleGrantedAuthority(ROLES.get(3)));
             }
+            case '6' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(5)));
         }
         // map: 01234/5:13
 

@@ -5,14 +5,13 @@ import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Collection;
 
-public class ApiTokenAuthentication extends AbstractAuthenticationToken {
+public class RestTokenAuthenticationObject extends AbstractAuthenticationToken {
+    private final String tokenId;
 
-    private final String apiToken;
-
-    public ApiTokenAuthentication(Collection<? extends GrantedAuthority> authorities, String apiToken) {
+    public RestTokenAuthenticationObject(Collection<? extends GrantedAuthority> authorities, String tokenId) {
         super(authorities);
-        this.apiToken = apiToken;
-        setAuthenticated(true);
+        this.tokenId = tokenId;
+        this.setAuthenticated(true);
     }
 
     @Override
@@ -22,6 +21,6 @@ public class ApiTokenAuthentication extends AbstractAuthenticationToken {
 
     @Override
     public Object getPrincipal() {
-        return apiToken;
+        return this.tokenId;
     }
 }

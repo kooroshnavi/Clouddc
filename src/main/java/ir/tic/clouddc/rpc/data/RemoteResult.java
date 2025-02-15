@@ -1,13 +1,16 @@
-package ir.tic.clouddc.dashboard;
+package ir.tic.clouddc.rpc.data;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import lombok.Data;
+import ir.tic.clouddc.rpc.response.Result;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.util.List;
 import java.util.Map;
 
-@Data
-public class CephApiData {
+@Getter
+@Setter
+public class RemoteResult extends Result {
 
     private String status;
 

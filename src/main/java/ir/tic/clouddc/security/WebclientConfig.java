@@ -1,23 +1,24 @@
-package ir.tic.clouddc.dashboard;
+package ir.tic.clouddc.security;
 
 import io.netty.handler.ssl.SslContext;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 import reactor.netty.http.client.HttpClient;
 
-@Configuration
-public class WebClientConfig {
+@Component
+public class WebclientConfig {
+
     private final SslContext sslContext;
 
     @Autowired
-    public WebClientConfig(SslContext sslContext) {
+    public WebclientConfig(SslContext sslContext) {
         this.sslContext = sslContext;
     }
 
