@@ -19,10 +19,13 @@ public interface TokenRepository extends JpaRepository<AuthenticationToken, Inte
     @Query("select t from AuthenticationToken t where t.person.username = :username")
     List<AuthenticationToken> getPersonTokenList(@Param("username") String username);
 
-    boolean existsByValidAndPersonUsernameAndExpiryDateIsGreaterThanEqual(boolean valid, String username, LocalDate localDate);
+    boolean existsByValidAndPersonUsername(boolean valid, String username);
 
     @Transactional
     @Modifying
     @Query("update AuthenticationToken t set t.valid = :valid, t.expiryDate = :expiryDate where t.person.username = :username and t.valid")
     void revokeToken(@Param("username") String username, @Param("valid") boolean valid, @Param("expiryDate") LocalDate expiryDate);
+
+    @Query("select t from AuthenticationToken t")
+    List<AuthenticationToken> fetchAll();
 }

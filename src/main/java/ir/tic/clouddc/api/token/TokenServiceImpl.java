@@ -37,7 +37,7 @@ public class TokenServiceImpl implements TokenService {
 
     @Override
     public boolean hasToken() {
-        return tokenRepository.existsByValidAndPersonUsernameAndExpiryDateIsGreaterThanEqual(true, personService.getCurrentUsername(), UtilService.getDATE());
+        return tokenRepository.existsByValidAndPersonUsername(true, personService.getCurrentUsername());
     }
 
     @Override
@@ -52,7 +52,7 @@ public class TokenServiceImpl implements TokenService {
     }
 
     @Override
-    @PreAuthorize("#token.person.username == authentication.name && hasAnyAuthority('ADMIN', 'WEBSERVICE')")
+    @PreAuthorize("#token.person.username == authentication.name || hasAnyAuthority('ADMIN')")
     public List<RequestRecord> getRequestRecordHistoryList(@Param("token") AuthenticationToken token) {
         var requestList = Hibernate.unproxy(token, AuthenticationToken.class).getRequestRecords();
         if (!requestList.isEmpty()) {
@@ -71,6 +71,25 @@ public class TokenServiceImpl implements TokenService {
         var username = personService.getCurrentUsername();
         tokenRepository.revokeToken(username, false, UtilService.getDATE());
 
+        updateActiveTokenList();
+    }
+
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('ADMIN')")
+    public boolean revokePersonToken(Integer personId) {
+        var person = personService.getReferencedPerson(personId);
+        if (tokenRepository.existsByValidAndPersonUsername(true, person.getUsername())) {
+            tokenRepository.revokeToken(person.getUsername(), false, UtilService.getDATE());
+            updateActiveTokenList();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    private void updateActiveTokenList() {
         validTokens = tokenRepository.getValidTokens();
     }
 
@@ -89,7 +108,7 @@ public class TokenServiceImpl implements TokenService {
         authenticationToken.setPerson(personService.getCurrentPerson());
         tokenRepository.save(authenticationToken);
 
-        validTokens = tokenRepository.getValidTokens();
+        updateActiveTokenList();
     }
 
     @Override
@@ -107,15 +126,21 @@ public class TokenServiceImpl implements TokenService {
     @PreAuthorize("hasAnyAuthority('ADMIN', 'WEBSERVICE')")
     public List<AuthenticationToken> getTokenList() {
         var currentUsername = personService.getCurrentUsername();
-        List<AuthenticationToken> personTokenList = tokenRepository.getPersonTokenList(currentUsername);
-        if (!personTokenList.isEmpty()) {
-            personTokenList.forEach(authenticationToken -> {
+        List<AuthenticationToken> tokenList;
+        if (personService.hasAdminAuthority()) {
+            tokenList = tokenRepository.fetchAll();
+        } else {
+            tokenList = tokenRepository.getPersonTokenList(currentUsername);
+        }
+
+        if (!tokenList.isEmpty()) {
+            tokenList.forEach(authenticationToken -> {
                 authenticationToken.setPersianRegisterDate(UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime()));
                 authenticationToken.setPersianExpiryDate(UtilService.getFormattedPersianDate(authenticationToken.getExpiryDate()));
             });
         }
 
-        return personTokenList;
+        return tokenList;
     }
 
     public static int isValidToken(String providedToken) {

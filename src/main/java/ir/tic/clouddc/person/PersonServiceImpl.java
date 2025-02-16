@@ -225,4 +225,11 @@ public class PersonServiceImpl implements PersonService {
     public String getPersonAddressByUsername(String username) {
         return personRepository.fetchPersonAddressByUsername(username);
     }
+
+    @Override
+    public boolean hasAdminAuthority() {
+        return getCurrentPersonRoleList()
+                .stream()
+                .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"));
+    }
 }

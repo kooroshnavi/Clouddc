@@ -71,11 +71,36 @@
                     </h4>
                     <br>
 
+                    <button th:if="${token.valid && not match}" sec:authorize="hasAnyAuthority('ADMIN')"
+                            type="button" class="btn btn-danger" data-bs-toggle="modal"
+                            data-bs-target="#exampleWarningModal">ابطال این توکن
+                    </button>
+                    <div class="modal fade" id="exampleWarningModal" tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content bg-danger">
+                                <div class="modal-header border-dark">
+                                    <h5 class="modal-title text-dark">همکار گرامی،</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-dark">
+                                    <p>در صورت تایید، توکن کاربر غیرفعال شده و جهت دریافت اطلاعات می بایست توکن جدید صادر کند. در صورت لزوم می توانید کاربر مذکور را نیز غیرفعال نمایید.</p>
+                                </div>
+                                <div class="modal-footer border-dark">
+                                    <a th:href="@{/webservice/token/person/{personId}/revoke (personId=${token.person.id})}" class="btn btn-outline-dark px-10 radius-30">ابطال توکن کاربر</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
                             <thead>
                             <tr>
                                 <th scope="col">توکن</th>
+                                <th th:if="${adminAccess}" scope="col">صادر کننده</th>
                                 <th scope="col">تاریخ انقضا</th>
                                 <th scope="col">وضعیت</th>
                             </tr>
@@ -84,6 +109,7 @@
                             <tbody>
                             <tr>
                                 <td th:text="${token.token}"/>
+                                <td th:if="${adminAccess}" class="text-bg-info" th:text="${token.getPerson().name}"/>
                                 <td th:text="${token.getPersianExpiryDate()}"/>
                                 <td th:if="${token.valid}" class="text-bg-success" th:text="فعال"/>
                                 <td th:unless="${token.valid}" th:text="غیرفعال" class="text-bg-danger">

@@ -163,9 +163,8 @@
                                         aria-label="Close"></button>
                             </div>
                             <div class="modal-body text-dark">
-                                <p>* از طریق توکن ایجاد شده می توانید اطلاعات وب سرویس درخواستی را دریافت نمایید.</p>
-                                <p>* مدت انقضای هر توکن 100 روز است.</p>
-                                <p>* امکان تمدید توکن از حداقل سه هفته مانده به تاریخ انقضا امکان پذیر است.</p>
+                                <p>* مدت اعتبار هر توکن 100 روز است.</p>
+                                <p>* امکان تمدید توکن از حداقل سه هفته مانده به تاریخ انقضا امکان‌پذیر است.</p>
                                 <p>* در صورت لزوم با مراجعه به همین صفحه نسبت به ابطال توکن اقدام نمایید.</p>
                                 <p>* توکن برای شما امکان دسترسی به اطلاعات شبکه ابر شرکت را فراهم می کند. لطفا از
                                     اطلاعات آن صرفا در سامانه های داخلی شرکت استفاده فرمایید.</p>
@@ -193,7 +192,7 @@
                                         aria-label="Close"></button>
                             </div>
                             <div class="modal-body text-dark">
-                                <p>در صورت تایید، توکن غیرفعال شده و جهت دریافت اطلاعات می بایست توکن جدید صادر
+                                <p>در صورت تایید، توکن شما غیرفعال شده و جهت دریافت اطلاعات می بایست توکن جدید صادر
                                     گردد.</p>
                             </div>
                             <div class="modal-footer border-dark">
@@ -214,6 +213,7 @@
                     <tr>
                         <th>ردیف</th>
                         <th>توکن</th>
+                        <th th:if="${adminAccess}">صادر کننده</th>
                         <th>تاریخ صدور</th>
                         <th>انقضا</th>
                         <th>وضعیت</th>
@@ -228,10 +228,14 @@
                         <td th:if="${token.valid}" class="text-bg-success" th:text="${token.token}"/>
                         <td th:unless="${token.valid}" th:text="${token.token}" class="text-bg-danger">
 
+                        <td th:if="${adminAccess}" class="text-bg-info" th:text="${token.getPerson().name}" dir="rtl"></td>
+
                         <td th:text="${token.getPersianRegisterDate()}" dir="rtl"></td>
 
-                        <td th:if="${token.valid}" class="text-bg-info" th:text="${token.getPersianExpiryDate()}" dir="rtl"></td>
-                        <td th:unless="${token.valid}" class="text-bg-danger" th:text="${token.getPersianExpiryDate()}" dir="rtl"></td>
+                        <td th:if="${token.valid}" class="text-bg-info" th:text="${token.getPersianExpiryDate()}"
+                            dir="rtl"></td>
+                        <td th:unless="${token.valid}" class="text-bg-danger" th:text="${token.getPersianExpiryDate()}"
+                            dir="rtl"></td>
 
                         <td th:if="${token.valid}" class="text-bg-success" th:text="فعال"/>
                         <td th:unless="${token.valid}" th:text="غیرفعال" class="text-bg-danger">

@@ -13,6 +13,8 @@ public interface TokenService {
 
     void revokeToken();
 
+    boolean revokePersonToken(Integer personId);
+
     interface ValidIdTokenProjection {
         int getId();
 

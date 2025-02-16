@@ -36,4 +36,6 @@ public interface PersonService {
     List<LoginHistory> getLoginHistoryList(Person targetPerson, String targetUsername);
 
     String getPersonAddressByUsername(String username);
+
+    boolean hasAdminAuthority();
 }

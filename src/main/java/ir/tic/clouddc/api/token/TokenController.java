@@ -1,5 +1,6 @@
 package ir.tic.clouddc.api.token;
 
+import ir.tic.clouddc.person.PersonService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -16,13 +17,20 @@ public class TokenController {
 
     private final TokenService tokenService;
 
-    public TokenController(TokenService tokenService) {
+    private final PersonService personService;
+
+    public TokenController(TokenService tokenService, PersonService personService) {
         this.tokenService = tokenService;
+        this.personService = personService;
     }
 
     @GetMapping
     public String tokenView(Model model) {
-        var tokenList = tokenService.getTokenList().stream().sorted(Comparator.comparing(AuthenticationToken::isValid).reversed()).toList();
+        var tokenList = tokenService.
+                getTokenList()
+                .stream()
+                .sorted(Comparator.comparing(AuthenticationToken::isValid).reversed())
+                .toList();
         model.addAttribute("tokenList", tokenList);
         if (!model.containsAttribute("hasToken")) {
             model.addAttribute("hasToken", false);
@@ -35,6 +43,7 @@ public class TokenController {
             isActive = tokenList.stream().anyMatch(AuthenticationToken::isValid);
         }
         model.addAttribute("isActive", isActive);
+        model.addAttribute("adminAccess", personService.hasAdminAuthority());
 
         return "tokenView";
     }
@@ -62,6 +71,12 @@ public class TokenController {
 
         model.addAttribute("requestRecordList", requestRecordList);
         model.addAttribute("token", token);
+        model.addAttribute("adminAccess", personService.hasAdminAuthority());
+        if (token.getPerson().equals(personService.getCurrentPerson())) {
+            model.addAttribute("match", true);
+        } else {
+            model.addAttribute("match", false);
+        }
 
         return "tokenHistoryList";
     }
@@ -72,8 +87,19 @@ public class TokenController {
         if (hasToken) {
             tokenService.revokeToken();
             redirectAttributes.addFlashAttribute("success", true);
+        } else {
+            redirectAttributes.addFlashAttribute("hasToken", true);
         }
-        else {
+
+        return "redirect:/webservice/token";
+    }
+
+    @GetMapping("/person/{personId}/revoke")
+    public String revokePersonToken(RedirectAttributes redirectAttributes, @PathVariable Integer personId) {
+        boolean personTokenRevoked = tokenService.revokePersonToken(personId);
+        if (personTokenRevoked) {
+            redirectAttributes.addFlashAttribute("success", true);
+        } else {
             redirectAttributes.addFlashAttribute("hasToken", true);
         }
 
