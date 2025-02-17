@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -87,6 +88,18 @@ public class TokenServiceImpl implements TokenService {
         }
 
         return false;
+    }
+
+    @Override
+    public List<AuthenticationToken> getPersonTokenList(List<AuthenticationToken> fullList, boolean valid) {
+        var currentUsername = personService.getCurrentUsername();
+
+        return fullList
+                .stream()
+                .filter(authenticationToken -> authenticationToken.isValid() == valid)
+                .filter(authenticationToken -> !authenticationToken.getPerson().getUsername().equals(currentUsername))
+                .sorted(Comparator.comparing(authenticationToken -> authenticationToken.getPerson().getId()))
+                .toList();
     }
 
     private void updateActiveTokenList() {

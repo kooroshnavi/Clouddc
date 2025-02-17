@@ -85,15 +85,16 @@
                                             aria-label="Close"></button>
                                 </div>
                                 <div class="modal-body text-dark">
-                                    <p>در صورت تایید، توکن کاربر غیرفعال شده و جهت دریافت اطلاعات می بایست توکن جدید صادر کند. در صورت لزوم می توانید کاربر مذکور را نیز غیرفعال نمایید.</p>
+                                    <p>در صورت تایید، توکن کاربر غیرفعال شده و جهت دریافت اطلاعات می بایست توکن جدید
+                                        صادر کند. در صورت لزوم می توانید کاربر مذکور را نیز غیرفعال نمایید.</p>
                                 </div>
                                 <div class="modal-footer border-dark">
-                                    <a th:href="@{/webservice/token/person/{personId}/revoke (personId=${token.person.id})}" class="btn btn-outline-dark px-10 radius-30">ابطال توکن کاربر</a>
+                                    <a th:href="@{/webservice/token/person/{personId}/revoke (personId=${token.person.id})}"
+                                       class="btn btn-outline-dark px-10 radius-30">ابطال توکن کاربر</a>
                                 </div>
                             </div>
                         </div>
                     </div>
-
 
                     <div class="table-responsive">
                         <table class="table table-bordered table-striped">
@@ -101,6 +102,7 @@
                             <tr>
                                 <th scope="col">توکن</th>
                                 <th th:if="${adminAccess}" scope="col">صادر کننده</th>
+                                <th scope="col">تاریخ صدور</th>
                                 <th scope="col">تاریخ انقضا</th>
                                 <th scope="col">وضعیت</th>
                             </tr>
@@ -108,11 +110,18 @@
 
                             <tbody>
                             <tr>
-                                <td th:text="${token.token}"/>
+                                <td th:if="${match || not token.valid}" th:text="${token.token}"/>
+                                <td th:unless="${match || not token.valid}" class="text-bg-warning">توکن فعال برای
+                                    صادرکننده آن قابل مشاهده است
+                                </td>
+
                                 <td th:if="${adminAccess}" class="text-bg-info" th:text="${token.getPerson().name}"/>
+                                <td th:text="${token.getPersianRegisterDate()()}"/>
                                 <td th:text="${token.getPersianExpiryDate()}"/>
+
                                 <td th:if="${token.valid}" class="text-bg-success" th:text="فعال"/>
                                 <td th:unless="${token.valid}" th:text="غیرفعال" class="text-bg-danger">
+
                             </tr>
 
                             </tbody>
@@ -139,7 +148,7 @@
                             <th>ردیف</th>
                             <th>زمان</th>
                             <th>آدرس درخواست کننده</th>
-                            <th>وضعیت نهایی</th>
+                            <th>نتیجه درخواست</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -151,10 +160,10 @@
                             <td th:text="${request.remoteAddress}"></td>
 
                             <td class="clock">
-                                <span th:if="${request.successful}" th:text="موفق"
+                                <span th:if="${request.successful}" th:text="دریافت اطلاعات"
                                       class="text-bg-success"></span>
                                 <span th:unless="${request.successful}"
-                                      class="text-bg-danger">خطا</span>
+                                      class="text-bg-danger">خطا در ارائه اطلاعات وب سرویس</span>
                             </td>
 
                         </tr>

@@ -108,37 +108,11 @@ public class DataServiceImpl implements DataService {
                     CEPH_USAGE_MESSENGER_TITLE.get(counter));
 
             if (brpResult instanceof CephResult brpDataResult && becResult instanceof CephResult becDataResult) {
-                CephResult messengerUsageResult = new CephResult();
-                float finalValueResult = (float) ((Float.parseFloat(brpDataResult.getValue()) + Float.parseFloat(becDataResult.getValue())) / (Math.pow(1000, 5)));
-
-                if (finalValueResult >= 1) {
-                    DecimalFormat pbFormat = new DecimalFormat("0.00");
-                    messengerUsageResult.setUnit("PB");
-                    messengerUsageResult.setValue(pbFormat.format(finalValueResult));
-
-                } else {
-                    finalValueResult *= 1000;
-                    DecimalFormat tbFormat = new DecimalFormat("0");
-                    if (finalValueResult >= 1) {
-                        messengerUsageResult.setValue(tbFormat.format(finalValueResult));
-                        messengerUsageResult.setUnit("TB");
-                    } else {
-                        finalValueResult *= 1000;
-                        if (finalValueResult >= 1) {
-                            messengerUsageResult.setUnit("GB");
-                            messengerUsageResult.setValue(tbFormat.format(finalValueResult));
-                        } else {
-                            messengerUsageResult.setUnit("< 1 GB");
-                            messengerUsageResult.setValue("حجم مصرفی کمتر از یک گیگابایت می باشد");
-                        }
-                    }
-                }
-
-                messengerUsageResult.setTitle(brpDataResult.getTitle());
-                messengerUsageResult.setId(brpDataResult.getId());
+                CephResult messengerUsageResult = getMessengerUsageResult(brpDataResult, becDataResult);
                 cephDataResultList.add(messengerUsageResult);
                 counter += 1;
             } else {
+                assert brpResult instanceof ErrorResult;
                 return new Response("Error"
                         , "خطا در دریافت اطلاعات"
                         , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
@@ -152,6 +126,39 @@ public class DataServiceImpl implements DataService {
                 "استوریج سبزسیستم - حجم مصرفی پیام رسان ها"
                 , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
                 , cephDataResultList);
+    }
+
+    private static CephResult getMessengerUsageResult(CephResult brpDataResult, CephResult becDataResult) {
+        CephResult messengerUsageResult = new CephResult();
+        float finalValueResult = (float) ((Float.parseFloat(brpDataResult.getValue()) + Float.parseFloat(becDataResult.getValue())) / (Math.pow(1000, 5)));
+
+        if (finalValueResult >= 1) {
+            DecimalFormat pbFormat = new DecimalFormat("0.00");
+            messengerUsageResult.setUnit("PB");
+            messengerUsageResult.setValue(pbFormat.format(finalValueResult));
+
+        } else {
+            finalValueResult *= 1000;
+            DecimalFormat tbFormat = new DecimalFormat("0");
+            if (finalValueResult >= 1) {
+                messengerUsageResult.setValue(tbFormat.format(finalValueResult));
+                messengerUsageResult.setUnit("TB");
+            } else {
+                finalValueResult *= 1000;
+                if (finalValueResult >= 1) {
+                    messengerUsageResult.setUnit("GB");
+                    messengerUsageResult.setValue(tbFormat.format(finalValueResult));
+                } else {
+                    messengerUsageResult.setUnit("< 1 GB");
+                    messengerUsageResult.setValue("حجم مصرفی کمتر از یک گیگابایت می باشد");
+                }
+            }
+        }
+
+        messengerUsageResult.setTitle(brpDataResult.getTitle());
+        messengerUsageResult.setId(brpDataResult.getId());
+
+        return messengerUsageResult;
     }
 
     private Result fetchAndPrepareResult(int id, String query, String filterValue, String title) throws JsonProcessingException {

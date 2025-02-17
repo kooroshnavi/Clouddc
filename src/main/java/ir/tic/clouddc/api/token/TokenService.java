@@ -15,6 +15,8 @@ public interface TokenService {
 
     boolean revokePersonToken(Integer personId);
 
+    List<AuthenticationToken> getPersonTokenList(List<AuthenticationToken> fullList, boolean valid);
+
     interface ValidIdTokenProjection {
         int getId();
 
