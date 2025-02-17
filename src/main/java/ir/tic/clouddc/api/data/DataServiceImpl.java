@@ -33,21 +33,30 @@ public class DataServiceImpl implements DataService {
 
     private static final String CEPH_CLUSTER_USED_CAPACITY_QUERY = "?query=ceph_cluster_total_used_raw_bytes{filter}";
 
-    private static final String CEPH_CLUSTER_FILTER = "{namespace='prod-ceph'}";
+    private static final String CEPH_CLUSTER_FILTER = "{namespace='prod-ceph'}/1000/1000/1000/1000/1000";
 
-    private static final String MESSENGER_USAGE_QUERY = "?query=sum(radosgw_usage_bucket_bytes{CEPH_USAGE_FILTER})*10";
+    private static final String MESSENGER_USAGE_QUERY = "?query=sum(radosgw_usage_bucket_bytes{CEPH_USAGE_FILTER})";
 
-    private static final List<String> CEPH_USAGE_MESSENGER_FILTER = Arrays.asList(
-            "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-brp'}",
-            "{cluster='ceph',owner='soroush',service='prod-ceph-rgw-exporter-brp'}",
-            "{cluster='ceph',owner='gap',service='prod-ceph-rgw-exporter-brp'}",
-            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-brp'}");
+    private static final List<String> CEPH_USAGE_MESSENGER_FILTER_1 = Arrays.asList(
+            "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-brp'}*3",
+            "{cluster='ceph',owner='soroush',service='prod-ceph-rgw-exporter-brp'}*3",
+            "{cluster='ceph',owner='gap',service='prod-ceph-rgw-exporter-brp'}*3",
+            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-brp'}*3",
+            "{cluster='ceph',owner='eitaa',service='prod-ceph-rgw-exporter-brp'}*3");
+
+    private static final List<String> CEPH_USAGE_MESSENGER_FILTER_2 = Arrays.asList(
+            "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-bec'}*1.5",
+            "{cluster='ceph',owner='soroush',service='prod-ceph-rgw-exporter-bec'}*1.5",
+            "{cluster='ceph',owner='gap',service='prod-ceph-rgw-exporter-bec'}*1.5",
+            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-bec'}*1.5",
+            "{cluster='ceph',owner='eitaa',service='prod-ceph-rgw-exporter-bec'}*1.5");
 
     private static final List<String> CEPH_USAGE_MESSENGER_TITLE = Arrays.asList(
             "بله",
             "سروش پلاس",
             "گپ",
-            "آیگپ");
+            "آیگپ",
+            "ایتا");
 
     List<CephResult> cephDataResultList;
 
@@ -64,6 +73,10 @@ public class DataServiceImpl implements DataService {
         Result usedCapacity = fetchAndPrepareResult(1, CEPH_CLUSTER_USED_CAPACITY_QUERY, CEPH_CLUSTER_FILTER, "حجم مصرفی");
 
         if (totalCapacity instanceof CephResult && usedCapacity instanceof CephResult) {
+            DecimalFormat clusterFormat = new DecimalFormat("0.0");
+            ((CephResult) totalCapacity).setValue(clusterFormat.format(Float.valueOf(((CephResult) totalCapacity).getValue())));
+            ((CephResult) usedCapacity).setValue(clusterFormat.format(Float.valueOf(((CephResult) usedCapacity).getValue())));
+
             return new Response("OK"
                     , "اطلاعات کلاستر استوریج سبزسیستم - CEPH"
                     , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
@@ -82,22 +95,57 @@ public class DataServiceImpl implements DataService {
         cephDataResultList = new ArrayList<>();
         int counter = 0;
         do {
-            var dataResult = fetchAndPrepareResult(
+            var brpResult = fetchAndPrepareResult(
                     counter,
                     MESSENGER_USAGE_QUERY,
-                    CEPH_USAGE_MESSENGER_FILTER.get(counter),
+                    CEPH_USAGE_MESSENGER_FILTER_1.get(counter),
                     CEPH_USAGE_MESSENGER_TITLE.get(counter));
-            if (dataResult instanceof CephResult cephDataResult) {
-                cephDataResultList.add(cephDataResult);
+
+            var becResult = fetchAndPrepareResult(
+                    counter,
+                    MESSENGER_USAGE_QUERY,
+                    CEPH_USAGE_MESSENGER_FILTER_2.get(counter),
+                    CEPH_USAGE_MESSENGER_TITLE.get(counter));
+
+            if (brpResult instanceof CephResult brpDataResult && becResult instanceof CephResult becDataResult) {
+                CephResult messengerUsageResult = new CephResult();
+                float finalValueResult = (float) ((Float.parseFloat(brpDataResult.getValue()) + Float.parseFloat(becDataResult.getValue())) / (Math.pow(1000, 5)));
+
+                if (finalValueResult >= 1) {
+                    DecimalFormat pbFormat = new DecimalFormat("0.00");
+                    messengerUsageResult.setUnit("PB");
+                    messengerUsageResult.setValue(pbFormat.format(finalValueResult));
+
+                } else {
+                    finalValueResult *= 1000;
+                    DecimalFormat tbFormat = new DecimalFormat("0");
+                    if (finalValueResult >= 1) {
+                        messengerUsageResult.setValue(tbFormat.format(finalValueResult));
+                        messengerUsageResult.setUnit("TB");
+                    } else {
+                        finalValueResult *= 1000;
+                        if (finalValueResult >= 1) {
+                            messengerUsageResult.setUnit("GB");
+                            messengerUsageResult.setValue(tbFormat.format(finalValueResult));
+                        } else {
+                            messengerUsageResult.setUnit("< 1 GB");
+                            messengerUsageResult.setValue("حجم مصرفی کمتر از یک گیگابایت می باشد");
+                        }
+                    }
+                }
+
+                messengerUsageResult.setTitle(brpDataResult.getTitle());
+                messengerUsageResult.setId(brpDataResult.getId());
+                cephDataResultList.add(messengerUsageResult);
                 counter += 1;
             } else {
                 return new Response("Error"
                         , "خطا در دریافت اطلاعات"
                         , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
-                        , List.of((ErrorResult) dataResult));
+                        , List.of((ErrorResult) brpResult));
             }
 
-        } while (counter < 4);
+        } while (counter < 5);
 
         return new Response("OK"
                 ,
@@ -128,8 +176,7 @@ public class DataServiceImpl implements DataService {
                 .getValue()
                 .get(1)
                 .toString();
-        BigDecimal output = new BigDecimal(bytesString);
-        BigDecimal petaBytes = output.divide(new BigDecimal("1000").pow(5), 3, RoundingMode.HALF_UP);
+        BigDecimal petaBytes = new BigDecimal(bytesString);
         cephDataResult.setValue(String.valueOf(petaBytes));
         BigDecimal displayValue;
 
@@ -137,19 +184,16 @@ public class DataServiceImpl implements DataService {
             displayValue = petaBytes;
             cephDataResult.setUnit("PB");
         } else {
-            BigDecimal divide = new BigDecimal("1").divide(new BigDecimal("1024").pow(1), RoundingMode.HALF_UP);
-            if (petaBytes.compareTo(new BigDecimal("1024")) < 0 && petaBytes.compareTo(BigDecimal.ONE) < 0 && petaBytes.compareTo(divide) >= 0) {
-                displayValue = petaBytes.multiply(new BigDecimal("1024"));
+            BigDecimal divide = new BigDecimal("1").divide(new BigDecimal("1000").pow(1), RoundingMode.HALF_UP);
+            if (petaBytes.compareTo(new BigDecimal("1000")) < 0 && petaBytes.compareTo(BigDecimal.ONE) < 0 && petaBytes.compareTo(divide) >= 0) {
+                displayValue = petaBytes.multiply(new BigDecimal("1000"));
                 cephDataResult.setUnit("TB");
-            } else if (petaBytes.compareTo(divide) < 0 && petaBytes.compareTo(new BigDecimal("1").divide(new BigDecimal("1024").pow(2), RoundingMode.HALF_UP)) >= 0) {
-                displayValue = petaBytes.multiply(new BigDecimal("1024").pow(2));
-                cephDataResult.setUnit("GB");
             } else {
-                displayValue = petaBytes.multiply(new BigDecimal("1024").pow(3));
-                cephDataResult.setUnit("KB");
+                displayValue = petaBytes.multiply(new BigDecimal("1000").pow(2));
+                cephDataResult.setUnit("GB");
             }
         }
-        DecimalFormat df = new DecimalFormat("0.0");
+        DecimalFormat df = new DecimalFormat("000000000000000.000000000000000");
         String formattedValue = df.format(displayValue);
         cephDataResult.setValue(formattedValue);
 
