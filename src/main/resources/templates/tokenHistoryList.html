@@ -116,7 +116,7 @@
                                 </td>
 
                                 <td th:if="${adminAccess}" class="text-bg-info" th:text="${token.getPerson().name}"/>
-                                <td th:text="${token.getPersianRegisterDate()()}"/>
+                                <td th:text="${token.getPersianRegisterDate()}"/>
                                 <td th:text="${token.getPersianExpiryDate()}"/>
 
                                 <td th:if="${token.valid}" class="text-bg-success" th:text="فعال"/>
@@ -160,8 +160,8 @@
                             <td th:text="${request.remoteAddress}"></td>
 
                             <td class="clock">
-                                <span th:if="${request.successful}" th:text="دریافت اطلاعات"
-                                      class="text-bg-success"></span>
+                                <span th:if="${request.successful}"
+                                      class="text-bg-success">دریافت اطلاعات</span>
                                 <span th:unless="${request.successful}"
                                       class="text-bg-danger">خطا در ارائه اطلاعات وب سرویس</span>
                             </td>

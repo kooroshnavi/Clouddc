@@ -34,7 +34,7 @@ public class ApiController {
         var response = dataService.getCephClusterDataResponse();
         tokenService.postRequestRecord(request, response.getStatus());
 
-        if (Objects.equals(response.getStatus(), "OK")){
+        if (Objects.equals(response.getStatus(), "OK")) {
             return new ResponseEntity<>(response, HttpStatusCode.valueOf(200));
         }
         return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
@@ -45,7 +45,18 @@ public class ApiController {
         var response = dataService.getCephMessengerUsageDataResponse();
         tokenService.postRequestRecord(request, response.getStatus());
 
-        if (Objects.equals(response.getStatus(), "OK")){
+        if (Objects.equals(response.getStatus(), "OK")) {
+            return new ResponseEntity<>(response, HttpStatusCode.valueOf(200));
+        }
+        return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
+    }
+
+    @GetMapping("/ceph/xas/usage")
+    public ResponseEntity<Response> getXasUsageData(HttpServletRequest request) {
+        var response = dataService.getXasCephUsageData();
+        tokenService.postRequestRecord(request, response.getStatus());
+
+        if (Objects.equals(response.getStatus(), "OK")) {
             return new ResponseEntity<>(response, HttpStatusCode.valueOf(200));
         }
         return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);

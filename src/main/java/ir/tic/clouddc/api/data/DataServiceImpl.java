@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.tic.clouddc.api.response.ErrorResult;
 import ir.tic.clouddc.api.response.Response;
 import ir.tic.clouddc.api.response.Result;
+import ir.tic.clouddc.cloud.CloudService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,8 @@ public class DataServiceImpl implements DataService {
 
     private final WebClient webClient;
 
+    private final CloudService cloudService;
+
     private static final String BASE_URL = "https://monitoring.it.tic.ir/ts-p/api/v1/query";
 
     private static final String CEPH_CLUSTER_TOTAL_CAPACITY_QUERY = "?query=ceph_cluster_total_bytes{filter}";
@@ -41,28 +44,26 @@ public class DataServiceImpl implements DataService {
             "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-brp'}*3",
             "{cluster='ceph',owner='soroush',service='prod-ceph-rgw-exporter-brp'}*3",
             "{cluster='ceph',owner='gap',service='prod-ceph-rgw-exporter-brp'}*3",
-            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-brp'}*3",
-            "{cluster='ceph',owner='eitaa',service='prod-ceph-rgw-exporter-brp'}*3");
+            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-brp'}*3");
 
     private static final List<String> CEPH_USAGE_MESSENGER_FILTER_2 = Arrays.asList(
             "{cluster='ceph',owner='bale',service='prod-ceph-rgw-exporter-bec'}*1.5",
             "{cluster='ceph',owner='soroush',service='prod-ceph-rgw-exporter-bec'}*1.5",
             "{cluster='ceph',owner='gap',service='prod-ceph-rgw-exporter-bec'}*1.5",
-            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-bec'}*1.5",
-            "{cluster='ceph',owner='eitaa',service='prod-ceph-rgw-exporter-bec'}*1.5");
+            "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-bec'}*1.5");
 
     private static final List<String> CEPH_USAGE_MESSENGER_TITLE = Arrays.asList(
             "بله",
             "سروش پلاس",
             "گپ",
-            "آیگپ",
-            "ایتا");
+            "آیگپ");
 
     List<CephResult> cephDataResultList;
 
     @Autowired
-    public DataServiceImpl(WebClient webClient) {
+    public DataServiceImpl(WebClient webClient, CloudService cloudService) {
         this.webClient = webClient;
+        this.cloudService = cloudService;
     }
 
     @Override
@@ -78,7 +79,7 @@ public class DataServiceImpl implements DataService {
             ((CephResult) usedCapacity).setValue(clusterFormat.format(Float.valueOf(((CephResult) usedCapacity).getValue())));
 
             return new Response("OK"
-                    , "اطلاعات کلاستر استوریج سبزسیستم - CEPH"
+                    , "استوریج ابری سبزسیستم"
                     , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
                     , List.of(totalCapacity, usedCapacity));
         }
@@ -110,6 +111,7 @@ public class DataServiceImpl implements DataService {
             if (brpResult instanceof CephResult brpDataResult && becResult instanceof CephResult becDataResult) {
                 CephResult messengerUsageResult = getMessengerUsageResult(brpDataResult, becDataResult);
                 cephDataResultList.add(messengerUsageResult);
+
                 counter += 1;
             } else {
                 assert brpResult instanceof ErrorResult;
@@ -119,13 +121,27 @@ public class DataServiceImpl implements DataService {
                         , List.of((ErrorResult) brpResult));
             }
 
-        } while (counter < 5);
+        } while (counter < 4);
 
         return new Response("OK"
                 ,
-                "استوریج سبزسیستم - حجم مصرفی پیام رسان ها"
+                "استوریج ابری سبزسیستم - حجم مصرفی پیام رسان ها"
                 , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
                 , cephDataResultList);
+    }
+
+    @Override
+    @PreAuthorize("hasAnyAuthority('API_GET_AUTH')")
+    public Response getXasCephUsageData() {
+        var xasCephData = cloudService.getXasCurrentCephData();
+        CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(xasCephData.getCapacity()), xasCephData.getUnit());
+        CephResult usedCapacity = new CephResult(2, "ایتا", String.valueOf(xasCephData.getCephUtilizerList().get(0).getUsage()), xasCephData.getCephUtilizerList().get(0).getUnit());
+
+        return new Response("OK"
+                ,
+                "استوریج ابری امین آسیا (ابر اختصاصی ایتا)"
+                , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
+                , List.of(totalCapacity, usedCapacity));
     }
 
     private static CephResult getMessengerUsageResult(CephResult brpDataResult, CephResult becDataResult) {

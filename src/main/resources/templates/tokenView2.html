@@ -92,11 +92,13 @@
                                                 type="button" class="btn btn-warning" data-bs-toggle="modal"
                                                 data-bs-target="#exampleWarningModal">صدور توکن جدید
                                         </button>
+                                        <br th:if="${not isActive}">
                                         <button th:unless="${not isActive}"
                                                 sec:authorize="hasAnyAuthority('ADMIN', 'WEBSERVICE')"
                                                 type="button" class="btn btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#exampleWarningModal">ابطال توکن فعال
                                         </button>
+                                        <br th:unless="${not isActive}">
                                         <!-- Modal -->
                                         <div th:if="${not isActive}" class="modal fade" id="exampleWarningModal"
                                              tabindex="-1"
@@ -120,10 +122,8 @@
                                                             اطلاعات آن صرفا در سامانه های داخلی شرکت استفاده
                                                             فرمایید.</p>
                                                         <p>* در حال حاضر امکان فعالسازی بیش از یک توکن وجود ندارد.</p>
-                                                        <p>* توکن به صورت رمزگذاری شده در دیتابیس ذخیره شده است. فقط
-                                                            صادرکننده توکن می تواند آن
-                                                            را ببیند.</p>
-                                                        <p>* ضمن احترام، مسئولیت بهره‌برداری توکن با صادر کننده آن
+                                                        <p>* توکن صرفا برای صادرکننده آن قابل مشاهده می باشد.</p>
+                                                        <p>* مسئولیت بهره‌برداری اطلاعات دریافتی از توکن با صادر کننده آن
                                                             است.</p>
 
                                                     </div>

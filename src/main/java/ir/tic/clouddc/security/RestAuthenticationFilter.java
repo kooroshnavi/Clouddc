@@ -21,9 +21,7 @@ public class RestAuthenticationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final String API_URL_1 = "/api/ceph/cluster";
-
-    private static final String API_URL_2 = "/api/ceph/messenger/usage";
+    private static final List<String> DEFINED_URLS = List.of("/api/ceph/cluster", "/api/ceph/messenger/usage", "/api/ceph/xas/usage");
 
 
     @Override
@@ -63,6 +61,6 @@ public class RestAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private boolean checkURLValidity(String requestURI) {
-        return requestURI.equals(API_URL_1) || requestURI.equals(API_URL_2);
+        return DEFINED_URLS.contains(requestURI);
     }
 }

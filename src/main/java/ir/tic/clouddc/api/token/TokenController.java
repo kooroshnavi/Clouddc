@@ -54,7 +54,7 @@ public class TokenController {
             model.addAttribute("otherPersonValidTokenList", otherPersonValidTokenList);
             model.addAttribute("otherPersonExpiredTokenList", otherPersonExpiredTokenList);
         } else {
-            model.addAttribute("tokenList", fullList.stream().sorted(Comparator.comparing(AuthenticationToken::isValid).reversed()));
+            model.addAttribute("tokenList", fullList.stream().sorted(Comparator.comparing(AuthenticationToken::isValid).reversed()).toList());
         }
         model.addAttribute("isActive", isActive);
         model.addAttribute("adminAccess", adminAccess);

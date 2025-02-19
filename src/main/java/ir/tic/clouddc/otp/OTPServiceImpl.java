@@ -75,7 +75,7 @@ public class OTPServiceImpl implements OTPService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(requestDateTime));
         String otp = getRandomOTP();
-        log.info(otp);
+       // log.info(otp);
         loginOTPCache.put(address, otpUid);
         loginOTPCache.put(otpUid, otp);
         loginOTPCache.put(otp, address);
@@ -126,7 +126,7 @@ public class OTPServiceImpl implements OTPService {
         UUID expiryTimeUUID = UUID.nameUUIDFromBytes(phoneNumber.getBytes(StandardCharsets.UTF_8));
         if (personRegisterOTPCache.get(phoneNumber).isBlank()) {
             String OTPCode = getRandomOTP();
-            log.info(OTPCode);
+           // log.info(OTPCode);
             personRegisterOTPCache.put(phoneNumber, OTPCode);
             personRegisterOTPCache.put(expiryTimeUUID.toString(), LocalDateTime.now().plusMinutes(REGISTER_EXPIRE_MIN).toString());
             notificationService.sendRegisterOTPMessage(phoneNumber, OTPCode);

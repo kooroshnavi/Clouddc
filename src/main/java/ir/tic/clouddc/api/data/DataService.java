@@ -8,4 +8,7 @@ public interface DataService {
     Response getCephClusterDataResponse() throws JsonProcessingException;
 
     Response getCephMessengerUsageDataResponse() throws JsonProcessingException;
+
+    Response getXasCephUsageData();
+
 }

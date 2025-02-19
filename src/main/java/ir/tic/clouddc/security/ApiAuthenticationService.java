@@ -18,10 +18,8 @@ public class ApiAuthenticationService {
         String authToken = request.getHeader(AUTH_TOKEN_HEADER_NAME);
         var tokenId = TokenServiceImpl.isValidToken(authToken);
         if (authToken == null || tokenId == -1) {
-            log.info("failed authentication");
             return Optional.empty();
         }
-        log.info("Successfully authenticated user");
         return Optional.of(new RestTokenAuthenticationObject(List.of(new SimpleGrantedAuthority("API_GET_AUTH")), String.valueOf(tokenId)));
     }
 }

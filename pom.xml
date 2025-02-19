@@ -12,7 +12,7 @@
 
     <groupId>ir.tic</groupId>
     <artifactId>clouddc</artifactId>
-    <version>3.2.2-241103</version>
+    <version>3.3-251218</version>
     <name>clouddc</name>
     <packaging>jar</packaging>
     <description>DC management service for tic cloud infrastructure</description>
@@ -126,7 +126,7 @@
     </dependencies>
 
     <build>
-        <finalName>Clouddc-3.2.2-241103</finalName>
+        <finalName>Clouddc-3.3-250218</finalName>
         <resources>
 
             <resource>
