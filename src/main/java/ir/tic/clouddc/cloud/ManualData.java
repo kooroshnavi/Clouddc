@@ -9,5 +9,5 @@ public class ManualData {
 
     private float used;
 
-    private String unit;
+    private int unit;
 }

@@ -17,8 +17,8 @@ public abstract class CloudProvider {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "CloudProviderGenerator")
-    @SequenceGenerator(name = "CloudProviderGenerator", sequenceName = "CloudProvider_SEQ", allocationSize = 1, schema = "Cloud", initialValue = 10000)
-    @Column(name = "LocationID")
+    @SequenceGenerator(name = "CloudProviderGenerator", sequenceName = "CloudProvider_SEQ", allocationSize = 1, schema = "Cloud", initialValue = 1000)
+    @Column(name = "CloudProviderID")
     private Integer id;
 
     @ManyToOne

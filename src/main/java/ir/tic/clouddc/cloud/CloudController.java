@@ -26,11 +26,15 @@ public class CloudController {
         if (!model.containsAttribute("success")) {
             model.addAttribute("success", false);
         }
-
         var currentXas = cloudService.getXasCurrentCephData();
-        currentXas.setPersianDateTime(UtilService.getFormattedPersianDateAndTime(currentXas.getLocalDateTime().toLocalDate(), currentXas.getLocalDateTime().toLocalTime()));
-        model.addAttribute("currentCeph", currentXas);
-        model.addAttribute("currentUsage", currentXas.getCephUtilizerList().get(0).getUsage());
+        if (currentXas.isPresent()) {
+            model.addAttribute("noData", false);
+            currentXas.get().setPersianDateTime(UtilService.getFormattedPersianDateAndTime(currentXas.get().getLocalDateTime().toLocalDate(), currentXas.get().getLocalDateTime().toLocalTime()));
+            model.addAttribute("currentCeph", currentXas.get());
+            model.addAttribute("currentUsage", currentXas.get().getCephUtilizerList().get(0).getUsage());
+        } else {
+            model.addAttribute("noData", true);
+        }
 
         return "cloudOverview";
     }

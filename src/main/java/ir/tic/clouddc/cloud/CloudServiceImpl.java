@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.Optional;
 
 @Service
 public class CloudServiceImpl implements CloudService {
@@ -38,13 +38,10 @@ public class CloudServiceImpl implements CloudService {
         cephUtilizer.setLocalDateTime(ceph.getLocalDateTime());
         ceph.setCurrent(true);
         ceph.setCephUtilizerList(List.of(cephUtilizer));
-        switch (manualData.getUnit()) {
-            case "1":
-                cephUtilizer.setUnit("PB");
-            case "2":
-                cephUtilizer.setUnit("TB");
-            case "3":
-                cephUtilizer.setUnit("GB");
+        if (manualData.getUnit() == 1) {
+            cephUtilizer.setUnit("TB");
+        } else {
+            cephUtilizer.setUnit("PB");
         }
 
         var oldResult = cephRepository.getCurrentCeph(1006);
@@ -57,12 +54,7 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
-    public Ceph getXasCurrentCephData() {
-        var currentXasData = cephRepository.getCurrentCeph(1006);
-        if (currentXasData.isPresent()) {
-            return currentXasData.get();
-        } else {
-            throw new NoSuchElementException();
-        }
+    public Optional<Ceph> getXasCurrentCephData() {
+        return cephRepository.getCurrentCeph(1006);
     }
 }

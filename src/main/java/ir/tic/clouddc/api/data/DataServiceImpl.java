@@ -134,14 +134,20 @@ public class DataServiceImpl implements DataService {
     @PreAuthorize("hasAnyAuthority('API_GET_AUTH')")
     public Response getXasCephUsageData() {
         var xasCephData = cloudService.getXasCurrentCephData();
-        CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(xasCephData.getCapacity()), xasCephData.getUnit());
-        CephResult usedCapacity = new CephResult(2, "ایتا", String.valueOf(xasCephData.getCephUtilizerList().get(0).getUsage()), xasCephData.getCephUtilizerList().get(0).getUnit());
+        if (xasCephData.isPresent()) {
+            CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(xasCephData.get().getCapacity()), xasCephData.get().getUnit());
+            CephResult usedCapacity = new CephResult(2, "ایتا", String.valueOf(xasCephData.get().getCephUtilizerList().get(0).getUsage()), xasCephData.get().getCephUtilizerList().get(0).getUnit());
 
-        return new Response("OK"
-                ,
-                "استوریج ابری امین آسیا (ابر اختصاصی ایتا)"
-                , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
-                , List.of(totalCapacity, usedCapacity));
+            return new Response("OK"
+                    ,
+                    "استوریج ابری امین آسیا (ابر اختصاصی ایتا)"
+                    , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
+                    , List.of(totalCapacity, usedCapacity));
+        }
+        return new Response("Error"
+                , "خطا در دریافت اطلاعات"
+                , UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now())
+                , List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
     }
 
     private static CephResult getMessengerUsageResult(CephResult brpDataResult, CephResult becDataResult) {

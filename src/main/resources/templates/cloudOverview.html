@@ -112,31 +112,27 @@
                                     <div class="border p-3 rounded">
 
 
-                                            <label class="for-check">آخرین بروزرسانی: </label>
-                                            <data type="number" value="" dir="ltr"
-                                                   th:text="${currentCeph.persianDateTime}" disabled="disabled"
-                                                   required="required"/>
+                                        <label th:if="${not noData}" class="for-check">آخرین بروزرسانی: </label>
+                                        <data th:if="${not noData}" type="number" value="" dir="ltr"
+                                              th:text="${currentCeph.persianDateTime}" disabled="disabled"
+                                              required="required"/>
 
 
+                                        <label th:if="${not noData}" class="for-check">حجم کل: </label>
+                                        <data th:if="${not noData}" type="number" value="" dir="ltr"
+                                              th:text="${currentCeph.capacity}" disabled="disabled"
+                                              required="required"/>
 
-                                            <label class="for-check">حجم کل: </label>
-                                            <data type="number" value="" dir="ltr"
-                                                   th:text="${currentCeph.capacity}" disabled="disabled"
-                                                   required="required"/>
-
-                                            <label class="for-check">حجم مصرفی: </label>
-                                            <data type="number" value="" dir="ltr"
-                                                   th:text="${currentUsage}" disabled="disabled"
-                                                   required="required"/>
-
+                                        <label th:if="${not noData}" class="for-check">حجم مصرفی: </label>
+                                        <data th:if="${not noData}" type="number" value="" dir="ltr"
+                                              th:text="${currentUsage}" disabled="disabled"
+                                              required="required"/>
                                         <br>
                                         <hr/>
 
-                                        <form id="form" class="was-validated"  th:action="@{/cloud/submitManualData}"
+                                        <form id="form" class="was-validated" th:action="@{/cloud/submitManualData}"
                                               th:object="${manualData}" method="Post"
                                               onSubmit="document.getElementById('submit2').disabled=true;">
-
-
 
                                             <div class="form-group">
                                                 <label class="for-check">حجم کل استوریج</label>
@@ -156,10 +152,11 @@
                                             <div class="col">
                                                 <label class="form-label">واحد</label>
                                                 <select class="single-select" name="subject" th:field="*{unit}">
-                                                    <option th:value="100" disabled="disabled" selected="selected">انتخاب</option>
-                                                    <option th:value="1">PB</option>
-                                                    <option th:value="2">TB</option>
-                                                    <option th:value="3">GB</option>
+                                                    <option th:value="100" disabled="disabled" selected="selected">
+                                                        انتخاب
+                                                    </option>
+                                                    <option th:value="1">TB</option>
+                                                    <option th:value="2">PB</option>
                                                 </select>
                                             </div>
 

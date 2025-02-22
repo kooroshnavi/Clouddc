@@ -1,10 +1,12 @@
 package ir.tic.clouddc.cloud;
 
+import java.util.Optional;
+
 public interface CloudService {
 
     void saveManualData(ManualData manualData);
 
-    Ceph getXasCurrentCephData();
+    Optional<Ceph> getXasCurrentCephData();
 
     interface ProviderIdNameProjection {
         int getId();
