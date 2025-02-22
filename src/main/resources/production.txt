@@ -1,0 +1,91 @@
+spring.datasource.url=jdbc:sqlserver://localhost\\MSSQLSERVER:1433;databaseName=Cloudb-bin2;encrypt=true;trustServerCertificate=true;sendStringParametersAsUnicode=true;columnEncryptionSetting=Enabled;
+spring.datasource.username=clouddc
+spring.datasource.password=ENC(LaiVu8XnSE9+N5FT9IgLfqozksLbq/qUgMtopZCqpkvQ9K0eGA7PdLTU7msQF1proh3GkcPogtQmHMvdzMT6Ng==)
+spring.datasource.hikari.connectionTimeout=20000
+spring.datasource.hikari.maximumPoolSize=5
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+spring.jpa.show-sql=false
+spring.jpa.properties.hibernate.use_nationalized_character_data=true
+server.error.whitelabel.enabled=true
+spring.mvc.throw-exception-if-no-handler-found=true
+soap.principal=ENC(4O19CdBHm0QxkNwffW071Q4Q+7UYy0PvtPOvLfZaZPh9dORDKGByZ+qjtX5RspbePctzWRwg7BYjwapG64wBQw==)
+soap.credential=ENC(sOk5MgdC2CP5GoC2CJyrNvMCnCO5sJz1A+CmQ8DJCFp7iaP5MhGVeA3T0rgzG9dmbmTrSNiz0OGlA0DlgNQsPg==)
+server.port=443
+server.ssl.key-store=classpath:clouddc.tic.ir.p12
+server.ssl.key-store-password=ENC(DD5gu18MIvzDNp67K9fmPN494pBe6sCJSVhut1nGR8C3BYJoZqd5Y9mPvT/RAEzJ)
+spring.servlet.multipart.max-file-size=512KB
+server.servlet.session.timeout=10h
+
+
+
+
+spring.datasource.url=jdbc:sqlserver://localhost\\MSSQLSERVER:1433;databaseName=Cloudb-bin2;encrypt=true;trustServerCertificate=true;sendStringParametersAsUnicode=true;columnEncryptionSetting=Enabled;
+spring.datasource.username=clouddc
+spring.datasource.password=ENC(LaiVu8XnSE9+N5FT9IgLfqozksLbq/qUgMtopZCqpkvQ9K0eGA7PdLTU7msQF1proh3GkcPogtQmHMvdzMT6Ng==)
+spring.datasource.hikari.connectionTimeout=20000
+spring.datasource.hikari.maximumPoolSize=5
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.hibernate.naming.physical-strategy=org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.use_nationalized_character_data=true
+server.error.whitelabel.enabled=true
+spring.mvc.throw-exception-if-no-handler-found=true
+soap.principal=ENC(4O19CdBHm0QxkNwffW071Q4Q+7UYy0PvtPOvLfZaZPh9dORDKGByZ+qjtX5RspbePctzWRwg7BYjwapG64wBQw==)
+soap.credential=ENC(sOk5MgdC2CP5GoC2CJyrNvMCnCO5sJz1A+CmQ8DJCFp7iaP5MhGVeA3T0rgzG9dmbmTrSNiz0OGlA0DlgNQsPg==)
+server.port=443
+server.ssl.key-store=classpath:clouddc.tic.ir.p12
+server.ssl.key-store-password=ENC(DD5gu18MIvzDNp67K9fmPN494pBe6sCJSVhut1nGR8C3BYJoZqd5Y9mPvT/RAEzJ)
+spring.servlet.multipart.max-file-size=512KB
+server.servlet.session.timeout=10h
+
+
+
+    <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available == 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
+                                <form th:action="@{/resource/device/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
+                                    <input type="hidden" name="deviceId" th:value="${device.id}"/>
+                                    <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
+                                    <input type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           max="-1" th:field="*{updatedValue}"/>
+                                    <button type="submit" id="submit" class="btn-group-sm btn-dark">بروزرسانی</button>
+                                </form>
+                            </td>
+
+                            <td class="text-danger"
+                                th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) != 0)}">
+                                <form th:action="@{/resource/device/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit2').disabled=true;">
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
+                                    <input type="hidden" name="deviceId" th:value="${device.id}"/>
+                                    <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
+                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${T(java.lang.Integer).min(2 - deviceModuleMap.get(moduleInventory), moduleInventory.available)}" th:field="*{updatedValue}"/>
+                                    <input th:unless="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" required="required"
+                                           th:min="${-deviceModuleMap.get(moduleInventory)}"
+                                           th:max="${moduleInventory.available}" th:field="*{updatedValue}"/>
+                                    <button type="submit" id="submit2" class="btn-group-sm btn-dark">بروزرسانی</button>
+                                </form>
+                            </td>
+
+                            <td th:if="${not moduleInventory.classification.equals('Storage') && moduleInventory.available != 0 && (deviceModuleMap.getOrDefault(moduleInventory,0) == 0)}">
+                                <form th:action="@{/resource/device/module/update}"
+                                      th:object="${updateForm}"
+                                      method="POST" onSubmit="document.getElementById('submit3').disabled=true;">
+                                    <input type="hidden" name="storageUpdate" th:value="${false}"/>
+                                    <input type="hidden" name="deviceId" th:value="${device.id}"/>
+                                    <input type="hidden" name="moduleInventoryId" th:value="${moduleInventory.id}"/>
+                                    <input th:if="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" min="1" required="required"
+                                           th:max="${T(java.lang.Integer).min(2, moduleInventory.available)}"
+                                           th:field="*{updatedValue}"/>
+                                    <input th:unless="${moduleInventory.classificationId == 4 || moduleInventory.classificationId == 5 || moduleInventory.classificationId == 9 || moduleInventory.classificationId == 10}" type="number" min="1" required="required"
+                                           th:max="${moduleInventory.available}"
+                                           th:field="*{updatedValue}"/>
+                                    <button type="submit" id="submit3" class="btn-group-sm btn-dark">بروزرسانی</button>
+                                </form>
+                            </td>

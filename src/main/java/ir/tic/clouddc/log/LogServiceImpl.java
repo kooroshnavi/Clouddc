@@ -26,11 +26,7 @@ public class LogServiceImpl implements LogService {
 
     @Override
     public Persistence newPersistenceInitialization(String logMessageKey, Person person, String category) {
-        Persistence persistence = new Persistence(person, category);
-        LogHistory logHistory = new LogHistory(UtilService.getDATE(), UtilService.getTime(), person, persistence, UtilService.LOG_MESSAGE.get(logMessageKey), true);
-        persistence.setLogHistoryList(List.of(logHistory));
-
-        return persistence;
+        return new Persistence(UtilService.getDATE(), UtilService.getTime(), person, logMessageKey, category);
     }
 
     @Override

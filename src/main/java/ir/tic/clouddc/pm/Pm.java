@@ -58,5 +58,4 @@ public abstract class Pm {    // new Task style
 
     @Transient
     private String activePersonName;
-
 }

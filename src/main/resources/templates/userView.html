@@ -181,6 +181,9 @@
                                                         <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
                                                                 th:value="3">مشاهده مدیران (امکان مشاهده تمام بخش ها)
                                                         </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="6">مدیریت توکن وب سرویس
+                                                        </option>
                                                     </select>
                                                 </label>
                                                 <hr/>
@@ -197,6 +200,9 @@
                                                         </option>
                                                         <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
                                                                 th:value="3">مشاهده مدیران (امکان مشاهده تمام بخش ها)
+                                                        </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
+                                                                th:value="6">مدیریت توکن وب سرویس
                                                         </option>
                                                     </select>
                                                 </label>

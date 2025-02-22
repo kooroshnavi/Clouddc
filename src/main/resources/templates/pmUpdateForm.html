@@ -112,7 +112,8 @@
                                           class="text-bg-success">ندارد</span>
                                 </td>
                                 <td th:if="${pm.active}" class="text-bg-warning" th:text="${pm.activePersonName}"/>
-                                <td th:unless="${pm.active}" class="text-bg-success" th:text="${pm.persianFinishedDate}" data-bs-toggle="tooltip"
+                                <td th:unless="${pm.active}" class="text-bg-success" th:text="${pm.persianFinishedDate}"
+                                    data-bs-toggle="tooltip"
                                     data-bs-placement="top"
                                     th:title="${pm.persianFinishedDayTime}" dir="rtl"/>
 
@@ -125,9 +126,11 @@
                                     </div>
                                 </td>
 
-                                <td th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}" th:text="${rack.hall.name + ' - ' + rack.center.name}"></td>
+                                <td th:if="${pmInterface.categoryId == 1 && locationPmCatalog.location.locationCategory.categoryId == 2}"
+                                    th:text="${rack.hall.name + ' - ' + rack.center.name}"></td>
 
-                                <td th:if="${pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.deviceCategory.category + ' ' + devicePmCatalog.device.deviceCategory.model}"></td>
+                                <td th:if="${pmInterface.categoryId == 2}"
+                                    th:text="${devicePmCatalog.device.deviceCategory.category + ' ' + devicePmCatalog.device.deviceCategory.model}"></td>
                                 <td th:if="${pmInterface.categoryId == 2}">
                                     <div class="col">
                                         <a th:text="${devicePmCatalog.device.serialNumber}"
@@ -136,7 +139,8 @@
                                            data-bs-placement="bottom" title="جزئیات تجهیز"></a>
                                     </div>
                                 </td>
-                                <td th:if="${pmInterface.categoryId == 2}" th:text="${devicePmCatalog.device.location.locationCategory.category + ' ' + devicePmCatalog.device.location.name}"></td>
+                                <td th:if="${pmInterface.categoryId == 2}"
+                                    th:text="${devicePmCatalog.device.location.locationCategory.category + ' ' + devicePmCatalog.device.location.name}"></td>
 
                             </tr>
 
@@ -144,7 +148,6 @@
 
                         </table>
                     </div>
-
 
 
                 </div>
@@ -161,82 +164,88 @@
                 <div class="card">
 
                     <div class="card-body">
-                            <div class="col-12 col-lg-8">
-                                <div class="card shadow-none bg-light border">
-                                    <div class="card-body">
+                        <div class="col-12 col-lg-8">
+                            <div class="card shadow-none bg-light border">
+                                <div class="card-body">
 
-                                        <form class="was-validated" th:action="@{/pm/update}"
-                                              enctype="multipart/form-data"  th:object="${pmUpdateForm}" method="POST" onSubmit="document.getElementById('submit').disabled=true;">
+                                    <form class="was-validated" th:action="@{/pm/update}"
+                                          enctype="multipart/form-data" th:object="${pmUpdateForm}" method="POST"
+                                          onSubmit="document.getElementById('submit').disabled=true;">
 
 
-                                            <div class="col-12">
-                                                <label class="form-label">نتیجه بررسی</label>
-                                                <textarea class="form-control" placeholder="شرح اقدام و توضیحات ضروری. اگر لازم است به مستندات شامل شماره نامه ، مجوز و ... اشاره نمایید. اگر فایلی در میان است آن را پیوست کنید." rows="4" cols="4"
-                                                          th:field="*{description}" required="required" dir="rtl"
-                                                          maxlength="1000"></textarea>
-                                            </div>
-                                            <br>
+                                        <div class="col-12">
+                                            <label class="form-label">نتیجه بررسی</label>
+                                            <textarea class="form-control"
+                                                      placeholder="شرح اقدام و توضیحات ضروری. اگر لازم است به مستندات شامل شماره نامه ، مجوز و ... اشاره نمایید. اگر فایلی در میان است آن را پیوست کنید."
+                                                      rows="4" cols="4"
+                                                      th:field="*{description}" required="required" dir="rtl"
+                                                      maxlength="1000"></textarea>
+                                        </div>
+                                        <br>
 
-                                            <div class="col-12">
-                                                <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
-                                                <input class="form-control" type="file" name="attachment"
-                                                       id="attachment">
-                                            </div>
-                                            <br>
+                                        <div class="col-12">
+                                            <label class="form-label">پیوست سند - حداکثر 500 کیلوبایت</label>
+                                            <input class="form-control" type="file" name="attachment"
+                                                   id="attachment">
+                                        </div>
+                                        <br>
 
-                                            <div class="col-12">
-                                                <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران
-                                                    <select class="single-select" th:field="*{actionType}">
-                                                        <option th:value="100" disabled="disabled" selected="selected">
-                                                            انتخاب
-                                                        </option>
-                                                        <option class="text-bg-success" th:value="0">اتمام وظیفه</option>
-                                                        <option class="text-bg-warning" th:each="person : ${assignPersonList}"
-                                                                th:value="${person.id}" th:text="${person.name + ' - ' + 'وظایف کارتابل: ' + person.workspaceSize}"></option>
-                                                    </select>
-                                                </label>
-                                            </div>
+                                        <div class="col-12">
+                                            <label class="form-label">اتمام / انتساب وظیفه به دیگر همکاران
+                                                <select class="single-select" th:field="*{actionType}">
+                                                    <option th:value="100" disabled="disabled" selected="selected">
+                                                        انتخاب
+                                                    </option>
+                                                    <option class="text-bg-success" th:value="0">اتمام وظیفه</option>
+                                                    <option class="text-bg-warning"
+                                                            th:each="person : ${assignPersonList}"
+                                                            th:value="${person.id}"
+                                                            th:text="${person.name + ' - ' + 'وظایف کارتابل: ' + person.workspaceSize}"></option>
+                                                </select>
+                                            </label>
+                                        </div>
 
-                                            <input type="hidden" name="pmId" th:value="${pm.id}"/>
-                                            <input type="hidden" name="ownerUsername" th:value="${pmOwnerUsername}"/>
+                                        <input type="hidden" name="pmId" th:value="${pm.id}"/>
+                                        <input type="hidden" name="ownerUsername" th:value="${pmOwnerUsername}"/>
 
-                                            <div class="col">
-                                                <!-- Button trigger modal -->
-                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal"
-                                                        data-bs-target="#exampleLargeModal">ثبت
-                                                </button>
-                                                <!-- Modal -->
-                                                <div class="modal fade" id="exampleLargeModal" tabindex="-1"
-                                                     aria-hidden="true">
-                                                    <div class="modal-dialog modal-lg">
-                                                        <div class="modal-content bg-warning">
-                                                            <div class="modal-header">
-                                                                <h5 class="modal-title">همکار گرامی</h5>
-                                                                <button type="button" class="btn-close"
-                                                                        data-bs-dismiss="modal"
-                                                                        aria-label="Close"></button>
-                                                            </div>
-                                                            <div class="modal-body">لطفا قبل از تایید، از صحت اطلاعات
-                                                                ورودی مطمئن شوید. داده ها در آینده ممکن است مورد رجوع و
-                                                                استناد قرار گیرند.
-                                                            </div>
-                                                            <div class="modal-footer">
-                                                                <button type="button" class="btn btn-secondary"
-                                                                        data-bs-dismiss="modal">لغو
-                                                                </button>
-                                                                <button type="submit" id="submit" class="btn btn-primary">بروزرسانی
-                                                                    وظیفه
-                                                                </button>
-                                                            </div>
+                                        <div class="col">
+                                            <!-- Button trigger modal -->
+                                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                                    data-bs-target="#exampleLargeModal">ثبت
+                                            </button>
+                                            <!-- Modal -->
+                                            <div class="modal fade" id="exampleLargeModal" tabindex="-1"
+                                                 aria-hidden="true">
+                                                <div class="modal-dialog modal-lg">
+                                                    <div class="modal-content bg-warning">
+                                                        <div class="modal-header">
+                                                            <h5 class="modal-title">همکار گرامی</h5>
+                                                            <button type="button" class="btn-close"
+                                                                    data-bs-dismiss="modal"
+                                                                    aria-label="Close"></button>
+                                                        </div>
+                                                        <div class="modal-body">لطفا قبل از تایید، از صحت اطلاعات
+                                                            ورودی مطمئن شوید. داده ها در آینده ممکن است مورد رجوع و
+                                                            استناد قرار گیرند.
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary"
+                                                                    data-bs-dismiss="modal">لغو
+                                                            </button>
+                                                            <button type="submit" id="submit" class="btn btn-primary">
+                                                                بروزرسانی
+                                                                وظیفه
+                                                            </button>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        </div>
 
-                                        </form>
-                                    </div>
+                                    </form>
                                 </div>
                             </div>
+                        </div>
 
 
                     </div>

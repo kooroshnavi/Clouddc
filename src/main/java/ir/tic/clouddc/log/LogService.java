@@ -7,6 +7,7 @@ import java.time.LocalTime;
 import java.util.List;
 
 public interface LogService {
+
     Persistence newPersistenceInitialization(String logMessageKey, Person currentPerson, String category);
 
     Persistence persistenceSetup(Person person, String category);

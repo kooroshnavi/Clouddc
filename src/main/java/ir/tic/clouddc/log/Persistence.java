@@ -30,7 +30,7 @@ public final class Persistence {
     @Column(name = "Category")
     private String category;
 
-    @OneToMany(mappedBy = "persistence", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    @OneToMany(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH}, mappedBy = "persistence")
     private List<LogHistory> logHistoryList;
 
     public Persistence(LocalDate date, LocalTime time, Person owner, String logMessageKey, String category) {

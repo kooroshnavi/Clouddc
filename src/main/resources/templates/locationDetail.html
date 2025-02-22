@@ -397,7 +397,14 @@
                                    data-bs-placement="bottom" title="جزئیات رک"></a>
                             </td>
                             <td th:text="${rack.devicePositionMap.size()}"></td>
-                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')" th:text="${rack.utilizer.name} "></td>
+                            <td sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">
+                                <div class="col">
+                                    <a th:text="${rack.utilizer.name} "
+                                       th:href="@{/resource/utilizer/{utilizerId}/detail (utilizerId=${rack.utilizer.id})}"
+                                       class="btn btn-outline-dark px-10 radius-30" data-bs-toggle="tooltip"
+                                       data-bs-placement="bottom" title="اطلاعات بهره بردار"></a>
+                                </div>
+                            </td>
 
                         </tr>
                         </tbody>
@@ -501,16 +508,6 @@
         </div>
         <!--Pm table-->
 
-        <!--Event table-->
-        <!--Event table-->
-
-        <!--File attachment form -->
-        <!--File attachment form -->
-
-        <!--attachment table-->
-
-        <!--End attachment table-->
-
     </main>
     <!--end page main-->
 
@@ -544,8 +541,6 @@
 <script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
 <script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
-
-
 <!--app-->
 <script src="/panel/assets/js/app.js"></script>
 

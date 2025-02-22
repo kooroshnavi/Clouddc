@@ -6,6 +6,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=yes">
     <link href="/login/css/style.css" rel="stylesheet">
     <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
+    <link href="/panel/assets/plugins/datatable/css/dataTables.bootstrap5.min.css" rel="stylesheet"/>
     <link href="/panel/assets/css/clock.css" rel="stylesheet"/>
 
 </head>
@@ -117,8 +121,8 @@
 
 
                         <div class="form-group">
-                            <button type="submit" id="submit" class="form-control btn btn-primary submit px-3">بررسی
-                            </button>
+                            <button type="submit" id="submit" class="btn btn-outline-warning radius-30" data-bs-toggle="tooltip"
+                                    data-bs-placement="bottom" title="در صورت ثبت بودن شماره تلفن، کد ورود به حساب تیک گرام ارسال می گردد.">بررسی</button>
                         </div>
 
                     </form>
@@ -127,13 +131,10 @@
                 </div>
             </div>
         </div>
+        <h6>
+            <span class="bg-dark small" th:text="${'IP Address: '   + remoteAddress}"></span>
+        </h6>
     </div>
-
-    <h6>
-        <br>
-        <span class="bg-primary" th:text="${'IP Address: '   + remoteAddress}"></span>
-    </h6>
-
 </section>
 
 <script src="/login/js/jquery.min.js"></script>

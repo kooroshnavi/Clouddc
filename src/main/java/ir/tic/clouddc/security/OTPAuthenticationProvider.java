@@ -25,9 +25,12 @@ import java.util.concurrent.ExecutionException;
 public class OTPAuthenticationProvider implements AuthenticationProvider {
 
     private final OTPService otpService;
+
     private final PersonService personService;
+
     private final AddressRepository addressRepository;
-    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN");  // char role: 0.1.2.3.4
+
+    private static final List<String> ROLES = Arrays.asList("OPERATOR", "SUPERVISOR", "VIEWER", "MANAGER", "ADMIN", "WEBSERVICE");  // char role: 0.1.2.3.4.5
 
     @Autowired
     public OTPAuthenticationProvider(OTPService otpService, PersonService personService, AddressRepository addressRepository) {
@@ -62,7 +65,7 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
         var roleId = personObject.getRole();
         List<GrantedAuthority> personRoles = new ArrayList<>();
         switch (roleId) {
-            case '0' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(0)));
+            case '0' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(0))); // OPERATOR
             case '1' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(1)));
             case '2' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(2)));
             case '3' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(3)));
@@ -71,8 +74,9 @@ public class OTPAuthenticationProvider implements AuthenticationProvider {
                 personRoles.add(new SimpleGrantedAuthority(ROLES.get(1)));
                 personRoles.add(new SimpleGrantedAuthority(ROLES.get(3)));
             }
+            case '6' -> personRoles.add(new SimpleGrantedAuthority(ROLES.get(5))); // WEBSERVICE
         }
-        // map: 01234/5:13
+        // map: 01234/5:13/6
 
         return new UsernamePasswordAuthenticationToken(personObject.getUsername(), null, personRoles);
     }

@@ -77,7 +77,7 @@
                                     </a>
                                 </div>
 
-                                <div class="col">
+                                <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
                                     <a th:href="@{/document/list}">
                                         <div class="apps p-2 radius-10 text-center">
                                             <div class="apps-icon-box mb-1 text-white bg-gradient-danger">
@@ -153,6 +153,7 @@
 
         <script>
             setInterval(showTime, 1000);
+
             function showTime() {
                 let time = new Date();
                 let hour =
@@ -184,6 +185,7 @@
                     ":" +
                     sec;
             }
+
             showTime();
         </script>
 
@@ -205,7 +207,7 @@
         <!--navigation-->
         <ul class="metismenu" id="menu">
 
-            <li>
+            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">
                 <a href="javascript:" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-exclamation-triangle-fill"></i>
                     </div>
@@ -215,13 +217,18 @@
                     <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')">
                         <a th:href="@{/pm/workspace}" href="/pm/interface/list"><i class="bi bi-circle"></i>کارتابل</a>
                     </li>
-                    <li><a href="/pm/active/list"><i class="bi bi-circle"></i>وظایف فعال جاری</a>
+                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')"><a
+                            href="/pm/active/list"><i class="bi bi-circle"></i>وظایف فعال جاری</a>
                     </li>
-                    <li><a href="/pm/interface/list"><i class="bi bi-circle"></i>مدیریت وظایف</a>
+                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')"><a
+                            href="/pm/interface/list"><i class="bi bi-circle"></i>مدیریت وظایف</a>
+                    </li>
+                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')"><a
+                            href="/report/dailyReport"><i class="bi bi-circle"></i>گزارش روزانه</a>
                     </li>
                 </ul>
             </li>
-            <li>
+            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">
                 <a href="javascript:" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-file-code-fill"></i>
                     </div>
@@ -231,9 +238,21 @@
                     <li><a href="/center/overview"><i class="bi bi-circle"></i>مراکز داده</a></li>
                     <li><a href="/resource/utilizer/list"><i class="bi bi-circle"></i>بهره برداران</a></li>
                     <li><a href="/resource/module/inventory"><i class="bi bi-circle"></i>مخزن ماژول</a></li>
-                    <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${0}, targetId=${0})}"><i class="bi bi-circle"></i>رخدادهای گزارش شده</a>
+                    <li><a th:href="@{/event/{typeId}/{targetId}/list (typeId=${0}, targetId=${0})}"><i
+                            class="bi bi-circle"></i>رخدادهای گزارش شده</a>
                     </li>
 
+                </ul>
+            </li>
+
+            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+                <a href="javascript:" class="has-arrow">
+                    <div class="parent-icon"><i class="bi bi-file-code-fill"></i>
+                    </div>
+                    <div class="menu-title">ابر</div>
+                </a>
+                <ul>
+                    <li><a href="/cloud/overview"><i class="bi bi-circle"></i>سرویس های ابری</a></li>
                 </ul>
             </li>
 
@@ -245,6 +264,11 @@
                 </a>
                 <ul>
                     <li><a href="/person/list"><i class="bi bi-circle"></i>اطلاعات کاربری</a></li>
+                </ul>
+
+                <ul>
+                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'WEBSERVICE')"><a
+                            href="/webservice/token"><i class="bi bi-circle"></i>مدیریت توکن</a></li>
                 </ul>
             </li>
 

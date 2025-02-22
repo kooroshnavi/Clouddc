@@ -15,4 +15,5 @@ public final class EventDetail extends Workflow {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "EventID")
-    private Event event;}
+    private Event event;
+}

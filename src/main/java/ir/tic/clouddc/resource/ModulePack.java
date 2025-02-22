@@ -43,5 +43,4 @@ public final class ModulePack {
     @OneToOne(cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     @JoinColumn(name = "PersistenceID")
     private Persistence persistence;
-
 }

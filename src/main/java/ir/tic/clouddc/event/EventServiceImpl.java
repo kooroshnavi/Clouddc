@@ -44,6 +44,8 @@ public class EventServiceImpl implements EventService {
 
     private final ResourceService resourceService;
 
+    private final UtilService utilService;
+
     private static final int General_Event_Category_ID = 1;
     private static final int NewDevice_Installation_EVENT_CATEGORY_ID = 2;
     private static final int LOCATION_UTILIZER_EVENT_CATEGORY_ID = 3;
@@ -57,7 +59,7 @@ public class EventServiceImpl implements EventService {
             , CenterService centerService
             , PersonService personService
             , FileService fileService,
-            LogService logService, ResourceService resourceService) {
+            LogService logService, ResourceService resourceService, UtilService utilService) {
         this.eventRepository = eventRepository;
         this.eventDetailRepository = eventDetailRepository;
         this.eventCategoryRepository = eventCategoryRepository;
@@ -66,6 +68,7 @@ public class EventServiceImpl implements EventService {
         this.resourceService = resourceService;
         this.fileService = fileService;
         this.logService = logService;
+        this.utilService = utilService;
     }
 
 
@@ -73,6 +76,7 @@ public class EventServiceImpl implements EventService {
     public LocationStatusForm getLocationStatusForm(Location location) {
         LocationStatusForm locationStatusForm = new LocationStatusForm();
         locationStatusForm.setLocation(location);
+
         return locationStatusForm;
     }
 
@@ -158,19 +162,6 @@ public class EventServiceImpl implements EventService {
         }
 
         finalizeEvent(eventForm, validDate, event);
-    }
-
-    private LocationCheckList locationStatusEventRegister_2(LocationStatusForm locationStatusForm) {
-        var currentStatus = locationStatusForm.getCurrentLocationStatus();
-        LocationCheckList locationCheckList = new LocationCheckList();
-        // locationCheckList.setLocationStatus(currentStatus);
-        // locationCheckList.setDoorChanged(currentStatus.isDoor() != locationStatusForm.isDoor());
-        // locationCheckList.setVentilationChanged(currentStatus.isVentilation() != locationStatusForm.isVentilation());
-        // locationCheckList.setPowerChanged(currentStatus.isPower() != locationStatusForm.isPower());
-        //locationCheckList.setLocation(locationStatusForm.getLocation());
-        locationCheckList.setActive(false);
-
-        return locationCheckList;
     }
 
     private Event generalEventRegister_1(EventForm eventForm) {
@@ -437,7 +428,6 @@ public class EventServiceImpl implements EventService {
                             , newUtilizer));
 
             return deviceUtilizerEvent;
-
         } else {
             throw new NoSuchElementException();
         }
@@ -467,6 +457,7 @@ public class EventServiceImpl implements EventService {
     private static boolean isBalance(Utilizer newUtilizer, List<Integer> affectedUtilizerIdList) {
         boolean hasBalance;
         hasBalance = affectedUtilizerIdList.size() != 1 || !Objects.equals(affectedUtilizerIdList.get(0), newUtilizer.getId());
+
         return hasBalance;
     }
 
@@ -493,6 +484,7 @@ public class EventServiceImpl implements EventService {
                 utilizerBalance.put(destinationUtilizerId, destBalance);
             }
         }
+
         return utilizerBalance;
     }
 
@@ -556,6 +548,7 @@ public class EventServiceImpl implements EventService {
             event.setPersianRegisterDate(UtilService.getFormattedPersianDate(event.getRegisterDate()));
             event.setPersianRegisterDayTime(UtilService.PERSIAN_DAY.get(event.getRegisterDate().getDayOfWeek().getDisplayName(TextStyle.SHORT, Locale.getDefault())) + " - " + event.getRegisterTime());
         }
+
         return eventList;
     }
 
@@ -571,7 +564,7 @@ public class EventServiceImpl implements EventService {
 
             return event;
         }
-        throw new NoSuchElementException();
+        throw new NoSuchElementException("s");
     }
 
     @Override
@@ -597,6 +590,7 @@ public class EventServiceImpl implements EventService {
                 balanceMap.put(utilizer, balanceId.get(utilizerId));
             }
         }
+
         return balanceMap;
     }
 
@@ -654,6 +648,7 @@ public class EventServiceImpl implements EventService {
     public Model modelForEventController(Model model) {
         model.addAttribute("person", personService.getCurrentPerson());
         model.addAttribute("date", UtilService.getCurrentDate());
+
         return model;
     }
 
@@ -679,6 +674,7 @@ public class EventServiceImpl implements EventService {
         var percent = (float) 25 * 100;
         log.info(String.valueOf(percent));
         var formatted = decimalFormat.format(percent);
+
         return Integer.parseInt(formatted);
     }
 
@@ -688,6 +684,7 @@ public class EventServiceImpl implements EventService {
         decimalFormat.setRoundingMode(RoundingMode.HALF_UP);
         float percent = ((float) getActiveEventCount() / getEventCount()) * 100;
         var formatted = decimalFormat.format(percent);
+
         return Integer.parseInt(formatted);
     }
 }
