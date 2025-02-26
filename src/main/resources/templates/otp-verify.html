@@ -19,9 +19,9 @@
                 <div class="card bg-white mb-5 mt-5 border-0" style="box-shadow: 0 12px 15px rgba(0, 0, 0, 0.02);">
                     <div class="card-body p-5 text-center">
                         <h4></h4>
-                        <p dir="rtl">همکار گرامی، لطفا کد ارسالی به حساب تیک گرام خود را وارد نمایید.</p>
+                        <p class="text-bg-warning" dir="rtl">همکار گرامی، لطفا کد ورود 6رقمی خود را وارد کنید.  کد ارسالی تیک گرام و کدهای بکاپ شما معتبر هستند.</p>
 
-                        <div th:if="${invalid}" class="alert-warning" dir="rtl">
+                        <div th:if="${invalid}" class="alert-danger" dir="rtl">
                             کد وارد شده اشتباه است.
                         </div>
 
@@ -110,7 +110,7 @@
     function OTPVerifyFn(e) {
         const userOtp = document.getElementById('userOTP').value;
         if (userOtp === "" || userOtp.length < 6) {
-            alert("کد ورود یک عدد ۶ رقمی است.");
+            alert("کد ورود یک عدد ۶ رقمی است");
             e.preventDefault();
         } else {
             return true;

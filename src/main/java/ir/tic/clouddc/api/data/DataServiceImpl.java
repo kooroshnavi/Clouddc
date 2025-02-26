@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import ir.tic.clouddc.api.response.ErrorResult;
 import ir.tic.clouddc.api.response.Response;
 import ir.tic.clouddc.api.response.Result;
-import ir.tic.clouddc.cloud.CloudService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.servlet.UnavailableException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,8 +26,6 @@ import java.util.List;
 public class DataServiceImpl implements DataService {
 
     private final WebClient webClient;
-
-    private final CloudService cloudService;
 
     private static final String BASE_URL = "https://monitoring.it.tic.ir/ts-p/api/v1/query";
 
@@ -61,9 +58,8 @@ public class DataServiceImpl implements DataService {
     List<CephResult> cephDataResultList;
 
     @Autowired
-    public DataServiceImpl(WebClient webClient, CloudService cloudService) {
+    public DataServiceImpl(WebClient webClient) {
         this.webClient = webClient;
-        this.cloudService = cloudService;
     }
 
     @Override
@@ -128,26 +124,6 @@ public class DataServiceImpl implements DataService {
                 "استوریج ابری سبزسیستم - حجم مصرفی پیام رسان ها"
                 , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
                 , cephDataResultList);
-    }
-
-    @Override
-    @PreAuthorize("hasAnyAuthority('API_GET_AUTH')")
-    public Response getXasCephUsageData() {
-        var xasCephData = cloudService.getXasCurrentCephData();
-        if (xasCephData.isPresent()) {
-            CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(xasCephData.get().getCapacity()), xasCephData.get().getUnit());
-            CephResult usedCapacity = new CephResult(2, "ایتا", String.valueOf(xasCephData.get().getCephUtilizerList().get(0).getUsage()), xasCephData.get().getCephUtilizerList().get(0).getUnit());
-
-            return new Response("OK"
-                    ,
-                    "استوریج ابری امین آسیا (ابر اختصاصی ایتا)"
-                    , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
-                    , List.of(totalCapacity, usedCapacity));
-        }
-        return new Response("Error"
-                , "خطا در دریافت اطلاعات"
-                , UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now())
-                , List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
     }
 
     private static CephResult getMessengerUsageResult(CephResult brpDataResult, CephResult becDataResult) {

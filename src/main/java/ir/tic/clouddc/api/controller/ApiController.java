@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import ir.tic.clouddc.api.data.DataService;
 import ir.tic.clouddc.api.response.Response;
 import ir.tic.clouddc.api.token.TokenService;
+import ir.tic.clouddc.cloud.CloudService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,10 +24,13 @@ public class ApiController {
 
     private final DataService dataService;
 
+    private final CloudService cloudService;
+
     @Autowired
-    public ApiController(TokenService tokenService, DataService dataService) {
+    public ApiController(TokenService tokenService, DataService dataService, CloudService cloudService) {
         this.tokenService = tokenService;
         this.dataService = dataService;
+        this.cloudService = cloudService;
     }
 
     @GetMapping("/ceph/cluster")
@@ -53,7 +57,7 @@ public class ApiController {
 
     @GetMapping("/ceph/xas/usage")
     public ResponseEntity<Response> getXasUsageData(HttpServletRequest request) {
-        var response = dataService.getXasCephUsageData();
+        var response = cloudService.getXasCephUsageData();
         tokenService.postRequestRecord(request, response.getStatus());
 
         if (Objects.equals(response.getStatus(), "OK")) {

@@ -1,18 +1,28 @@
 package ir.tic.clouddc.cloud;
 
+import ir.tic.clouddc.api.response.Response;
+
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 public interface CloudService {
 
-    void saveManualData(ManualData manualData);
+    List<ServiceHistory> getServiceHistory(int serviceType, int providerID);
 
-    Optional<Ceph> getXasCurrentCephData();
+    Optional<? extends CloudProvider> getCloudProvider(int cloudProviderId);
 
-    interface ProviderIdNameProjection {
+    interface CloudProviderIDLocalDateProjection{
         int getId();
 
-        String getName();
-
-        char getType();
+        LocalDateTime getDate();
     }
+
+    void saveManualData(ManualData manualData);
+
+    Optional<? extends CloudProvider> getCurrentService(int serviceType, int providerID);
+
+    Response getXasCephUsageData();
+
+    Optional<? extends CloudProvider> getServiceStatus(Integer serviceType);
 }

@@ -1,8 +1,10 @@
 package ir.tic.clouddc.otp;
 
 import ir.tic.clouddc.person.Address;
+import ir.tic.clouddc.person.Person;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface OTPService {
@@ -26,4 +28,9 @@ public interface OTPService {
     void verifyUnregisteredIPAddress(String remoteAddr) throws ExecutionException;
 
     boolean loginPageAvailability(String remoteAddr) throws ExecutionException;
+
+    void refreshPersonBackupCodeList(Person currentPerson);
+
+    List<BackupCodeRepository.BackupCodeProjection> getBackCodeList(Person currentPerson);
 }
+

@@ -1,8 +1,9 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.api.token.AuthenticationToken;
 import ir.tic.clouddc.center.LocationPmCatalog;
 import ir.tic.clouddc.log.Persistence;
-import ir.tic.clouddc.api.token.AuthenticationToken;
+import ir.tic.clouddc.otp.BackupCode;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -49,6 +50,9 @@ public final class Person {
 
     @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
     private List<AuthenticationToken> authenticationTokenList;
+
+    @OneToMany(mappedBy = "person", cascade = {CascadeType.MERGE, CascadeType.PERSIST, CascadeType.REFRESH, CascadeType.DETACH})
+    private List<BackupCode> backupCodeList;
 
     @OneToOne
     @JoinColumn(name = "LatestLoginHistoryID")

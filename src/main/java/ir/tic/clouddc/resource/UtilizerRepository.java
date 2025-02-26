@@ -14,4 +14,6 @@ public interface UtilizerRepository extends JpaRepository<Utilizer, Integer> {
 
     @Query("select utilizer from Utilizer utilizer where utilizer.genuineUtilizer")
     List<Utilizer> fetchGenuineList();
+
+    boolean existsByNameContainsIgnoreCase(String name);
 }

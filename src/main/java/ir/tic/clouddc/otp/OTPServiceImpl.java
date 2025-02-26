@@ -6,6 +6,7 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.person.Address;
+import ir.tic.clouddc.person.Person;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ExecutionException;
@@ -39,9 +41,13 @@ public class OTPServiceImpl implements OTPService {
 
     private final NotificationService notificationService;
 
+    private final BackupCodeRepository backupCodeRepository;
+
+
     @Autowired
-    public OTPServiceImpl(NotificationService notificationService) {
+    public OTPServiceImpl(NotificationService notificationService, BackupCodeRepository backupCodeRepository) {
         this.notificationService = notificationService;
+        this.backupCodeRepository = backupCodeRepository;
         personRegisterOTPCache = CacheBuilder.newBuilder()
                 .expireAfterWrite(REGISTER_EXPIRE_MIN, TimeUnit.MINUTES)
                 .build(new CacheLoader<>() {
@@ -75,7 +81,7 @@ public class OTPServiceImpl implements OTPService {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss");
         String persianDateTime = formatter.format(PersianDateTime.fromGregorian(requestDateTime));
         String otp = getRandomOTP();
-        //log.info(otp);
+      //  log.info(otp);
         loginOTPCache.put(address, otpUid);
         loginOTPCache.put(otpUid, otp);
         loginOTPCache.put(otp, address);
@@ -109,8 +115,14 @@ public class OTPServiceImpl implements OTPService {
         var realOtp = loginOTPCache.get(otpUid);
         if (realOtp.isBlank()) { //expired or maybe malformed UID
             return "0";
-        } else if (!realOtp.equals(providedOtp)) { //invalid otp
-            return "-1";
+        }
+        var address = loginOTPCache.get(realOtp);
+        if (backupCodeRepository.existsByPerson_Address_ValueAndBackupCode(address, providedOtp)) {
+            backupCodeRepository.deleteByPerson_Address_ValueAndBackupCode(address, providedOtp);
+
+            return loginOTPCache.get(realOtp);
+        } else if (realOtp.equals(providedOtp)) {
+            return loginOTPCache.get(realOtp);
         }
 
         /* otpCache.invalidate(otpUid);
@@ -118,7 +130,7 @@ public class OTPServiceImpl implements OTPService {
         otpCache.invalidate(UUID.nameUUIDFromBytes(otpUid.getBytes(StandardCharsets.UTF_8)).toString());
         otpCache.invalidate(realOtp);*/
 
-        return loginOTPCache.get(realOtp);
+        return "-1";
     }
 
     @Override
@@ -126,7 +138,7 @@ public class OTPServiceImpl implements OTPService {
         UUID expiryTimeUUID = UUID.nameUUIDFromBytes(phoneNumber.getBytes(StandardCharsets.UTF_8));
         if (personRegisterOTPCache.get(phoneNumber).isBlank()) {
             String OTPCode = getRandomOTP();
-           // log.info(OTPCode);
+            // log.info(OTPCode);
             personRegisterOTPCache.put(phoneNumber, OTPCode);
             personRegisterOTPCache.put(expiryTimeUUID.toString(), LocalDateTime.now().plusMinutes(REGISTER_EXPIRE_MIN).toString());
             notificationService.sendRegisterOTPMessage(phoneNumber, OTPCode);
@@ -188,5 +200,24 @@ public class OTPServiceImpl implements OTPService {
     @Override
     public boolean loginPageAvailability(String remoteAddr) throws ExecutionException {
         return machineLimitedCache.get(remoteAddr) < MAXIMUM_UNREGISTERED_TRIES;
+    }
+
+    @Override
+    public void refreshPersonBackupCodeList(Person currentPerson) {
+        var personBackupCodeList = backupCodeRepository.getPersonBackupCodeList(currentPerson);
+        if (personBackupCodeList.isEmpty()) {
+            for (int i = 0; i < 5; i++) {
+                BackupCode backupCode = new BackupCode();
+                backupCode.setBackupCode(getRandomOTP());
+                backupCode.setPerson(currentPerson);
+                personBackupCodeList.add(backupCode);
+            }
+            backupCodeRepository.saveAll(personBackupCodeList);
+        }
+    }
+
+    @Override
+    public List<BackupCodeRepository.BackupCodeProjection> getBackCodeList(Person currentPerson) {
+        return backupCodeRepository.getBackupCodeList(currentPerson);
     }
 }

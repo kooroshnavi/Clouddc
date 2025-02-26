@@ -223,9 +223,6 @@
                     <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')"><a
                             href="/pm/interface/list"><i class="bi bi-circle"></i>مدیریت وظایف</a>
                     </li>
-                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')"><a
-                            href="/report/dailyReport"><i class="bi bi-circle"></i>گزارش روزانه</a>
-                    </li>
                 </ul>
             </li>
             <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR', 'MANAGER')">
@@ -245,7 +242,7 @@
                 </ul>
             </li>
 
-            <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')">
+            <li sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')">
                 <a href="javascript:" class="has-arrow">
                     <div class="parent-icon"><i class="bi bi-file-code-fill"></i>
                     </div>
@@ -267,7 +264,7 @@
                 </ul>
 
                 <ul>
-                    <li sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'WEBSERVICE')"><a
+                    <li sec:authorize="hasAnyAuthority('ADMIN', 'WEBSERVICE')"><a
                             href="/webservice/token"><i class="bi bi-circle"></i>مدیریت توکن</a></li>
                 </ul>
             </li>

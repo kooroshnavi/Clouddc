@@ -17,9 +17,22 @@ public class Ceph extends CloudProvider {
     @Column(name = "Capacity", nullable = false)
     private float capacity;
 
-    @Column(name = "Unit")
-    private String unit;
+    @Column(name = "Usage", nullable = false)
+    private float usage;
+
+    @Column(name = "CapacityUnit", nullable = false)
+    private String capacityUnit;
+
+    @Column(name = "UsageUnit", nullable = false)
+    private String usageUnit;
 
     @OneToMany(mappedBy = "provider", cascade = CascadeType.ALL)
     private List<CephUtilizer> cephUtilizerList;
+
+    @Transient
+    private String readOnlyRemaining;
+
+    @Transient
+    private String readOnlyRemainingUnit;
+
 }

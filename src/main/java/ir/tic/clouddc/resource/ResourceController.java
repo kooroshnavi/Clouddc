@@ -104,10 +104,25 @@ public class ResourceController {
                 .sorted(Comparator.comparing(utilizer -> utilizer.getDeviceList().size()))
                 .toList());
         Collections.reverse(utilizerList);
-
         model.addAttribute("utilizerList", utilizerList);
+        model.addAttribute("utilizerForm", new UtilizerForm());
+        if (!model.containsAttribute("registered")) {
+            model.addAttribute("registered", false);
+        }
+        if (!model.containsAttribute("registration")) {
+            model.addAttribute("registration", false);
+        }
 
         return "UtilizerList";
+    }
+
+    @PostMapping("/utilizer/register")
+    public String registerNewUtilizer(RedirectAttributes redirectAttributes, @ModelAttribute("utilizerForm") UtilizerForm utilizerForm) {
+        var registered = resourceService.utilizerRegister(utilizerForm);
+        redirectAttributes.addFlashAttribute("registered", registered);
+        redirectAttributes.addFlashAttribute("registration", true);
+
+        return "redirect:/resource/utilizer/list";
     }
 
     @GetMapping("/utilizer/{utilizerId}/detail")

@@ -1,7 +1,5 @@
 package ir.tic.clouddc.resource;
 
-import ir.tic.clouddc.event.DeviceCheckList;
-import ir.tic.clouddc.event.DeviceStatusForm;
 import jakarta.persistence.EntityNotFoundException;
 
 import java.util.List;
@@ -54,6 +52,8 @@ public interface ResourceService {
 
     void inventoryUpdate(ModuleUpdateForm moduleUpdateForm);
 
+    boolean utilizerRegister(UtilizerForm utilizerForm);
+
     interface DeviceIdSerialCategoryVendor_Projection1 {
         Long getId();
 
@@ -92,9 +92,6 @@ public interface ResourceService {
 
     Utilizer getUtilizer(int utilizerId);
 
-    void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event);
-
     List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList);
 
-    DeviceStatus getCurrentDeviceStatus(Device device);
 }
