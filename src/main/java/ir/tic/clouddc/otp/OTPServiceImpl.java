@@ -29,7 +29,7 @@ public class OTPServiceImpl implements OTPService {
 
     private static final long REGISTER_EXPIRE_MIN = 10;
 
-    private static final long IP_LIMITED_EXPIRE_HOUR = 100;
+    private static final long IP_LIMITED_EXPIRE_SECOND = 100;
 
     private static final int MAXIMUM_UNREGISTERED_TRIES = 5;
 
@@ -67,7 +67,7 @@ public class OTPServiceImpl implements OTPService {
                 });
 
         machineLimitedCache = CacheBuilder.newBuilder()
-                .expireAfterAccess(IP_LIMITED_EXPIRE_HOUR, TimeUnit.SECONDS)
+                .expireAfterAccess(IP_LIMITED_EXPIRE_SECOND, TimeUnit.SECONDS)
                 .build(new CacheLoader<>() {
                     @Override
                     public Integer load(String s) {
