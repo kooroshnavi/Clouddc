@@ -157,11 +157,15 @@ public class CloudServiceImpl implements CloudService {
         Ceph ceph = new Ceph();
         ceph.setCapacity(manualData.getCapacity());
         ceph.setLocalDateTime(LocalDateTime.now());
-        ceph.setProvider(resourceService.getReferencedUtilizer(XAS));
+        ceph.setProvider(resourceService.getReferencedUtilizer(manualData.getProvider()));
         ceph.setServiceType('1');
         ceph.setCapacityUnit("PB");
         CephUtilizer cephUtilizer = new CephUtilizer();
-        cephUtilizer.setUtilizer(resourceService.getReferencedUtilizer(EITAA));
+        if (manualData.getProvider() == XAS) {
+            cephUtilizer.setUtilizer(resourceService.getReferencedUtilizer(EITAA));
+        } else {
+            cephUtilizer.setUtilizer(resourceService.getReferencedUtilizer(BALE));
+        }
         cephUtilizer.setProvider(ceph);
         cephUtilizer.setUsage(manualData.getUsed());
         cephUtilizer.setLocalDateTime(ceph.getLocalDateTime());
@@ -174,7 +178,7 @@ public class CloudServiceImpl implements CloudService {
             cephUtilizer.setUnit("PB");
         }
         ceph.setUsageUnit(cephUtilizer.getUnit());
-        var oldResult = cephRepository.getCurrentCeph(XAS);
+        var oldResult = cephRepository.getCurrentCeph(manualData.getProvider());
         if (oldResult.isPresent()) {
             oldResult.get().setCurrent(false);
             cloudRepository.saveAll(List.of(ceph, oldResult.get()));
@@ -215,19 +219,36 @@ public class CloudServiceImpl implements CloudService {
     }
 
     @Override
+    @PreAuthorize("hasAnyAuthority('API_GET_AUTH')")
+    public Response getSedadUsageData() {
+        var sedadCeph = getCurrentService(CEPH_SERVICE_TYPE, BALE);
+        if (sedadCeph.isPresent()) {
+            var sedadResult = (Ceph) sedadCeph.get();
+            CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(sedadResult.getCapacity()), sedadResult.getCapacityUnit());
+            CephResult usedCapacity = new CephResult(2, "بله", String.valueOf(sedadResult.getCephUtilizerList().get(0).getUsage()), sedadResult.getCephUtilizerList().get(0).getUnit());
+
+            return new Response("OK"
+                    ,
+                    "استوریج ابری سداد فارس (ابر پشتیبان)"
+                    , UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime())
+                    , List.of(totalCapacity, usedCapacity));
+        }
+        return new Response("Error"
+                , "خطا در دریافت اطلاعات"
+                , UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now())
+                , List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
+    }
+
+    @Override
     @PreAuthorize("hasAnyAuthority('ADMIN')")
     public Optional<? extends CloudProvider> getServiceStatus(Integer serviceType) {
         Optional<? extends CloudProvider> currentService;
-        if (serviceType == 1) {
-            log.info("Sabz");
-            currentService = getCurrentService(CEPH_SERVICE_TYPE, SABZ_SYSTEM);
-        } else {
-            log.info("XAS");
-            currentService = getCurrentService(CEPH_SERVICE_TYPE, XAS);
+        switch (serviceType) {
+            case 1 -> currentService = getCurrentService(CEPH_SERVICE_TYPE, SABZ_SYSTEM);
+            case 4 -> currentService = getCurrentService(CEPH_SERVICE_TYPE, XAS);
+            default -> currentService = getCurrentService(CEPH_SERVICE_TYPE, BALE);
         }
-
         if (currentService.isPresent()) {
-            log.info("Service is present");
             var service = currentService.get();
             var serviceDate = service.getLocalDateTime().toLocalDate();
             var serviceTime = service.getLocalDateTime().toLocalTime();

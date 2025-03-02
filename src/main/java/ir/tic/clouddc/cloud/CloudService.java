@@ -12,6 +12,8 @@ public interface CloudService {
 
     Optional<? extends CloudProvider> getCloudProvider(int cloudProviderId);
 
+    Response getSedadUsageData();
+
     interface CloudProviderIDLocalDateProjection{
         int getId();
 

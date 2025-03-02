@@ -110,14 +110,21 @@
                                                             <li><a class="dropdown-item"
                                                                    href="/cloud/serviceType/1">سبزسیستم-CEPH</a>
                                                             </li>
-                                                            <li><button disabled="disabled" class="dropdown-item"
-                                                                   href="/cloud/serviceType/2">سبزسیستم-IAAS</button>
+                                                            <li>
+                                                                <button disabled="disabled" class="dropdown-item"
+                                                                        href="/cloud/serviceType/2">سبزسیستم-IAAS
+                                                                </button>
                                                             </li>
-                                                            <li><button  disabled="disabled" class="dropdown-item"
-                                                                   href="/cloud/serviceType/3">سبزسیستم-KAAS</button>
+                                                            <li>
+                                                                <button disabled="disabled" class="dropdown-item"
+                                                                        href="/cloud/serviceType/3">سبزسیستم-KAAS
+                                                                </button>
                                                             </li>
                                                             <li><a class="dropdown-item"
                                                                    href="/cloud/serviceType/4">امین آسیا (ایتا)</a>
+                                                            </li>
+                                                            <li><a class="dropdown-item"
+                                                                   href="/cloud/serviceType/5">سدادفارس (بله)</a>
                                                             </li>
                                                         </ul>
                                                     </div>
@@ -145,22 +152,20 @@
                             <div class="accordion-body">
                                 <div class="border p-3 rounded">
 
-
-                                    <label th:if="${not noData}" class="for-check">آخرین
+                                    <label th:if="${not noXasData}" class="for-check">آخرین
                                         بروزرسانی: </label>
-                                    <data th:if="${not noData}" type="number" value="" dir="ltr"
-                                          th:text="${currentCeph.persianDateTime}" disabled="disabled"
+                                    <data th:if="${not noXasData}" type="number" value="" dir="ltr"
+                                          th:text="${currentXasCeph.persianDateTime}" disabled="disabled"
                                           required="required"/>
 
-
-                                    <label th:if="${not noData}" class="for-check">حجم کل: </label>
-                                    <data th:if="${not noData}" type="number" value="" dir="ltr"
-                                          th:text="${currentCeph.capacity}" disabled="disabled"
+                                    <label th:if="${not noXasData}" class="for-check">حجم کل: </label>
+                                    <data th:if="${not noXasData}" type="number" value="" dir="ltr"
+                                          th:text="${currentXasCeph.capacity}" disabled="disabled"
                                           required="required"/>
 
-                                    <label th:if="${not noData}" class="for-check">حجم مصرفی: </label>
-                                    <data th:if="${not noData}" type="number" value="" dir="ltr"
-                                          th:text="${currentUsage}" disabled="disabled"
+                                    <label th:if="${not noXasData}" class="for-check">حجم مصرفی: </label>
+                                    <data th:if="${not noXasData}" type="number" value="" dir="ltr"
+                                          th:text="${currentXasUsage}" disabled="disabled"
                                           required="required"/>
                                     <br>
                                     <hr/>
@@ -215,6 +220,8 @@
                                             <hr/>
                                         </div>
 
+                                        <input type="hidden" name="provider" th:value="${1006}"/>
+
                                         <hr/>
                                         <button type="submit" id="submit2" class="btn btn-dark">
                                             ثبت اطلاعات
@@ -223,7 +230,101 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
 
+
+                    <div sec:authorize="hasAnyAuthority('ADMIN')" class="accordion-item">
+                        <h2 class="accordion-header" id="headingThree">
+                            <button class="accordion-button collapsed" type="button"
+                                    data-bs-toggle="collapse"
+                                    data-bs-target="#collapseThree" aria-expanded="false"
+                                    aria-controls="collapseThree">
+                                ثبت اطلاعات استوریج سداد (بله - ابر پشتیبان)
+                            </button>
+                        </h2>
+                        <div id="collapseThree" class="accordion-collapse collapse"
+                             aria-labelledby="headingThree"
+                             data-bs-parent="#accordionExample">
+                            <div class="accordion-body">
+                                <div class="border p-3 rounded">
+
+                                    <label th:if="${not noSedadData}" class="for-check">آخرین
+                                        بروزرسانی: </label>
+                                    <data th:if="${not noSedadData}" type="number" value="" dir="ltr"
+                                          th:text="${currentSedadCeph.persianDateTime}" disabled="disabled"
+                                          required="required"/>
+
+
+                                    <label th:if="${not noSedadData}" class="for-check">حجم کل: </label>
+                                    <data th:if="${not noSedadData}" type="number" value="" dir="ltr"
+                                          th:text="${currentSedadCeph.capacity}" disabled="disabled"
+                                          required="required"/>
+
+                                    <label th:if="${not noSedadData}" class="for-check">حجم مصرفی: </label>
+                                    <data th:if="${not noSedadData}" type="number" value="" dir="ltr"
+                                          th:text="${currentSedadUsage}" disabled="disabled"
+                                          required="required"/>
+                                    <br>
+                                    <hr/>
+
+                                    <form class="was-validated"
+                                          th:action="@{/cloud/submitManualData}"
+                                          th:object="${manualData}" method="Post"
+                                          onSubmit="document.getElementById('submit2').disabled=true;">
+
+                                        <div class="form-group">
+                                            <label class="for-check">حجم کل استوریج</label>
+                                            <input type="number" step="0.01" value="" dir="ltr"
+                                                   th:field="*{capacity}"
+                                                   required="required">
+                                        </div>
+                                        <br>
+                                        <div class="form-group">
+                                            <label class="for-check">حجم مصرفی</label>
+                                            <input type="number" step="0.1" dir="ltr"
+                                                   th:field="*{used}"
+                                                   required="required">
+                                        </div>
+
+                                        <br>
+                                        <div class="col">
+                                            <label class="form-label">واحد</label>
+                                            <select class="single-select" name="subject"
+                                                    th:field="*{unit}">
+                                                <option th:value="100" disabled="disabled"
+                                                        selected="selected">
+                                                    انتخاب
+                                                </option>
+                                                <option th:value="1">TB</option>
+                                                <option th:value="2">PB</option>
+                                            </select>
+                                        </div>
+                                        <br>
+                                        <div class="col">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" value=""
+                                                       id="invalidCheck"
+                                                       required="required">
+                                                <label class="form-check-label" for="invalidCheck">از
+                                                    ثبت اطلاعات
+                                                    صحیح مطمئن هستم</label>
+                                                <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل
+                                                    کنید
+                                                </div>
+                                            </div>
+                                            <hr/>
+                                        </div>
+
+                                        <input type="hidden" name="provider" th:value="${1003}"/>
+
+                                        <hr/>
+                                        <button type="submit" id="submit2" class="btn btn-dark">
+                                            ثبت اطلاعات
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -31,12 +31,23 @@ public class CloudController {
         var currentXas = cloudService.getCurrentService(1, 1006);
         if (currentXas.isPresent()) {
             var xasResult = (Ceph) currentXas.get();
-            model.addAttribute("noData", false);
+            model.addAttribute("noXasData", false);
             currentXas.get().setPersianDateTime(UtilService.getFormattedPersianDateAndTime(currentXas.get().getLocalDateTime().toLocalDate(), currentXas.get().getLocalDateTime().toLocalTime()));
-            model.addAttribute("currentCeph", xasResult);
-            model.addAttribute("currentUsage", xasResult.getCephUtilizerList().get(0).getUsage());
+            model.addAttribute("currentXasCeph", xasResult);
+            model.addAttribute("currentXasUsage", xasResult.getCephUtilizerList().get(0).getUsage());
         } else {
-            model.addAttribute("noData", true);
+            model.addAttribute("noXasData", true);
+        }
+
+        var currentSedad = cloudService.getCurrentService(1, 1003);
+        if (currentSedad.isPresent()) {
+            var sedadResult = (Ceph) currentSedad.get();
+            model.addAttribute("noSedadData", false);
+            currentSedad.get().setPersianDateTime(UtilService.getFormattedPersianDateAndTime(currentSedad.get().getLocalDateTime().toLocalDate(), currentSedad.get().getLocalDateTime().toLocalTime()));
+            model.addAttribute("currentSedadCeph", sedadResult);
+            model.addAttribute("currentSedadUsage", sedadResult.getCephUtilizerList().get(0).getUsage());
+        } else {
+            model.addAttribute("noSedadData", true);
         }
 
         return "cloudOverview";

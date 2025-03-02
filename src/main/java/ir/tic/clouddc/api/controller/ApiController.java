@@ -65,4 +65,15 @@ public class ApiController {
         }
         return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
     }
+
+    @GetMapping("/ceph/sedad/usage")
+    public ResponseEntity<Response> getSedadUsageData(HttpServletRequest request) {
+        var response = cloudService.getSedadUsageData();
+        tokenService.postRequestRecord(request, response.getStatus());
+
+        if (Objects.equals(response.getStatus(), "OK")) {
+            return new ResponseEntity<>(response, HttpStatusCode.valueOf(200));
+        }
+        return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
+    }
 }
