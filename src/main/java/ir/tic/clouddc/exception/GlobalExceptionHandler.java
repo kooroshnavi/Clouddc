@@ -4,13 +4,16 @@ import io.netty.resolver.dns.DnsNameResolverException;
 import io.netty.resolver.dns.DnsNameResolverTimeoutException;
 import ir.tic.clouddc.api.response.ErrorResult;
 import ir.tic.clouddc.api.response.Response;
+import ir.tic.clouddc.cloud.CloudService;
 import ir.tic.clouddc.notification.NotificationService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.servlet.UnavailableException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -35,9 +38,12 @@ public class GlobalExceptionHandler {
 
     private final NotificationService notificationService;
 
+    private final CloudService cloudService;
+
     @Autowired
-    public GlobalExceptionHandler(NotificationService notificationService) {
+    public GlobalExceptionHandler(NotificationService notificationService, CloudService cloudService) {
         this.notificationService = notificationService;
+        this.cloudService = cloudService;
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
@@ -70,11 +76,14 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({UnavailableException.class, NoRouteToHostException.class, DnsNameResolverTimeoutException.class, DnsNameResolverException.class, WebClientRequestException.class, WebClientException.class, WebClientResponseException.class})
-    public ResponseEntity<Response> catchWebserviceException() {
-        log.error("UnavailableException: ");
-        Response response = new Response("Error", "خطا در دریافت اطلاعات", UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now()), List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
-
-        return new ResponseEntity<>(response, HttpStatus.SERVICE_UNAVAILABLE);
+    public ResponseEntity<Response> catchWebserviceException(HttpServletRequest request) {
+        log.warn("Live Response Not Available");
+        var requestURI = request.getRequestURI();
+        if (requestURI.contains("cluster")) {
+            return new ResponseEntity<>(cloudService.getSabzClusterData(), HttpStatusCode.valueOf(200));
+        } else {
+            return new ResponseEntity<>(cloudService.getSabzMessengerData(), HttpStatusCode.valueOf(200));
+        }
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)

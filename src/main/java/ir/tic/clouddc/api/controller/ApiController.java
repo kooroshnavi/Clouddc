@@ -59,7 +59,6 @@ public class ApiController {
     public ResponseEntity<Response> getXasUsageData(HttpServletRequest request) {
         var response = cloudService.getXasCephUsageData();
         tokenService.postRequestRecord(request, response.getStatus());
-
         if (Objects.equals(response.getStatus(), "OK")) {
             return new ResponseEntity<>(response, HttpStatusCode.valueOf(200));
         }

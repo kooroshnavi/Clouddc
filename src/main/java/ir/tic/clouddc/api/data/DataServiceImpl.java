@@ -50,10 +50,10 @@ public class DataServiceImpl implements DataService {
             "{cluster='ceph',owner='igap',service='prod-ceph-rgw-exporter-bec'}*1.5");
 
     private static final List<String> CEPH_USAGE_MESSENGER_TITLE = Arrays.asList(
-            "بله",
-            "سروش پلاس",
-            "گپ",
-            "آیگپ");
+            "داده ورزی سداد فارس (بله)",
+            "ستاک هوشمند شریف (سروش پلاس)",
+            "فناوری اطلاعات توسعه سامان (گپ)",
+            "آی گپ");
 
     List<CephResult> cephDataResultList;
 

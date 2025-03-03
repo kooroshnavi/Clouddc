@@ -12,9 +12,7 @@ public interface CloudService {
 
     Optional<? extends CloudProvider> getCloudProvider(int cloudProviderId);
 
-    Response getSedadUsageData();
-
-    interface CloudProviderIDLocalDateProjection{
+    interface CloudProviderIDLocalDateProjection {
         int getId();
 
         LocalDateTime getDate();
@@ -25,6 +23,12 @@ public interface CloudService {
     Optional<? extends CloudProvider> getCurrentService(int serviceType, int providerID);
 
     Response getXasCephUsageData();
+
+    Response getSedadUsageData();
+
+    Response getSabzClusterData();
+
+    Response getSabzMessengerData();
 
     Optional<? extends CloudProvider> getServiceStatus(Integer serviceType);
 }

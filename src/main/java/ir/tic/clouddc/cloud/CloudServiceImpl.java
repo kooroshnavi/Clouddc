@@ -11,6 +11,7 @@ import ir.tic.clouddc.utils.UtilService;
 import jakarta.transaction.Transactional;
 import lombok.extern.slf4j.Slf4j;
 import org.hibernate.Hibernate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -44,12 +45,15 @@ public class CloudServiceImpl implements CloudService {
     private final ResourceService resourceService;
     private final CephRepository cephRepository;
     private final DataService dataService;
+    private final CephUtilizerRepository cephUtilizerRepository;
 
-    public CloudServiceImpl(CloudRepository cloudRepository, ResourceService resourceService, CephRepository cephRepository, DataService dataService) {
+    @Autowired
+    public CloudServiceImpl(CloudRepository cloudRepository, ResourceService resourceService, CephRepository cephRepository, DataService dataService, CephUtilizerRepository cephUtilizerRepository) {
         this.cloudRepository = cloudRepository;
         this.resourceService = resourceService;
         this.cephRepository = cephRepository;
         this.dataService = dataService;
+        this.cephUtilizerRepository = cephUtilizerRepository;
     }
 
     @Scheduled(cron = "0 0 6,19 * * *")
@@ -105,7 +109,9 @@ public class CloudServiceImpl implements CloudService {
             } else {
                 cloudRepository.save(ceph);
             }
-            log.info("SUCCESS");
+            log.info("Scheduler Successful");
+        } else {
+            log.error("API Not Available");
         }
         SecurityContextHolder.clearContext();
     }
@@ -204,7 +210,7 @@ public class CloudServiceImpl implements CloudService {
         if (xasCephData.isPresent()) {
             var xasResult = (Ceph) xasCephData.get();
             CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(xasResult.getCapacity()), xasResult.getCapacityUnit());
-            CephResult usedCapacity = new CephResult(2, "ایتا", String.valueOf(xasResult.getCephUtilizerList().get(0).getUsage()), xasResult.getCephUtilizerList().get(0).getUnit());
+            CephResult usedCapacity = new CephResult(2, "اندیشه یاوران تمدن امروز (ایتا)", String.valueOf(xasResult.getCephUtilizerList().get(0).getUsage()), xasResult.getCephUtilizerList().get(0).getUnit());
 
             return new Response("OK"
                     ,
@@ -225,7 +231,7 @@ public class CloudServiceImpl implements CloudService {
         if (sedadCeph.isPresent()) {
             var sedadResult = (Ceph) sedadCeph.get();
             CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(sedadResult.getCapacity()), sedadResult.getCapacityUnit());
-            CephResult usedCapacity = new CephResult(2, "بله", String.valueOf(sedadResult.getCephUtilizerList().get(0).getUsage()), sedadResult.getCephUtilizerList().get(0).getUnit());
+            CephResult usedCapacity = new CephResult(2, sedadResult.getProvider().getName(), String.valueOf(sedadResult.getCephUtilizerList().get(0).getUsage()), sedadResult.getCephUtilizerList().get(0).getUnit());
 
             return new Response("OK"
                     ,
@@ -237,6 +243,58 @@ public class CloudServiceImpl implements CloudService {
                 , "خطا در دریافت اطلاعات"
                 , UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now())
                 , List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
+    }
+
+    @Override
+    public Response getSabzClusterData() {
+        var sedadCeph = getCurrentService(CEPH_SERVICE_TYPE, SABZ_SYSTEM);
+        if (sedadCeph.isPresent()) {
+            var sedadResult = (Ceph) sedadCeph.get();
+            CephResult totalCapacity = new CephResult(1, "حجم کل", String.valueOf(sedadResult.getCapacity()), sedadResult.getCapacityUnit());
+            CephResult usedCapacity = new CephResult(2, "حجم مصرفی", String.valueOf(sedadResult.getUsage()), sedadResult.getUsageUnit());
+
+            return new Response("OK"
+                    ,
+                    "استوریج ابری سبزسیستم"
+                    , UtilService.getFormattedPersianDateAndTime(sedadResult.getLocalDateTime().toLocalDate(), sedadResult.getLocalDateTime().toLocalTime())
+                    , List.of(totalCapacity, usedCapacity));
+        }
+
+        return new Response("Error"
+                , "خطا در دریافت اطلاعات"
+                , UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now())
+                , List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
+    }
+
+    @Override
+    public Response getSabzMessengerData() {
+        var currentSedadCeph = getCurrentService(CEPH_SERVICE_TYPE, SABZ_SYSTEM);
+        if (currentSedadCeph.isPresent()) {
+            List<CephUtilizerRepository.CephUtilizerProjection> cephUtilizerList = cephUtilizerRepository
+                    .getCephUtilizerList(currentSedadCeph.get().getProvider().getId())
+                    .stream()
+                    .sorted(Comparator.comparing(CephUtilizerRepository.CephUtilizerProjection::getUtilizerId))
+                    .toList();
+            log.info(cephUtilizerList.toString());
+            List<CephResult> cephResultList = new ArrayList<>();
+            for (int i = 0; i < cephUtilizerList.size(); i++) {
+                var result = cephUtilizerList.get(i);
+                CephResult cephResult = new CephResult(i + 1, result.getUtilizerName(), String.valueOf(result.getUsage()), result.getUnit());
+                cephResultList.add(cephResult);
+            }
+
+            return new Response("OK"
+                    ,
+                    "استوریج ابری سبزسیستم - حجم مصرفی پیام رسان ها"
+                    , UtilService.getFormattedPersianDateAndTime(currentSedadCeph.get().getLocalDateTime().toLocalDate(), currentSedadCeph.get().getLocalDateTime().toLocalTime())
+                    , cephResultList);
+
+        } else {
+            return new Response("Error"
+                    , "خطا در دریافت اطلاعات"
+                    , UtilService.getFormattedPersianDateAndTime(LocalDate.now(), LocalTime.now())
+                    , List.of(new ErrorResult("وب سرویس ریموت سامانه مانیتورینگ جهت دریافت اطلاعات در دسترس نمی باشد")));
+        }
     }
 
     @Override
