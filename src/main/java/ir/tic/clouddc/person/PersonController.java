@@ -1,5 +1,6 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.otp.BackupCodeRepository;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,14 @@ public class PersonController {
         List<Person> personList = personService
                 .getRegisteredPerosonList();
         model.addAttribute("personProjection1List", personList);
+
+        List<BackupCodeRepository.BackupCodeProjection> backupCodeList = personService.getBackupCodeList();
+        if (backupCodeList.isEmpty()) {
+            model.addAttribute("emptyBackupCodeList", true);
+        } else {
+            model.addAttribute("emptyBackupCodeList", false);
+            model.addAttribute("backupCodeList", backupCodeList);
+        }
 
         if (!model.containsAttribute("personRegisterForm")) {
             model.addAttribute("personRegisterForm", new PersonRegisterForm());
@@ -140,5 +149,12 @@ public class PersonController {
         model.addAttribute("loginHistoryList", loginHistoryList);
 
         return "loginHistoryList";
+    }
+
+    @GetMapping("/backupCode/refresh")
+    public String refreshBackupCodeList() {
+        personService.refreshBackupCodeList();
+
+        return "redirect:/person/list";
     }
 }

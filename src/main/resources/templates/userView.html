@@ -82,6 +82,59 @@
 
                 <div class="card-body">
 
+                    <button th:if="${not emptyBackupCodeList}"
+                            type="button" class="btn btn-info" data-bs-toggle="modal"
+                            data-bs-target="#exampleSuccessModal" th:text="${'کدهای بکاپ ورود' + ' (' + backupCodeList.size() + ')'}">
+                    </button>
+
+                    <div th:if="${not emptyBackupCodeList}" class="modal fade" id="exampleSuccessModal"
+                         tabindex="-1"
+                         aria-hidden="true">
+                        <div class="modal-dialog modal-lg modal-dialog-centered">
+                            <div class="modal-content bg-light">
+                                <div class="modal-header border-dark">
+                                    <h5 class="modal-title text-dark">کد بکاپ ورود</h5>
+                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                </div>
+                                <div class="modal-body text-dark">
+                                    <p>با استفاده از این کدها امکان ورود به سامانه هنگام اختلال در تیک گرام وجود دارد.</p>
+                                    <p>هر کد یکبار مصرف است و پس از استفاده حذف می شود.</p>
+                                    <p>پس از استفاده از آخرین کد، امکان صدور و مشاهده لیست جدید وجود دارد.</p>
+                                    <p>کدهای ارسالی از طریق تیک گرام همچنان قابل استفاده هستند.</p>
+                                </div>
+                                <div class="modal-footer border-dark">
+
+                                    <table dir="rtl" class="table table-striped table-bordered">
+                                        <thead>
+                                        <tr>
+                                            <th>کدهای بکاپ</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+
+                                        <tr th:each="code : ${backupCodeList}">
+                                            <td class="text-bronze"
+                                                th:text="${code.code}"/>
+                                        </tr>
+                                        </tbody>
+                                        <tfoot>
+                                        </tfoot>
+                                    </table>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <h4 th:if="${emptyBackupCodeList}" class="mb-0 text-uppercase" align="center">
+                        <strong class="mb-0 text-bg-warning">شما در حال حاضر کد بکاپ ورود به سامانه ندارید.</strong>
+                    </h4>
+                    <br th:if="${emptyBackupCodeList}">
+                    <a th:if="${emptyBackupCodeList}" th:href="@{/person/backupCode/refresh}"
+                       class="btn btn-outline-warning px-10 radius-30">صدور کدهای بکاپ ورود به سامانه</a>
+
                     <div class="my-3 border-top"></div>
                     <div class="accordion" id="accordionExample">
 
@@ -184,6 +237,9 @@
                                                         <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
                                                                 th:value="6">مدیریت توکن وب سرویس
                                                         </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN')"
+                                                                th:value="4">Administrator
+                                                        </option>
                                                     </select>
                                                 </label>
                                                 <hr/>
@@ -203,6 +259,9 @@
                                                         </option>
                                                         <option sec:authorize="hasAnyAuthority('ADMIN', 'MANAGER')"
                                                                 th:value="6">مدیریت توکن وب سرویس
+                                                        </option>
+                                                        <option sec:authorize="hasAnyAuthority('ADMIN')"
+                                                                th:value="4">Administrator
                                                         </option>
                                                     </select>
                                                 </label>

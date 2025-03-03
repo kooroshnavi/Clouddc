@@ -10,4 +10,6 @@ public class ManualData {
     private float used;
 
     private int unit;
+
+    private int provider;
 }

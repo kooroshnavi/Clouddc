@@ -21,8 +21,7 @@ public class RestAuthenticationFilter extends OncePerRequestFilter {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    private static final List<String> DEFINED_URLS = List.of("/api/ceph/cluster", "/api/ceph/messenger/usage", "/api/ceph/xas/usage");
-
+    private static final List<String> DEFINED_URLS = List.of("/api/ceph/cluster", "/api/ceph/messenger/usage", "/api/ceph/xas/usage", "/api/ceph/sedad/usage");
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {

@@ -1,8 +1,6 @@
 package ir.tic.clouddc.resource;
 
 import ir.tic.clouddc.center.CenterService;
-import ir.tic.clouddc.event.DeviceCheckList;
-import ir.tic.clouddc.event.DeviceStatusForm;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.person.PersonService;
@@ -459,6 +457,24 @@ public class ResourceServiceImpl implements ResourceService {
     }
 
     @Override
+    public boolean utilizerRegister(UtilizerForm utilizerForm) {
+        var name = utilizerForm.getName();
+        if (name == null || name.isBlank() || name.isEmpty()) {
+            return false;
+        }
+        if (utilizerRepository.existsByNameContainsIgnoreCase(utilizerForm.getName().trim())) {
+            return false;
+        }
+        Utilizer utilizer = new Utilizer();
+        utilizer.setGenuineUtilizer(true);
+        utilizer.setName(utilizerForm.getName().trim());
+        utilizer.setMessenger(utilizerForm.isMessenger());
+        utilizerRepository.saveAndFlush(utilizer);
+
+        return true;
+    }
+
+    @Override
     public Optional<Device> getDevice(Long deviceId) {
         Optional<Device> currentDevice = deviceRepository.findById(deviceId);
 
@@ -505,52 +521,11 @@ public class ResourceServiceImpl implements ResourceService {
         return deviceRepository.getReferenceById(deviceId);
     }
 
-    @Override
-    public void updateDeviceStatus(DeviceStatusForm deviceStatusForm, DeviceCheckList event) {
-       /* List<DeviceStatus> deviceStatusList = new ArrayList<>();
-      //  var device = event.getDevice();
-        var currentDeviceStatus = getCurrentDeviceStatus(device);
-        currentDeviceStatus.setActive(false);
-        deviceStatusList.add(currentDeviceStatus);
-
-        DeviceStatus newDeviceStatus = new DeviceStatus();
-        newDeviceStatus.setDevice(device);
-        newDeviceStatus.setEvent(event);
-        newDeviceStatus.setDualPower(deviceStatusForm.isDualPower());
-        newDeviceStatus.setSts(deviceStatusForm.isSts());
-        newDeviceStatus.setFan(deviceStatusForm.isFan());
-        newDeviceStatus.setModule(deviceStatusForm.isModule());
-        newDeviceStatus.setStorage(deviceStatusForm.isStorage());
-        newDeviceStatus.setPort(deviceStatusForm.isPort());
-        newDeviceStatus.setActive(true);
-
-        deviceStatusList.add(newDeviceStatus);
-
-        deviceStatusRepository.saveAllAndFlush(deviceStatusList);*/
-    }
-
 
     @Override
     public List<UtilizerIdNameProjection> getUtilizerListExcept(List<Integer> utilizerIdList) {
         return utilizerRepository.getUtilizerProjectionExcept(utilizerIdList);
     }
 
-    @Override
-    public DeviceStatus getCurrentDeviceStatus(Device device) {
-      /*  var currentStatus = deviceStatusRepository.findByDeviceAndActive(device, true);
-        if (currentStatus.isPresent()) {
-            return currentStatus.get();
-        } else {
-            DeviceStatus defaultDeviceStatus = new DeviceStatus();
-            defaultDeviceStatus.setDualPower(true);
-            defaultDeviceStatus.setSts(true);
-            defaultDeviceStatus.setFan(true);
-            defaultDeviceStatus.setModule(true);
-            defaultDeviceStatus.setStorage(true);
-            defaultDeviceStatus.setPort(true);
-            return defaultDeviceStatus;
-        }*/
-        return null;
-    }
 }
 

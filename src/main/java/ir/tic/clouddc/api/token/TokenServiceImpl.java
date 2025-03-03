@@ -12,7 +12,6 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -46,7 +45,9 @@ public class TokenServiceImpl implements TokenService {
     public AuthenticationToken getToken(Integer tokenId) {
         AuthenticationToken authenticationToken;
         authenticationToken = tokenRepository.getReferenceById(tokenId);
-        authenticationToken.setPersianRegisterDate(UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime()));
+        var registerDate = authenticationToken.getRegisterDate().toLocalDate();
+        var registerTime = authenticationToken.getRegisterDate().toLocalTime();
+        authenticationToken.setPersianRegisterDate(UtilService.getFormattedPersianDateAndTime(registerDate, registerTime));
         authenticationToken.setPersianExpiryDate(UtilService.getFormattedPersianDate(authenticationToken.getExpiryDate()));
 
         return authenticationToken;
@@ -71,7 +72,6 @@ public class TokenServiceImpl implements TokenService {
     public void revokeToken() {
         var username = personService.getCurrentUsername();
         tokenRepository.revokeToken(username, false, UtilService.getDATE());
-
         updateActiveTokenList();
     }
 
@@ -116,7 +116,7 @@ public class TokenServiceImpl implements TokenService {
                 .get()
                 .generate(10));
         authenticationToken.setValid(true);
-        authenticationToken.setExpiryDate(LocalDate.now().plusDays(100));
+        authenticationToken.setExpiryDate(UtilService.getDATE().plusDays(100));
         authenticationToken.setRegisterDate(LocalDateTime.now());
         authenticationToken.setPerson(personService.getCurrentPerson());
         tokenRepository.save(authenticationToken);
@@ -148,7 +148,9 @@ public class TokenServiceImpl implements TokenService {
 
         if (!tokenList.isEmpty()) {
             tokenList.forEach(authenticationToken -> {
-                authenticationToken.setPersianRegisterDate(UtilService.getFormattedPersianDateAndTime(UtilService.getDATE(), UtilService.getTime()));
+                var registerDate = authenticationToken.getRegisterDate().toLocalDate();
+                var registerTime = authenticationToken.getRegisterDate().toLocalTime();
+                authenticationToken.setPersianRegisterDate(UtilService.getFormattedPersianDateAndTime(registerDate, registerTime));
                 authenticationToken.setPersianExpiryDate(UtilService.getFormattedPersianDate(authenticationToken.getExpiryDate()));
             });
         }

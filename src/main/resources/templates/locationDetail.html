@@ -422,7 +422,7 @@
 
         <div sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'OPERATOR')" class="col">
             <div class="ui-dialog-buttonpane" align="center">
-                <a th:href="@{/pm/catalog/location/{locationId}/form(locationId=${location.id})}"
+                <a th:href="@{/pm/catalog/location/{locationId}/form (locationId=${location.id})}"
                    class="btn btn-outline-success"
                    th:text="'افزودن ' + ${location.name} + 'به کاتالوگ یک PM'">
                 </a>

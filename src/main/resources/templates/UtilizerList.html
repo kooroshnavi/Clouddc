@@ -6,6 +6,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!--plugins-->
+    <link href="/panel/assets/plugins/notifications/css/lobibox.min.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/simplebar/css/simplebar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/perfect-scrollbar/css/perfect-scrollbar.css" rel="stylesheet"/>
     <link href="/panel/assets/plugins/metismenu/css/metisMenu.min.css" rel="stylesheet"/>
@@ -30,6 +31,18 @@
 </head>
 
 <body>
+
+<script th:if="${registration && registered}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos5_success_noti();
+    });
+</script>
+
+<script th:if="${registration && not registered}">
+    document.addEventListener('DOMContentLoaded', function () {
+        pos3_warning_noti();
+    });
+</script>
 
 
 <!--start wrapper-->
@@ -64,6 +77,68 @@
         <br>
         <div class="card">
             <div class="card-body">
+
+                <button sec:authorize="hasAnyAuthority('ADMIN', 'SUPERVISOR', 'MANAGER')"
+                        type="button" class="btn btn-info" data-bs-toggle="modal"
+                        data-bs-target="#exampleWarningModal">ثبت بهره بردار جدید
+                </button>
+                <br>
+                <!-- Modal -->
+                <div  class="modal fade" id="exampleWarningModal"
+                     tabindex="-1"
+                     aria-hidden="true">
+                    <div class="modal-dialog modal-lg modal-dialog-centered">
+                        <div class="modal-content bg-warning">
+                            <div class="modal-header border-dark">
+                                <h5 class="modal-title text-dark">ثبت بهره بردار جدید</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                        aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body text-dark">
+
+                                <form id="form" class="was-validated"
+                                      th:action="@{/resource/utilizer/register}"
+                                      th:object="${utilizerForm}" method="Post"
+                                      onSubmit="document.getElementById('submit2').disabled=true;">
+
+                                    <div class="form-group">
+                                        <label class="for-check">نام کامل بهره بردار</label>
+                                        <input type="text" step="0.01" value="" dir="rtl"
+                                               th:field="*{name}"
+                                               required="required">
+                                    </div>
+                                    <br>
+                                    <div class="form-group">
+                                        <label class="for-check">آیا بهره بردار یک پیام رسان است؟</label>
+                                        <input type="checkbox" dir="ltr"
+                                               th:field="*{messenger}">
+                                    </div>
+                                    <br>
+
+                                    <div class="col">
+                                        <div class="form-check">
+                                            <input class="form-check-input" type="checkbox" value=""
+                                                   id="invalidCheck"
+                                                   required="required">
+                                            <label class="form-check-label" for="invalidCheck">از
+                                                ثبت اطلاعات
+                                                 صحیح مطمئن هستم و اطلاعات تکراری ثبت نمی کنم.</label>
+                                            <div class="invalid-feedback">لطفا اطلاعات فرم را کنترل
+                                                کنید
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr/>
+                                    <button type="submit" id="submit2" class="btn btn-dark">
+                                        ثبت اطلاعات
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <hr>
 
                 <h6 class="card-header bg-success" align="center">
                     <strong class="mb-0">اسامی سبزرنگ؛ پیام رسان های بومی بهره بردار می باشند.</strong>
@@ -134,6 +209,9 @@
 <script src="/panel/assets/js/jquery.min.js"></script>
 <script src="/panel/assets/plugins/simplebar/js/simplebar.min.js"></script>
 <script src="/panel/assets/plugins/metismenu/js/metisMenu.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/lobibox.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notifications.min.js"></script>
+<script src="/panel/assets/plugins/notifications/js/notification-custom-script.js"></script>
 <script src="/panel/assets/plugins/perfect-scrollbar/js/perfect-scrollbar.js"></script>
 <script src="/panel/assets/js/pace.min.js"></script>
 <script src="/panel/assets/plugins/datatable/js/jquery.dataTables.min.js"></script>

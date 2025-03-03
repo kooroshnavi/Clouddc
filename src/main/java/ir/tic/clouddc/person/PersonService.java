@@ -1,11 +1,14 @@
 package ir.tic.clouddc.person;
 
+import ir.tic.clouddc.otp.BackupCodeRepository;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public interface PersonService {
+
+    void refreshBackupCodeList();
 
     boolean checkPhoneExistence(PersonRegisterForm personRegisterForm);
 
@@ -38,4 +41,6 @@ public interface PersonService {
     String getPersonAddressByUsername(String username);
 
     boolean hasAdminAuthority();
+
+    List<BackupCodeRepository.BackupCodeProjection> getBackupCodeList();
 }

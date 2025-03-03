@@ -3,6 +3,7 @@ package ir.tic.clouddc.person;
 import ir.tic.clouddc.log.LogService;
 import ir.tic.clouddc.log.Persistence;
 import ir.tic.clouddc.notification.NotificationService;
+import ir.tic.clouddc.otp.BackupCodeRepository;
 import ir.tic.clouddc.otp.OTPService;
 import ir.tic.clouddc.utils.UtilService;
 import jakarta.persistence.EntityNotFoundException;
@@ -41,6 +42,12 @@ public class PersonServiceImpl implements PersonService {
         this.logService = logService;
         this.notificationService = notificationService;
     }
+
+    @Override
+    public void refreshBackupCodeList() {
+        otpService.refreshPersonBackupCodeList(getCurrentPerson());
+    }
+
 
     @Override
     public boolean checkPhoneExistence(PersonRegisterForm personRegisterForm) {
@@ -231,5 +238,10 @@ public class PersonServiceImpl implements PersonService {
         return getCurrentPersonRoleList()
                 .stream()
                 .anyMatch(grantedAuthority -> grantedAuthority.getAuthority().equals("ADMIN"));
+    }
+
+    @Override
+    public List<BackupCodeRepository.BackupCodeProjection> getBackupCodeList() {
+        return otpService.getBackCodeList(getCurrentPerson());
     }
 }

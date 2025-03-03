@@ -36,7 +36,4 @@ public class CephUtilizer {
 
     @Column(name = "localDateTime", nullable = false)
     private LocalDateTime localDateTime;
-
-    @Transient
-    private String persianDateTime;
 }

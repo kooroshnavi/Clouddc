@@ -12,7 +12,7 @@
 
     <groupId>ir.tic</groupId>
     <artifactId>clouddc</artifactId>
-    <version>3.3.1-250222</version>
+    <version>3.5-250303</version>
     <name>clouddc</name>
     <packaging>jar</packaging>
     <description>DC management service for tic cloud infrastructure</description>
@@ -126,7 +126,7 @@
     </dependencies>
 
     <build>
-        <finalName>Clouddc-3.3.1-250222</finalName>
+        <finalName>Clouddc-3.5-250303</finalName>
         <resources>
 
             <resource>
@@ -143,7 +143,6 @@
             </resource>
 
         </resources>
-
 
         <plugins>
             <plugin>
@@ -168,7 +167,6 @@
                 <version>3.0.3</version>
             </plugin>
 
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -187,7 +185,6 @@
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
-
 
         </plugins>
     </build>
